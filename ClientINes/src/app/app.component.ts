@@ -3,6 +3,7 @@ import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HeaderComponent } from './shared/header.component';
 import { FooterComponent } from './shared/footer.component';
+import { LocalizationService } from './services/localization.service';
 
 @Component({
   selector: 'app-root',
@@ -12,5 +13,11 @@ import { FooterComponent } from './shared/footer.component';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'ClientINes';
+  constructor(private loc: LocalizationService) {}
+
+  changeLang(lang: string) {
+    this.loc.setLanguage(lang);
+
+  //title = 'ClientINes';
+}
 }

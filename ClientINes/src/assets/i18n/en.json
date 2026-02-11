@@ -1,0 +1,13 @@
+{
+  "auth": {
+    "email": "Email",
+    "username": "Username",
+    "password": "Password",
+    "register": "Register"
+  },
+  "HEADER":{
+    "HOME": "Home",
+    "LOGIN": "Login",
+    "REGISTER": "Register"
+  }
+}
