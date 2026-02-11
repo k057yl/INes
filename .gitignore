@@ -1,0 +1,11 @@
+# Backend
+**/bin/
+**/obj/
+**/*.user
+**/*.vs
+appsettings*.json
+
+# Frontend (Angular)
+node_modules/
+dist/
+.angular/

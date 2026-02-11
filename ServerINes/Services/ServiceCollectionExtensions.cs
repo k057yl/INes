@@ -13,17 +13,23 @@ namespace INest.Services
     {
         public static IServiceCollection AddAppServices(this IServiceCollection services, IConfiguration config)
         {
-            // DB
+            // ---------- Localization ----------
+            services.AddLocalization(options =>
+            {
+                options.ResourcesPath = "Resources";
+            });
+
+            // ---------- DB ----------
             services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(config.GetConnectionString("DefaultConnection"))
             );
 
-            // Identity
+            // ---------- Identity ----------
             services.AddIdentity<AppUser, IdentityRole<Guid>>()
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
 
-            // JWT
+            // ---------- JWT ----------
             var jwt = config.GetSection("Jwt");
             var key = jwt["Key"]?.Trim();
             var issuer = jwt["Issuer"]?.Trim();
@@ -46,6 +52,7 @@ namespace INest.Services
             {
                 options.RequireHttpsMetadata = false;
                 options.SaveToken = true;
+
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
@@ -71,7 +78,7 @@ namespace INest.Services
 
             services.AddAuthorization();
 
-            // CORS
+            // ---------- CORS ----------
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowAngular", policy =>
@@ -81,8 +88,8 @@ namespace INest.Services
                           .AllowCredentials());
             });
 
-            // Custom services
-            services.AddScoped<IEmailService,EmailService>();
+            // ---------- Custom services ----------
+            services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ITokenService, TokenService>();
 
