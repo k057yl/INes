@@ -8,6 +8,7 @@
   "HEADER":{
     "HOME": "Головна",
     "LOGIN": "Логін",
-    "REGISTER": "Реєстрація"
+    "REGISTER": "Реєстрація",
+    "TEST": "Test_UA"
   }
 }

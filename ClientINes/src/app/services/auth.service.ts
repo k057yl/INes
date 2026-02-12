@@ -52,9 +52,16 @@ export class AuthService {
 
   login(email: string, password: string) {
     return this.http
-      .post<{ token: string }>(`${this.apiUrl}/login`, { email, password })
+      .post<{ token: string | "unconfirmed" }>(`${this.apiUrl}/login`, { email, password })
       .pipe(
-        tap(res => this.setSession(res.token))
+        tap(res => {
+
+          if (res.token === 'unconfirmed') {
+            throw { error: 'unconfirmed' };
+          }
+
+          this.setSession(res.token);
+        })
       );
   }
 
@@ -113,4 +120,16 @@ export class AuthService {
   isAuthenticated(): boolean {
     return !!this.tokenSubject.value;
   }
+
+  getUserEmail(): string | null {
+  const token = this.getToken();
+  if (!token) return null;
+  
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'] || payload.email;
+  } catch {
+    return null;
+  }
+}
 }

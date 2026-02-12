@@ -8,6 +8,7 @@
   "HEADER":{
     "HOME": "Home",
     "LOGIN": "Login",
-    "REGISTER": "Register"
+    "REGISTER": "Register",
+    "TEST": "Test_EN"
   }
 }

@@ -14,6 +14,7 @@ namespace INest.Controllers
 
         public AuthController(IAuthService authService) => _authService = authService;
 
+        [AllowAnonymous]
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto dto)
         {
@@ -37,6 +38,7 @@ namespace INest.Controllers
             return Ok(new { message = "Регистрация завершена" });
         }
 
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {

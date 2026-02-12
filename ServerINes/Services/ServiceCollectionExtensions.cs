@@ -92,6 +92,8 @@ namespace INest.Services
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IItemService, ItemService>();
+            services.AddScoped<ILocationService, LocationService>();
 
             return services;
         }

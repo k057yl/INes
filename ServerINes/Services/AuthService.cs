@@ -1,6 +1,5 @@
 ﻿using INest.Models.DTOs.Auth;
 using INest.Models.Entities;
-using INest.Resources;
 using INest.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
@@ -34,11 +33,11 @@ namespace INest.Services
         public async Task SendConfirmationCodeAsync(RegisterDto dto)
         {
             if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.Username) || string.IsNullOrWhiteSpace(dto.Password))
-                throw new ArgumentException(_localizer["RequiredAuthFields"]);
+                throw new ArgumentException(_localizer["Auth.RequiredFields"]);
 
             var existing = await _userManager.FindByEmailAsync(dto.Email);
             if (existing != null)
-                throw new InvalidOperationException("Пользователь с таким email уже существует");
+                throw new InvalidOperationException(_localizer["Auth.UserAlreadyExists"]);
 
             var user = new AppUser
             {

@@ -17,7 +17,5 @@ export class AppComponent {
 
   changeLang(lang: string) {
     this.loc.setLanguage(lang);
-
-  //title = 'ClientINes';
 }
 }

@@ -117,10 +117,16 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="RequiredAuthFields" xml:space="preserve">
+  <data name="Auth.RequiredFields" xml:space="preserve">
     <value>Email, ім'я користувача та пароль є обов'язковими</value>
   </data>
-  <data name="UserNotFound" xml:space="preserve">
+  <data name="Auth.UserAlreadyExists" xml:space="preserve">
+    <value>Користувач із таким email вже існує</value>
+  </data>
+  <data name="Auth.UserNotFound" xml:space="preserve">
     <value>Користувача не знайдено</value>
+  </data>
+  <data name="Welcome" xml:space="preserve">
+    <value>Ласкаво просимо</value>
   </data>
 </root>

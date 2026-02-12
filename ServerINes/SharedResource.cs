@@ -1,4 +1,4 @@
-﻿namespace INest.Resources
+﻿namespace INest
 {
     public class SharedResource
     {
