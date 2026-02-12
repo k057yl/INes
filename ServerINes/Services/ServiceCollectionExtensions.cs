@@ -93,7 +93,9 @@ namespace INest.Services
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IItemService, ItemService>();
+            services.AddScoped<IItemPhotoService, ItemPhotoService>();
             services.AddScoped<ILocationService, LocationService>();
+            services.AddScoped<ICategoryService, CategoryService>();
 
             return services;
         }

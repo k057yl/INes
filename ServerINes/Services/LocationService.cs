@@ -36,6 +36,8 @@ namespace INest.Services
                 Description = dto.Description,
                 ParentLocationId = dto.ParentLocationId,
                 SortOrder = dto.SortOrder,
+                Color = dto.Color ?? "#007bff",
+                Icon = dto.Icon ?? "fa-folder",
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -52,7 +54,10 @@ namespace INest.Services
                 .Select(l => new {
                     l.Id,
                     l.Name,
-                    l.Description
+                    l.Description,
+                    l.Color,
+                    l.Icon,
+                    items = l.Items.Select(i => new { i.Id, i.Name }).ToList()
                 })
                 .ToListAsync();
         }

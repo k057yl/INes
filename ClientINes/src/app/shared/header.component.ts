@@ -21,6 +21,8 @@ import { TranslatePipe } from '@ngx-translate/core';
         <a routerLink="/home">{{ 'HEADER.HOME' | translate }}</a>
         <a routerLink="/login">{{ 'HEADER.LOGIN' | translate }}</a>
         <a routerLink="/register">{{ 'HEADER.REGISTER' | translate }}</a>
+        <a routerLink="/create-item">{{ 'HEADER.TEST' | translate }}</a>
+        <a routerLink="/create-category">{{ 'HEADER.TEST' | translate }}</a>
       </nav>
 
       <div class="lang">
@@ -45,7 +47,7 @@ import { TranslatePipe } from '@ngx-translate/core';
       gap: 20px;
     }
     .welcome-msg {
-      color: #ff4d4d; /* Ярко-красный */
+      color: #ff4d4d;
       font-weight: bold;
       font-size: 0.9rem;
     }

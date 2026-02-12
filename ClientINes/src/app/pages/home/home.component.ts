@@ -135,10 +135,14 @@ export class HomeComponent implements OnInit {
         event.currentIndex
       );
 
-      this.http.patch(`${environment.apiBaseUrl}/items/move`, { 
-        itemId: item.id, 
-        targetLocationId: targetLocationId 
-      }).subscribe();
+      this.http.patch(
+        `${environment.apiBaseUrl}/items/${item.id}/move`,
+        { targetLocationId },
+        { headers: { 'Content-Type': 'application/json' } }
+      ).subscribe({
+        next: () => console.log('Moved'),
+        error: err => console.error(err)
+      });
     }
   }
 }
