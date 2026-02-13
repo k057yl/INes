@@ -8,5 +8,8 @@ namespace INest.Services.Interfaces
         Task<StorageLocation> CreateLocationAsync(Guid userId, CreateLocationDto dto);
         Task<IEnumerable<object>> GetUserLocationsAsync(Guid userId);
         Task<bool> UpdateSortOrderAsync(Guid userId, Guid locationId, int newOrder);
+        Task MoveLocationAsync(Guid userId, Guid locationId, Guid? newParentId);
+        Task ReorderLocationsAsync(Guid userId, Guid? parentId, List<Guid> orderedIds);
+        Task<List<StorageLocation>> GetTreeAsync(Guid userId);
     }
 }

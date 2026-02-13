@@ -23,9 +23,11 @@ namespace INest.Controllers
             Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new Exception("UserId missing"));
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateItemDto dto)
+        public async Task<IActionResult> Create(
+            [FromForm] CreateItemDto dto,
+            IFormFile? photo)
         {
-            var item = await _itemService.CreateItemAsync(GetUserId(), dto);
+            var item = await _itemService.CreateItemAsync(GetUserId(), dto, photo);
             return Ok(item);
         }
 

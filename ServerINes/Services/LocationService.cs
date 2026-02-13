@@ -73,5 +73,81 @@ namespace INest.Services
             await _context.SaveChangesAsync();
             return true;
         }
+        //***********************
+        public async Task MoveLocationAsync(Guid userId, Guid locationId, Guid? newParentId)
+        {
+            var location = await _context.StorageLocations
+                .FirstOrDefaultAsync(l => l.Id == locationId && l.UserId == userId);
+
+            if (location == null)
+                throw new Exception("Location not found");
+
+            if (locationId == newParentId)
+                throw new Exception("Нельзя вложить локацию в саму себя");
+
+            var parent = await _context.StorageLocations
+                .FirstOrDefaultAsync(l => l.Id == newParentId && l.UserId == userId);
+
+            while (parent != null)
+            {
+                if (parent.Id == locationId)
+                    throw new Exception("Нельзя вложить родителя внутрь потомка");
+
+                parent = await _context.StorageLocations
+                    .FirstOrDefaultAsync(l => l.Id == parent.ParentLocationId && l.UserId == userId);
+            }
+
+            location.ParentLocationId = newParentId;
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task ReorderLocationsAsync(Guid userId, Guid? parentId, List<Guid> orderedIds)
+        {
+            var locations = await _context.StorageLocations
+                .Where(l => l.UserId == userId && l.ParentLocationId == parentId)
+                .ToListAsync();
+
+            for (int i = 0; i < orderedIds.Count; i++)
+            {
+                var loc = locations.FirstOrDefault(x => x.Id == orderedIds[i]);
+                if (loc != null)
+                    loc.SortOrder = i;
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
+        private List<StorageLocation> BuildTree(List<StorageLocation> all, Guid? parentId)
+        {
+            return all
+                .Where(l => l.ParentLocationId == parentId)
+                .OrderBy(l => l.SortOrder)
+                .Select(l => new StorageLocation
+                {
+                    Id = l.Id,
+                    UserId = l.UserId,
+                    Name = l.Name,
+                    Description = l.Description,
+                    Color = l.Color,
+                    Icon = l.Icon,
+                    ParentLocationId = l.ParentLocationId,
+                    SortOrder = l.SortOrder,
+                    CreatedAt = l.CreatedAt,
+                    Items = l.Items,
+                    Children = BuildTree(all, l.Id)
+                })
+                .ToList();
+        }
+
+        public async Task<List<StorageLocation>> GetTreeAsync(Guid userId)
+        {
+            var all = await _context.StorageLocations
+                .Where(l => l.UserId == userId)
+                .Include(l => l.Items)
+                .ToListAsync();
+
+            return BuildTree(all, null);
+        }
     }
 }

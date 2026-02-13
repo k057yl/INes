@@ -24,6 +24,10 @@ export class ItemService {
     return this.http.put(`${environment.apiBaseUrl}/items/${id}`, dto);
   }
 
+  createWithPhoto(data: FormData) {
+    return this.http.post(`${environment.apiBaseUrl}/items`, data);
+  }
+
   delete(id: string): Observable<any> {
     return this.http.delete(`${environment.apiBaseUrl}/items/${id}`);
   }

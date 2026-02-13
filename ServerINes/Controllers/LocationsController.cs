@@ -38,25 +38,51 @@ namespace INest.Controllers
         {
             try
             {
-                // 1. Ищем клейм (пробуем стандартный и короткий "sub")
                 var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub");
 
                 if (string.IsNullOrEmpty(userIdStr))
                     return BadRequest(new { error = "В токене отсутствует ID пользователя" });
 
-                // 2. Безопасно парсим в Guid
                 if (!Guid.TryParse(userIdStr, out var userId))
                     return BadRequest(new { error = $"ID в токене ({userIdStr}) не является валидным GUID" });
 
-                // 3. Вызываем сервис
                 var locations = await _locationService.GetUserLocationsAsync(userId);
                 return Ok(locations);
             }
             catch (Exception ex)
             {
-                // Если упадет база или что-то еще - мы увидим текст ошибки на фронте
                 return StatusCode(500, new { error = ex.Message, stack = ex.StackTrace });
             }
+        }
+
+        [HttpPatch("{id}/move")]
+        public async Task<IActionResult> Move(Guid id, [FromBody] MoveLocationDto dto)
+        {
+            var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+            await _locationService.MoveLocationAsync(userId, id, dto.NewParentId);
+
+            return Ok();
+        }
+
+        [HttpPatch("reorder")]
+        public async Task<IActionResult> Reorder([FromBody] ReorderLocationsDto dto)
+        {
+            var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+            await _locationService.ReorderLocationsAsync(userId, dto.ParentId, dto.OrderedIds);
+
+            return Ok();
+        }
+
+        [HttpGet("tree")]
+        public async Task<IActionResult> GetTree()
+        {
+            var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+            var tree = await _locationService.GetTreeAsync(userId);
+
+            return Ok(tree);
         }
     }
 }

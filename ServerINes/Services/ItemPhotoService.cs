@@ -24,15 +24,28 @@ namespace INest.Services
             if (item == null)
                 throw new InvalidOperationException("Item not found");
 
-            var folder = Path.Combine(_env.ContentRootPath, "Uploads", "ItemPhotos");
-            if (!Directory.Exists(folder))
-                Directory.CreateDirectory(folder);
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp" };
+            var extension = Path.GetExtension(file.FileName).ToLower();
 
-            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+            if (!allowedExtensions.Contains(extension))
+                throw new InvalidOperationException("Unsupported file type");
+
+            if (file.Length > 5 * 1024 * 1024)
+                throw new InvalidOperationException("File too large");
+
+            if (!item.Photos.Any())
+                isMain = true;
+
+            var folder = Path.Combine(_env.ContentRootPath, "Uploads", "ItemPhotos");
+            Directory.CreateDirectory(folder);
+
+            var fileName = $"{Guid.NewGuid()}{extension}";
             var path = Path.Combine(folder, fileName);
 
-            await using var stream = new FileStream(path, FileMode.Create);
-            await file.CopyToAsync(stream);
+            await using (var stream = new FileStream(path, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
 
             if (isMain)
             {
@@ -44,13 +57,24 @@ namespace INest.Services
             {
                 Id = Guid.NewGuid(),
                 ItemId = itemId,
-                FilePath = $"/uploads/ItemPhotos/{fileName}",
+                FilePath = $"/Uploads/ItemPhotos/{fileName}",
                 IsMain = isMain,
                 UploadedAt = DateTime.UtcNow
             };
 
-            _context.ItemPhotos.Add(photo);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.ItemPhotos.Add(photo);
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                if (File.Exists(path))
+                    File.Delete(path);
+
+                throw;
+            }
+
             return photo;
         }
 

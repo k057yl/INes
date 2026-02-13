@@ -5,8 +5,6 @@ import { Router } from '@angular/router';
 import { ItemService } from '../../services/item.service';
 import { LocationService } from '../../services/location.service';
 import { CategoryService } from '../../services/category.service';
-import { ItemStatus } from '../../models/enums/item-status.enum';
-import { CreateItemDto } from '../../models/dtos/item.dto';
 
 @Component({
   selector: 'app-item-create',
@@ -16,27 +14,45 @@ import { CreateItemDto } from '../../models/dtos/item.dto';
     <div class="container">
       <form [formGroup]="form" (ngSubmit)="onSubmit()">
         <h2>Создать айтем</h2>
-        
+
         <input formControlName="name" placeholder="Название" required>
+
         <textarea formControlName="description" placeholder="Описание"></textarea>
-        
+
         <select formControlName="categoryId" required>
           <option value="">Выберите категорию</option>
-          <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</option>
+          <option *ngFor="let cat of categories" [value]="cat.id">
+            {{ cat.name }}
+          </option>
         </select>
-        
+
         <select formControlName="storageLocationId">
           <option value="">Без локации</option>
-          <option *ngFor="let loc of locations" [value]="loc.id">{{ loc.name }}</option>
+          <option *ngFor="let loc of locations" [value]="loc.id">
+            {{ loc.name }}
+          </option>
         </select>
-        
+
         <select formControlName="status">
-          <option *ngFor="let s of statuses" [value]="s.value">{{ s.label }}</option>
+          <option *ngFor="let s of statuses" [value]="s.value">
+            {{ s.label }}
+          </option>
         </select>
 
         <input formControlName="purchaseDate" type="date">
+
         <input formControlName="purchasePrice" type="number" placeholder="Цена покупки">
+
         <input formControlName="estimatedValue" type="number" placeholder="Оценочная стоимость">
+
+        <label class="photo-flag">
+          <input type="checkbox" formControlName="addPhoto">
+          Добавить фото
+        </label>
+
+        <div *ngIf="form.value.addPhoto">
+          <input type="file" accept="image/*" (change)="onFileSelected($event)">
+        </div>
 
         <div class="actions">
           <button type="button" (click)="cancel()">Отмена</button>
@@ -46,12 +62,34 @@ import { CreateItemDto } from '../../models/dtos/item.dto';
     </div>
   `,
   styles: [`
-    .container { padding: 20px; max-width: 500px; margin: auto; }
-    input, select, textarea { display: block; width: 100%; margin-bottom: 10px; padding: 8px; }
-    .actions { display: flex; gap: 10px; }
+    .container {
+      padding: 20px;
+      max-width: 500px;
+      margin: auto;
+    }
+
+    input, select, textarea {
+      display: block;
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 8px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .photo-flag {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
   `]
 })
 export class ItemCreateComponent implements OnInit {
+
   private fb = inject(FormBuilder);
   private itemService = inject(ItemService);
   private locationService = inject(LocationService);
@@ -60,6 +98,9 @@ export class ItemCreateComponent implements OnInit {
 
   locations: any[] = [];
   categories: any[] = [];
+
+  selectedFile?: File;
+
   statuses = [
     { value: 0, label: 'Active' },
     { value: 1, label: 'Lent' },
@@ -77,12 +118,19 @@ export class ItemCreateComponent implements OnInit {
     status: [0, Validators.required],
     purchaseDate: [''],
     purchasePrice: [null],
-    estimatedValue: [null]
+    estimatedValue: [null],
+    addPhoto: [false]
   });
 
   ngOnInit() {
     this.loadLocations();
     this.loadCategories();
+
+    this.form.get('addPhoto')?.valueChanges.subscribe(val => {
+      if (!val) {
+        this.selectedFile = undefined;
+      }
+    });
   }
 
   loadLocations() {
@@ -99,27 +147,49 @@ export class ItemCreateComponent implements OnInit {
     });
   }
 
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+
+    if (input.files && input.files.length > 0) {
+      this.selectedFile = input.files[0];
+    }
+  }
+
   onSubmit() {
-  if (this.form.valid) {
+
+    if (!this.form.valid) return;
+
     const val = this.form.value;
 
-    const dto: CreateItemDto = {
-      name: val.name || '',
-      description: val.description || '',
-      categoryId: val.categoryId || '',
-      storageLocationId: val.storageLocationId || undefined,
-      status: val.status != null ? +val.status : 0,           // приводим к number
-      purchaseDate: val.purchaseDate ? new Date(val.purchaseDate).toISOString() : undefined, // к string ISO
-      purchasePrice: val.purchasePrice != null ? +val.purchasePrice : undefined,
-      estimatedValue: val.estimatedValue != null ? +val.estimatedValue : undefined
-    };
+    const formData = new FormData();
 
-    this.itemService.create(dto).subscribe({
+    formData.append('name', val.name || '');
+    formData.append('description', val.description || '');
+    formData.append('categoryId', val.categoryId || '');
+    formData.append('status', String(val.status ?? 0));
+
+    if (val.storageLocationId)
+      formData.append('storageLocationId', val.storageLocationId);
+
+    if (val.purchaseDate)
+      formData.append('purchaseDate', new Date(val.purchaseDate).toISOString());
+
+    if (val.purchasePrice != null)
+      formData.append('purchasePrice', String(val.purchasePrice));
+
+    if (val.estimatedValue != null)
+      formData.append('estimatedValue', String(val.estimatedValue));
+
+    if (val.addPhoto && this.selectedFile)
+      formData.append('photo', this.selectedFile);
+
+    this.itemService.createWithPhoto(formData).subscribe({
       next: () => this.router.navigate(['/home']),
       error: err => console.error(err)
     });
   }
-}
 
-  cancel() { this.router.navigate(['/home']); }
+  cancel() {
+    this.router.navigate(['/home']);
+  }
 }

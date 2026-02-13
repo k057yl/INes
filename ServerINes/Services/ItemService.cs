@@ -16,7 +16,7 @@ namespace INest.Services
             _context = context;
         }
 
-        public async Task<Item> CreateItemAsync(Guid userId, CreateItemDto dto)
+        public async Task<Item> CreateItemAsync(Guid userId, CreateItemDto dto, IFormFile? photo)
         {
             var item = new Item
             {
@@ -35,6 +35,30 @@ namespace INest.Services
 
             _context.Items.Add(item);
 
+            // ===== Save photo =====
+            if (photo != null && photo.Length > 0)
+            {
+                var uploadsFolder = Path.Combine("wwwroot", "uploads");
+
+                if (!Directory.Exists(uploadsFolder))
+                    Directory.CreateDirectory(uploadsFolder);
+
+                var fileName = $"{Guid.NewGuid()}{Path.GetExtension(photo.FileName)}";
+                var filePath = Path.Combine(uploadsFolder, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await photo.CopyToAsync(stream);
+                }
+
+                _context.ItemPhotos.Add(new ItemPhoto
+                {
+                    Id = Guid.NewGuid(),
+                    ItemId = item.Id,
+                    FilePath = $"/uploads/{fileName}"
+                });
+            }
+
             _context.ItemHistories.Add(new ItemHistory
             {
                 Id = Guid.NewGuid(),
@@ -44,6 +68,7 @@ namespace INest.Services
             });
 
             await _context.SaveChangesAsync();
+
             return item;
         }
 
