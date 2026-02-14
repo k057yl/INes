@@ -1,19 +1,21 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './pages/login/login.component';
-import { HomeComponent } from './pages/home/home.component';
 import { RegisterComponent } from './pages/register/register.component';
 import { ConfirmRegisterComponent } from './pages/register/confirm.register.component';
+import { LocationBoardComponent } from './pages/location/location-board.component';
 import { LocationCreateComponent } from './pages/location/location-create.component';
 import { ItemCreateComponent } from './pages/item/item-create.component';
 import { CategoryCreateComponent } from './pages/category/category-create.component';
+import { LocationDetailComponent } from './pages/location/location-detail.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'confirm-register', component: ConfirmRegisterComponent },
-  { path: 'home', component: HomeComponent },
+  { path: 'home', component: LocationBoardComponent }, 
   { path: 'location-create', component: LocationCreateComponent },
-  { path: 'create-item', component: ItemCreateComponent},
-  { path: 'create-category', component: CategoryCreateComponent}
+  { path: 'create-item', component: ItemCreateComponent },
+  { path: 'create-category', component: CategoryCreateComponent },
+  { path: 'location/:id', component: LocationDetailComponent },
 ];

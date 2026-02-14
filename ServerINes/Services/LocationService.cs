@@ -149,5 +149,39 @@ namespace INest.Services
 
             return BuildTree(all, null);
         }
+
+        public async Task RenameLocationAsync(Guid userId, Guid locationId, string newName)
+        {
+            var location = await _context.StorageLocations
+                .FirstOrDefaultAsync(l => l.Id == locationId && l.UserId == userId);
+
+            if (location == null)
+                throw new KeyNotFoundException(_localizer["Error.LocationNotFound"]);
+
+            location.Name = newName;
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteLocationAsync(Guid userId, Guid locationId)
+        {
+            var location = await _context.StorageLocations
+                .Include(l => l.Children)
+                .FirstOrDefaultAsync(l => l.Id == locationId && l.UserId == userId);
+
+            if (location == null)
+                throw new KeyNotFoundException(_localizer["Error.LocationNotFound"]);
+
+            _context.StorageLocations.Remove(location);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<StorageLocation?> GetLocationByIdAsync(Guid userId, Guid locationId)
+        {
+            return await _context.StorageLocations
+                .Where(l => l.UserId == userId && l.Id == locationId)
+                .Include(l => l.Items)
+                .Include(l => l.Children)
+                .FirstOrDefaultAsync();
+        }
     }
 }

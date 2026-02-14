@@ -12,5 +12,6 @@ namespace INest.Models.DTOs.Item
         public DateTime? PurchaseDate { get; set; }
         public decimal? PurchasePrice { get; set; }
         public decimal? EstimatedValue { get; set; }
+        public IFormFile? Photo { get; set; }
     }
 }

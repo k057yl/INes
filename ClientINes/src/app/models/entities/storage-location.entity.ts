@@ -8,4 +8,5 @@ export interface StorageLocation {
   parentLocationId?: string | null;
   items: Item[];
   children?: StorageLocation[];
+  showMenu?: boolean;
 }

@@ -29,5 +29,7 @@ namespace INest.Models.Entities
         public ICollection<ItemHistory> History { get; set; } = new List<ItemHistory>();
         public ICollection<Reminder> Reminders { get; set; } = new List<Reminder>();
         public Lending? Lending { get; set; }
+        public string? PhotoUrl { get; set; }
+        public string? PublicId { get; set; }
     }
 }

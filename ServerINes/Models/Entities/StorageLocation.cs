@@ -14,7 +14,7 @@
         public Guid? ParentLocationId { get; set; }
         public int SortOrder { get; set; }
 
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         public AppUser User { get; set; } = null!;
         public StorageLocation? ParentLocation { get; set; }

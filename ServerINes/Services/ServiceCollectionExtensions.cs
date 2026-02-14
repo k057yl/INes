@@ -19,6 +19,14 @@ namespace INest.Services
                 options.ResourcesPath = "Resources";
             });
 
+            // ----------- Setting localization for DataAnnotations ---------- 
+            services.AddControllers()
+                .AddDataAnnotationsLocalization(options =>
+                {
+                    options.DataAnnotationLocalizerProvider = (type, factory) =>
+                        factory.Create(typeof(SharedResource));
+                });
+
             // ---------- DB ----------
             services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(config.GetConnectionString("DefaultConnection"))
@@ -88,14 +96,16 @@ namespace INest.Services
                           .AllowCredentials());
             });
 
+            services.Configure<CloudinarySettings>(config.GetSection("CloudinarySettings"));
+
             // ---------- Custom services ----------
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IItemService, ItemService>();
-            services.AddScoped<IItemPhotoService, ItemPhotoService>();
             services.AddScoped<ILocationService, LocationService>();
             services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IPhotoService, PhotoService>();
 
             return services;
         }

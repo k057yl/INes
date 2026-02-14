@@ -5,7 +5,7 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 import { routes } from './app.routes';
 
-import { jwtInterceptor, cultureInterceptor } from '../app/interceptors/app.interceptors';
+import { jwtInterceptor, cultureInterceptor, globalErrorInterceptor } from '../app/interceptors/app.interceptors';
 
 import { provideTranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
@@ -18,7 +18,7 @@ export const appConfig: ApplicationConfig = {
     provideAnimations(),
 
     provideHttpClient(
-      withInterceptors([jwtInterceptor, cultureInterceptor])
+      withInterceptors([jwtInterceptor, cultureInterceptor, globalErrorInterceptor])
     ),
 
     provideTranslateService({

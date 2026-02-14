@@ -23,12 +23,13 @@ namespace INest.Controllers
             Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new Exception("UserId missing"));
 
         [HttpPost]
-        public async Task<IActionResult> Create(
-            [FromForm] CreateItemDto dto,
-            IFormFile? photo)
+        public async Task<IActionResult> Create([FromForm] CreateItemDto dto)
         {
-            var item = await _itemService.CreateItemAsync(GetUserId(), dto, photo);
-            return Ok(item);
+            var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+            var item = await _itemService.CreateItemAsync(userId, dto, dto.Photo);
+
+            return CreatedAtAction(nameof(GetById), new { id = item.Id }, item);
         }
 
         [HttpGet]
@@ -39,10 +40,14 @@ namespace INest.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(Guid id)
+        public async Task<IActionResult> GetById(Guid id)
         {
-            var item = await _itemService.GetItemAsync(GetUserId(), id);
+            var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+            var item = await _itemService.GetItemAsync(userId, id);
+
             if (item == null) return NotFound();
+
             return Ok(item);
         }
 

@@ -1,4 +1,5 @@
-import { HttpInterceptorFn } from '@angular/common/http';
+import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
+import { catchError, throwError } from 'rxjs';
 
 export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
   const token = localStorage.getItem('jwt');
@@ -29,3 +30,15 @@ export const cultureInterceptor: HttpInterceptorFn = (req, next) => {
   });
   return next(req);
 };
+
+export const globalErrorInterceptor: HttpInterceptorFn = (req, next) => {
+  return next(req).pipe(
+    catchError((error: HttpErrorResponse) => {
+      if (error.status === 400 && error.error?.errors) {
+        const message = Object.values(error.error.errors).flat().join('\n');
+        alert(message);
+      }
+      return throwError(() => error);
+    })
+  )
+}

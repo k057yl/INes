@@ -10,10 +10,12 @@ namespace INest.Services
     public class ItemService : IItemService
     {
         private readonly AppDbContext _context;
+        private readonly IPhotoService _photoService;
 
-        public ItemService(AppDbContext context)
+        public ItemService(AppDbContext context, IPhotoService photoService)
         {
             _context = context;
+            _photoService = photoService;
         }
 
         public async Task<Item> CreateItemAsync(Guid userId, CreateItemDto dto, IFormFile? photo)
@@ -35,28 +37,22 @@ namespace INest.Services
 
             _context.Items.Add(item);
 
-            // ===== Save photo =====
             if (photo != null && photo.Length > 0)
             {
-                var uploadsFolder = Path.Combine("wwwroot", "uploads");
+                var result = await _photoService.AddPhotoAsync(photo);
 
-                if (!Directory.Exists(uploadsFolder))
-                    Directory.CreateDirectory(uploadsFolder);
-
-                var fileName = $"{Guid.NewGuid()}{Path.GetExtension(photo.FileName)}";
-                var filePath = Path.Combine(uploadsFolder, fileName);
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
+                if (result.Error == null)
                 {
-                    await photo.CopyToAsync(stream);
+                    item.PhotoUrl = result.SecureUrl.ToString();
+                    item.PublicId = result.PublicId;
+
+                    _context.ItemPhotos.Add(new ItemPhoto
+                    {
+                        Id = Guid.NewGuid(),
+                        ItemId = item.Id,
+                        FilePath = item.PhotoUrl
+                    });
                 }
-
-                _context.ItemPhotos.Add(new ItemPhoto
-                {
-                    Id = Guid.NewGuid(),
-                    ItemId = item.Id,
-                    FilePath = $"/uploads/{fileName}"
-                });
             }
 
             _context.ItemHistories.Add(new ItemHistory
@@ -68,7 +64,6 @@ namespace INest.Services
             });
 
             await _context.SaveChangesAsync();
-
             return item;
         }
 

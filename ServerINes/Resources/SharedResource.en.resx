@@ -126,6 +126,12 @@
   <data name="Auth.UserNotFound" xml:space="preserve">
     <value>User not found</value>
   </data>
+  <data name="Localization_LocationNameLength" xml:space="preserve">
+    <value>The location name cannot be shorter than 3 characters</value>
+  </data>
+  <data name="Localization_LocationNameRequired" xml:space="preserve">
+    <value>Location name required!</value>
+  </data>
   <data name="Welcome" xml:space="preserve">
     <value>Welcome</value>
   </data>

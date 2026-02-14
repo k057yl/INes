@@ -88,6 +88,24 @@ namespace INest.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на The location name cannot be shorter than 3 characters.
+        /// </summary>
+        public static string Localization_LocationNameLength {
+            get {
+                return ResourceManager.GetString("Localization_LocationNameLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Location name required!.
+        /// </summary>
+        public static string Localization_LocationNameRequired {
+            get {
+                return ResourceManager.GetString("Localization_LocationNameRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Welcome.
         /// </summary>
         public static string Welcome {

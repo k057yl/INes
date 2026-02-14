@@ -84,5 +84,45 @@ namespace INest.Controllers
 
             return Ok(tree);
         }
+
+        [HttpPatch("{id}/rename")]
+        public async Task<IActionResult> Rename(Guid id, [FromBody] RenameLocationDto dto)
+        {
+            try
+            {
+                var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+                await _locationService.RenameLocationAsync(userId, id, dto.Name);
+                return Ok();
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            try
+            {
+                var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+                await _locationService.DeleteLocationAsync(userId, id);
+                return Ok();
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(Guid id)
+        {
+            var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var location = await _locationService.GetLocationByIdAsync(userId, id);
+
+            if (location == null) return NotFound();
+            return Ok(location);
+        }
     }
 }

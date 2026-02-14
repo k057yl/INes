@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { ItemService } from '../../services/item.service';
 import { LocationService } from '../../services/location.service';
 import { CategoryService } from '../../services/category.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-item-create',
@@ -90,6 +91,7 @@ import { CategoryService } from '../../services/category.service';
 })
 export class ItemCreateComponent implements OnInit {
 
+  private route = inject(ActivatedRoute);
   private fb = inject(FormBuilder);
   private itemService = inject(ItemService);
   private locationService = inject(LocationService);
@@ -126,10 +128,15 @@ export class ItemCreateComponent implements OnInit {
     this.loadLocations();
     this.loadCategories();
 
-    this.form.get('addPhoto')?.valueChanges.subscribe(val => {
-      if (!val) {
-        this.selectedFile = undefined;
+    this.route.queryParams.subscribe(params => {
+      const locationIdFromUrl = params['locationId'];
+      if (locationIdFromUrl) {
+        this.form.patchValue({ storageLocationId: locationIdFromUrl });
       }
+    });
+
+    this.form.get('addPhoto')?.valueChanges.subscribe(val => {
+      if (!val) this.selectedFile = undefined;
     });
   }
 
@@ -184,12 +191,18 @@ export class ItemCreateComponent implements OnInit {
       formData.append('photo', this.selectedFile);
 
     this.itemService.createWithPhoto(formData).subscribe({
-      next: () => this.router.navigate(['/home']),
-      error: err => console.error(err)
-    });
+    next: () => {
+      if (val.storageLocationId) {
+        this.router.navigate(['/location', val.storageLocationId]);
+      } else {
+        this.router.navigate(['/home']);
+      }
+    },
+    error: err => console.error('Ошибка при создании:', err)
+  });
   }
 
   cancel() {
-    this.router.navigate(['/home']);
+    window.history.back(); 
   }
 }

@@ -1,0 +1,106 @@
+<div class="location-column" 
+     [style.border-top-color]="location.color"
+     cdkDrag
+     [cdkDragData]="location">
+  
+  <div class="location-placeholder" *cdkDragPlaceholder></div>
+
+  <div class="loc-header" cdkDragHandle>
+    <div class="title-group">
+      <div class="grip-icon">
+        <i class="fa fa-grip-vertical"></i>
+      </div>
+      
+      <div class="icon-wrapper" [style.background-color]="location.color + '20'">
+         <i [className]="'fa ' + (location.icon || 'fa-folder')" [style.color]="location.color"></i>
+      </div>
+
+      <div class="name-stack">
+        <h3>{{ location.name }}</h3>
+        <span class="item-count">{{ location.items.length }} предметов</span>
+      </div>
+    </div>
+    
+    <button class="menu-btn" (click)="onToggleMenu($event)" [class.active]="location.showMenu">
+      <i class="fa fa-ellipsis-v">...</i>
+    </button>
+
+    <div class="menu" *ngIf="location.showMenu" (click)="$event.stopPropagation()">
+      
+      <div class="menu-section">
+        <label><i class="fa fa-exchange-alt"></i> Переместить в</label>
+        <div class="select-wrapper">
+            <select (change)="onMove($event)">
+                <option value="" disabled selected>Выберите цель...</option>
+                <option value="root">📁 В корень</option>
+                <option *ngFor="let target of flatLocations" 
+                        [value]="target.id" 
+                        [disabled]="target.id === location.id || isChildOf(target.id, location)">
+                    {{ target.name }}
+                </option>
+            </select>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+      
+      <div class="menu-header">Действия</div>
+      <div class="menu-actions">
+        <button [routerLink]="['/location', location.id]" (click)="location.showMenu = false">
+            <i class="fa fa-expand-alt"></i> Открыть детали
+        </button>
+        
+        <button (click)="onRenameClick()">
+            <i class="fa fa-pen"></i> Переименовать
+        </button>
+        
+        <div class="divider"></div>
+        
+        <button (click)="onDeleteClick()" class="delete-btn">
+            <i class="fa fa-trash-alt"></i> Удалить
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div
+    cdkDropList
+    [id]="location.id"
+    [cdkDropListData]="location.items"
+    [cdkDropListConnectedTo]="connectedLists"
+    (cdkDropListDropped)="onItemDrop($event)"
+    class="items-container">
+    
+    <div class="item-card" *ngFor="let item of location.items" cdkDrag>
+      <div class="item-dot" [style.background-color]="location.color"></div>
+      <span class="item-name">{{ item.name }}</span>
+      <i class="fa fa-chevron-right ml-auto"></i>
+      
+      <div class="item-placeholder" *cdkDragPlaceholder></div>
+    </div>
+    
+    <div class="empty-state" *ngIf="location.items.length === 0">
+      <i class="fa fa-plus-circle"></i>
+      <p>Перетащите предметы сюда</p>
+    </div>
+  </div>
+
+  <div class="children" *ngIf="location.children?.length"
+       cdkDropList 
+       [cdkDropListData]="location.children || []"
+       (cdkDropListDropped)="onChildLocationDrop($event)">
+    
+    <app-location-card 
+      *ngFor="let child of location.children" 
+      [location]="child"
+      [flatLocations]="flatLocations"
+      [connectedLists]="connectedLists"
+      [isChildOf]="isChildOf"
+      (itemDropped)="itemDropped.emit($event)"
+      (locationReordered)="locationReordered.emit($event)"
+      (move)="move.emit($event)"
+      (rename)="rename.emit($event)"
+      (delete)="delete.emit($event)">
+    </app-location-card>
+  </div>
+</div>

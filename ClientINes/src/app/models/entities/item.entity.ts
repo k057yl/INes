@@ -3,6 +3,8 @@ import { CreateItemDto } from '../dtos/create-item.dto';
 export interface Item extends CreateItemDto {
   id: string;
   createdAt: string;
+  photoUrl?: string;
+  publicId?: string;
   photos: ItemPhoto[];
 }
 

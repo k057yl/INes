@@ -11,5 +11,8 @@ namespace INest.Services.Interfaces
         Task MoveLocationAsync(Guid userId, Guid locationId, Guid? newParentId);
         Task ReorderLocationsAsync(Guid userId, Guid? parentId, List<Guid> orderedIds);
         Task<List<StorageLocation>> GetTreeAsync(Guid userId);
+        Task RenameLocationAsync(Guid userId, Guid locationId, string newName);
+        Task DeleteLocationAsync(Guid userId, Guid locationId);
+        Task<StorageLocation?> GetLocationByIdAsync(Guid userId, Guid locationId);
     }
 }
