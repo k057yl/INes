@@ -1,16 +1,7 @@
-<div class="location-column" 
-     [style.border-top-color]="location.color"
-     cdkDrag
-     [cdkDragData]="location">
+<div class="location-column" [style.border-top-color]="location.color">
   
-  <div class="location-placeholder" *cdkDragPlaceholder></div>
-
-  <div class="loc-header" cdkDragHandle>
+  <div class="loc-header">
     <div class="title-group">
-      <div class="grip-icon">
-        <i class="fa fa-grip-vertical"></i>
-      </div>
-      
       <div class="icon-wrapper" [style.background-color]="location.color + '20'">
          <i [className]="'fa ' + (location.icon || 'fa-folder')" [style.color]="location.color"></i>
       </div>
@@ -22,13 +13,13 @@
     </div>
     
     <button class="menu-btn" (click)="onToggleMenu($event)" [class.active]="location.showMenu">
-      <i class="fa fa-ellipsis-v">...</i>
+      <i class="fa fa-ellipsis-v"></i>
     </button>
 
     <div class="menu" *ngIf="location.showMenu" (click)="$event.stopPropagation()">
       
       <div class="menu-section">
-        <label><i class="fa fa-exchange-alt"></i> Переместить в</label>
+        <label><i class="fa fa-exchange-alt"></i> Переместить локацию в:</label>
         <div class="select-wrapper">
             <select (change)="onMove($event)">
                 <option value="" disabled selected>Выберите цель...</option>
@@ -85,11 +76,7 @@
     </div>
   </div>
 
-  <div class="children" *ngIf="location.children?.length"
-       cdkDropList 
-       [cdkDropListData]="location.children || []"
-       (cdkDropListDropped)="onChildLocationDrop($event)">
-    
+  <div class="children" *ngIf="location.children?.length">
     <app-location-card 
       *ngFor="let child of location.children" 
       [location]="child"

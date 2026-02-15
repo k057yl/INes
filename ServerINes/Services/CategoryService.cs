@@ -32,5 +32,32 @@ namespace INest.Services
                 .Where(c => c.UserId == userId)
                 .ToListAsync();
         }
+
+        public async Task<Category?> UpdateAsync(Guid userId, Guid categoryId, CreateCategoryDto dto)
+        {
+            var category = await _context.Categories
+                .FirstOrDefaultAsync(c => c.Id == categoryId && c.UserId == userId);
+
+            if (category == null) return null;
+
+            category.Name = dto.Name;
+            if (dto.Color != null) category.Color = dto.Color;
+            category.ParentCategoryId = dto.ParentCategoryId;
+
+            await _context.SaveChangesAsync();
+            return category;
+        }
+
+        public async Task<bool> DeleteAsync(Guid userId, Guid categoryId)
+        {
+            var category = await _context.Categories
+                .FirstOrDefaultAsync(c => c.Id == categoryId && c.UserId == userId);
+
+            if (category == null) return false;
+
+            _context.Categories.Remove(category);
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }

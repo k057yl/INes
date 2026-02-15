@@ -44,7 +44,7 @@ export class ConfirmRegisterComponent {
     }).subscribe({
       next: () => {
         this.message = 'Заебок, вы зарегистрированы!';
-        setTimeout(() => this.router.navigate(['/home']), 1500);
+        setTimeout(() => this.router.navigate(['/main']), 1500);
       },
       error: err => this.error = err.error?.error || 'Ошибка подтверждения'
     });

@@ -40,7 +40,6 @@
   display: flex; 
   align-items: center; 
   gap: 10px; 
-  cursor: grab; 
   flex-grow: 1; 
 }
 
@@ -118,7 +117,7 @@
 
 /* Предметы */
 .items-container { min-height: 40px; padding: 4px; background: #fcfcfd; border-radius: 12px; margin-top: 8px; }
-.item-card { background: white; padding: 12px; margin-bottom: 8px; border-radius: 12px; border: 1px solid #f1f5f9; display: flex; align-items: center; gap: 10px; font-size: 0.85rem; }
+.item-card { background: white; padding: 12px; margin-bottom: 8px; border-radius: 12px; border: 1px solid #f1f5f9; display: flex; align-items: center; gap: 10px; font-size: 0.85rem; cursor: grab; }
 .item-dot { width: 6px; height: 6px; border-radius: 50%; }
 
 /* Вложенность */

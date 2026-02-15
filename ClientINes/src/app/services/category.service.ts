@@ -19,4 +19,12 @@ export class CategoryService {
   create(dto: CreateCategoryDto): Observable<Category> {
     return this.http.post<Category>(this.apiUrl, dto);
   }
+
+  update(id: string, dto: CreateCategoryDto): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${id}`, dto);
+  }
+
+  delete(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
 }

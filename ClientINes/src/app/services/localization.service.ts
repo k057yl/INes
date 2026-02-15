@@ -12,12 +12,16 @@ export class LocalizationService {
     translate.use(saved);
   }
 
+  get currentLang(): string {
+    return this.translate.currentLang || 'en';
+  }
+
   setLanguage(lang: string) {
     localStorage.setItem('lang', lang);
     this.translate.use(lang);
   }
 
   getLanguage(): string {
-    return this.translate.currentLang || 'en';
+    return this.currentLang;
   }
 }

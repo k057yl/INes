@@ -7,5 +7,7 @@ namespace INest.Services.Interfaces
     {
         Task<Category> CreateAsync(Guid userId, CreateCategoryDto dto);
         Task<IEnumerable<Category>> GetAllAsync(Guid userId);
+        Task<Category?> UpdateAsync(Guid userId, Guid categoryId, CreateCategoryDto dto);
+        Task<bool> DeleteAsync(Guid userId, Guid categoryId);
     }
 }

@@ -30,5 +30,27 @@ namespace INest.Controllers
             var cats = await _service.GetAllAsync(GetUserId());
             return Ok(cats);
         }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(Guid id, [FromBody] CreateCategoryDto dto)
+        {
+            var updated = await _service.UpdateAsync(GetUserId(), id, dto);
+
+            if (updated == null)
+                return NotFound(new { message = "Категория не найдена или доступ запрещен" });
+
+            return Ok(updated);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var success = await _service.DeleteAsync(GetUserId(), id);
+
+            if (!success)
+                return NotFound(new { message = "Категория не найдена или доступ запрещен" });
+
+            return NoContent();
+        }
     }
 }

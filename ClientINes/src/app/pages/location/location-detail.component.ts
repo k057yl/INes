@@ -12,7 +12,7 @@ import { environment } from '../../../environments/environment';
     <div class="detail-container" *ngIf="location">
       <header class="detail-header">
         <div class="header-left">
-          <button routerLink="/home" class="back-btn">
+          <button routerLink="/main" class="back-btn">
             <i class="fa fa-arrow-left"></i> Назад
           </button>
           <div class="title-info">

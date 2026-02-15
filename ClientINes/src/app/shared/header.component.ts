@@ -1,81 +1,168 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { RouterLink, RouterLinkActive } from '@angular/router'; // Добавил активные ссылки
 import { LocalizationService } from '../services/localization.service';
+import { ThemeService } from '../services/theme.service'; // Импортируем наш сервис
 import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, RouterLink, TranslatePipe],
+  imports: [CommonModule, RouterLink, RouterLinkActive, TranslatePipe],
   template: `
     <header class="header">
       <div class="brand-section">
-        <h2>INest</h2>
+        <h2 class="logo">INest</h2>
         <span *ngIf="userEmail" class="welcome-msg">
-          Привет, {{ userEmail }}
+          {{ 'COMMON.WELCOME' | translate }}, {{ userEmail }}
         </span>
       </div>
 
-      <nav>
-        <a routerLink="/home">{{ 'HEADER.HOME' | translate }}</a>
-        <a routerLink="/login">{{ 'HEADER.LOGIN' | translate }}</a>
-        <a routerLink="/register">{{ 'HEADER.REGISTER' | translate }}</a>
-        <a routerLink="/create-item">{{ 'HEADER.TEST' | translate }}</a>
-        <a routerLink="/create-category">{{ 'HEADER.TEST' | translate }}</a>
+      <nav class="nav-links">
+        <a routerLink="/main" routerLinkActive="active">{{ 'HEADER.HOME' | translate }}</a>
+        <a routerLink="/login" routerLinkActive="active">{{ 'HEADER.LOGIN' | translate }}</a>
+        <a routerLink="/register" routerLinkActive="active">{{ 'HEADER.REGISTER' | translate }}</a>
+        <a routerLink="/create-item" routerLinkActive="active">{{ 'HEADER.TEST' | translate }}</a>
+        <a routerLink="/category" routerLinkActive="active">{{ 'HEADER.TEST' | translate }}</a>
       </nav>
 
-      <div class="lang">
-        <button (click)="changeLang('en')">EN</button>
-        <button (click)="changeLang('ru')">RU</button>
-        <button (click)="changeLang('uk')">UK</button>
+      <div class="actions">
+        <button class="theme-toggle" (click)="toggleTheme()" [title]="'Сменить тему'">
+           {{ themeService.isDarkTheme() ? '🌙' : '☀️' }}
+        </button>
+
+        <div class="lang-selector">
+          <button 
+            (click)="changeLang('en')" 
+            [class.active]="currentLang === 'en'">EN</button>
+          <button 
+            (click)="changeLang('ru')" 
+            [class.active]="currentLang === 'ru'">RU</button>
+          <button 
+            (click)="changeLang('uk')" 
+            [class.active]="currentLang === 'uk'">UK</button>
+        </div>
       </div>
     </header>
   `,
   styles: [`
+    :host {
+      --dark-blue: #0b132b;
+      --navy-blue: #1c2541;
+      --turquoise: #00f5d4; /* Бирюзовый акцент */
+      --text-light: #ffffff;
+      --text-muted: #94a3b8;
+      
+      display: block;
+      /* В реальном проекте эти переменные лучше вынести в global styles.scss */
+    }
+
     .header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 15px;
-      background: #222;
-      color: white;
+      padding: 0.75rem 2rem;
+      background: var(--dark-blue);
+      color: var(--text-light);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      border-bottom: 2px solid var(--navy-blue);
     }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--turquoise);
+      letter-spacing: 1px;
+      margin: 0;
+    }
+
     .brand-section {
       display: flex;
       align-items: center;
-      gap: 20px;
+      gap: 1.5rem;
     }
+
     .welcome-msg {
-      color: #ff4d4d;
-      font-weight: bold;
-      font-size: 0.9rem;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      border-left: 1px solid var(--navy-blue);
+      padding-left: 1rem;
     }
-    nav a {
-      margin-left: 15px;
-      color: white;
+
+    .nav-links a {
+      margin-left: 1.5rem;
+      color: var(--text-light);
       text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s ease;
     }
-    .lang button {
-      margin-left: 5px;
+
+    .nav-links a:hover, .nav-links a.active {
+      color: var(--turquoise);
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .theme-toggle {
+      background: var(--navy-blue);
+      border: 1px solid var(--turquoise);
+      border-radius: 50%;
+      width: 35px;
+      height: 35px;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s;
+    }
+
+    .theme-toggle:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 10px var(--turquoise);
+    }
+
+    .lang-selector button {
+      background: transparent;
+      border: 1px solid var(--navy-blue);
+      color: var(--text-muted);
+      padding: 4px 8px;
+      cursor: pointer;
+      font-size: 0.75rem;
+      transition: all 0.2s;
+    }
+
+    .lang-selector button:first-child { border-radius: 4px 0 0 4px; }
+    .lang-selector button:last-child { border-radius: 0 4px 4px 0; }
+
+    .lang-selector button.active {
+      background: var(--turquoise);
+      color: var(--dark-blue);
+      border-color: var(--turquoise);
+      font-weight: bold;
     }
   `]
 })
 export class HeaderComponent {
   private loc = inject(LocalizationService);
+  public themeService = inject(ThemeService);
+
+  get currentLang() {
+    return this.loc.currentLang;
+  }
 
   get userEmail(): string | null {
     const token = localStorage.getItem('token');
     if (!token) return null;
-
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
-      
       return payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] 
-            || payload.name 
-            || payload.sub 
-            || 'Пользователь';
+             || payload.name 
+             || payload.sub 
+             || 'Пользователь';
     } catch {
       return null;
     }
@@ -83,5 +170,9 @@ export class HeaderComponent {
 
   changeLang(lang: string) {
     this.loc.setLanguage(lang);
+  }
+
+  toggleTheme() {
+    this.themeService.toggleTheme();
   }
 }

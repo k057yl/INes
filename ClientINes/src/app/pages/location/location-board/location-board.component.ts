@@ -3,64 +3,90 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
-import { environment } from '../../../environments/environment';
-import { StorageLocation } from '../../models/entities/storage-location.entity';
-import { Item } from '../../models/entities/item.entity';
-import { LocationCardComponent } from './location-card/location-card.component';
+import { environment } from '../../../../environments/environment';
+import { StorageLocation } from '../../../models/entities/storage-location.entity';
+import { Item } from '../../../models/entities/item.entity';
+import { LocationCardComponent } from '../location-card/location-card.component';
 
 @Component({
   selector: 'app-location-board',
   standalone: true,
   imports: [CommonModule, RouterModule, DragDropModule, LocationCardComponent],
   template: `
+    <div class="root-ribbon-container">
+      <div class="ribbon-label">Порядок колонок:</div>
+      <div class="root-ribbon" 
+           cdkDropList 
+           cdkDropListOrientation="horizontal" 
+           [cdkDropListData]="locations"
+           (cdkDropListDropped)="onLocationDropped($event, null)">
+        
+        <div class="root-chip" *ngFor="let loc of locations" cdkDrag>
+          <i [className]="'fa ' + (loc.icon || 'fa-folder')" [style.color]="loc.color"></i>
+          {{ loc.name }}
+          <div class="chip-placeholder" *cdkDragPlaceholder></div>
+        </div>
+      </div>
+    </div>
+
     <div class="header-actions">
       <button routerLink="/location-create" class="add-loc-btn">
-        + Добавить локацию
+        <i class="fa fa-plus"></i> Добавить локацию
       </button>
     </div>
 
-    <div class="board-wrapper" 
-         cdkDropList 
-         cdkDropListOrientation="horizontal" 
-         [cdkDropListData]="locations"
-         (cdkDropListDropped)="onLocationDropped($event, null)">
-      
-      <div class="loader" *ngIf="isLoading">Загружаем локации...</div>
+    <div class="board-wrapper">
+      <div class="loader" *ngIf="isLoading">Загружаем...</div>
 
       <app-location-card 
         *ngFor="let loc of locations; trackBy: trackById"
-        cdkDrag
-        [cdkDragData]="loc"
         [location]="loc"
         [flatLocations]="flatLocations"
         [connectedLists]="connectedLists"
         [isChildOf]="isChildOf.bind(this)"
         (itemDropped)="onItemDropped($event)"
-        (locationReordered)="onLocationReordered($event)"
         (move)="onLocationMove($event)"
         (rename)="onRename($event)"
         (delete)="onDelete($event)">
-        
-        <div class="location-placeholder" *cdkDragPlaceholder></div>
       </app-location-card>
     </div>
   `,
   styles: [`
+    .root-ribbon-container {
+      background: #f8fafc;
+      padding: 10px 20px;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .ribbon-label { font-size: 0.8rem; font-weight: bold; color: #64748b; text-transform: uppercase; }
+    
+    .root-ribbon { display: flex; gap: 10px; }
+    
+    .root-chip {
+      background: white;
+      padding: 6px 12px;
+      border-radius: 20px;
+      border: 1px solid #cbd5e0;
+      font-size: 0.85rem;
+      cursor: grab;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .root-chip:active { cursor: grabbing; }
+
     .board-wrapper { 
-      display: flex; gap: 20px; padding: 20px; flex-wrap: wrap; align-items: flex-start; 
-      min-height: 400px;
+      display: flex; gap: 20px; padding: 20px; overflow-x: auto; align-items: flex-start; 
+      min-height: calc(100vh - 150px);
     }
-    .header-actions { padding: 20px; }
+    .header-actions { padding: 20px 20px 0 20px; }
     .add-loc-btn { 
-      padding: 10px 20px; background: #28a745; color: white; border-radius: 5px; cursor: pointer; border: none; 
+      padding: 10px 20px; background: #28a745; color: white; border-radius: 8px; cursor: pointer; border: none; font-weight: 600;
     }
-    .location-placeholder {
-      background: rgba(0,0,0,0.05);
-      border: 2px dashed #ccc;
-      border-radius: 8px;
-      width: 280px;
-      height: 200px;
-    }
+    .chip-placeholder { background: #edf2fd; border: 1px dashed #3182ce; border-radius: 20px; width: 80px; }
   `]
 })
 export class LocationBoardComponent implements OnInit, OnDestroy {
