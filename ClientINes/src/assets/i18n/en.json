@@ -10,5 +10,14 @@
     "LOGIN": "Login",
     "REGISTER": "Register",
     "TEST": "Test_EN"
+  },
+  "STATUS":{
+    "ACTIVE": "Active",
+    "LENT": "Lent",
+    "LOST": "Lost",
+    "BROKEN": "Broken",
+    "SOLD": "Sold",
+    "GIFTED": "Gifted",
+    "LISTED": "Listed"
   }
 }

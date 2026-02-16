@@ -7,6 +7,7 @@
         Lost = 2,
         Broken = 3,
         Sold = 4,
-        Gifted = 5
+        Gifted = 5,
+        Listed = 6
     }
 }
