@@ -3,6 +3,7 @@ using INest.Models.Entities;
 using INest.Services.Interfaces;
 using Microsoft.Extensions.Localization;
 using Microsoft.EntityFrameworkCore;
+using INest.Models.Enums;
 
 namespace INest.Services
 {
@@ -57,7 +58,10 @@ namespace INest.Services
                     l.Description,
                     l.Color,
                     l.Icon,
-                    items = l.Items.Select(i => new { i.Id, i.Name }).ToList()
+                    items = l.Items
+                    .Where(i => i.Status != ItemStatus.Sold)
+                    .Select(i => new { i.Id, i.Name })
+                    .ToList()
                 })
                 .ToListAsync();
         }
@@ -73,7 +77,7 @@ namespace INest.Services
             await _context.SaveChangesAsync();
             return true;
         }
-        //***********************
+
         public async Task MoveLocationAsync(Guid userId, Guid locationId, Guid? newParentId)
         {
             var location = await _context.StorageLocations
@@ -144,7 +148,7 @@ namespace INest.Services
         {
             var all = await _context.StorageLocations
                 .Where(l => l.UserId == userId)
-                .Include(l => l.Items)
+                .Include(l => l.Items.Where(i => i.Status != ItemStatus.Sold))
                 .ToListAsync();
 
             return BuildTree(all, null);
@@ -179,7 +183,7 @@ namespace INest.Services
         {
             return await _context.StorageLocations
                 .Where(l => l.UserId == userId && l.Id == locationId)
-                .Include(l => l.Items)
+                .Include(l => l.Items.Where(i => i.Status != ItemStatus.Sold))
                 .Include(l => l.Children)
                 .FirstOrDefaultAsync();
         }

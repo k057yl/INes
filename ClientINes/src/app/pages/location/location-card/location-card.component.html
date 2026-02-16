@@ -62,10 +62,18 @@
     (cdkDropListDropped)="onItemDrop($event)"
     class="items-container">
     
-    <div class="item-card" *ngFor="let item of location.items" cdkDrag>
+    <div class="item-card" 
+        *ngFor="let item of location.items" 
+        cdkDrag 
+        [cdkDragData]="item"> 
       <div class="item-dot" [style.background-color]="location.color"></div>
       <span class="item-name">{{ item.name }}</span>
-      <i class="fa fa-chevron-right ml-auto"></i>
+      
+      <button class="sell-btn-inline" (click)="onSellClick($event, item)">
+        <i class="fa fa-dollar-sign"></i>
+      </button>
+
+      <i class="fa fa-chevron-right"></i>
       
       <div class="item-placeholder" *cdkDragPlaceholder></div>
     </div>
@@ -78,16 +86,17 @@
 
   <div class="children" *ngIf="location.children?.length">
     <app-location-card 
-      *ngFor="let child of location.children" 
-      [location]="child"
-      [flatLocations]="flatLocations"
-      [connectedLists]="connectedLists"
-      [isChildOf]="isChildOf"
-      (itemDropped)="itemDropped.emit($event)"
-      (locationReordered)="locationReordered.emit($event)"
-      (move)="move.emit($event)"
-      (rename)="rename.emit($event)"
-      (delete)="delete.emit($event)">
-    </app-location-card>
+        *ngFor="let child of location.children" 
+        [location]="child"
+        [flatLocations]="flatLocations"
+        [connectedLists]="connectedLists"
+        [isChildOf]="isChildOf"
+        (itemDropped)="itemDropped.emit($event)"
+        (locationReordered)="locationReordered.emit($event)"
+        (move)="move.emit($event)"
+        (rename)="rename.emit($event)"
+        (delete)="delete.emit($event)"
+        
+        (sellItem)="sellItem.emit($event)"> </app-location-card>
   </div>
 </div>

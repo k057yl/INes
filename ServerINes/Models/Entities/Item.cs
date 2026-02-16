@@ -31,7 +31,6 @@ namespace INest.Models.Entities
         public Lending? Lending { get; set; }
         public string? PhotoUrl { get; set; }
         public string? PublicId { get; set; }
-        public decimal? SalePrice { get; set; }
-        public DateTime? SoldDate { get; set; }
+        public Sale? Sale { get; set; }
     }
 }

@@ -19,5 +19,15 @@
     "SOLD": "Sold",
     "GIFTED": "Gifted",
     "LISTED": "Listed"
+  },
+  "SALES": {
+    "TITLE": "Sales History",
+    "TOTAL_REVENUE": "Total Revenue",
+    "TOTAL_PROFIT": "Net Profit",
+    "COL_ITEM": "Item",
+    "COL_DATE": "Sale Date",
+    "COL_PRICE": "Sale Price",
+    "COL_PROFIT": "Profit",
+    "NO_SALES": "No sales yet"
   }
 }

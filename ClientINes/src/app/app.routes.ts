@@ -7,6 +7,7 @@ import { LocationCreateComponent } from './pages/location/location-create.compon
 import { ItemCreateComponent } from './pages/item/item-create.component';
 import { CategoryListComponent } from './pages/category/category-list.component';
 import { LocationDetailComponent } from './pages/location/location-detail.component';
+import { SalesListComponent } from './pages/sale/sales-list.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -18,4 +19,5 @@ export const routes: Routes = [
   { path: 'create-item', component: ItemCreateComponent },
   { path: 'category', component: CategoryListComponent },
   { path: 'location/:id', component: LocationDetailComponent },
+  { path: 'sales', component: SalesListComponent },
 ];

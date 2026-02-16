@@ -106,6 +106,7 @@ namespace INest.Services
             services.AddScoped<ILocationService, LocationService>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IPhotoService, PhotoService>();
+            services.AddScoped<ISalesService, SalesService>();
 
             return services;
         }

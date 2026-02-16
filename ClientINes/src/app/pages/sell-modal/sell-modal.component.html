@@ -1,0 +1,40 @@
+<div class="modal-backdrop" (click)="onCancel()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Selling: {{ item.name }}</h2>
+      <button class="close-btn" (click)="onCancel()">&times;</button>
+    </div>
+
+    <form [formGroup]="sellForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label>Price ($)</label>
+        <input type="number" formControlName="salePrice" step="0.01" min="0">
+      </div>
+
+      <div class="form-group">
+        <label>Date</label>
+        <input type="date" formControlName="soldDate">
+      </div>
+
+      <div class="form-group">
+        <label>Platform</label>
+        <select formControlName="platformId">
+          <option value="">-- None --</option>
+          <option *ngFor="let p of platforms" [value]="p.id">{{ p.name }}</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Comment</label>
+        <textarea formControlName="comment" rows="3"></textarea>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" (click)="onCancel()">Cancel</button>
+        <button type="submit" class="btn-confirm" [disabled]="sellForm.invalid">
+          Confirm Sale
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

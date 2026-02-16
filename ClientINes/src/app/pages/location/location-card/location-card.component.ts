@@ -25,6 +25,7 @@ export class LocationCardComponent {
   @Output() move = new EventEmitter<{loc: StorageLocation, targetId: string}>();
   @Output() rename = new EventEmitter<StorageLocation>();
   @Output() delete = new EventEmitter<StorageLocation>();
+  @Output() sellItem = new EventEmitter<Item>();
 
   @HostListener('document:click', ['$event'])
   onClickOutside(event: MouseEvent) {
@@ -60,5 +61,10 @@ export class LocationCardComponent {
 
   onChildLocationDrop(event: CdkDragDrop<StorageLocation[]>) {
     this.locationReordered.emit({ event, parentId: this.location.id });
+  }
+
+  onSellClick(event: MouseEvent, item: Item) {
+    event.stopPropagation();
+    this.sellItem.emit(item); 
   }
 }

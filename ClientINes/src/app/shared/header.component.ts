@@ -24,6 +24,7 @@ import { TranslatePipe } from '@ngx-translate/core';
         <a routerLink="/register" routerLinkActive="active">{{ 'HEADER.REGISTER' | translate }}</a>
         <a routerLink="/create-item" routerLinkActive="active">{{ 'HEADER.TEST' | translate }}</a>
         <a routerLink="/category" routerLinkActive="active">{{ 'HEADER.TEST' | translate }}</a>
+        <a routerLink="/sales" routerLinkActive="active">{{ 'HEADER.TEST' | translate }}</a>
       </nav>
 
       <div class="actions">
