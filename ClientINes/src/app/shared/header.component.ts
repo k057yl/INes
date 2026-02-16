@@ -19,12 +19,15 @@ import { TranslatePipe } from '@ngx-translate/core';
       </div>
 
       <nav class="nav-links">
-        <a routerLink="/main" routerLinkActive="active">{{ 'HEADER.HOME' | translate }}</a>
-        <a routerLink="/login" routerLinkActive="active">{{ 'HEADER.LOGIN' | translate }}</a>
-        <a routerLink="/register" routerLinkActive="active">{{ 'HEADER.REGISTER' | translate }}</a>
-        <a routerLink="/create-item" routerLinkActive="active">{{ 'HEADER.TEST' | translate }}</a>
-        <a routerLink="/category" routerLinkActive="active">{{ 'HEADER.TEST' | translate }}</a>
-        <a routerLink="/sales" routerLinkActive="active">{{ 'HEADER.TEST' | translate }}</a>
+        <a routerLink="/main" routerLinkActive="active">
+          <i class="fa fa-th-large"></i> {{ 'HEADER.HOME' | translate }}
+        </a>
+        <a routerLink="/sales" routerLinkActive="active">
+          <i class="fa fa-chart-line"></i> {{ 'HEADER.SALES' | translate }}
+        </a>
+        <a routerLink="/settings" routerLinkActive="active">
+          <i class="fa fa-cog"></i> {{ 'HEADER.SETTINGS' | translate }}
+        </a>
       </nav>
 
       <div class="actions">
@@ -50,12 +53,11 @@ import { TranslatePipe } from '@ngx-translate/core';
     :host {
       --dark-blue: #0b132b;
       --navy-blue: #1c2541;
-      --turquoise: #00f5d4; /* Бирюзовый акцент */
+      --turquoise: #00f5d4;
       --text-light: #ffffff;
       --text-muted: #94a3b8;
       
       display: block;
-      /* В реальном проекте эти переменные лучше вынести в global styles.scss */
     }
 
     .header {

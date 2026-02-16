@@ -1,0 +1,68 @@
+<div class="detail-container" *ngIf="item; else loader">
+  <header class="detail-header">
+    <button class="back-btn" (click)="goBack()">
+      <i class="fa fa-arrow-left"></i> Назад к доске
+    </button>
+    <div class="header-actions">
+      <button class="edit-btn"><i class="fa fa-pen"></i> Редактировать</button>
+    </div>
+  </header>
+
+  <div class="detail-content">
+    <div class="image-section">
+      <div class="main-image">
+        <img *ngIf="item.photoUrl" [src]="item.photoUrl" alt="Item Image">
+        <div *ngIf="!item.photoUrl" class="no-image-placeholder">
+          <i class="fa fa-image"></i>
+          <p>Нет изображения</p>
+        </div>
+      </div>
+      
+      <div class="photo-grid" *ngIf="item.photos.length"> 
+            </div>
+
+        <div class="location-info" *ngIf="item.locationId">
+            <i class="fa fa-map-marker-alt"></i>
+            <span>Находится в: <strong>{{ item.locationName || 'Не указано' }}</strong></span>
+        </div>
+    </div>
+
+    <div class="info-section">
+      <div class="info-card">
+        <span class="category-badge" [style.background-color]="item.category?.color + '30'" [style.color]="item.category?.color">
+          {{ item.category?.name || 'Без категории' }}
+        </span>
+        
+        <h1 class="item-title">{{ item.name }}</h1>
+        <p class="description">{{ item.description || 'Описание отсутствует...' }}</p>
+
+        <div class="stats-grid">
+          <div class="stat-item">
+            <label>Оценочная стоимость</label>
+            <span class="value accent">{{ item.estimatedValue || 0 }} $</span>
+          </div>
+          <div class="stat-item">
+            <label>Дата добавления</label>
+            <span class="value">{{ item.createdAt | date:'dd MMMM yyyy' }}</span>
+          </div>
+        </div>
+
+        <div class="location-info" *ngIf="item.locationId">
+            <i class="fa fa-map-marker-alt"></i>
+            <span>Находится в: <strong>{{ item.locationName || 'Локация загружается...' }}</strong></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #loader>
+  <div class="loader-screen" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>Загружаем детали предмета...</p>
+  </div>
+  <div class="error-screen" *ngIf="!isLoading && !item">
+    <h2>Предмет не найден</h2>
+    <button (click)="goBack()">Вернуться</button>
+  </div>
+</ng-template>

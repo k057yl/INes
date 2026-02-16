@@ -14,6 +14,7 @@ public class AppDbContext
     public DbSet<StorageLocation> StorageLocations => Set<StorageLocation>();
     public DbSet<Category> Categories => Set<Category>();
     public DbSet<Sale> Sales => Set<Sale>();
+    public DbSet<Platform> Platforms => Set<Platform>();
 
     public AppDbContext(DbContextOptions<AppDbContext> options)
         : base(options)

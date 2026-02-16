@@ -38,6 +38,9 @@ import { SellItemRequestDto } from '../../../models/dtos/sale.dto';
       <button routerLink="/location-create" class="add-loc-btn">
         <i class="fa fa-plus"></i> {{ 'BOARD.ADD_LOCATION' | translate }}
       </button>
+      <button routerLink="/create-item" class="add-item-btn">
+        <i class="fa fa-box-open"></i> Добавить предмет
+      </button>
     </div>
 
     <div class="board-wrapper">
@@ -60,8 +63,7 @@ import { SellItemRequestDto } from '../../../models/dtos/sale.dto';
     <app-sell-modal 
       *ngIf="itemToSell" 
       [item]="itemToSell"
-      [platforms]="flatLocations" 
-      (close)="closeSellModal()"
+      (close)="itemToSell = null"
       (confirm)="onSellConfirmed($event)">
     </app-sell-modal>
   `,
@@ -98,6 +100,21 @@ import { SellItemRequestDto } from '../../../models/dtos/sale.dto';
     .add-loc-btn:hover { background: var(--accent-teal); color: var(--bg-dark); }
     .board-wrapper { display: flex; gap: 20px; padding: 20px; overflow-x: auto; align-items: flex-start; }
     .loader { color: var(--accent-teal); padding: 20px; }
+    .add-item-btn { 
+      margin-left: 15px;
+      padding: 12px 24px; 
+      background: var(--accent-teal); 
+      color: var(--bg-dark); 
+      border: none; 
+      border-radius: 8px; 
+      cursor: pointer; 
+      font-weight: 600; 
+      transition: all 0.3s;
+    }
+    .add-item-btn:hover { 
+      transform: translateY(-2px);
+      box-shadow: 0 0 15px var(--accent-teal);
+    }
   `]
 })
 export class LocationBoardComponent implements OnInit, OnDestroy {

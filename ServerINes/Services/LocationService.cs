@@ -149,6 +149,7 @@ namespace INest.Services
             var all = await _context.StorageLocations
                 .Where(l => l.UserId == userId)
                 .Include(l => l.Items.Where(i => i.Status != ItemStatus.Sold))
+                    .ThenInclude(i => i.Category)
                 .ToListAsync();
 
             return BuildTree(all, null);

@@ -15,7 +15,7 @@ namespace INest.Models.Entities
         public decimal Profit { get; set; }
         public DateTime SoldDate { get; set; }
         public Guid? PlatformId { get; set; }
-        public StorageLocation? Platform { get; set; }
+        public Platform? Platform { get; set; }
         public string? Comment { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }

@@ -40,7 +40,9 @@ import { TranslateModule } from '@ngx-translate/core';
             <tr *ngFor="let sale of sales">
               <td>
                 <div class="item-name">{{ sale.itemName }}</div> 
-                <div class="platform-hint" *ngIf="sale.platformName">{{ sale.platformName }}</div>
+                <div class="platform-hint" *ngIf="sale.platformName">
+                    <i class="fa fa-shopping-cart"></i> {{ sale.platformName }}
+                </div>
               </td>
               <td class="date-cell">{{ sale.soldDate | date:'dd.MM.yyyy' }}</td>
               <td class="price-cell">{{ sale.salePrice | number:'1.2-2' }} $</td>
@@ -61,27 +63,23 @@ import { TranslateModule } from '@ngx-translate/core';
     .sales-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
     h1 { font-size: 2rem; font-weight: 800; color: white; margin: 0; }
     .stats-cards { display: flex; gap: 20px; }
-    .stat-card { background: #1c2541; padding: 15px 25px; border-radius: 12px; border: 1px solid #3a506b; display: flex; flex-direction: column; min-width: 150px; }
-    .stat-card .label { font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+    .stat-card { background: #1c2541; padding: 15px 25px; border-radius: 12px; border: 1px solid #3a506b; min-width: 150px; }
+    .stat-card .label { font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; display: block; margin-bottom: 5px; }
     .stat-card .value { font-size: 1.5rem; font-weight: 700; }
-    .table-container { background: #1c2541; border-radius: 16px; border: 1px solid #3a506b; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+    .table-container { background: #1c2541; border-radius: 16px; border: 1px solid #3a506b; overflow: hidden; }
     .sales-table { width: 100%; border-collapse: collapse; }
-    th { background: rgba(58, 80, 107, 0.4); padding: 18px 20px; text-align: left; font-size: 0.85rem; color: #94a3b8; text-transform: uppercase; border-bottom: 1px solid #3a506b; }
-    td { padding: 18px 20px; border-bottom: 1px solid rgba(58, 80, 107, 0.3); font-size: 1rem; }
-    tr:last-child td { border-bottom: none; }
-    tr:hover { background: rgba(0, 245, 212, 0.03); }
+    th { background: rgba(58, 80, 107, 0.4); padding: 18px 20px; text-align: left; font-size: 0.85rem; color: #94a3b8; border-bottom: 1px solid #3a506b; }
+    td { padding: 18px 20px; border-bottom: 1px solid rgba(58, 80, 107, 0.3); }
     .item-name { font-weight: 600; color: #e2e8f0; }
-    .platform-hint { font-size: 0.8rem; color: #94a3b8; }
+    .platform-hint { font-size: 0.75rem; color: #00f5d4; margin-top: 4px; }
     .date-cell { color: #94a3b8; }
-    .price-cell { font-weight: 500; }
     .turquoise { color: #00f5d4 !important; }
     .red { color: #ff4d4d !important; }
-    .empty-msg { text-align: center; padding: 40px; color: #94a3b8; font-style: italic; }
+    .empty-msg { text-align: center; padding: 40px; color: #94a3b8; }
   `]
 })
 export class SalesListComponent implements OnInit {
   private salesService = inject(SalesService);
-  
   sales: SaleResponseDto[] = [];
 
   get totalRevenue(): number {
@@ -93,6 +91,10 @@ export class SalesListComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.loadHistory();
+  }
+
+  loadHistory() {
     this.salesService.getHistory().subscribe({
       next: (data) => this.sales = data,
       error: (err) => console.error('Error fetching sales', err)

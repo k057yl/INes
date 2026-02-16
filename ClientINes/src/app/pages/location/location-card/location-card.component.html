@@ -1,11 +1,9 @@
 <div class="location-column" [style.border-top-color]="location.color">
-  
   <div class="loc-header">
     <div class="title-group">
       <div class="icon-wrapper" [style.background-color]="location.color + '20'">
          <i [className]="'fa ' + (location.icon || 'fa-folder')" [style.color]="location.color"></i>
       </div>
-
       <div class="name-stack">
         <h3>{{ location.name }}</h3>
         <span class="item-count">{{ location.items.length }} предметов</span>
@@ -17,19 +15,19 @@
     </button>
 
     <div class="menu" *ngIf="location.showMenu" (click)="$event.stopPropagation()">
-      
+  
       <div class="menu-section">
         <label><i class="fa fa-exchange-alt"></i> Переместить локацию в:</label>
         <div class="select-wrapper">
-            <select (change)="onMove($event)">
-                <option value="" disabled selected>Выберите цель...</option>
-                <option value="root">📁 В корень</option>
-                <option *ngFor="let target of flatLocations" 
-                        [value]="target.id" 
-                        [disabled]="target.id === location.id || isChildOf(target.id, location)">
-                    {{ target.name }}
-                </option>
-            </select>
+          <select (change)="onMove($event)">
+            <option value="" disabled selected>Выберите цель...</option>
+            <option value="root">📁 В корень</option>
+            <option *ngFor="let target of flatLocations" 
+                    [value]="target.id" 
+                    [disabled]="target.id === location.id || isChildOf(target.id, location)">
+              {{ target.name }}
+            </option>
+          </select>
         </div>
       </div>
 
@@ -38,17 +36,17 @@
       <div class="menu-header">Действия</div>
       <div class="menu-actions">
         <button [routerLink]="['/location', location.id]" (click)="location.showMenu = false">
-            <i class="fa fa-expand-alt"></i> Открыть детали
+          <i class="fa fa-expand-alt"></i> Открыть детали
         </button>
         
         <button (click)="onRenameClick()">
-            <i class="fa fa-pen"></i> Переименовать
+          <i class="fa fa-pen"></i> Переименовать
         </button>
         
         <div class="divider"></div>
         
         <button (click)="onDeleteClick()" class="delete-btn">
-            <i class="fa fa-trash-alt"></i> Удалить
+          <i class="fa fa-trash-alt"></i> Удалить
         </button>
       </div>
     </div>
@@ -66,21 +64,41 @@
         *ngFor="let item of location.items" 
         cdkDrag 
         [cdkDragData]="item"> 
-      <div class="item-dot" [style.background-color]="location.color"></div>
-      <span class="item-name">{{ item.name }}</span>
       
-      <button class="sell-btn-inline" (click)="onSellClick($event, item)">
-        <i class="fa fa-dollar-sign"></i>
-      </button>
+      <div class="item-thumb">
+        <img *ngIf="item.photoUrl" [src]="item.photoUrl" alt="item">
+        <div *ngIf="!item.photoUrl" class="no-image">
+          <i class="fa fa-image"></i>
+        </div>
+      </div>
 
-      <i class="fa fa-chevron-right"></i>
+      <div class="item-info">
+        <span class="item-name">{{ item.name }}</span>
+        <div class="item-meta">
+          <span class="item-price" *ngIf="item.estimatedValue">
+            {{ item.estimatedValue | number:'1.0-0' }} $
+          </span>
+          <span class="item-category" *ngIf="item.category">
+            {{ item.category.name }}
+          </span>
+        </div>
+      </div>
       
+      <div class="item-actions">
+        <button class="sell-btn" (click)="onSellClick($event, item)" title="Продать">
+          <i class="fa fa-dollar-sign"></i>
+        </button>
+        <button class="details-btn" [routerLink]="['/item', item.id]" title="Детали">
+          <i class="fa fa-chevron-right"></i>
+        </button>
+      </div>
+
       <div class="item-placeholder" *cdkDragPlaceholder></div>
     </div>
     
     <div class="empty-state" *ngIf="location.items.length === 0">
-      <i class="fa fa-plus-circle"></i>
-      <p>Перетащите предметы сюда</p>
+      <i class="fa fa-box-open"></i>
+      <p>Пусто</p>
     </div>
   </div>
 
@@ -96,7 +114,7 @@
         (move)="move.emit($event)"
         (rename)="rename.emit($event)"
         (delete)="delete.emit($event)"
-        
-        (sellItem)="sellItem.emit($event)"> </app-location-card>
+        (sellItem)="sellItem.emit($event)"> 
+    </app-location-card>
   </div>
 </div>
