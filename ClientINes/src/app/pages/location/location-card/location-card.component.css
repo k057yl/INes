@@ -176,29 +176,31 @@
   color: white;
 }
 
-.menu-btn {
-  background: #3a506b;    /* Сделаем её чуть светлее фона колонки, чтобы выделялась */
-  border: 1px solid rgba(0, 245, 212, 0.3); /* Тонкая бирюзовая рамка */
+/* Объединяем общие стили для всех трех кнопок */
+.sell-btn, .details-btn, .delete-btn {
+  background: #1c2541;
+  border: 1px solid #3a506b;
   color: #94a3b8;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
   cursor: pointer;
-  
-  /* --- ВОТ ЗДЕСЬ РАЗМЕР --- */
-  width: 24px;           /* Ширина кнопки */
-  height: 24px;          /* Высота кнопки */
-  font-size: 0.9rem;     /* Размер самих точек внутри */
-  border-radius: 8px;    /* Скругление */
-  /* ------------------------ */
-  
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: 0.2s;
+  font-size: 0.8rem;
+  transition: all 0.2s;
 }
 
-.menu-btn:hover, .menu-btn.active { 
-  background: #00f5d4; 
-  color: #0b132b; 
-  box-shadow: 0 0 10px rgba(0, 245, 212, 0.4);
+/* Индивидуальные эффекты при наведении */
+.sell-btn:hover { background: #00f5d4; color: #0b132b; border-color: #00f5d4; }
+.details-btn:hover { color: white; background: #3a506b; }
+
+/* Красный акцент для удаления */
+.delete-btn:hover { 
+  background: rgba(255, 77, 77, 0.1); 
+  color: #ff4d4d; 
+  border-color: #ff4d4d; 
 }
 
 .menu { 
@@ -215,10 +217,17 @@
   animation: menuIn 0.2s ease-out;
 }
 
-.status-icon {
-  font-size: 0.85rem;
-  margin-left: 8px;
-  vertical-align: middle;
+.name-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
 }
-.status-icon.sales { color: #00f5d4; }
-.status-icon.lending { color: #f39c12; }
+
+.item-status {
+  font-size: 0.75rem;
+  filter: drop-shadow(0 0 2px rgba(0,0,0,0.5));
+}
+
+.item-status.sales { color: #00f5d4; }    /* Бирюзовый */
+.item-status.lending { color: #f39c12; }

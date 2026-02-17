@@ -28,7 +28,11 @@ export class ItemService {
     return this.http.post(`${environment.apiBaseUrl}/items`, data);
   }
 
-  delete(id: string): Observable<any> {
-    return this.http.delete(`${environment.apiBaseUrl}/items/${id}`);
+  deleteItem(id: string): Observable<void> {
+    return this.http.delete<void>(`${environment.apiBaseUrl}/items/${id}`);
+  }
+
+  cancelSale(id: string): Observable<void> {
+    return this.http.post<void>(`${environment.apiBaseUrl}/items/${id}/cancel-sale`, {});
   }
 }

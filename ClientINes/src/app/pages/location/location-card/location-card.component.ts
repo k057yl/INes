@@ -5,6 +5,7 @@ import { StorageLocation } from '../../../models/entities/storage-location.entit
 import { Item } from '../../../models/entities/item.entity';
 import { RouterModule } from '@angular/router';
 import { FeatureService } from '../../../services/feature.service';
+import { ItemService } from '../../../services/item.service';
 
 @Component({
   selector: 'app-location-card',
@@ -17,6 +18,8 @@ export class LocationCardComponent {
   public featureService = inject(FeatureService);
 
   private elementRef = inject(ElementRef);
+
+  private itemService = inject(ItemService);
 
   @Input() location!: StorageLocation;
   @Input() flatLocations: StorageLocation[] = [];
@@ -70,4 +73,21 @@ export class LocationCardComponent {
     event.stopPropagation();
     this.sellItem.emit(item); 
   }
+
+  onDeleteItem(event: MouseEvent, item: Item) {
+  event.stopPropagation();
+
+  if (confirm(`Вы уверены, что хотите удалить "${item.name}"?`)) {
+    this.itemService.deleteItem(item.id).subscribe({
+      next: () => {
+        this.location.items = this.location.items.filter(i => i.id !== item.id);
+        console.log('Предмет успешно удален');
+      },
+      error: (err) => {
+        alert('Не удалось удалить предмет. Возможно, есть связанные данные.');
+        console.error(err);
+      }
+    });
+  }
+}
 }

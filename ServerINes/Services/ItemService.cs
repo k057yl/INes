@@ -166,13 +166,16 @@ namespace INest.Services
                         {
                             item.Status = ItemStatus.Listed;
                         }
-                        if (targetLocation.IsLendingLocation)
+                        else if (targetLocation.IsLendingLocation)
                         {
                             item.Status = ItemStatus.Lent;
                         }
-                        else if (item.Status == ItemStatus.Listed)
+                        else
                         {
-                            item.Status = ItemStatus.Active;
+                            if (item.Status == ItemStatus.Listed || item.Status == ItemStatus.Lent)
+                            {
+                                item.Status = ItemStatus.Active;
+                            }
                         }
                     }
                 }
@@ -236,13 +239,51 @@ namespace INest.Services
                 .ToListAsync();
         }
 
+        public async Task<bool> CancelSaleAsync(Guid userId, Guid itemId)
+        {
+            var item = await _context.Items
+                .Include(i => i.Sale)
+                .FirstOrDefaultAsync(i => i.Id == itemId && i.UserId == userId);
+
+            if (item == null || item.Sale == null) return false;
+
+            _context.Sales.Remove(item.Sale);
+
+            item.Status = ItemStatus.Active;
+
+            _context.ItemHistories.Add(new ItemHistory
+            {
+                Id = Guid.NewGuid(),
+                ItemId = item.Id,
+                Type = ItemHistoryType.StatusChanged,
+                OldValue = "Sold",
+                NewValue = "Active",
+                CreatedAt = DateTime.UtcNow
+            });
+
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
         public async Task<bool> DeleteItemAsync(Guid userId, Guid itemId)
         {
-            var item = await _context.Items.FirstOrDefaultAsync(i => i.Id == itemId && i.UserId == userId);
+            var item = await _context.Items
+                .Include(i => i.Photos)
+                .Include(i => i.Sale)
+                .FirstOrDefaultAsync(i => i.Id == itemId && i.UserId == userId);
+
             if (item == null) return false;
+
+            if (!string.IsNullOrEmpty(item.PublicId))
+            {
+                await _photoService.DeletePhotoAsync(item.PublicId);
+            }
+
+            if (item.Sale != null) _context.Sales.Remove(item.Sale);
 
             _context.Items.Remove(item);
             await _context.SaveChangesAsync();
+
             return true;
         }
     }
