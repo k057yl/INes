@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { TranslateModule } from '@ngx-translate/core';
+import { FeatureService } from '../../services/feature.service';
 
 interface SimpleEntity {
   id: string;
@@ -19,7 +20,39 @@ interface SimpleEntity {
       <h1><i class="fa fa-cogs"></i> Управление данными</h1>
 
       <div class="settings-grid">
-        <section class="settings-section">
+        <section class="settings-section mode-toggle">
+          <h2><i class="fa fa-sliders-h"></i> Режим работы</h2>
+          
+          <div class="toggle-item">
+            <div class="toggle-control">
+              <span>Модуль продаж</span>
+              <label class="switch">
+                <input type="checkbox" 
+                      [checked]="featureService.isSalesModeEnabled()"
+                      (change)="featureService.toggleSalesMode(s.checked)" #s>
+                <span class="slider"></span>
+              </label>
+            </div>
+            <p class="hint">Включает кнопки «Продать», выбор платформ и статистику прибыли.</p>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="toggle-item">
+            <div class="toggle-control">
+              <span>Модуль одалживания</span>
+              <label class="switch">
+                <input type="checkbox" 
+                      [checked]="featureService.isLendingModeEnabled()"
+                      (change)="featureService.toggleLendingMode(l.checked)" #l>
+                <span class="slider"></span>
+              </label>
+            </div>
+            <p class="hint">Позволяет помечать предметы как переданные другим людям и создавать зоны одалживания.</p>
+          </div>
+        </section>
+
+        <section class="settings-section" *ngIf="featureService.isSalesModeEnabled()">
           <div class="sec-header">
             <h2><i class="fa fa-shopping-cart"></i> Платформы</h2>
           </div>
@@ -59,6 +92,22 @@ interface SimpleEntity {
     .settings-section { background: #1c2541; padding: 25px; border-radius: 16px; border: 1px solid #3a506b; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
     h1 { color: white; margin-bottom: 40px; font-weight: 800; display: flex; align-items: center; gap: 15px; }
     h2 { font-size: 1.1rem; color: #00f5d4; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
+    
+    /* Стили для переключателей */
+    .toggle-item { margin-bottom: 20px; }
+    .toggle-control { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .toggle-control span { font-weight: 600; font-size: 1rem; color: #e2e8f0; }
+    .hint { color: #64748b; font-size: 0.85rem; line-height: 1.4; margin: 0; }
+    .divider { height: 1px; background: #3a506b; margin: 20px 0; opacity: 0.5; }
+
+    /* Красивый Switch */
+    .switch { position: relative; display: inline-block; width: 44px; height: 22px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #0b132b; transition: .4s; border-radius: 34px; border: 1px solid #3a506b; }
+    .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: #94a3b8; transition: .4s; border-radius: 50%; }
+    input:checked + .slider { background-color: rgba(0, 245, 212, 0.2); border-color: #00f5d4; }
+    input:checked + .slider:before { transform: translateX(22px); background-color: #00f5d4; }
+
     .list { display: flex; flex-direction: column; gap: 10px; }
     .list-item { 
       display: flex; justify-content: space-between; align-items: center; 
@@ -74,6 +123,8 @@ interface SimpleEntity {
 })
 export class SettingsComponent implements OnInit {
   private http = inject(HttpClient);
+
+  public featureService = inject(FeatureService);
   
   platforms: SimpleEntity[] = [];
   categories: SimpleEntity[] = [];

@@ -153,6 +153,47 @@ namespace INest.Services
                     CreatedAt = DateTime.UtcNow
                 });
 
+                var oldStatus = item.Status;
+
+                if (targetLocationId.HasValue)
+                {
+                    var targetLocation = await _context.StorageLocations
+                        .FirstOrDefaultAsync(l => l.Id == targetLocationId.Value);
+
+                    if (targetLocation != null)
+                    {
+                        if (targetLocation.IsSalesLocation)
+                        {
+                            item.Status = ItemStatus.Listed;
+                        }
+                        if (targetLocation.IsLendingLocation)
+                        {
+                            item.Status = ItemStatus.Lent;
+                        }
+                        else if (item.Status == ItemStatus.Listed)
+                        {
+                            item.Status = ItemStatus.Active;
+                        }
+                    }
+                }
+                else if (item.Status == ItemStatus.Listed)
+                {
+                    item.Status = ItemStatus.Active;
+                }
+
+                if (oldStatus != item.Status)
+                {
+                    _context.ItemHistories.Add(new ItemHistory
+                    {
+                        Id = Guid.NewGuid(),
+                        ItemId = item.Id,
+                        Type = ItemHistoryType.StatusChanged,
+                        OldValue = oldStatus.ToString(),
+                        NewValue = item.Status.ToString(),
+                        CreatedAt = DateTime.UtcNow
+                    });
+                }
+
                 item.StorageLocationId = targetLocationId;
                 await _context.SaveChangesAsync();
             }

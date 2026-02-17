@@ -6,6 +6,8 @@ export interface StorageLocation {
   color?: string;
   icon?: string;
   parentLocationId?: string | null;
+  isSalesLocation: boolean;
+  isLendingLocation: boolean;
   items: Item[];
   children?: StorageLocation[];
   showMenu?: boolean;

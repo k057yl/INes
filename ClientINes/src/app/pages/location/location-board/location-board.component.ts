@@ -191,14 +191,25 @@ export class LocationBoardComponent implements OnInit, OnDestroy {
   }
 
   onItemDropped(data: {event: CdkDragDrop<Item[]>, loc: StorageLocation}) {
-    const { event, loc } = data;
+      const { event, loc } = data;
 
-    if (event.previousContainer === event.container) {
-      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-      return;
-    }
+      if (event.previousContainer === event.container) {
+        moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+        return;
+      }
 
-    const item = event.previousContainer.data[event.previousIndex];
+      const item = event.previousContainer.data[event.previousIndex];
+
+      if (loc.isSalesLocation) {
+        item.status = 6;
+      } else if (loc.isLendingLocation) {
+        item.status = 1;
+      } else {
+        if (item.status === 6 || item.status === 1) {
+          item.status = 0;
+        }
+      }
+
 
     transferArrayItem(
       event.previousContainer.data,

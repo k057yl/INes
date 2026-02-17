@@ -8,5 +8,7 @@
         public int SortOrder { get; set; }
         public string? Color { get; set; }
         public string? Icon { get; set; }
+        public bool IsSalesLocation { get; set; } = false;
+        public bool IsLendingLocation { get; set; } = false;
     }
 }

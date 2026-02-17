@@ -28,6 +28,12 @@ import { TranslatePipe } from '@ngx-translate/core';
         <a routerLink="/settings" routerLinkActive="active">
           <i class="fa fa-cog"></i> {{ 'HEADER.SETTINGS' | translate }}
         </a>
+        <a routerLink="/login" routerLinkActive="active">
+          <i class="fa fa-cog"></i> {{ 'HEADER.LOGIN' | translate }}
+        </a>
+        <a routerLink="/register" routerLinkActive="active">
+          <i class="fa fa-cog"></i> {{ 'HEADER.REGISTER' | translate }}
+        </a>
       </nav>
 
       <div class="actions">

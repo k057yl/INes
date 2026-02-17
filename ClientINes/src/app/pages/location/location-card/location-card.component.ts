@@ -4,6 +4,7 @@ import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
 import { StorageLocation } from '../../../models/entities/storage-location.entity';
 import { Item } from '../../../models/entities/item.entity';
 import { RouterModule } from '@angular/router';
+import { FeatureService } from '../../../services/feature.service';
 
 @Component({
   selector: 'app-location-card',
@@ -13,6 +14,8 @@ import { RouterModule } from '@angular/router';
   styleUrl: './location-card.component.css'
 })
 export class LocationCardComponent {
+  public featureService = inject(FeatureService);
+
   private elementRef = inject(ElementRef);
 
   @Input() location!: StorageLocation;

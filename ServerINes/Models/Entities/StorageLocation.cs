@@ -20,5 +20,7 @@
         public StorageLocation? ParentLocation { get; set; }
         public ICollection<StorageLocation> Children { get; set; } = new List<StorageLocation>();
         public ICollection<Item> Items { get; set; } = new List<Item>();
+        public bool IsSalesLocation { get; set; } = false;
+        public bool IsLendingLocation { get; set; } = false;
     }
 }

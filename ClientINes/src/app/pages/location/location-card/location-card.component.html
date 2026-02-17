@@ -5,7 +5,16 @@
          <i [className]="'fa ' + (location.icon || 'fa-folder')" [style.color]="location.color"></i>
       </div>
       <div class="name-stack">
-        <h3>{{ location.name }}</h3>
+        <h3>
+          {{ location.name }}
+          <i *ngIf="location.isSalesLocation" 
+            class="fa fa-shopping-cart status-icon sales" 
+            title="Торговая локация (Listed)"></i>
+            
+          <i *ngIf="location.isLendingLocation" 
+            class="fa fa-handshake status-icon lending" 
+            title="Локация одалживания (Lent)"></i>
+        </h3>
         <span class="item-count">{{ location.items.length }} предметов</span>
       </div>
     </div>
@@ -85,7 +94,9 @@
       </div>
       
       <div class="item-actions">
-        <button class="sell-btn" (click)="onSellClick($event, item)" title="Продать">
+        <button *ngIf="featureService.isSalesModeEnabled()" 
+              class="sell-btn" 
+              (click)="onSellClick($event, item)">
           <i class="fa fa-dollar-sign"></i>
         </button>
         <button class="details-btn" [routerLink]="['/item', item.id]" title="Детали">

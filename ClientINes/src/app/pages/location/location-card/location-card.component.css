@@ -20,7 +20,7 @@
   min-height: 50px; 
   padding: 4px; 
   background: transparent; 
-  margin-top: 10px; 
+  margin-top: 10px;
 }
 
 /* КАРТОЧКА ПРЕДМЕТА */
@@ -110,7 +110,7 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  opacity: 0; /* Скрыты по умолчанию */
+  opacity: 0;
   transition: opacity 0.2s;
 }
 
@@ -200,3 +200,25 @@
   color: #0b132b; 
   box-shadow: 0 0 10px rgba(0, 245, 212, 0.4);
 }
+
+.menu { 
+  top: 50px; 
+  right: 0; 
+  background: #1c2541; 
+  backdrop-filter: blur(12px);
+  border-radius: 14px; 
+  z-index: 9999; 
+  padding: 8px; 
+  min-width: 220px;
+  border: 1px solid #00f5d4; 
+  box-shadow: 0 10px 30px rgba(0, 245, 212, 0.15); 
+  animation: menuIn 0.2s ease-out;
+}
+
+.status-icon {
+  font-size: 0.85rem;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+.status-icon.sales { color: #00f5d4; }
+.status-icon.lending { color: #f39c12; }

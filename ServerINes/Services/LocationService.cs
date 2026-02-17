@@ -39,7 +39,9 @@ namespace INest.Services
                 SortOrder = dto.SortOrder,
                 Color = dto.Color ?? "#007bff",
                 Icon = dto.Icon ?? "fa-folder",
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                IsSalesLocation = dto.IsSalesLocation,
+                IsLendingLocation = dto.IsLendingLocation
             };
 
             _context.StorageLocations.Add(location);
@@ -58,6 +60,8 @@ namespace INest.Services
                     l.Description,
                     l.Color,
                     l.Icon,
+                    l.IsSalesLocation,
+                    l.IsLendingLocation,
                     items = l.Items
                     .Where(i => i.Status != ItemStatus.Sold)
                     .Select(i => new { i.Id, i.Name })
@@ -139,6 +143,8 @@ namespace INest.Services
                     SortOrder = l.SortOrder,
                     CreatedAt = l.CreatedAt,
                     Items = l.Items,
+                    IsSalesLocation = l.IsSalesLocation,
+                    IsLendingLocation = l.IsLendingLocation,
                     Children = BuildTree(all, l.Id)
                 })
                 .ToList();
