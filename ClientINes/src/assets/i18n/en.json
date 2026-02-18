@@ -1,9 +1,13 @@
 {
-  "auth": {
-    "email": "Email",
-    "username": "Username",
-    "password": "Password",
-    "register": "Register"
+  "AUTH": {
+    "LOGIN_TITLE": "Welcome back!",
+    "LOGIN_SUBTITLE": "Sign in to your storage system",
+    "EMAIL": "EMAIL ADDRESS",
+    "PASSWORD": "PASSWORD",
+    "LOGIN_SUBMIT": "SIGN IN",
+    "GO_TO_REGISTER": "Don't have an account? Register",
+    "ERROR_UNCONFIRMED": "Email is not confirmed. Please check your inbox.",
+    "ERROR_DEFAULT": "Login failed. Please check your credentials."
   },
   "HEADER":{
     "HOME": "Home",

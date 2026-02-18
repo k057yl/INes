@@ -1,8 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, RouterLinkActive } from '@angular/router'; // Добавил активные ссылки
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { LocalizationService } from '../services/localization.service';
-import { ThemeService } from '../services/theme.service'; // Импортируем наш сервис
+import { ThemeService } from '../services/theme.service';
 import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({

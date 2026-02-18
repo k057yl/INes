@@ -1,0 +1,48 @@
+<div class="auth-page">
+  <button class="theme-fab" (click)="themeService.toggleTheme()" [title]="'COMMON.TOGGLE_THEME' | translate">
+    <i class="fa" [ngClass]="themeService.isDarkTheme() ? 'fa-sun' : 'fa-moon'"></i>
+  </button>
+
+  <div class="auth-card">
+    <header class="auth-header">
+      <div class="logo">
+        <i class="fa fa-box-open"></i>
+      </div>
+      <h1>{{ 'AUTH.LOGIN_TITLE' | translate }}</h1>
+      <p>{{ 'AUTH.LOGIN_SUBTITLE' | translate }}</p>
+    </header>
+
+    <form (ngSubmit)="login()" #loginForm="ngForm">
+      <div class="field">
+        <label>{{ 'AUTH.FIELDS_EMAIL' | translate }}</label>
+        <div class="input-box">
+          <i class="fa fa-at"></i>
+          <input type="email" [(ngModel)]="email" name="email" required 
+                 placeholder="email@example.com" autocomplete="email">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>{{ 'AUTH.FIELDS_PASSWORD' | translate }}</label>
+        <div class="input-box">
+          <i class="fa fa-lock"></i>
+          <input type="password" [(ngModel)]="password" name="password" required 
+                 [placeholder]="'AUTH.FIELDS.PASSWORD_PLACEHOLDER' | translate"
+                 autocomplete="current-password">
+        </div>
+      </div>
+
+      <p class="error-text" *ngIf="error">{{ error | translate }}</p>
+
+      <button type="submit" class="submit-btn" [disabled]="!loginForm.valid">
+        {{ 'AUTH.LOGIN_SUBMIT' | translate }}
+        <i class="fa fa-arrow-right"></i>
+      </button>
+    </form>
+
+    <footer class="auth-footer">
+      <span>{{ 'AUTH.LOGIN.NO_ACCOUNT' | translate }}</span>
+      <a routerLink="/register">{{ 'AUTH.LOGIN.GO_TO_REGISTER' | translate }}</a>
+    </footer>
+  </div>
+</div>

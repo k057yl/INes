@@ -1,9 +1,13 @@
 {
-  "auth": {
-    "email": "Почта",
-    "username": "Имя пользователя",
-    "password": "Пароль",
-    "register": "Регистрация"
+  "AUTH": {
+    "LOGIN_TITLE": "С возвращением!",
+    "LOGIN_SUBTITLE": "Войдите в свою систему хранения",
+    "EMAIL": "EMAIL АДРЕС",
+    "PASSWORD": "ПАРОЛЬ",
+    "LOGIN_SUBMIT": "ВОЙТИ",
+    "GO_TO_REGISTER": "Нет аккаунта? Зарегистрироваться",
+    "ERROR_UNCONFIRMED": "Email не подтвержден. Проверьте почту.",
+    "ERROR_DEFAULT": "Ошибка входа. Проверьте данные."
   },
   "HEADER":{
     "HOME": "Главная",

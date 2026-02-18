@@ -1,0 +1,70 @@
+.auth-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+  background: var(--bg-main); /* Переменная из глобального стилей */
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--bg-card);
+  padding: 40px 30px;
+  border-radius: 28px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+  border: 1px solid var(--border-color);
+}
+
+.auth-header { text-align: center; margin-bottom: 35px; }
+.logo { 
+  font-size: 2.5rem; color: var(--accent-color); margin-bottom: 15px;
+  display: inline-block; padding: 15px; background: var(--bg-main); border-radius: 20px;
+}
+.auth-header h1 { font-size: 1.75rem; margin: 0; font-weight: 800; color: var(--text-main); }
+.auth-header p { color: var(--text-muted); font-size: 0.9rem; margin-top: 8px; }
+
+/* Поля ввода */
+.field { margin-bottom: 22px; }
+.field label { display: block; font-size: 0.75rem; font-weight: 700; margin-bottom: 8px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+.input-box {
+  display: flex; align-items: center; background: var(--bg-input);
+  border-radius: 14px; padding: 0 15px; border: 1px solid transparent;
+  transition: all 0.2s;
+}
+.input-box:focus-within { border-color: var(--accent-color); box-shadow: 0 0 0 4px var(--accent-soft); }
+.input-box i { color: var(--text-muted); font-size: 0.9rem; }
+.input-box input {
+  background: transparent; border: none; padding: 14px 12px;
+  width: 100%; color: var(--text-main); outline: none; font-size: 1rem;
+}
+
+/* Кнопка */
+.submit-btn {
+  width: 100%; padding: 16px; border-radius: 14px; border: none;
+  background: var(--accent-color); color: #0b132b; font-weight: 700;
+  cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px;
+  transition: all 0.3s; margin-top: 10px;
+}
+.submit-btn:hover:not(:disabled) { transform: translateY(-2px); filter: brightness(1.1); }
+.submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Темы и плавающая кнопка */
+.theme-fab {
+  position: fixed; top: 20px; right: 20px;
+  width: 45px; height: 45px; border-radius: 12px;
+  background: var(--bg-card); border: 1px solid var(--border-color);
+  color: var(--accent-color); cursor: pointer; transition: 0.3s;
+}
+
+.error-text { color: #ff4d4d; font-size: 0.85rem; text-align: center; margin-bottom: 15px; }
+.auth-footer { text-align: center; margin-top: 25px; font-size: 0.9rem; color: var(--text-muted); }
+.auth-footer a { color: var(--accent-color); text-decoration: none; font-weight: 700; margin-left: 5px; }
+
+/* Адаптация под мобильные устройства */
+@media (max-width: 480px) {
+  .auth-card { padding: 30px 20px; border-radius: 0; position: absolute; top: 0; bottom: 0; display: flex; flex-direction: column; justify-content: center; }
+  .auth-page { padding: 0; background: var(--bg-card); }
+}
