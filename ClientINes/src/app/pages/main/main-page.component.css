@@ -1,0 +1,49 @@
+:host {
+  --bg-dark: #0b132b;
+  --bg-navy: #1c2541;
+  --accent-teal: #00f5d4;
+  display: block;
+  background: var(--bg-dark);
+  min-height: 100vh;
+}
+
+.board-controls-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+}
+
+.btn-add-loc {
+  background: var(--bg-navy); color: var(--accent-teal);
+  border: 1px solid var(--accent-teal); border-radius: 8px;
+  width: 40px; height: 40px; cursor: pointer;
+}
+
+.btn-add-item {
+  background: var(--accent-teal); color: var(--bg-dark);
+  border: none; border-radius: 8px; padding: 0 20px; height: 40px;
+  font-weight: bold; margin-left: 10px; cursor: pointer;
+}
+
+.board-pager-nav {
+  display: flex; align-items: center; gap: 15px;
+  background: var(--bg-navy); padding: 5px 15px; border-radius: 20px;
+  border: 1px solid #3a506b;
+}
+
+.page-info { font-size: 0.8rem; color: var(--accent-teal); font-weight: bold; }
+
+.board-pager-nav button {
+  background: transparent; border: none; color: white; cursor: pointer; font-size: 1rem;
+}
+
+.board-pager-nav button:disabled { opacity: 0.2; }
+
+.board-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  padding: 0 20px 20px;
+  align-items: flex-start;
+}

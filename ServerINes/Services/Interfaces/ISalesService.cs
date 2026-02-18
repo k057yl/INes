@@ -6,5 +6,6 @@ namespace INest.Services.Interfaces
     {
         Task<SaleResponseDto> SellItemAsync(Guid userId, SellItemRequestDto request);
         Task<List<SaleResponseDto>> GetSalesAsync(Guid userId);
+        Task<bool> CancelSaleAsync(Guid userId, Guid itemId);
     }
 }

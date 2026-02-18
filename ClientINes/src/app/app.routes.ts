@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { LoginComponent } from './pages/login/login.component';
 import { RegisterComponent } from './pages/register/register.component';
 import { ConfirmRegisterComponent } from './pages/register/confirm.register.component';
-import { LocationBoardComponent } from './pages/location/location-board/location-board.component';
+import { MainPageComponent } from './pages/main/main-page.component';
 import { LocationCreateComponent } from './pages/location/location-create.component';
 import { ItemCreateComponent } from './pages/item/item-create.component';
 import { CategoryListComponent } from './pages/category/category-list.component';
@@ -16,7 +16,7 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'confirm-register', component: ConfirmRegisterComponent },
-  { path: 'main', component: LocationBoardComponent }, 
+  { path: 'main', component: MainPageComponent }, 
   { path: 'location-create', component: LocationCreateComponent },
   { path: 'create-item', component: ItemCreateComponent },
   { path: 'category', component: CategoryListComponent },
@@ -25,3 +25,5 @@ export const routes: Routes = [
   { path: 'settings', component: SettingsComponent },
   { path: 'item/:id', component: ItemDetailComponent },
 ];
+//import { LocationBoardComponent } from './pages/location/location-board/location-board.component';
+//{ path: 'main', component: LocationBoardComponent }, 

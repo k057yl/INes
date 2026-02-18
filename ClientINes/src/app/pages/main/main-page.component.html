@@ -1,0 +1,53 @@
+<div class="main-page-container">
+  
+  <app-location-ribbon
+    [locations]="locations"
+    [currentPage]="currentPageRibbon"
+    [activeBoardIds]="activeBoardIds"
+    (pageChange)="currentPageRibbon = $event"
+    (reorder)="onRibbonReorder($event)"
+    (jumpTo)="jumpToLocation($event)">
+  </app-location-ribbon>
+
+  <div class="board-controls-row">
+    <div class="main-actions">
+      <button routerLink="/location-create" class="btn-add-loc"><i class="fa fa-plus"></i></button>
+      <button routerLink="/create-item" class="btn-add-item">Добавить предмет</button>
+    </div>
+
+    <div class="board-pager-nav" *ngIf="totalBoardPages > 1">
+      <button (click)="currentPageBoard = currentPageBoard - 1" [disabled]="currentPageBoard === 0">
+        <i class="fa fa-arrow-left"></i>
+      </button>
+      <span class="page-info">Страница {{ currentPageBoard + 1 }} из {{ totalBoardPages }}</span>
+      <button (click)="currentPageBoard = currentPageBoard + 1" [disabled]="currentPageBoard === totalBoardPages - 1">
+        <i class="fa fa-arrow-right"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="board-grid-3">
+    <div class="loader-overlay" *ngIf="isLoading">Загрузка...</div>
+    
+    <app-location-card 
+      *ngFor="let loc of pagedBoardLocations; trackBy: trackById"
+      [location]="loc"
+      [flatLocations]="flatLocations"
+      [connectedLists]="connectedLists"
+      [isChildOf]="isChildOf.bind(this)"
+      (itemDropped)="onItemDropped($event)"
+      (sellItem)="onSellRequest($event)" 
+      (move)="onLocationMove($event)"
+      (rename)="onRename($event)"
+      (deleteItem)="onDeleteItem($event)"
+      (delete)="onDelete($event)">
+    </app-location-card>
+  </div>
+</div>
+
+<app-sell-modal 
+  *ngIf="itemToSell" 
+  [item]="itemToSell"
+  (close)="itemToSell = null"
+  (confirm)="onSellConfirmed($event)">
+</app-sell-modal>

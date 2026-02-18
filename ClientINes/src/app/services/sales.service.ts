@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { SellItemRequestDto, SaleResponseDto } from '../models/dtos/sale.dto';
+import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class SalesService {
@@ -24,5 +25,9 @@ export class SalesService {
     return this.http.post<any>(`${environment.apiBaseUrl}/platforms`, JSON.stringify(name), {
       headers: { 'Content-Type': 'application/json' }
     });
+  }
+
+  cancelSale(itemId: string): Observable<void> {
+    return this.http.delete<void>(`${environment.apiBaseUrl}/sales/${itemId}`);
   }
 }

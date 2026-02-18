@@ -34,7 +34,7 @@ import { TranslateModule } from '@ngx-translate/core';
               <th>{{ 'SALES.COL_DATE' | translate }}</th>
               <th>{{ 'SALES.COL_PRICE' | translate }}</th>
               <th>{{ 'SALES.COL_PROFIT' | translate }}</th>
-            </tr>
+              <th class="actions-head"></th> </tr>
           </thead>
           <tbody>
             <tr *ngFor="let sale of sales">
@@ -49,9 +49,16 @@ import { TranslateModule } from '@ngx-translate/core';
               <td class="profit-cell" [ngClass]="sale.profit >= 0 ? 'turquoise' : 'red'">
                 {{ sale.profit > 0 ? '+' : '' }}{{ sale.profit | number:'1.2-2' }} $
               </td>
+              <td class="actions-cell">
+                <button class="cancel-sale-btn" 
+                        (click)="onCancelSale(sale)" 
+                        [title]="'SALES.CANCEL_TOOLTIP' | translate">
+                  <i class="fa fa-history"></i>
+                </button>
+              </td>
             </tr>
             <tr *ngIf="sales.length === 0">
-              <td colspan="4" class="empty-msg">{{ 'SALES.NO_SALES' | translate }}</td>
+              <td colspan="5" class="empty-msg">{{ 'SALES.NO_SALES' | translate }}</td>
             </tr>
           </tbody>
         </table>
@@ -76,6 +83,29 @@ import { TranslateModule } from '@ngx-translate/core';
     .turquoise { color: #00f5d4 !important; }
     .red { color: #ff4d4d !important; }
     .empty-msg { text-align: center; padding: 40px; color: #94a3b8; }
+
+    /* НОВЫЕ СТИЛИ */
+    .actions-head { width: 60px; }
+    .actions-cell { text-align: right; }
+    .cancel-sale-btn {
+      background: rgba(148, 163, 184, 0.1);
+      border: 1px solid #3a506b;
+      color: #94a3b8;
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .cancel-sale-btn:hover {
+      background: rgba(255, 77, 77, 0.1);
+      color: #ff4d4d;
+      border-color: #ff4d4d;
+      transform: rotate(-15deg);
+    }
   `]
 })
 export class SalesListComponent implements OnInit {
@@ -99,5 +129,16 @@ export class SalesListComponent implements OnInit {
       next: (data) => this.sales = data,
       error: (err) => console.error('Error fetching sales', err)
     });
+  }
+
+  onCancelSale(sale: SaleResponseDto) {
+    if (confirm(`Отменить продажу "${sale.itemName}"? Предмет снова станет активным.`)) {
+      this.salesService.cancelSale(sale.itemId).subscribe({
+        next: () => {
+          this.sales = this.sales.filter(s => s.itemId !== sale.itemId);
+        },
+        error: (err) => console.error('Failed to cancel sale', err)
+      });
+    }
   }
 }

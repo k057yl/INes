@@ -102,5 +102,37 @@ namespace INest.Services
                 })
                 .ToListAsync();
         }
+
+        public async Task<bool> CancelSaleAsync(Guid userId, Guid itemId)
+        {
+            var item = await _context.Items
+                .Include(i => i.Sale)
+                .FirstOrDefaultAsync(i => i.Id == itemId && i.UserId == userId);
+
+            if (item == null || item.Sale == null)
+                return false;
+
+            var oldStatus = item.Status;
+
+            _context.Sales.Remove(item.Sale);
+
+            item.Status = ItemStatus.Active;
+
+            var history = new ItemHistory
+            {
+                Id = Guid.NewGuid(),
+                ItemId = item.Id,
+                Type = ItemHistoryType.StatusChanged,
+                CreatedAt = DateTime.UtcNow,
+                Comment = "Sale cancelled, item returned to inventory",
+                OldValue = oldStatus.ToString(),
+                NewValue = ItemStatus.Active.ToString()
+            };
+
+            _context.ItemHistories.Add(history);
+
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }

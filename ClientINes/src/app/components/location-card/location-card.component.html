@@ -2,31 +2,25 @@
   <div class="loc-header">
     <div class="title-group">
       <div class="icon-wrapper" [style.background-color]="location.color + '20'">
-         <i [className]="'fa ' + (location.icon || 'fa-folder')" [style.color]="location.color"></i>
+        <i [className]="'fa ' + (location.icon || 'fa-folder')" [style.color]="location.color"></i>
       </div>
       <div class="name-stack">
         <h3>
           {{ location.name }}
-          <i *ngIf="location.isSalesLocation" 
-            class="fa fa-shopping-cart status-icon sales" 
-            title="Торговая локация (Listed)"></i>
-            
-          <i *ngIf="location.isLendingLocation" 
-            class="fa fa-handshake status-icon lending" 
-            title="Локация одалживания (Lent)"></i>
+          <i *ngIf="location.isSalesLocation" class="fa fa-shopping-cart status-icon sales" title="Sales Location"></i>
+          <i *ngIf="location.isLendingLocation" class="fa fa-handshake status-icon lending" title="Lending Location"></i>
         </h3>
         <span class="item-count">{{ location.items.length }} предметов</span>
       </div>
     </div>
     
-    <button class="menu-btn" (click)="onToggleMenu($event)" [class.active]="location.showMenu">
+    <button class="menu-btn" [id]="'btn-' + location.id" (click)="location.showMenu = !location.showMenu">
       <i class="fa fa-ellipsis-v"></i>
     </button>
 
-    <div class="menu" *ngIf="location.showMenu" (click)="$event.stopPropagation()">
-  
+    <div class="menu-dropdown" *ngIf="location.showMenu" (click)="$event.stopPropagation()">
       <div class="menu-section">
-        <label><i class="fa fa-exchange-alt"></i> Переместить локацию в:</label>
+        <label><i class="fa fa-exchange-alt"></i> Переместить в:</label>
         <div class="select-wrapper">
           <select (change)="onMove($event)">
             <option value="" disabled selected>Выберите цель...</option>
@@ -42,19 +36,15 @@
 
       <div class="divider"></div>
       
-      <div class="menu-header">Действия</div>
       <div class="menu-actions">
         <button [routerLink]="['/location', location.id]" (click)="location.showMenu = false">
-          <i class="fa fa-expand-alt"></i> Открыть детали
+          <i class="fa fa-expand-alt"></i> Детали
         </button>
-        
-        <button (click)="onRenameClick()">
+        <button (click)="rename.emit(location)">
           <i class="fa fa-pen"></i> Переименовать
         </button>
-        
         <div class="divider"></div>
-        
-        <button (click)="onDeleteClick()" class="delete-btn">
+        <button (click)="delete.emit(location)" class="delete-loc-btn">
           <i class="fa fa-trash-alt"></i> Удалить
         </button>
       </div>
@@ -69,25 +59,18 @@
     (cdkDropListDropped)="onItemDrop($event)"
     class="items-container">
     
-    <div class="item-card" 
-        *ngFor="let item of location.items" 
-        cdkDrag 
-        [cdkDragData]="item"> 
-      
+    <div class="item-card" *ngFor="let item of location.items" cdkDrag [cdkDragData]="item">
       <div class="item-thumb">
         <img *ngIf="item.photoUrl" [src]="item.photoUrl" alt="item">
-        <div *ngIf="!item.photoUrl" class="no-image">
-          <i class="fa fa-image"></i>
-        </div>
+        <div *ngIf="!item.photoUrl" class="no-image"><i class="fa fa-image"></i></div>
       </div>
 
       <div class="item-info">
         <div class="name-row">
           <span class="item-name">{{ item.name }}</span>
-          
           <span class="status-indicators">
-            <i *ngIf="item.status === 6" class="fa fa-shopping-cart item-status sales" title="Выставлено"></i>
-            <i *ngIf="item.status === 1" class="fa fa-handshake item-status lending" title="Одолжено"></i>
+            <i *ngIf="item.status === 6" class="fa fa-shopping-cart item-status sales"></i>
+            <i *ngIf="item.status === 1" class="fa fa-handshake item-status lending"></i>
           </span>
         </div>
 
@@ -95,26 +78,20 @@
           <span class="item-price" *ngIf="featureService.isSalesModeEnabled() && item.estimatedValue">
             {{ item.estimatedValue | number:'1.0-0' }} $
           </span>
-          
-          <span class="item-category" *ngIf="item.category">
-            {{ item.category.name }}
-          </span>
+          <span class="item-category" *ngIf="item.category">{{ item.category.name }}</span>
         </div>
       </div>
       
       <div class="item-actions">
         <button *ngIf="featureService.isSalesModeEnabled() && item.status !== 4" 
-                class="sell-btn" 
-                (click)="onSellClick($event, item)">
+                class="action-btn sell" (click)="onSellClick($event, item)" title="Продать">
           <i class="fa fa-dollar-sign"></i>
         </button>
-
-        <button class="delete-btn" (click)="onDeleteItem($event, item)" title="Удалить предмет">
-          <i class="fa fa-trash-alt"></i>
-        </button>
-
-        <button class="details-btn" [routerLink]="['/item', item.id]">
+        <button class="action-btn details" [routerLink]="['/item', item.id]" title="Открыть">
           <i class="fa fa-chevron-right"></i>
+        </button>
+        <button class="action-btn delete" (click)="onDeleteItem($event, item)" title="Удалить предмет">
+            <i class="fa fa-trash-alt"></i>
         </button>
       </div>
 
@@ -127,7 +104,7 @@
     </div>
   </div>
 
-  <div class="children" *ngIf="location.children?.length">
+  <div class="child-locations" *ngIf="location.children?.length">
     <app-location-card 
         *ngFor="let child of location.children" 
         [location]="child"
@@ -135,7 +112,6 @@
         [connectedLists]="connectedLists"
         [isChildOf]="isChildOf"
         (itemDropped)="itemDropped.emit($event)"
-        (locationReordered)="locationReordered.emit($event)"
         (move)="move.emit($event)"
         (rename)="rename.emit($event)"
         (delete)="delete.emit($event)"

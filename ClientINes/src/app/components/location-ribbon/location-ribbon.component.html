@@ -1,0 +1,35 @@
+<div class="ribbon-container">
+  <div class="ribbon-header">
+    <div class="ribbon-label">
+      <i class="fa fa-sort-amount-down"></i> {{ 'BOARD.COLUMN_ORDER' | translate }}
+      <span class="count-badge">{{ currentPage + 1 }}/{{ totalPages }}</span>
+    </div>
+    
+    <div class="pagination-ctrl" *ngIf="totalPages > 1">
+      <button (click)="pageChange.emit(currentPage - 1)" [disabled]="currentPage === 0">
+        <i class="fa fa-chevron-left"></i>
+      </button>
+      <button (click)="pageChange.emit(currentPage + 1)" [disabled]="currentPage === totalPages - 1">
+        <i class="fa fa-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="root-ribbon-grid" 
+       cdkDropList 
+       cdkDropListOrientation="mixed" 
+       [cdkDropListData]="pagedLocations"
+       (cdkDropListDropped)="reorder.emit($event)">
+    
+    <div class="root-chip" 
+         *ngFor="let loc of pagedLocations" 
+         cdkDrag
+         [class.active-on-board]="isLocActiveOnBoard(loc.id)"
+         (click)="jumpTo.emit(loc.id)">
+      <div class="chip-content">
+        <i [className]="'fa ' + (loc.icon || 'fa-folder')" [style.color]="loc.color"></i>
+        <span class="loc-name">{{ loc.name }}</span>
+      </div>
+    </div>
+  </div>
+</div>

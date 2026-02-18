@@ -20,10 +20,7 @@ namespace INest.Controllers
         {
             try
             {
-                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier) ?? User.FindFirst("sub");
-                if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
-                    return Unauthorized();
-
+                var userId = GetCurrentUserId();
                 var result = await _salesService.SellItemAsync(userId, request);
                 return Ok(result);
             }
@@ -64,6 +61,29 @@ namespace INest.Controllers
             }
 
             throw new UnauthorizedAccessException("User ID is missing in token.");
+        }
+
+        [HttpDelete("{itemId}")]
+        public async Task<IActionResult> CancelSale(Guid itemId)
+        {
+            try
+            {
+                var userId = GetCurrentUserId();
+                var result = await _salesService.CancelSaleAsync(userId, itemId);
+
+                if (!result)
+                    return NotFound("Sale record not found for this item.");
+
+                return Ok();
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal server error during sale cancellation");
+            }
         }
     }
 }

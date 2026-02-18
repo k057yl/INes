@@ -1,0 +1,60 @@
+.ribbon-container {
+  background: #1c2541;
+  padding: 15px 20px;
+  border-bottom: 1px solid #3a506b;
+}
+
+.ribbon-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.ribbon-label { font-size: 0.75rem; font-weight: bold; color: #94a3b8; text-transform: uppercase; }
+
+.count-badge {
+  background: #3a506b;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  margin-left: 8px;
+  color: white;
+}
+
+.root-ribbon-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(3, 38px);
+  gap: 8px;
+}
+
+.root-chip {
+  background: #0b132b;
+  border: 1px solid #3a506b;
+  border-radius: 8px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: all 0.2s;
+  overflow: hidden;
+}
+
+.root-chip.active-on-board {
+  opacity: 1;
+  background: rgba(0, 245, 212, 0.15);
+  border-color: #00f5d4;
+  box-shadow: 0 0 10px rgba(0, 245, 212, 0.3);
+}
+
+.chip-content { display: flex; align-items: center; gap: 8px; width: 100%; }
+.loc-name { color: white; font-size: 0.8rem; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
+
+.pagination-ctrl button {
+  background: #0b132b; border: 1px solid #3a506b; color: white;
+  width: 26px; height: 26px; border-radius: 6px; cursor: pointer; margin-left: 5px;
+}
+.pagination-ctrl button:disabled { opacity: 0.3; }
