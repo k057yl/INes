@@ -1,0 +1,46 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <header class="auth-header">
+      <div class="logo-circle">
+        <i class="fa fa-envelope-open-text"></i>
+      </div>
+      <h2>{{ 'AUTH.CONFIRM.TITLE' | translate }}</h2>
+      <p>{{ 'AUTH.CONFIRM.SUBTITLE' | translate }}</p>
+      <small class="target-email" *ngIf="email">{{ email }}</small>
+    </header>
+
+    <form (ngSubmit)="confirm()" #confirmForm="ngForm">
+      <div class="form-group">
+        <label>{{ 'AUTH.FIELDS.CONFIRM_CODE' | translate }}</label>
+        <div class="input-with-icon">
+          <i class="fa fa-key"></i>
+          <input type="text" 
+                 [(ngModel)]="code" 
+                 name="code" 
+                 required 
+                 maxlength="6"
+                 [placeholder]="'AUTH.FIELDS.CODE_PLACEHOLDER' | translate"
+                 autocomplete="one-time-code">
+        </div>
+      </div>
+
+      <div class="status-box error" *ngIf="error">
+        <i class="fa fa-exclamation-circle"></i> {{ error | translate }}
+      </div>
+
+      <div class="status-box success" *ngIf="message">
+        <i class="fa fa-check-double"></i> {{ message | translate }}
+      </div>
+
+      <button type="submit" class="auth-submit-btn" [disabled]="!confirmForm.valid">
+        {{ 'AUTH.CONFIRM.SUBMIT' | translate }}
+        <i class="fa fa-check"></i>
+      </button>
+    </form>
+
+    <footer class="auth-footer">
+      <span>{{ 'AUTH.CONFIRM.DIDNT_GET_CODE' | translate }}</span>
+      <a href="javascript:void(0)" (click)="confirm()">{{ 'AUTH.CONFIRM.RESEND' | translate }}</a>
+    </footer>
+  </div>
+</div>

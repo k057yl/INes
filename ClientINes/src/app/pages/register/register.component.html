@@ -1,0 +1,64 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <header class="auth-header">
+      <div class="logo-circle"><i class="fa fa-user-plus"></i></div>
+      <h2>{{ 'AUTH.REGISTER.TITLE' | translate }}</h2>
+      <p>{{ 'AUTH.REGISTER.SUBTITLE' | translate }}</p>
+    </header>
+
+    <form (ngSubmit)="register()" #regForm="ngForm">
+      <div class="form-group">
+        <label>{{ 'AUTH.FIELDS.USERNAME' | translate }}</label>
+        <div class="input-with-icon">
+          <i class="fa fa-user"></i>
+          <input [(ngModel)]="username" name="username" required 
+                 [placeholder]="'AUTH.FIELDS.USERNAME_PLACEHOLDER' | translate">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>{{ 'AUTH.FIELDS.EMAIL' | translate }}</label>
+        <div class="input-with-icon">
+          <i class="fa fa-envelope"></i>
+          <input type="email" [(ngModel)]="email" name="email" required placeholder="email@example.com">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>{{ 'AUTH.FIELDS.PASSWORD' | translate }}</label>
+          <div class="input-with-icon">
+            <i class="fa fa-lock"></i>
+            <input type="password" [(ngModel)]="password" name="password" required placeholder="••••••">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>{{ 'AUTH.FIELDS.CONFIRM_PASSWORD' | translate }}</label>
+          <div class="input-with-icon">
+            <i class="fa fa-shield-alt"></i>
+            <input type="password" [(ngModel)]="confirmPassword" name="confirmPassword" required placeholder="••••••">
+          </div>
+        </div>
+      </div>
+
+      <div class="status-box error" *ngIf="error || (password && confirmPassword && password !== confirmPassword)">
+        <i class="fa fa-exclamation-triangle"></i> 
+        {{ (password !== confirmPassword ? 'AUTH.ERRORS.PASSWORD_MISMATCH' : error) | translate }}
+      </div>
+
+      <div class="status-box success" *ngIf="message">
+        <i class="fa fa-check-circle"></i> {{ message | translate }}
+      </div>
+
+      <button type="submit" class="auth-submit-btn" 
+              [disabled]="!regForm.valid || password !== confirmPassword">
+        {{ 'AUTH.REGISTER.SUBMIT' | translate }}
+      </button>
+    </form>
+
+    <footer class="auth-footer">
+      <span>{{ 'AUTH.REGISTER.ALREADY_HAVE_ACC' | translate }}</span>
+      <a routerLink="/login">{{ 'AUTH.REGISTER.GO_TO_LOGIN' | translate }}</a>
+    </footer>
+  </div>
+</div>

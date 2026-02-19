@@ -1,32 +1,30 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { TranslateModule } from '@ngx-translate/core';
 import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-confirm-register',
   standalone: true,
-  imports: [CommonModule, FormsModule],
-  template: `
-    <h2>Подтверждение регистрации</h2>
-    <form (ngSubmit)="confirm()">
-      <input [(ngModel)]="code" name="code" placeholder="Код из письма" required />
-      <button type="submit">Подтвердить</button>
-    </form>
-    <p *ngIf="message" style="color:green">{{ message }}</p>
-    <p *ngIf="error" style="color:red">{{ error }}</p>
-  `
+  imports: [CommonModule, FormsModule, TranslateModule],
+  templateUrl: './confirm-register.component.html',
+  styleUrl: './register.component.css'
 })
-export class ConfirmRegisterComponent {
+export class ConfirmRegisterComponent implements OnInit {
+  private http = inject(HttpClient);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+
   email = '';
   password = '';
   code = '';
   message?: string;
   error?: string;
 
-  constructor(private http: HttpClient, private router: Router, private route: ActivatedRoute) {
+  ngOnInit() {
     this.route.queryParams.subscribe(params => {
       this.email = params['email'] || '';
       this.password = params['password'] || '';
@@ -43,10 +41,10 @@ export class ConfirmRegisterComponent {
       code: this.code
     }).subscribe({
       next: () => {
-        this.message = 'Заебок, вы зарегистрированы!';
+        this.message = 'AUTH.CONFIRM.SUCCESS_MSG';
         setTimeout(() => this.router.navigate(['/main']), 1500);
       },
-      error: err => this.error = err.error?.error || 'Ошибка подтверждения'
+      error: err => this.error = err.error?.error || 'AUTH.ERRORS.CONFIRM_FAILED'
     });
   }
 }

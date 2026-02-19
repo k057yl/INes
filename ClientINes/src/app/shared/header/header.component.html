@@ -1,0 +1,51 @@
+<header class="header">
+  <div class="header-main">
+    <div class="brand-section">
+      <button class="menu-toggle" (click)="toggleMenu()" [class.open]="isMenuOpen()">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      
+      <h2 class="logo" routerLink="/main">INest</h2>
+    </div>
+
+    <nav class="nav-links" [class.mobile-open]="isMenuOpen()">
+      <div class="mobile-user-info" *ngIf="userEmail">
+        {{ 'COMMON.WELCOME' | translate }}, <br><strong>{{ userEmail }}</strong>
+      </div>
+      
+      <a routerLink="/main" routerLinkActive="active" (click)="closeMenu()">
+        <i class="fa fa-th-large"></i> {{ 'HEADER.HOME' | translate }}
+      </a>
+      <a routerLink="/sales" routerLinkActive="active" (click)="closeMenu()">
+        <i class="fa fa-chart-line"></i> {{ 'HEADER.SALES' | translate }}
+      </a>
+      <a routerLink="/settings" routerLinkActive="active" (click)="closeMenu()">
+        <i class="fa fa-cog"></i> {{ 'HEADER.SETTINGS' | translate }}
+      </a>
+      
+      <hr class="mobile-divider">
+      <a routerLink="/login" routerLinkActive="active" (click)="closeMenu()" class="auth-link">
+        <i class="fa fa-sign-in-alt"></i> {{ 'HEADER.LOGIN' | translate }}
+      </a>
+      <a routerLink="/register" routerLinkActive="active" (click)="closeMenu()" class="auth-link">
+        <i class="fa fa-sign-in-alt"></i> {{ 'HEADER.REGISTER' | translate }}
+      </a>
+    </nav>
+
+    <div class="actions">
+      <button class="theme-toggle" (click)="toggleTheme()">
+         {{ themeService.isDarkTheme() ? '🌙' : '☀️' }}
+      </button>
+
+      <div class="lang-selector">
+        <button (click)="changeLang('en')" [class.active]="currentLang === 'en'">EN</button>
+        <button (click)="changeLang('ru')" [class.active]="currentLang === 'ru'">RU</button>
+        <button (click)="changeLang('uk')" [class.active]="currentLang === 'uk'">UK</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="overlay" *ngIf="isMenuOpen()" (click)="closeMenu()"></div>

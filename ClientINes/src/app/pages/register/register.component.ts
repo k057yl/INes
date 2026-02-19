@@ -1,28 +1,22 @@
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { TranslateModule } from '@ngx-translate/core';
 import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, FormsModule],
-  template: `
-    <h2>Регистрация</h2>
-    <form (ngSubmit)="register()">
-      <input [(ngModel)]="username" name="username" placeholder="Имя пользователя" required />
-      <input [(ngModel)]="email" name="email" placeholder="Email" required />
-      <input [(ngModel)]="password" name="password" type="password" placeholder="Пароль" required />
-      <input [(ngModel)]="confirmPassword" name="confirmPassword" type="password" placeholder="Повторите пароль" required />
-      <button type="submit">Зарегистрироваться</button>
-    </form>
-    <p *ngIf="message" style="color:green">{{ message }}</p>
-    <p *ngIf="error" style="color:red">{{ error }}</p>
-  `
+  imports: [CommonModule, FormsModule, RouterModule, TranslateModule],
+  templateUrl: './register.component.html',
+  styleUrl: './register.component.css'
 })
 export class RegisterComponent {
+  private http = inject(HttpClient);
+  private router = inject(Router);
+
   username = '';
   email = '';
   password = '';
@@ -30,14 +24,12 @@ export class RegisterComponent {
   message?: string;
   error?: string;
 
-  constructor(private http: HttpClient, private router: Router) {}
-
   register() {
     this.error = undefined;
     this.message = undefined;
 
     if (this.password !== this.confirmPassword) {
-      this.error = 'Пароли не совпадают';
+      this.error = 'AUTH.ERRORS.PASSWORD_MISMATCH';
       return;
     }
 
@@ -47,10 +39,14 @@ export class RegisterComponent {
       password: this.password
     }).subscribe({
       next: () => {
-        this.message = 'Одноразовый код отправлен на почту';
-        setTimeout(() => this.router.navigate(['/confirm-register'], { queryParams: { email: this.email } }), 1000);
+        this.message = 'AUTH.REGISTER.SUCCESS_MSG';
+        setTimeout(() => {
+          this.router.navigate(['/confirm-register'], { 
+            queryParams: { email: this.email, password: this.password } 
+          });
+        }, 1500);
       },
-      error: err => this.error = err.error?.error || 'Ошибка регистрации'
+      error: err => this.error = err.error?.error || 'AUTH.ERRORS.REGISTER_FAILED'
     });
   }
 }

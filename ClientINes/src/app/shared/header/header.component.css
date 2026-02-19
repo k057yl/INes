@@ -1,0 +1,84 @@
+:host {
+  --turquoise: #00f5d4;
+  --dark-blue: #0b132b;
+  --navy-blue: #1c2541;
+  display: block;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.header {
+  background: var(--dark-blue);
+  border-bottom: 2px solid var(--navy-blue);
+  padding: 0.75rem 1.5rem;
+}
+
+.header-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.brand-section { display: flex; align-items: center; gap: 1rem; }
+.logo { color: var(--turquoise); cursor: pointer; margin: 0; font-weight: 800; }
+
+/* ДЕСКТОПНЫЕ ССЫЛКИ */
+.nav-links a {
+  margin-left: 1.5rem;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+  transition: 0.3s;
+}
+.nav-links a.active { color: var(--turquoise); }
+.mobile-user-info, .mobile-divider, .menu-toggle { display: none; }
+
+/* КНОПКИ ДЕЙСТВИЙ */
+.actions { display: flex; gap: 10px; align-items: center; }
+.theme-toggle { 
+  background: var(--navy-blue); border: 1px solid var(--turquoise); 
+  border-radius: 50%; width: 35px; height: 35px; cursor: pointer;
+}
+.lang-selector button {
+  background: transparent; border: 1px solid var(--navy-blue);
+  color: #94a3b8; padding: 4px 8px; cursor: pointer;
+}
+.lang-selector button.active { background: var(--turquoise); color: var(--dark-blue); }
+
+/* --- МОБИЛЬНАЯ АДАПТАЦИЯ --- */
+@media (max-width: 850px) {
+  .menu-toggle {
+    display: flex; flex-direction: column; gap: 5px;
+    background: transparent; border: none; cursor: pointer; width: 30px;
+  }
+  .menu-toggle span {
+    display: block; width: 100%; height: 3px; background: var(--turquoise);
+    transition: 0.3s; border-radius: 2px;
+  }
+  
+  /* Анимация бургера в крестик */
+  .menu-toggle.open span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+  .menu-toggle.open span:nth-child(2) { opacity: 0; }
+  .menu-toggle.open span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+
+  .nav-links {
+    position: fixed; top: 0; left: -100%; width: 280px; height: 100vh;
+    background: var(--navy-blue); flex-direction: column; padding: 2rem;
+    transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); display: flex; box-shadow: 5px 0 15px rgba(0,0,0,0.5); z-index: 1100;
+  }
+  .nav-links.mobile-open { left: 0; }
+  .nav-links a { margin: 1rem 0; font-size: 1.2rem; }
+  
+  .mobile-user-info { display: block; margin-bottom: 1.5rem; color: #94a3b8; font-size: 0.9rem; }
+  .mobile-divider { display: block; width: 100%; border: none; border-top: 1px solid var(--dark-blue); margin: 1rem 0; }
+  
+  .overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6); z-index: 1000;
+  }
+  
+  .lang-selector button { padding: 8px 12px; }
+}
