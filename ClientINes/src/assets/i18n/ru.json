@@ -1,13 +1,36 @@
 {
-  "AUTH": {
-    "LOGIN_TITLE": "С возвращением!",
-    "LOGIN_SUBTITLE": "Войдите в свою систему хранения",
-    "EMAIL": "EMAIL АДРЕС",
-    "PASSWORD": "ПАРОЛЬ",
-    "LOGIN_SUBMIT": "ВОЙТИ",
-    "GO_TO_REGISTER": "Нет аккаунта? Зарегистрироваться",
-    "ERROR_UNCONFIRMED": "Email не подтвержден. Проверьте почту.",
-    "ERROR_DEFAULT": "Ошибка входа. Проверьте данные."
+  "ERRORS": {
+    "DEFAULT": "Неверные данные",
+    "UNCONFIRMED_PASSWORD": "Пароль не верный",
+    "UNCONFIRMED_USERNAME": "Имя не верное"
+  },
+  "REG": {
+    "TITLE": "О, Привет!",
+    "SUBTITLE": "Зарегистрируйтесь в системе",
+    "USERNAME": "Имя",
+    "FIELD_USERNAME": "Введите имя",
+    "EMAIL": "Email",
+    "FIELD_EMAIL": "Введите email",
+    "PASSWORD": "Пароль",
+    "FIELD_PASSWORD": "Введите пароль",
+    "CONFIRM_PASSWORD": "Проверка пароля",
+    "CONFIRM_FIELD_PASSWORD": "Введите пароль еще раз",
+    "PASSWORD_MISMATCH": "Пароли не совпадают",
+    "BUTTON_START": "Зарегистрироваться",
+    "ALREADY_HAVE_ACC": "Уже есть аккаунт? ",
+    "GO_TO_LOGIN": " Перейти к логину"
+  },
+  "LOGIN": {
+    "TITLE": "С возвращением!",
+    "SUBTITLE": "Войдите в свою систему хранения",
+    "USERNAME": "Имя",
+    "FIELD_USERNAME": "Введите имя",
+    "PASSWORD": "Пароль",
+    "FIELD_PASSWORD": "Введите пароль",
+    "PASSWORD_MISMATCH": "Пароль не верный",
+    "BUTTON_START": "Войти",
+    "NO_ACC_YET": "Ещё нет аккаунта? ",
+    "GO_TO_REGISTER": " Перейти к регистрации"
   },
   "HEADER":{
     "HOME": "Главная",

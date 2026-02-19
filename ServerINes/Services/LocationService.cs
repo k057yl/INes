@@ -1,7 +1,6 @@
 ﻿using INest.Models.DTOs.Location;
 using INest.Models.Entities;
 using INest.Services.Interfaces;
-using Microsoft.Extensions.Localization;
 using Microsoft.EntityFrameworkCore;
 using INest.Models.Enums;
 
@@ -10,12 +9,10 @@ namespace INest.Services
     public class LocationService : ILocationService
     {
         private readonly AppDbContext _context;
-        private readonly IStringLocalizer<SharedResource> _localizer;
 
-        public LocationService(AppDbContext context, IStringLocalizer<SharedResource> localizer)
+        public LocationService(AppDbContext context)
         {
             _context = context;
-            _localizer = localizer;
         }
 
         public async Task<StorageLocation> CreateLocationAsync(Guid userId, CreateLocationDto dto)
@@ -26,7 +23,7 @@ namespace INest.Services
                     .AnyAsync(l => l.Id == dto.ParentLocationId && l.UserId == userId);
 
                 if (!parentExists)
-                    throw new InvalidOperationException(_localizer["Error.LocationNotFound"]);
+                    throw new InvalidOperationException("Error.LocationNotFound");
             }
 
             var location = new StorageLocation
@@ -167,7 +164,7 @@ namespace INest.Services
                 .FirstOrDefaultAsync(l => l.Id == locationId && l.UserId == userId);
 
             if (location == null)
-                throw new KeyNotFoundException(_localizer["Error.LocationNotFound"]);
+                throw new KeyNotFoundException("Error.LocationNotFound");
 
             location.Name = newName;
             await _context.SaveChangesAsync();
@@ -180,7 +177,7 @@ namespace INest.Services
                 .FirstOrDefaultAsync(l => l.Id == locationId && l.UserId == userId);
 
             if (location == null)
-                throw new KeyNotFoundException(_localizer["Error.LocationNotFound"]);
+                throw new KeyNotFoundException("Error.LocationNotFound");
 
             _context.StorageLocations.Remove(location);
             await _context.SaveChangesAsync();

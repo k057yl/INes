@@ -1,64 +1,62 @@
-<div class="auth-container">
+<div class="register-container">
   <div class="auth-card">
     <header class="auth-header">
       <div class="logo-circle"><i class="fa fa-user-plus"></i></div>
-      <h2>{{ 'AUTH.REGISTER.TITLE' | translate }}</h2>
-      <p>{{ 'AUTH.REGISTER.SUBTITLE' | translate }}</p>
+      <h2>{{ 'REG.TITLE' | translate }}</h2>
+      <p>{{ 'REG.SUBTITLE' | translate }}</p>
     </header>
 
     <form (ngSubmit)="register()" #regForm="ngForm">
       <div class="form-group">
-        <label>{{ 'AUTH.FIELDS.USERNAME' | translate }}</label>
+        <label>{{ 'REG.USERNAME' | translate }}</label>
         <div class="input-with-icon">
           <i class="fa fa-user"></i>
           <input [(ngModel)]="username" name="username" required 
-                 [placeholder]="'AUTH.FIELDS.USERNAME_PLACEHOLDER' | translate">
+            [placeholder]="'REG.FIELD_USERNAME' | translate">
         </div>
       </div>
 
       <div class="form-group">
-        <label>{{ 'AUTH.FIELDS.EMAIL' | translate }}</label>
+        <label>{{ 'REG.EMAIL' | translate }}</label>
         <div class="input-with-icon">
           <i class="fa fa-envelope"></i>
-          <input type="email" [(ngModel)]="email" name="email" required placeholder="email@example.com">
+          <input type="email" [(ngModel)]="email" name="email" required
+            [placeholder]="'REG.FIELD_EMAIL' | translate">
         </div>
       </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label>{{ 'AUTH.FIELDS.PASSWORD' | translate }}</label>
-          <div class="input-with-icon">
-            <i class="fa fa-lock"></i>
-            <input type="password" [(ngModel)]="password" name="password" required placeholder="••••••">
-          </div>
+      <div class="form-group">
+        <label>{{ 'REG.PASSWORD' | translate }}</label>
+        <div class="input-with-icon">
+          <i class="fa fa-lock"></i>
+          <input type="password" [(ngModel)]="password" name="password" required 
+            [placeholder]="'REG.FIELD_PASSWORD' | translate">
         </div>
-        <div class="form-group">
-          <label>{{ 'AUTH.FIELDS.CONFIRM_PASSWORD' | translate }}</label>
-          <div class="input-with-icon">
-            <i class="fa fa-shield-alt"></i>
-            <input type="password" [(ngModel)]="confirmPassword" name="confirmPassword" required placeholder="••••••">
-          </div>
+      </div>
+
+      <div class="form-group">
+        <label>{{ 'REG.CONFIRM_PASSWORD' | translate }}</label>
+        <div class="input-with-icon">
+          <i class="fa fa-shield-alt"></i>
+          <input type="password" [(ngModel)]="confirmPassword" name="confirmPassword" required 
+            [placeholder]="'REG.CONFIRM_FIELD_PASSWORD' | translate">
         </div>
       </div>
 
       <div class="status-box error" *ngIf="error || (password && confirmPassword && password !== confirmPassword)">
         <i class="fa fa-exclamation-triangle"></i> 
-        {{ (password !== confirmPassword ? 'AUTH.ERRORS.PASSWORD_MISMATCH' : error) | translate }}
-      </div>
-
-      <div class="status-box success" *ngIf="message">
-        <i class="fa fa-check-circle"></i> {{ message | translate }}
+        {{ (password !== confirmPassword ? 'REG.PASSWORD_MISMATCH' : error) | translate }}
       </div>
 
       <button type="submit" class="auth-submit-btn" 
               [disabled]="!regForm.valid || password !== confirmPassword">
-        {{ 'AUTH.REGISTER.SUBMIT' | translate }}
+        {{ 'REG.BUTTON_START' | translate }}
       </button>
     </form>
 
     <footer class="auth-footer">
-      <span>{{ 'AUTH.REGISTER.ALREADY_HAVE_ACC' | translate }}</span>
-      <a routerLink="/login">{{ 'AUTH.REGISTER.GO_TO_LOGIN' | translate }}</a>
+      <span>{{ 'REG.ALREADY_HAVE_ACC' | translate }}</span>  
+      <a routerLink="/login">{{ 'REG.GO_TO_LOGIN' | translate }}</a>
     </footer>
   </div>
 </div>

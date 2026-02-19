@@ -1,13 +1,36 @@
 {
-  "AUTH": {
-    "LOGIN_TITLE": "Welcome back!",
-    "LOGIN_SUBTITLE": "Sign in to your storage system",
-    "EMAIL": "EMAIL ADDRESS",
-    "PASSWORD": "PASSWORD",
-    "LOGIN_SUBMIT": "SIGN IN",
-    "GO_TO_REGISTER": "Don't have an account? Register",
-    "ERROR_UNCONFIRMED": "Email is not confirmed. Please check your inbox.",
-    "ERROR_DEFAULT": "Login failed. Please check your credentials."
+  "ERRORS": {
+    "DEFAULT": "Invalid credentials",
+    "UNCONFIRMED_PASSWORD": "Incorrect password",
+    "UNCONFIRMED_USERNAME": "Incorrect username"
+  },
+  "REG": {
+    "TITLE": "Oh, hello!",
+    "SUBTITLE": "Register in the system",
+    "USERNAME": "Username",
+    "FIELD_USERNAME": "Enter your username",
+    "EMAIL": "Email",
+    "FIELD_EMAIL": "Enter your email",
+    "PASSWORD": "Password",
+    "FIELD_PASSWORD": "Enter your password",
+    "CONFIRM_PASSWORD": "Confirm Password",
+    "CONFIRM_FIELD_PASSWORD": "Enter your password again",
+    "PASSWORD_MISMATCH": "Passwords do not match",
+    "BUTTON_START": "Register",
+    "ALREADY_HAVE_ACC": "Already have an account? ",
+    "GO_TO_LOGIN": " Go to login"
+  },
+  "LOGIN": {
+    "TITLE": "Welcome back!",
+    "SUBTITLE": "Sign in to your storage system",
+    "USERNAME": "Username",
+    "FIELD_USERNAME": "Enter your username",
+    "PASSWORD": "Password",
+    "FIELD_PASSWORD": "Enter your password",
+    "PASSWORD_MISMATCH": "Password is incorrect",
+    "BUTTON_START": "Sign In",
+    "NO_ACC_YET": "Don't have an account yet? ",
+    "GO_TO_REGISTER": " Go to registration"
   },
   "HEADER":{
     "HOME": "Home",

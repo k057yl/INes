@@ -2,7 +2,6 @@
 using INest.Models.Entities;
 using INest.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Localization;
 using System.Collections.Concurrent;
 
 namespace INest.Services
@@ -14,30 +13,26 @@ namespace INest.Services
         private readonly IEmailService _emailService;
         private readonly IConfiguration _config;
 
-        private readonly IStringLocalizer<SharedResource> _localizer;
-
         private static readonly ConcurrentDictionary<string, (string Code, DateTime Expire)> _otpStore
             = new();
 
         public AuthService(UserManager<AppUser> userManager, ITokenService tokenService, IEmailService emailService,
-            IConfiguration config, IStringLocalizer<SharedResource> localizer)
+            IConfiguration config)
         {
             _userManager = userManager;
             _tokenService = tokenService;
             _emailService = emailService;
             _config = config;
-
-            _localizer = localizer;
         }
 
         public async Task SendConfirmationCodeAsync(RegisterDto dto)
         {
             if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.Username) || string.IsNullOrWhiteSpace(dto.Password))
-                throw new ArgumentException(_localizer["Auth.RequiredFields"]);
+                throw new ArgumentException("Auth.RequiredFields");
 
             var existing = await _userManager.FindByEmailAsync(dto.Email);
             if (existing != null)
-                throw new InvalidOperationException(_localizer["Auth.UserAlreadyExists"]);
+                throw new InvalidOperationException("Auth.UserAlreadyExists");
 
             var user = new AppUser
             {

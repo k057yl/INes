@@ -24,17 +24,13 @@ export class LoginComponent {
 
   login() {
     this.error = undefined;
-
+    
     this.authService.login(this.email, this.password).subscribe({
       next: () => {
-        this.router.navigate(['/main']);
+        this.router.navigate(["/main"]);
       },
-      error: err => {
-        if (err.error === 'unconfirmed') {
-          this.error = 'AUTH.ERRORS.UNCONFIRMED';
-          return;
-        }
-        this.error = err.error?.error || 'AUTH.ERRORS.DEFAULT';
+      error: (err) => {
+        this.error = err.error?.error || "ERRORS.DEFAULT";
       }
     });
   }

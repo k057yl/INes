@@ -1,80 +1,90 @@
-.auth-container {
+.register-container {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start; 
   min-height: calc(100vh - 70px);
-  padding: 20px;
+  padding: 100px 20px 40px;
+  box-sizing: border-box;
 }
 
+/* Общая карточка */
 .auth-card {
   background: var(--navy-blue);
   width: 100%;
   max-width: 450px;
-  padding: 2rem;
+  padding: 2.5rem;
   border-radius: 24px;
   box-shadow: 0 15px 35px rgba(0,0,0,0.4);
   border: 1px solid rgba(0, 245, 214, 0.1);
+  display: flex;
+  flex-direction: column;
 }
 
 .auth-header { text-align: center; margin-bottom: 1.5rem; }
 
 .logo-circle {
-  width: 50px; height: 50px; background: var(--dark-blue);
+  width: 60px; height: 60px; background: var(--dark-blue);
   border: 2px solid var(--turquoise); border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  margin: 0 auto 1rem; font-size: 1.2rem; color: var(--turquoise);
+  margin: 0 auto 1rem; color: var(--turquoise);
+  font-size: 1.5rem;
 }
 
-.auth-header h2 { color: #fff; margin: 0; font-size: 1.4rem; }
-.auth-header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.4rem; }
+.auth-header h2 { color: #fff; margin: 0; font-size: 1.6rem; font-weight: 700; }
+.auth-header p { color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem; }
 
+/* Формы и поля */
 .form-group { margin-bottom: 1.2rem; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 
-@media (max-width: 480px) {
-  .form-row { grid-template-columns: 1fr; }
-}
+@media (max-width: 480px) { .form-row { grid-template-columns: 1fr; } }
 
-.form-group label { display: block; color: var(--text-muted); font-size: 0.7rem; margin-bottom: 0.4rem; text-transform: uppercase; }
+.form-group label { 
+  display: block; color: var(--text-muted); 
+  font-size: 0.75rem; margin-bottom: 0.5rem; text-transform: uppercase; 
+  letter-spacing: 1px;
+}
 
 .input-with-icon {
-  position: relative; background: var(--dark-blue); border-radius: 12px;
-  border: 1px solid transparent; transition: 0.3s;
+  position: relative; background: var(--dark-blue); 
+  border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); 
+  transition: 0.3s; display: flex; align-items: center;
 }
 
-.input-with-icon:focus-within { border-color: var(--turquoise); }
-.input-with-icon i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.9rem; }
+.input-with-icon:focus-within { 
+  border-color: var(--turquoise); 
+  box-shadow: 0 0 0 4px rgba(0, 245, 214, 0.1);
+}
+
+.input-with-icon i { position: absolute; left: 15px; color: var(--text-muted); }
+
 .input-with-icon input {
-  width: 100%; background: transparent; border: none; padding: 12px 12px 12px 38px;
-  color: #fff; outline: none; font-size: 0.95rem;
+  width: 100%; background: transparent; border: none; 
+  padding: 14px 15px 14px 45px; color: var(--text-main); 
+  outline: none; font-size: 1rem;
 }
 
+/* Кнопка */
 .auth-submit-btn {
   width: 100%; background: var(--turquoise); color: var(--dark-blue);
-  border: none; padding: 14px; border-radius: 12px; font-weight: 800;
-  cursor: pointer; transition: all 0.3s; margin-top: 1rem;
+  border: none; padding: 16px; border-radius: 12px; 
+  font-weight: 800; cursor: pointer; transition: 0.3s; margin-top: 1rem;
+  text-transform: uppercase; letter-spacing: 1px;
 }
+.auth-submit-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+.auth-submit-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
-.auth-submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-.status-box { padding: 10px; border-radius: 10px; font-size: 0.8rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; }
-.status-box.error { background: rgba(255, 77, 77, 0.1); color: #ff4d4d; border: 1px solid #ff4d4d; }
-.status-box.success { background: rgba(0, 245, 212, 0.1); color: var(--turquoise); border: 1px solid var(--turquoise); }
-
-.auth-footer { text-align: center; margin-top: 1.5rem; color: var(--text-muted); font-size: 0.85rem; }
+/* Футер */
+.auth-footer { 
+    text-align: center; margin-top: 2rem; padding-top: 1.5rem;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    font-size: 0.9rem; color: var(--text-muted); 
+}
 .auth-footer a { color: var(--turquoise); text-decoration: none; font-weight: 600; margin-left: 5px; }
 
-.target-email {
-  display: block;
-  margin-top: 10px;
-  color: var(--turquoise);
-  font-weight: 600;
-  opacity: 0.8;
+/* Статусы */
+.status-box { 
+  padding: 12px; border-radius: 10px; font-size: 0.85rem; 
+  margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px; 
 }
-
-input[name="code"] {
-  letter-spacing: 4px;
-  font-size: 1.2rem;
-  text-align: center;
-  padding-left: 12px !important;
-}
+.status-box.error { background: rgba(255, 77, 77, 0.1); color: #ff4d4d; border: 1px solid rgba(255, 77, 77, 0.2); }

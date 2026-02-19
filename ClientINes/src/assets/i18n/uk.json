@@ -1,13 +1,36 @@
 {
-  "AUTH": {
-    "LOGIN_TITLE": "З поверненням!",
-    "LOGIN_SUBTITLE": "Увійдіть до своєї системи зберігання",
-    "EMAIL": "ЕЛЕКТРОННА ПОШТА",
-    "PASSWORD": "ПАРОЛЬ",
-    "LOGIN_SUBMIT": "УВІЙТИ",
-    "GO_TO_REGISTER": "Немає облікового запису? Зареєструватися",
-    "ERROR_UNCONFIRMED": "Електронну пошту не підтверджено. Перевірте свою скриньку.",
-    "ERROR_DEFAULT": "Помилка входу. Перевірте введені дані."
+  "ERRORS": {
+    "DEFAULT": "Невірні дані",
+    "UNCONFIRMED_PASSWORD": "Невірний пароль",
+    "UNCONFIRMED_USERNAME": "Невірне ім'я користувача"
+  },
+  "REG": {
+    "TITLE": "О, привіт!",
+    "SUBTITLE": "Зареєструйтеся в системі",
+    "USERNAME": "Ім'я користувача",
+    "FIELD_USERNAME": "Введіть ім'я користувача",
+    "EMAIL": "Електронна пошта",
+    "FIELD_EMAIL": "Введіть електронну пошту",
+    "PASSWORD": "Пароль",
+    "FIELD_PASSWORD": "Введіть пароль",
+    "CONFIRM_PASSWORD": "Підтвердження пароля",
+    "CONFIRM_FIELD_PASSWORD": "Введіть пароль ще раз",
+    "PASSWORD_MISMATCH": "Паролі не збігаються",
+    "BUTTON_START": "Зареєструватися",
+    "ALREADY_HAVE_ACC": "Вже маєте акаунт? ",
+    "GO_TO_LOGIN": " Перейти до входу"
+  },
+  "LOGIN": {
+    "TITLE": "З поверненням!",
+    "SUBTITLE": "Увійдіть до своєї системи зберігання",
+    "USERNAME": "Ім'я користувача",
+    "FIELD_USERNAME": "Введіть ім'я користувача",
+    "PASSWORD": "Пароль",
+    "FIELD_PASSWORD": "Введіть пароль",
+    "PASSWORD_MISMATCH": "Пароль не вірний",
+    "BUTTON_START": "Увійти",
+    "NO_ACC_YET": "Ще немає акаунта? ",
+    "GO_TO_REGISTER": " Перейти до реєстрації"
   },
   "HEADER":{
     "HOME": "Головна",

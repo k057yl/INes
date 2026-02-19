@@ -13,19 +13,7 @@ namespace INest.Services
     {
         public static IServiceCollection AddAppServices(this IServiceCollection services, IConfiguration config)
         {
-            // ---------- Localization ----------
-            services.AddLocalization(options =>
-            {
-                options.ResourcesPath = "Resources";
-            });
-
-            // ----------- Setting localization for DataAnnotations ---------- 
-            services.AddControllers()
-                .AddDataAnnotationsLocalization(options =>
-                {
-                    options.DataAnnotationLocalizerProvider = (type, factory) =>
-                        factory.Create(typeof(SharedResource));
-                });
+            services.AddControllers();
 
             // ---------- DB ----------
             services.AddDbContext<AppDbContext>(options =>

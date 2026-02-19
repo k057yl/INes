@@ -43,8 +43,12 @@ namespace INest.Controllers
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
             var token = await _authService.LoginAsync(dto);
-            if (token == null) return Unauthorized(new { error = "Неверные данные" });
-            if (token == "unconfirmed") return Unauthorized(new { error = "Email не подтвержден" });
+
+            if (token == null)
+                return Unauthorized(new { error = LacalizationConst.UnconfirmedPassword });
+
+            if (token == "unconfirmed")
+                return Unauthorized(new { error = LacalizationConst.UnconfirmedMail });
 
             return Ok(new { token });
         }
