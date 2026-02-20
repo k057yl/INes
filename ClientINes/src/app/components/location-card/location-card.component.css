@@ -28,9 +28,6 @@
 .name-stack h3 { color: #f8fafc; font-size: 1rem; margin: 0; display: flex; align-items: center; gap: 6px; }
 .item-count { color: #94a3b8; font-size: 0.75rem; }
 
-.status-icon.sales { color: #00f5d4; font-size: 0.8rem; }
-.status-icon.lending { color: #f39c12; font-size: 0.8rem; }
-
 /* МЕНЮ */
 .menu-btn {
   background: rgba(58, 80, 107, 0.3); border: none; color: #94a3b8;
@@ -43,39 +40,7 @@
   width: 200px; padding: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
-/* ПРЕДМЕТЫ */
-.items-container { min-height: 40px; margin-top: 10px; }
 
-.item-card {
-  background: #0b132b; padding: 10px; margin-bottom: 8px;
-  border-radius: 12px; border: 1px solid #3a506b;
-  display: flex; align-items: center; gap: 10px; transition: 0.2s;
-}
-
-.item-card:hover { border-color: #00f5d4; transform: translateX(4px); }
-
-.item-thumb { width: 44px; height: 44px; border-radius: 8px; overflow: hidden; background: #1c2541; flex-shrink: 0; }
-.item-thumb img { width: 100%; height: 100%; object-fit: cover; }
-
-.item-info { flex-grow: 1; overflow: hidden; }
-.item-name { color: #e2e8f0; font-size: 0.85rem; font-weight: 600; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-.item-meta { display: flex; align-items: center; gap: 8px; margin-top: 2px; }
-.item-price { color: #00f5d4; font-size: 0.75rem; font-weight: bold; }
-.item-category { font-size: 0.65rem; color: #64748b; background: rgba(148,163,184,0.1); padding: 2px 6px; border-radius: 4px; }
-
-/* КНОПКИ ДЕЙСТВИЙ ПРЕДМЕТА */
-.item-actions { display: flex; gap: 4px; opacity: 0; transition: 0.2s; }
-.item-card:hover .item-actions { opacity: 1; }
-
-.action-btn {
-  background: #1c2541; border: 1px solid #3a506b; color: #94a3b8;
-  width: 26px; height: 26px; border-radius: 6px; cursor: pointer; font-size: 0.75rem;
-  display: flex; align-items: center; justify-content: center;
-}
-
-.action-btn.sell:hover { background: #00f5d4; color: #0b132b; border-color: #00f5d4; }
-.action-btn.details:hover { background: #3a506b; color: white; }
 
 /* ВЛОЖЕННОСТЬ */
 .child-locations { margin-top: 15px; padding-left: 15px; border-left: 2px dashed #3a506b; display: flex; flex-direction: column; gap: 15px; }

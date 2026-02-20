@@ -20,15 +20,17 @@ export class LocationRibbonComponent {
   @Output() pageChange = new EventEmitter<number>();
   @Output() jumpTo = new EventEmitter<string>();
 
-  readonly pageSize = 15;
+  get dynamicPageSize(): number {
+    return window.innerWidth <= 768 ? 9 : 15;
+  }
 
   get pagedLocations(): StorageLocation[] {
-    const start = this.currentPage * this.pageSize;
-    return this.locations.slice(start, start + this.pageSize);
+    const start = this.currentPage * this.dynamicPageSize;
+    return this.locations.slice(start, start + this.dynamicPageSize);
   }
 
   get totalPages(): number {
-    return Math.ceil(this.locations.length / this.pageSize);
+    return Math.ceil(this.locations.length / this.dynamicPageSize);
   }
 
   isLocActiveOnBoard(locId: string): boolean {

@@ -58,3 +58,20 @@
   width: 26px; height: 26px; border-radius: 6px; cursor: pointer; margin-left: 5px;
 }
 .pagination-ctrl button:disabled { opacity: 0.3; }
+
+/* Мобильная версия 3x3 */
+@media (max-width: 768px) {
+  .root-ribbon-grid {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 38px);
+    gap: 6px;
+  }
+  
+  .root-chip {
+    padding: 0 6px;
+  }
+  
+  .loc-name {
+    font-size: 0.7rem;
+  }
+}

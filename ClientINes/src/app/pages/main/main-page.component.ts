@@ -120,6 +120,7 @@ export class MainPageComponent implements OnInit, OnDestroy {
           if (parent) (parent.children ??= []).push(targetLoc);
         }
         this.refreshState();
+        event.loc.showMenu = false;
       }
     });
   }

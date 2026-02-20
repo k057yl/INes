@@ -9,20 +9,26 @@
     (jumpTo)="jumpToLocation($event)">
   </app-location-ribbon>
 
-  <div class="board-controls-row">
+  <div class="board-header-zone">
     <div class="main-actions">
-      <button routerLink="/location-create" class="btn-add-loc"><i class="fa fa-plus"></i></button>
-      <button routerLink="/create-item" class="btn-add-item">Добавить предмет</button>
+      <button routerLink="/location-create" class="btn-action fill">
+        <i class="fa fa-plus"></i> Локация
+      </button>
+      <button routerLink="/create-item" class="btn-action fill">
+        Добавить предмет
+      </button>
     </div>
 
-    <div class="board-pager-nav" *ngIf="totalBoardPages > 1">
-      <button (click)="currentPageBoard = currentPageBoard - 1" [disabled]="currentPageBoard === 0">
-        <i class="fa fa-arrow-left"></i>
-      </button>
-      <span class="page-info">Страница {{ currentPageBoard + 1 }} из {{ totalBoardPages }}</span>
-      <button (click)="currentPageBoard = currentPageBoard + 1" [disabled]="currentPageBoard === totalBoardPages - 1">
-        <i class="fa fa-arrow-right"></i>
-      </button>
+    <div class="board-pager-row" *ngIf="totalBoardPages > 1">
+      <div class="board-pager-nav">
+        <button (click)="currentPageBoard = currentPageBoard - 1" [disabled]="currentPageBoard === 0">
+          <i class="fa fa-arrow-left"></i>
+        </button>
+        <span class="page-info">{{ currentPageBoard + 1 }} / {{ totalBoardPages }}</span>
+        <button (click)="currentPageBoard = currentPageBoard + 1" [disabled]="currentPageBoard === totalBoardPages - 1">
+          <i class="fa fa-arrow-right"></i>
+        </button>
+      </div>
     </div>
   </div>
 

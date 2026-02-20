@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DragDropModule, CdkDragDrop } from '@angular/cdk/drag-drop';
 import { RouterModule } from '@angular/router';
@@ -28,6 +28,18 @@ export class LocationCardComponent {
   @Output() rename = new EventEmitter<StorageLocation>();
   @Output() delete = new EventEmitter<StorageLocation>();
   @Output() deleteItem = new EventEmitter<Item>();
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    if (!this.location.showMenu) return;
+
+    const target = event.target as HTMLElement;
+    const clickedInside = target.closest('.menu-dropdown') || target.closest('.menu-btn');
+
+    if (!clickedInside) {
+      this.location.showMenu = false;
+    }
+  }
 
   onItemDrop(event: CdkDragDrop<Item[]>) {
     this.itemDropped.emit({ event, loc: this.location });

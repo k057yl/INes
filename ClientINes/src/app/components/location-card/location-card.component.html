@@ -19,7 +19,36 @@
     </button>
 
     <div class="menu-dropdown" *ngIf="location.showMenu" (click)="$event.stopPropagation()">
-       </div>
+      <div class="menu-section">
+        <label><i class="fa fa-exchange-alt"></i> Переместить в:</label>
+        <div class="select-wrapper">
+          <select (change)="onMove($event)">
+            <option value="" disabled selected>Выберите цель...</option>
+            <option value="root">📁 В корень</option>
+            <option *ngFor="let target of flatLocations" 
+                    [value]="target.id" 
+                    [disabled]="target.id === location.id || isChildOf(target.id, location)">
+              {{ target.name }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+      
+      <div class="menu-actions">
+        <button [routerLink]="['/location', location.id]" (click)="location.showMenu = false">
+          <i class="fa fa-expand-alt"></i> Детали
+        </button>
+        <button (click)="rename.emit(location)">
+          <i class="fa fa-pen"></i> Переименовать
+        </button>
+        <div class="divider"></div>
+        <button (click)="delete.emit(location)" class="delete-loc-btn">
+          <i class="fa fa-trash-alt"></i> Удалить
+        </button>
+      </div>
+    </div>
   </div>
 
   <div
