@@ -14,41 +14,12 @@
       </div>
     </div>
     
-    <button class="menu-btn" [id]="'btn-' + location.id" (click)="location.showMenu = !location.showMenu">
+    <button class="menu-btn" (click)="location.showMenu = !location.showMenu">
       <i class="fa fa-ellipsis-v"></i>
     </button>
 
     <div class="menu-dropdown" *ngIf="location.showMenu" (click)="$event.stopPropagation()">
-      <div class="menu-section">
-        <label><i class="fa fa-exchange-alt"></i> Переместить в:</label>
-        <div class="select-wrapper">
-          <select (change)="onMove($event)">
-            <option value="" disabled selected>Выберите цель...</option>
-            <option value="root">📁 В корень</option>
-            <option *ngFor="let target of flatLocations" 
-                    [value]="target.id" 
-                    [disabled]="target.id === location.id || isChildOf(target.id, location)">
-              {{ target.name }}
-            </option>
-          </select>
-        </div>
-      </div>
-
-      <div class="divider"></div>
-      
-      <div class="menu-actions">
-        <button [routerLink]="['/location', location.id]" (click)="location.showMenu = false">
-          <i class="fa fa-expand-alt"></i> Детали
-        </button>
-        <button (click)="rename.emit(location)">
-          <i class="fa fa-pen"></i> Переименовать
-        </button>
-        <div class="divider"></div>
-        <button (click)="delete.emit(location)" class="delete-loc-btn">
-          <i class="fa fa-trash-alt"></i> Удалить
-        </button>
-      </div>
-    </div>
+       </div>
   </div>
 
   <div
@@ -59,44 +30,12 @@
     (cdkDropListDropped)="onItemDrop($event)"
     class="items-container">
     
-    <div class="item-card" *ngFor="let item of location.items" cdkDrag [cdkDragData]="item">
-      <div class="item-thumb">
-        <img *ngIf="item.photoUrl" [src]="item.photoUrl" alt="item">
-        <div *ngIf="!item.photoUrl" class="no-image"><i class="fa fa-image"></i></div>
-      </div>
-
-      <div class="item-info">
-        <div class="name-row">
-          <span class="item-name">{{ item.name }}</span>
-          <span class="status-indicators">
-            <i *ngIf="item.status === 6" class="fa fa-shopping-cart item-status sales"></i>
-            <i *ngIf="item.status === 1" class="fa fa-handshake item-status lending"></i>
-          </span>
-        </div>
-
-        <div class="item-meta">
-          <span class="item-price" *ngIf="featureService.isSalesModeEnabled() && item.estimatedValue">
-            {{ item.estimatedValue | number:'1.0-0' }} $
-          </span>
-          <span class="item-category" *ngIf="item.category">{{ item.category.name }}</span>
-        </div>
-      </div>
-      
-      <div class="item-actions">
-        <button *ngIf="featureService.isSalesModeEnabled() && item.status !== 4" 
-                class="action-btn sell" (click)="onSellClick($event, item)" title="Продать">
-          <i class="fa fa-dollar-sign"></i>
-        </button>
-        <button class="action-btn details" [routerLink]="['/item', item.id]" title="Открыть">
-          <i class="fa fa-chevron-right"></i>
-        </button>
-        <button class="action-btn delete" (click)="onDeleteItem($event, item)" title="Удалить предмет">
-            <i class="fa fa-trash-alt"></i>
-        </button>
-      </div>
-
-      <div class="item-placeholder" *cdkDragPlaceholder></div>
-    </div>
+    <app-item-card 
+      *ngFor="let item of location.items" 
+      [item]="item"
+      (sell)="sellItem.emit($event)"
+      (delete)="deleteItem.emit($event)">
+    </app-item-card>
     
     <div class="empty-state" *ngIf="location.items.length === 0">
       <i class="fa fa-box-open"></i>
@@ -115,7 +54,8 @@
         (move)="move.emit($event)"
         (rename)="rename.emit($event)"
         (delete)="delete.emit($event)"
-        (sellItem)="sellItem.emit($event)"> 
+        (sellItem)="sellItem.emit($event)"
+        (deleteItem)="deleteItem.emit($event)"> 
     </app-location-card>
   </div>
 </div>

@@ -4,12 +4,12 @@ import { RegisterComponent } from './pages/register/register.component';
 import { ConfirmRegisterComponent } from './pages/register/confirm.register.component';
 import { MainPageComponent } from './pages/main/main-page.component';
 import { LocationCreateComponent } from './pages/location/location-create.component';
-import { ItemCreateComponent } from './pages/item/item-create.component';
+import { ItemCreateComponent } from './pages/item/create/item-create.component';
 import { CategoryListComponent } from './pages/category/category-list.component';
 import { LocationDetailComponent } from './pages/location/location-detail.component';
 import { SalesListComponent } from './pages/sales/sales-list.component';
 import { SettingsComponent } from './pages/setting/settings.component';
-import { ItemDetailComponent } from './pages/item/item-detail.component';
+import { ItemDetailComponent } from './pages/item/details/item-detail.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -25,5 +25,3 @@ export const routes: Routes = [
   { path: 'settings', component: SettingsComponent },
   { path: 'item/:id', component: ItemDetailComponent },
 ];
-//import { LocationBoardComponent } from './pages/location/location-board/location-board.component';
-//{ path: 'main', component: LocationBoardComponent }, 

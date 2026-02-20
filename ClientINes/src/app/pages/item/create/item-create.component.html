@@ -1,0 +1,116 @@
+<div class="create-item-container">
+  <div class="auth-card">
+    <header class="auth-header">
+      <div class="logo-circle"><i class="fa fa-plus"></i></div>
+      <h2>{{ 'CREATE_ITEM.TITLE' | translate }}</h2>
+    </header>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      
+      <div class="form-group">
+        <label>{{ 'CREATE_ITEM.NAME' | translate }}</label>
+        <div class="input-with-icon">
+          <i class="fa fa-tag"></i>
+          <input formControlName="name" [placeholder]="'CREATE_ITEM.FIELD_NAME' | translate">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>{{ 'CREATE_ITEM.DESCRIPTION' | translate }}</label>
+        <div class="input-with-icon textarea-icon">
+          <i class="fa fa-align-left"></i>
+          <textarea formControlName="description" [placeholder]="'CREATE_ITEM.FIELD_DESCRIPTION' | translate" rows="3"></textarea>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>{{ 'CREATE_ITEM.CATEGORY' | translate }}</label>
+          <div class="input-with-icon">
+            <i class="fa fa-folder"></i>
+            <select formControlName="categoryId">
+              <option value="">{{ 'CREATE_ITEM.FIELD_CATEGORY' | translate }}</option>
+              <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>{{ 'CREATE_ITEM.STATUS' | translate }}</label>
+          <div class="input-with-icon">
+            <i class="fa fa-info-circle"></i>
+            <select formControlName="status">
+              <option *ngFor="let s of statuses" [value]="s.value">
+                {{ s.label | translate }} 
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>{{ 'CREATE_ITEM.LOCATION' | translate }}</label>
+        <div class="input-with-icon">
+          <i class="fa fa-map-marker-alt"></i>
+          <select formControlName="storageLocationId">
+            <option value=""disabled selected hidden>{{ 'CREATE_ITEM.SELECT_LOCATION' | translate }}</option>
+            <option *ngFor="let loc of locations" [value]="loc.id">{{ loc.name }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>{{ 'CREATE_ITEM.PURCHASE_DATE' | translate }}</label>
+        <div class="input-with-icon">
+          <i class="fa fa-calendar-alt"></i>
+          <input type="date" formControlName="purchaseDate" [max]="todayMax">
+        </div>
+        <small class="error-text" *ngIf="form.get('purchaseDate')?.errors?.['futureDate']">
+          {{ 'ERROR.FUTURE_DATE' | translate }}
+        </small>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>{{ 'CREATE_ITEM.PRICE' | translate }}</label>
+          <div class="input-with-icon">
+            <i class="fa fa-wallet"></i>
+            <input formControlName="purchasePrice" type="number" placeholder="0.00">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>{{ 'CREATE_ITEM.ESTIMATED' | translate }}</label>
+          <div class="input-with-icon">
+            <i class="fa fa-chart-line"></i>
+            <input formControlName="estimatedValue" type="number" placeholder="0.00">
+          </div>
+        </div>
+      </div>
+
+      <div class="photo-section">
+        <label class="photo-flag">
+          <input type="checkbox" formControlName="addPhoto">
+          <span class="checkbox-custom"></span>
+          <span>{{ 'CREATE_ITEM.ADD_PHOTO' | translate }}</span>
+        </label>
+
+        <div *ngIf="form.value.addPhoto" class="file-upload-zone">
+          <i class="fa fa-cloud-upload-alt"></i>
+          <input type="file" accept="image/*" (change)="onFileSelected($event)">
+          <p *ngIf="!selectedFile">{{ 'CREATE_ITEM.CLICK_TO_UPLOAD' | translate }}</p>
+          <p *ngIf="selectedFile" class="file-name">{{ selectedFile.name }}</p>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn-cancel" (click)="cancel()">
+            <i class="fa fa-times"></i>
+          {{ 'CREATE_ITEM.BUTTON_CANCEL' | translate }}
+        </button>
+        <button type="submit" class="auth-submit-btn" [disabled]="form.invalid">
+          <i class="fa fa-save"></i> {{ 'CREATE_ITEM.BUTTON_START' | translate }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

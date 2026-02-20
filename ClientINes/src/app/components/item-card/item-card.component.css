@@ -1,0 +1,110 @@
+.item-card {
+  display: flex;
+  align-items: center;
+  background: var(--dark-blue);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 10px;
+  margin-bottom: 8px;
+  transition: all 0.2s ease;
+  cursor: grab;
+}
+
+.item-card:hover {
+  border-color: var(--turquoise);
+  transform: translateX(4px);
+  background: rgba(0, 245, 212, 0.05);
+}
+
+/* Эскиз */
+.item-thumb {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--navy-blue);
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.item-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.no-image { 
+  width: 100%; height: 100%; display: flex; 
+  align-items: center; justify-content: center; color: var(--text-muted); 
+}
+
+/* Инфо */
+.item-content { flex: 1; margin: 0 15px; overflow: hidden; }
+
+.item-header { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.item-name { 
+  color: var(--text-main); font-weight: 600; font-size: 0.95rem;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.item-details { display: flex; align-items: center; gap: 12px; }
+.category-tag { font-size: 0.75rem; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
+.price-tag { font-size: 0.8rem; color: var(--turquoise); font-weight: 700; }
+
+/* Контейнер кнопок */
+.item-actions {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+  padding-left: 10px;
+}
+
+/* Базовый стиль кнопки */
+.action-btn {
+  background: transparent;
+  /* Начальный цвет рамки — едва заметный серый */
+  border: 1px solid rgba(255, 255, 255, 0.1); 
+  color: var(--text-muted);
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  transition: all 0.2s ease-in-out;
+}
+
+
+
+/* --- Состояния при наведении на конкретную кнопку --- */
+
+/* ДЕТАЛИ - Серый (как у айтема) */
+.action-btn.details:hover {
+  border-color: #94a3b8; /* Стальной серый */
+  color: #fff;
+  background: rgba(148, 163, 184, 0.05);
+}
+
+/* ПРОДАТЬ - Бирюзовый акцент */
+.action-btn.sell:hover {
+  border-color: var(--turquoise);
+  color: var(--turquoise);
+  background: rgba(0, 245, 212, 0.05);
+}
+
+/* УДАЛИТЬ - Красный */
+.action-btn.delete:hover {
+  border-color: #ff4d4d;
+  color: #ff4d4d;
+  background: rgba(255, 77, 77, 0.05);
+}
+
+/* Эффект нажатия */
+.action-btn:active {
+  transform: scale(0.92);
+}
+
+/* Drag & Drop */
+.cdk-drag-preview {
+  box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+  border: 1px solid var(--turquoise);
+  background: var(--dark-blue);
+  border-radius: 12px;
+}

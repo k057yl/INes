@@ -36,7 +36,27 @@
     "HOME": "Home",
     "LOGIN": "Login",
     "REGISTER": "Register",
-    "TEST": "Test_EN"
+    "SETTINGS": "Settings",
+    "SALES": "Sales"
+  },
+  "CREATE_ITEM": {
+    "TITLE": "Create Item",
+    "NAME": "Name",
+    "FIELD_NAME": "Enter item name",
+    "DESCRIPTION": "Description",
+    "FIELD_DESCRIPTION": "Enter item description",
+    "CATEGORY": "Category",
+    "FIELD_CATEGORY": "Select a category",
+    "STATUS": "Status",
+    "LOCATION": "Location",
+    "SELECT_LOCATION": "Select location",
+    "PURCHASE_DATE": "Creation date",
+    "PRICE": "Price",
+    "ESTIMATED": "Estimated value",
+    "ADD_PHOTO": "Add photo",
+    "CLICK_TO_UPLOAD": "Click to select a photo",
+    "BUTTON_START": "Create",
+    "BUTTON_CANCEL": "Cancel"
   },
   "STATUS":{
     "ACTIVE": "Active",

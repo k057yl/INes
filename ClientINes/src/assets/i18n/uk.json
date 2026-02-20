@@ -36,7 +36,27 @@
     "HOME": "Головна",
     "LOGIN": "Логін",
     "REGISTER": "Реєстрація",
-    "TEST": "Test_UA"
+    "SETTINGS": "Налаштування",
+    "SALES": "Продажі"
+  },
+  "CREATE_ITEM": {
+    "TITLE": "Створити предмет",
+    "NAME": "Назва",
+    "FIELD_NAME": "Введіть назву предмета",
+    "DESCRIPTION": "Опис",
+    "FIELD_DESCRIPTION": "Введіть опис предмета",
+    "CATEGORY": "Категорія",
+    "FIELD_CATEGORY": "Оберіть категорію",
+    "STATUS": "Статус",
+    "LOCATION": "Локація",
+    "SELECT_LOCATION": "Оберіть локацію",
+    "PURCHASE_DATE": "Дата створення",
+    "PRICE": "Ціна",
+    "ESTIMATED": "Оціночна вартість",
+    "ADD_PHOTO": "Додати фото",
+    "CLICK_TO_UPLOAD": "Натисніть, щоб обрати фото",
+    "BUTTON_START": "Створити",
+    "BUTTON_CANCEL": "Скасувати"
   },
   "STATUS": {
     "ACTIVE": "Активний",

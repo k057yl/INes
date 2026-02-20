@@ -2,7 +2,8 @@
   "ERRORS": {
     "DEFAULT": "Неверные данные",
     "UNCONFIRMED_PASSWORD": "Пароль не верный",
-    "UNCONFIRMED_USERNAME": "Имя не верное"
+    "UNCONFIRMED_USERNAME": "Имя не верное",
+    "FUTURE_DATE": "Дата не может быть в будующем"
   },
   "REG": {
     "TITLE": "О, Привет!",
@@ -36,7 +37,27 @@
     "HOME": "Главная",
     "LOGIN": "Логин",
     "REGISTER": "Регистрация",
-    "TEST": "Test_RU"
+    "SETTINGS": "Настройки",
+    "SALES": "Продажи"
+  },
+  "CREATE_ITEM":{
+    "TITLE": "Создайте предмет",
+    "NAME": "Название",
+    "FIELD_NAME": "Введите название предмета",
+    "DESCRIPTION": "Описание",
+    "FIELD_DESCRIPTION": "Введите описание предмета",
+    "CATEGORY": "Категория",
+    "FIELD_CATEGORY": "Выберите категорию",
+    "STATUS": "Статус",
+    "LOCATION": "Локация",
+    "SELECT_LOCATION": "Выберите локацию",
+    "PURCHASE_DATE": "Дата создания",
+    "PRICE": "Цена",
+    "ESTIMATED": "Оценочная стоимость",
+    "ADD_PHOTO": "Добавить фото",
+    "CLICK_TO_UPLOAD": "Нажмите, чтобы выбрать фото",
+    "BUTTON_START": "Создать",
+    "BUTTON_CANCEL": "Отмена"
   },
   "STATUS": {
     "ACTIVE": "Активен",

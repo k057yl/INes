@@ -1,0 +1,50 @@
+<div class="item-card" cdkDrag [cdkDragData]="item">
+  <div class="item-thumb" [routerLink]="['/item', item.id]">
+    <img *ngIf="item.photoUrl" [src]="item.photoUrl" alt="item">
+    <div *ngIf="!item.photoUrl" class="no-image">
+      <i class="fa fa-image"></i>
+    </div>
+  </div>
+
+  <div class="item-content">
+    <div class="item-header">
+      <span class="item-name" [title]="item.name">{{ item.name }}</span>
+      <div class="status-badges">
+        <i *ngIf="item.status === 6" class="fa fa-shopping-cart status-sale" title="На продаже"></i>
+        <i *ngIf="item.status === 1" class="fa fa-handshake status-lend" title="Одолжено"></i>
+      </div>
+    </div>
+
+    <div class="item-details">
+      <span class="category-tag" *ngIf="item.category">
+        <i class="fa fa-folder-open"></i> {{ item.category.name }}
+      </span>
+      <span class="price-tag" *ngIf="featureService.isSalesModeEnabled() && item.estimatedValue">
+        {{ item.estimatedValue | number:'1.0-0' }} $
+      </span>
+    </div>
+  </div>
+
+  <div class="item-actions">
+    <button *ngIf="featureService.isSalesModeEnabled() && item.status !== 4" 
+            class="action-btn sell" 
+            (click)="onSell($event)" 
+            title="Продать">
+      <i class="fa fa-dollar-sign"></i>
+    </button>
+
+    <button class="action-btn details" 
+            [routerLink]="['/item', item.id]" 
+            title="Детали">
+      <i class="fa fa-chevron-right"></i>
+    </button>
+
+    <button class="action-btn delete" 
+            (click)="onDelete($event)" 
+            title="Удалить">
+      <i class="fa fa-trash-alt"></i>
+    </button>
+  </div>
+
+  <div class="item-drag-placeholder" *cdkDragPlaceholder></div>
+</div>

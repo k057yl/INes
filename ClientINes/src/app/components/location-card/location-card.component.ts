@@ -5,11 +5,12 @@ import { RouterModule } from '@angular/router';
 import { StorageLocation } from '../../models/entities/storage-location.entity';
 import { Item } from '../../models/entities/item.entity';
 import { FeatureService } from '../../services/feature.service';
+import { ItemCardComponent } from '../item-card/item-card.component';
 
 @Component({
   selector: 'app-location-card',
   standalone: true,
-  imports: [CommonModule, DragDropModule, RouterModule],
+  imports: [CommonModule, DragDropModule, RouterModule, ItemCardComponent],
   templateUrl: './location-card.component.html',
   styleUrl: './location-card.component.css'
 })
