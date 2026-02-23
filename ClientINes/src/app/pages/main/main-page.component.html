@@ -12,10 +12,10 @@
   <div class="board-header-zone">
     <div class="main-actions">
       <button routerLink="/location-create" class="btn-action fill">
-        <i class="fa fa-plus"></i> Локация
+        <i class="fa fa-plus"></i> {{'MAIN.BUTTON_CREATE_LOCATION' | translate }}
       </button>
       <button routerLink="/create-item" class="btn-action fill">
-        Добавить предмет
+        {{'MAIN.BUTTON_CREATE_ITEM' | translate }}
       </button>
     </div>
 
@@ -24,7 +24,7 @@
         <button (click)="currentPageBoard = currentPageBoard - 1" [disabled]="currentPageBoard === 0">
           <i class="fa fa-arrow-left"></i>
         </button>
-        <span class="page-info">{{ currentPageBoard + 1 }} / {{ totalBoardPages }}</span>
+        <span class="page-info">{{'MAIN.PAGE' | translate }}{{ currentPageBoard + 1 }} / {{ totalBoardPages }}</span>
         <button (click)="currentPageBoard = currentPageBoard + 1" [disabled]="currentPageBoard === totalBoardPages - 1">
           <i class="fa fa-arrow-right"></i>
         </button>
@@ -33,7 +33,7 @@
   </div>
 
   <div class="board-grid-3">
-    <div class="loader-overlay" *ngIf="isLoading">Загрузка...</div>
+    <div class="loader-overlay" *ngIf="isLoading">{{'MAIN.LOADING' | translate }}</div>
     
     <app-location-card 
       *ngFor="let loc of pagedBoardLocations; trackBy: trackById"

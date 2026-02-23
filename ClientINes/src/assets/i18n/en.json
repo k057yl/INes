@@ -58,6 +58,36 @@
     "BUTTON_START": "Create",
     "BUTTON_CANCEL": "Cancel"
   },
+  "MAIN": {
+    "BUTTON_CREATE_LOCATION": "Create location",
+    "BUTTON_CREATE_ITEM": "Create item",
+    "LOADING": "Loading...",
+    "PAGE": " Page "
+  },
+  "LOCATION_RIB": {
+    "GLOBAL_PAGE": "Page: "
+  },
+  "LOCATION_CARD": {
+    "MOVE": "Move to:",
+    "HIGHER_LEVEL": "To top level",
+    "DETAILS": "Details",
+    "RENAME": "Rename",
+    "DELETE": "Delete"
+  },
+  "ITEM_CARD": {
+    "SELL": "Sell",
+    "INFO": "Info",
+    "DELETE": "Delete",
+    "M_MOVE": "Move to:",
+    "M_SELECT_LOCATION": "Select location"
+  },
+  "ITEM_DETAILS": {
+    "BUTTON_BACK": "Back",
+    "BUTTON_EDIT": "Edit",
+    "NO_IMAGE": "No image",
+    "ESTIMATE_VALUE": "Estimated value",
+    "ADD_DATE": "Date added"
+  },
   "STATUS":{
     "ACTIVE": "Active",
     "LENT": "Lent",

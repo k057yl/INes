@@ -6,20 +6,40 @@ export interface Category {
   color: string;
 }
 
+// Добавляем недостающие интерфейсы для коллекций
+export interface ItemPhoto {
+  id: string;
+  url: string;
+  filePath: string;
+  isMain: boolean;
+  uploadedAt: string;
+}
+
+export interface ItemHistory {
+  id: string;
+  changeDate: string;
+  description: string;
+}
+
+// Интерфейсы-заглушки (наполни их полями из своих Sale/Lending сущностей в C#)
+export interface Sale { price: number; }
+export interface Lending { borrowerName: string; }
+export interface Reminder { id: string; title: string; date: string; }
+
 export interface Item extends CreateItemDto {
   id: string;
   createdAt: string;
   photoUrl?: string;
   publicId?: string;
+  
+  // Связи
   photos: ItemPhoto[];
   category?: Category;
-  locationId: string;     
+  storageLocation?: any;
+  history: ItemHistory[];
+  reminders: Reminder[];
+  sale?: Sale;
+  lending?: Lending;
+  locationId?: string;     
   locationName?: string;
-}
-
-export interface ItemPhoto {
-  id: string;
-  filePath: string;
-  isMain: boolean;
-  uploadedAt: string;
 }

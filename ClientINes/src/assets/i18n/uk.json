@@ -58,6 +58,36 @@
     "BUTTON_START": "Створити",
     "BUTTON_CANCEL": "Скасувати"
   },
+  "MAIN": {
+    "BUTTON_CREATE_LOCATION": "Створити локацію",
+    "BUTTON_CREATE_ITEM": "Створити предмет",
+    "LOADING": "Завантаження...",
+    "PAGE": " Сторінка "
+  },
+  "LOCATION_RIB": {
+    "GLOBAL_PAGE": "Сторінка: "
+  },
+  "LOCATION_CARD": {
+    "MOVE": "Перемістити до:",
+    "HIGHER_LEVEL": "На верхній рівень",
+    "DETAILS": "Деталі",
+    "RENAME": "Перейменувати",
+    "DELETE": "Видалити"
+  },
+  "ITEM_CARD": {
+    "SELL": "Продати",
+    "INFO": "Інфо",
+    "DELETE": "Видалити",
+    "M_MOVE": "Перемістити до:",
+    "M_SELECT_LOCATION": "Оберіть локацію"
+  },
+  "ITEM_DETAILS": {
+    "BUTTON_BACK": "Назад",
+    "BUTTON_EDIT": "Редагувати",
+    "NO_IMAGE": "Немає зображення",
+    "ESTIMATE_VALUE": "Оцінна вартість",
+    "ADD_DATE": "Дата додавання"
+  },
   "STATUS": {
     "ACTIVE": "Активний",
     "LENT": "Позичений",

@@ -59,6 +59,36 @@
     "BUTTON_START": "Создать",
     "BUTTON_CANCEL": "Отмена"
   },
+  "MAIN":{
+    "BUTTON_CREATE_LOCATION": "Создать локацию",
+    "BUTTON_CREATE_ITEM": "Создать предмет",
+    "LOADING": "Загрузка...",
+    "PAGE": " Страница "
+  },
+  "LOCATION_RIB":{
+    "GLOBAL_PAGE": "Страница : "
+  },
+  "LOCATION_CARD":{
+    "MOVE": "Переместить в : ",
+    "HIGHER_LEVEL": "На верхний уровень",
+    "DETAILS": "Детали",
+    "RENAME": "Переименовать",
+    "DELETE": "Удалить"
+  },
+  "ITEM_CARD":{
+    "SELL": "Продать",
+    "INFO": "Инфо",
+    "DELETE": "Удалить",
+    "M_MOVE": "Переместить в : ",
+    "M_SELECT_LOCATION":"Выберите локацию"
+  },
+  "ITEM_DETAILS":{
+    "BUTTON_BACK": "Назад",
+    "BUTTON_EDIT": "Редактировать",
+    "NO_IMAGE": "Нет изображения",
+    "ESTIMATE_VALUE": "Оценочная стоимость",
+    "ADD_DATE": "Дата добавления"
+  },
   "STATUS": {
     "ACTIVE": "Активен",
     "LENT": "Одолжен",

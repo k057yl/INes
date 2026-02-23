@@ -91,14 +91,24 @@
         <label class="photo-flag">
           <input type="checkbox" formControlName="addPhoto">
           <span class="checkbox-custom"></span>
-          <span>{{ 'CREATE_ITEM.ADD_PHOTO' | translate }}</span>
+          <span>{{ 'CREATE_ITEM.ADD_PHOTO' | translate }} (до 5)</span>
         </label>
 
-        <div *ngIf="form.value.addPhoto" class="file-upload-zone">
-          <i class="fa fa-cloud-upload-alt"></i>
-          <input type="file" accept="image/*" (change)="onFileSelected($event)">
-          <p *ngIf="!selectedFile">{{ 'CREATE_ITEM.CLICK_TO_UPLOAD' | translate }}</p>
-          <p *ngIf="selectedFile" class="file-name">{{ selectedFile.name }}</p>
+        <div *ngIf="form.value.addPhoto" class="upload-container">
+          <div class="file-upload-zone" *ngIf="selectedPhotos.length < MAX_PHOTOS">
+            <i class="fa fa-cloud-upload-alt"></i>
+            <input type="file" accept="image/*" multiple (change)="onFileSelected($event)">
+            <p>{{ 'CREATE_ITEM.CLICK_TO_UPLOAD' | translate }}</p>
+          </div>
+
+          <div class="photo-preview-grid" *ngIf="selectedPhotos.length > 0">
+            <div class="preview-item" *ngFor="let p of selectedPhotos; let i = index">
+              <img [src]="p.preview" alt="Preview">
+              <button type="button" class="remove-photo" (click)="removePhoto(i)">
+                <i class="fa fa-times"></i>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 

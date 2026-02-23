@@ -1,21 +1,50 @@
-<div class="item-card" cdkDrag [cdkDragData]="item" [cdkDragDisabled]="isMobile">
+<div class="item-card" 
+     cdkDrag 
+     [cdkDragData]="item" 
+     [cdkDragDisabled]="isMobile"
+     [class.menu-open]="showMenu">
   
   <div class="item-thumb" [routerLink]="['/item', item.id]">
-     </div>
+    <img *ngIf="item.photoUrl" [src]="item.photoUrl" alt="item">
+    <div *ngIf="!item.photoUrl" class="no-image">
+      <i class="fa fa-image"></i>
+    </div>
+    <span class="category-badge" *ngIf="item.category">
+      {{ item.category.name }}
+    </span>
+  </div>
 
   <div class="item-content">
+    <div class="item-header">
+      <span class="item-name" [title]="item.name">{{ item.name }}</span>
+      <div class="status-badges">
+        <i *ngIf="item.status === 6" class="fa fa-shopping-cart status-sale" title="На продаже"></i>
+        <i *ngIf="item.status === 1" class="fa fa-handshake status-lend" title="Одолжено"></i>
+      </div>
     </div>
+
+    <div class="item-details">
+      <span class="price-tag" *ngIf="featureService.isSalesModeEnabled() && item.estimatedValue">
+        {{ item.estimatedValue | number:'1.0-0' }} $
+      </span>
+    </div>
+  </div>
 
   <div class="item-actions desktop-only">
     <button *ngIf="featureService.isSalesModeEnabled() && item.status !== 4" 
             class="action-btn sell" (click)="onSell($event)">
       <i class="fa fa-dollar-sign"></i>
+      <span>{{'ITEM_CARD.SELL' | translate}}</span>
     </button>
+    
     <button class="action-btn details" [routerLink]="['/item', item.id]">
-      <i class="fa fa-chevron-right"></i>
+      <i class="fa fa-eye"></i>
+      <span>{{'ITEM_CARD.INFO' | translate}}</span>
     </button>
+    
     <button class="action-btn delete" (click)="onDelete($event)">
       <i class="fa fa-trash-alt"></i>
+      <span>{{'ITEM_CARD.DELETE' | translate}}</span>
     </button>
   </div>
 
@@ -26,10 +55,10 @@
 
     <div class="menu-dropdown item-menu" *ngIf="showMenu" (click)="$event.stopPropagation()">
       <div class="menu-section">
-        <label><i class="fa fa-exchange-alt"></i> Переместить в:</label>
+        <label><i class="fa fa-exchange-alt"></i> {{'ITEM_CARD.M_MOVE' | translate}}</label>
         <div class="select-wrapper">
           <select (change)="onMove($event)">
-            <option value="" disabled selected>Выберите локацию...</option>
+            <option value="" disabled selected>{{'ITEM_CARD.M_SELECT_LOCATION' | translate}}</option>
             <option *ngFor="let loc of availableLocations" [value]="loc.id">
               {{ loc.name }}
             </option>
@@ -37,9 +66,9 @@
         </div>
       </div>
       <div class="divider"></div>
-      <button [routerLink]="['/item', item.id]"><i class="fa fa-info-circle"></i> Детали</button>
-      <button *ngIf="featureService.isSalesModeEnabled()" (click)="onSell($event)"><i class="fa fa-dollar-sign"></i> Продать</button>
-      <button (click)="onDelete($event)" class="delete-btn"><i class="fa fa-trash-alt"></i> Удалить</button>
+      <button [routerLink]="['/item', item.id]"><i class="fa fa-info-circle"></i>{{'ITEM_CARD.INFO' | translate}}</button>
+      <button *ngIf="featureService.isSalesModeEnabled()" (click)="onSell($event)"><i class="fa fa-dollar-sign"></i> {{'ITEM_CARD.SELL' | translate}}</button>
+      <button (click)="onDelete($event)" class="delete-btn"><i class="fa fa-trash-alt"></i>{{'ITEM_CARD.DELETE' | translate}}</button>
     </div>
   </div>
 

@@ -20,6 +20,14 @@ export class ItemDetailComponent implements OnInit {
 
   item: Item | null = null;
   isLoading = true;
+  activePhotoUrl: string | null = null;
+  readonly baseUrl = environment.apiBaseUrl.replace('/api', '');
+
+  getPhotoUrl(path: string | undefined): string {
+    if (!path) return '';
+    if (path.startsWith('http')) return path;
+    return `${this.baseUrl}/${path}`;
+  }
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
@@ -33,6 +41,13 @@ export class ItemDetailComponent implements OnInit {
     this.http.get<Item>(`${environment.apiBaseUrl}/items/${id}`).subscribe({
       next: (data) => {
         this.item = data;
+
+        if (data.photoUrl) {
+          this.activePhotoUrl = data.photoUrl;
+        } else if (data.photos && data.photos.length > 0) {
+          this.activePhotoUrl = data.photos[0].filePath;
+        }
+
         this.isLoading = false;
       },
       error: (err) => {
@@ -40,6 +55,10 @@ export class ItemDetailComponent implements OnInit {
         this.isLoading = false;
       }
     });
+  }
+
+  setMainPhoto(url: string) {
+    this.activePhotoUrl = url;
   }
 
   goBack() {

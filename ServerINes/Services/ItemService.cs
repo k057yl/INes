@@ -17,7 +17,7 @@ namespace INest.Services
             _photoService = photoService;
         }
 
-        public async Task<Item> CreateItemAsync(Guid userId, CreateItemDto dto, IFormFile? photo)
+        public async Task<Item> CreateItemAsync(Guid userId, CreateItemDto dto, List<IFormFile> photos)
         {
             var item = new Item
             {
@@ -31,28 +31,37 @@ namespace INest.Services
                 PurchaseDate = dto.PurchaseDate,
                 PurchasePrice = dto.PurchasePrice,
                 EstimatedValue = dto.EstimatedValue,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                Photos = new List<ItemPhoto>()
             };
 
-            _context.Items.Add(item);
-
-            if (photo != null && photo.Length > 0)
+            if (photos != null && photos.Count > 0)
             {
-                var result = await _photoService.AddPhotoAsync(photo);
-
-                if (result.Error == null)
+                foreach (var photo in photos)
                 {
-                    item.PhotoUrl = result.SecureUrl.ToString();
-                    item.PublicId = result.PublicId;
-
-                    _context.ItemPhotos.Add(new ItemPhoto
+                    var result = await _photoService.AddPhotoAsync(photo);
+                    if (result.Error == null)
                     {
-                        Id = Guid.NewGuid(),
-                        ItemId = item.Id,
-                        FilePath = item.PhotoUrl
-                    });
+                        var itemPhoto = new ItemPhoto
+                        {
+                            Id = Guid.NewGuid(),
+                            ItemId = item.Id,
+                            FilePath = result.SecureUrl.ToString(),
+                            PublicId = result.PublicId
+                        };
+
+                        if (string.IsNullOrEmpty(item.PhotoUrl))
+                        {
+                            item.PhotoUrl = itemPhoto.FilePath;
+                            item.PublicId = itemPhoto.PublicId;
+                        }
+
+                        item.Photos.Add(itemPhoto);
+                    }
                 }
             }
+
+            _context.Items.Add(item);
 
             _context.ItemHistories.Add(new ItemHistory
             {
@@ -273,9 +282,12 @@ namespace INest.Services
 
             if (item == null) return false;
 
-            if (!string.IsNullOrEmpty(item.PublicId))
+            foreach (var photo in item.Photos)
             {
-                await _photoService.DeletePhotoAsync(item.PublicId);
+                if (!string.IsNullOrEmpty(photo.PublicId))
+                {
+                    await _photoService.DeletePhotoAsync(photo.PublicId);
+                }
             }
 
             if (item.Sale != null) _context.Sales.Remove(item.Sale);

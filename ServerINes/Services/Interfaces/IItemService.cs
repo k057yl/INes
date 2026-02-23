@@ -6,7 +6,7 @@ namespace INest.Services.Interfaces
 {
     public interface IItemService
     {
-        Task<Item> CreateItemAsync(Guid userId, CreateItemDto dto, IFormFile? photo);
+        Task<Item> CreateItemAsync(Guid userId, CreateItemDto dto, List<IFormFile> photos);
         Task<IEnumerable<Item>> GetUserItemsAsync(Guid userId);
         Task<Item?> GetItemAsync(Guid userId, Guid itemId);
         Task<bool> UpdateItemAsync(Guid userId, Guid itemId, UpdateItemDto dto);

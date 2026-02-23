@@ -6,11 +6,12 @@ import { StorageLocation } from '../../models/entities/storage-location.entity';
 import { Item } from '../../models/entities/item.entity';
 import { FeatureService } from '../../services/feature.service';
 import { ItemCardComponent } from '../item-card/item-card.component';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-location-card',
   standalone: true,
-  imports: [CommonModule, DragDropModule, RouterModule, ItemCardComponent],
+  imports: [CommonModule, DragDropModule, RouterModule, ItemCardComponent, TranslateModule],
   templateUrl: './location-card.component.html',
   styleUrl: './location-card.component.css'
 })
@@ -28,8 +29,7 @@ export class LocationCardComponent {
   @Output() rename = new EventEmitter<StorageLocation>();
   @Output() delete = new EventEmitter<StorageLocation>();
   @Output() deleteItem = new EventEmitter<Item>();
-
-  @Output() moveItemManual = new EventEmitter<{item: Item, targetLocationId: string}>();//********** */
+  @Output() moveItemManual = new EventEmitter<{item: Item, targetLocationId: string}>();
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
@@ -42,11 +42,11 @@ export class LocationCardComponent {
       this.location.showMenu = false;
     }
   }
-//********* */
+
   onItemMoveManual(data: {item: Item, targetLocationId: string}) {
     this.moveItemManual.emit(data);
   }
-//******** */
+
   onItemDrop(event: CdkDragDrop<Item[]>) {
     this.itemDropped.emit({ event, loc: this.location });
   }

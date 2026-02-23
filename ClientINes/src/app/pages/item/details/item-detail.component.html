@@ -1,55 +1,78 @@
 <div class="detail-container" *ngIf="item; else loader">
   <header class="detail-header">
-    <button class="back-btn" (click)="goBack()">
-      <i class="fa fa-arrow-left"></i> Назад к доске
+    <button class="nav-btn" (click)="goBack()">
+      <i class="fa fa-chevron-left"></i> Назад
     </button>
     <div class="header-actions">
-      <button class="edit-btn"><i class="fa fa-pen"></i> Редактировать</button>
+      <button class="nav-btn edit-btn">
+        <i class="fa fa-pen"></i> Редактировать
+      </button>
     </div>
   </header>
 
-  <div class="detail-content">
-    <div class="image-section">
-      <div class="main-image">
-        <img *ngIf="item.photoUrl" [src]="item.photoUrl" alt="Item Image">
-        <div *ngIf="!item.photoUrl" class="no-image-placeholder">
-          <i class="fa fa-image"></i>
-          <p>Нет изображения</p>
+  <div class="content-layout">
+    <div class="visual-column">
+      <div class="main-image-wrapper">
+        <img *ngIf="activePhotoUrl" 
+            [src]="getPhotoUrl(activePhotoUrl)" 
+            class="main-img">
+      </div>
+
+      <div class="thumbs-gallery" *ngIf="item.photos.length">
+        <div class="thumb-item" 
+            *ngFor="let p of item.photos" 
+            [class.active]="activePhotoUrl === p.filePath"
+            (click)="setMainPhoto(p.filePath)">
+          
+          <img [src]="getPhotoUrl(p.filePath)" alt="мини">
         </div>
       </div>
-      
-      <div class="photo-grid" *ngIf="item.photos.length"> 
-            </div>
 
-        <div class="location-info" *ngIf="item.locationId">
-            <i class="fa fa-map-marker-alt"></i>
-            <span>Находится в: <strong>{{ item.locationName || 'Не указано' }}</strong></span>
+      <div class="location-badge" *ngIf="item.storageLocation" [routerLink]="['/location', item.storageLocationId]">
+        <div class="loc-icon"><i class="fa fa-map-marker-alt"></i></div>
+        <div class="loc-info">
+          <span>Место хранения</span>
+          <strong>{{ item.storageLocation.name }}</strong>
         </div>
+        <i class="fa fa-chevron-right arrow"></i>
+      </div>
     </div>
 
-    <div class="info-section">
-      <div class="info-card">
-        <span class="category-badge" [style.background-color]="item.category?.color + '30'" [style.color]="item.category?.color">
-          {{ item.category?.name || 'Без категории' }}
-        </span>
-        
-        <h1 class="item-title">{{ item.name }}</h1>
-        <p class="description">{{ item.description || 'Описание отсутствует...' }}</p>
-
-        <div class="stats-grid">
-          <div class="stat-item">
-            <label>Оценочная стоимость</label>
-            <span class="value accent">{{ item.estimatedValue || 0 }} $</span>
-          </div>
-          <div class="stat-item">
-            <label>Дата добавления</label>
-            <span class="value">{{ item.createdAt | date:'dd MMMM yyyy' }}</span>
-          </div>
+    <div class="info-column">
+      <div class="title-section">
+        <div class="tags-row">
+          <span class="badge category" *ngIf="item.category" 
+                [style.background-color]="item.category.color + '20'" 
+                [style.color]="item.category.color">
+            {{ item.category.name }}
+          </span>
+          <span class="badge status">Статус: {{ item.status }}</span>
         </div>
+        <h1 class="item-name">{{ item.name }}</h1>
+        <p class="item-description">{{ item.description || 'Описание отсутствует' }}</p>
+      </div>
 
-        <div class="location-info" *ngIf="item.locationId">
-            <i class="fa fa-map-marker-alt"></i>
-            <span>Находится в: <strong>{{ item.locationName || 'Локация загружается...' }}</strong></span>
+      <div class="finance-grid">
+        <div class="finance-card">
+          <label>Куплено за</label>
+          <div class="price-val">{{ item.purchasePrice ? item.purchasePrice + ' $' : '—' }}</div>
+          <span class="date">{{ item.createdAt | date:'dd.MM.yyyy' }}</span>
+        </div>
+        <div class="finance-card highlight">
+          <label>Текущая оценка</label>
+          <div class="price-val">{{ item.estimatedValue || 0 }} $</div>
+        </div>
+      </div>
+
+      <div class="history-section">
+        <h3>История</h3>
+        <div class="history-placeholder" *ngIf="!item.history.length">
+          <i class="fa fa-history"></i>
+          <p>История изменений пока пуста</p>
+        </div>
+        <div class="history-list" *ngIf="item.history.length">
+          <div class="history-item" *ngFor="let h of item.history">
+             </div>
         </div>
       </div>
     </div>
@@ -57,12 +80,4 @@
 </div>
 
 <ng-template #loader>
-  <div class="loader-screen" *ngIf="isLoading">
-    <div class="spinner"></div>
-    <p>Загружаем детали предмета...</p>
-  </div>
-  <div class="error-screen" *ngIf="!isLoading && !item">
-    <h2>Предмет не найден</h2>
-    <button (click)="goBack()">Вернуться</button>
-  </div>
-</ng-template>
+  </ng-template>

@@ -25,9 +25,12 @@ export class ItemCreateComponent implements OnInit {
 
   locations: any[] = [];
   categories: any[] = [];
+
+  selectedPhotos: { file: File, preview: string }[] = [];
+  readonly MAX_PHOTOS = 5;
+
   selectedFile?: File;
   todayMax = new Date().toISOString().split('T')[0];
-
   statuses = Object.entries(ITEM_STATUS_LABELS).map(([value, label]) => ({
     value: Number(value),
     label: label
@@ -66,7 +69,7 @@ export class ItemCreateComponent implements OnInit {
     });
 
     this.form.get('addPhoto')?.valueChanges.subscribe(val => {
-      if (!val) this.selectedFile = undefined;
+      if (!val) this.selectedPhotos = [];
     });
   }
 
@@ -86,9 +89,32 @@ export class ItemCreateComponent implements OnInit {
 
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      this.selectedFile = input.files[0];
+    if (!input.files || input.files.length === 0) return;
+
+    const files = Array.from(input.files);
+    const availableSlots = this.MAX_PHOTOS - this.selectedPhotos.length;
+
+    if (availableSlots <= 0) {
+      alert('Достигнут лимит в 5 фотографий');
+      return;
     }
+
+    files.slice(0, availableSlots).forEach(file => {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.selectedPhotos.push({
+          file: file,
+          preview: e.target.result
+        });
+      };
+      reader.readAsDataURL(file);
+    });
+
+    input.value = '';
+  }
+
+  removePhoto(index: number) {
+    this.selectedPhotos.splice(index, 1);
   }
 
   onSubmit() {
@@ -103,22 +129,20 @@ export class ItemCreateComponent implements OnInit {
     formData.append('status', String(val.status ?? 0));
 
     if (val.storageLocationId) formData.append('storageLocationId', val.storageLocationId);
-    
-    if (val.purchaseDate) {
-        formData.append('purchaseDate', new Date(val.purchaseDate).toISOString());
-    }
-
+    if (val.purchaseDate) formData.append('purchaseDate', new Date(val.purchaseDate).toISOString());
     if (val.purchasePrice != null) formData.append('purchasePrice', String(val.purchasePrice));
     if (val.estimatedValue != null) formData.append('estimatedValue', String(val.estimatedValue));
-    if (val.addPhoto && this.selectedFile) formData.append('photo', this.selectedFile);
+
+    if (val.addPhoto && this.selectedPhotos.length > 0) {
+      this.selectedPhotos.forEach(photo => {
+        formData.append('photos', photo.file);
+      });
+    }
 
     this.itemService.createWithPhoto(formData).subscribe({
       next: () => {
-        if (val.storageLocationId) {
-          this.router.navigate(['/location', val.storageLocationId]);
-        } else {
-          this.router.navigate(['/home']);
-        }
+        const path = val.storageLocationId ? ['/location', val.storageLocationId] : ['/home'];
+        this.router.navigate(path);
       },
     });
   }
