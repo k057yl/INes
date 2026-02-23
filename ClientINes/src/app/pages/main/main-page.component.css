@@ -112,4 +112,22 @@
   .board-grid {
     grid-template-columns: 1fr !important; /* Три локации вертикально */
   }
+
+  .board-grid-3 {
+    /* Переключаем сетку в одну колонку */
+    grid-template-columns: 1fr !important; 
+    
+    /* Добавляем отступы, чтобы карточки не слипались */
+    gap: 15px;
+    padding: 10px;
+    
+    /* Убираем возможное ограничение по ширине, если оно есть */
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .main-page-container {
+    /* Убедимся, что контейнер не пытается скроллиться по горизонтали */
+    overflow-x: hidden;
+  }
 }

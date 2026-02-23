@@ -108,3 +108,36 @@
   background: var(--dark-blue);
   border-radius: 12px;
 }
+
+.mobile-only { display: none; }
+
+@media (max-width: 768px) {
+  .desktop-only { display: none; }
+  .mobile-only { display: block; }
+  
+  .item-card {
+    touch-action: auto !important; /* Возвращаем прокрутку пальцем */
+  }
+
+  .menu-dropdown.item-menu {
+    position: absolute;
+    right: 10px;
+    top: 0px;
+    background: white;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 1200;
+    width: 200px;
+    border-radius: 8px;
+    padding: 8px 0;
+  }
+  
+  /* Стили для селекта внутри меню */
+  .menu-section select {
+    width: 90%;
+    margin: 5px 5%;
+    padding: 4px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+  }
+}

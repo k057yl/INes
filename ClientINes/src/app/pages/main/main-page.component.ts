@@ -218,6 +218,35 @@ export class MainPageComponent implements OnInit, OnDestroy {
     }
     loc.children?.forEach(c => this.closeMenuRecursive(c, event));
   }
+//*************** */
+  onItemMoveManual(data: {item: Item, targetLocationId: string}) {
+    const { item, targetLocationId } = data;
+    const targetLoc = this.flatLocations.find(l => l.id === targetLocationId);
+    
+    if (!targetLoc) return;
+
+    // Логика смены статуса как в onItemDropped
+    item.status = targetLoc.isSalesLocation ? 6 : targetLoc.isLendingLocation ? 1 : 0;
+
+    this.http.patch(`${environment.apiBaseUrl}/items/${item.id}/move`, { 
+      targetLocationId: targetLoc.id 
+    }).subscribe({
+      next: () => {
+        // Находим старую локацию и удаляем оттуда
+        const oldLoc = this.flatLocations.find(l => l.id === item.storageLocationId);
+        if (oldLoc && oldLoc.items) {
+          oldLoc.items = oldLoc.items.filter(i => i.id !== item.id);
+        }
+        
+        // Добавляем в новую
+        item.storageLocationId = targetLoc.id;
+        (targetLoc.items ??= []).push(item);
+        
+        this.locations = [...this.locations];
+        this.refreshState();
+      }
+    });
+  }
 
   onDeleteItem(item: Item) {
     if (confirm(`Вы уверены, что хотите удалить "${item.name}"?`)) {

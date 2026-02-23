@@ -29,6 +29,8 @@ export class LocationCardComponent {
   @Output() delete = new EventEmitter<StorageLocation>();
   @Output() deleteItem = new EventEmitter<Item>();
 
+  @Output() moveItemManual = new EventEmitter<{item: Item, targetLocationId: string}>();//********** */
+
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
     if (!this.location.showMenu) return;
@@ -40,7 +42,11 @@ export class LocationCardComponent {
       this.location.showMenu = false;
     }
   }
-
+//********* */
+  onItemMoveManual(data: {item: Item, targetLocationId: string}) {
+    this.moveItemManual.emit(data);
+  }
+//******** */
   onItemDrop(event: CdkDragDrop<Item[]>) {
     this.itemDropped.emit({ event, loc: this.location });
   }

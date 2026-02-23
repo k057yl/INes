@@ -62,8 +62,10 @@
     <app-item-card 
       *ngFor="let item of location.items" 
       [item]="item"
+      [flatLocations]="flatLocations"
       (sell)="sellItem.emit($event)"
-      (delete)="deleteItem.emit($event)">
+      (delete)="deleteItem.emit($event)"
+      (move)="onItemMoveManual($event)">
     </app-item-card>
     
     <div class="empty-state" *ngIf="location.items.length === 0">
@@ -81,7 +83,7 @@
         [isChildOf]="isChildOf"
         (itemDropped)="itemDropped.emit($event)"
         (move)="move.emit($event)"
-        (rename)="rename.emit($event)"
+        (moveItemManual)="moveItemManual.emit($event)" (rename)="rename.emit($event)"
         (delete)="delete.emit($event)"
         (sellItem)="sellItem.emit($event)"
         (deleteItem)="deleteItem.emit($event)"> 
