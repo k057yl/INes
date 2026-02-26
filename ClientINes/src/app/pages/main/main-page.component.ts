@@ -225,22 +225,28 @@ export class MainPageComponent implements OnInit, OnDestroy {
     
     if (!targetLoc) return;
 
-    item.status = targetLoc.isSalesLocation ? 6 : targetLoc.isLendingLocation ? 1 : 0;
-
     this.http.patch(`${environment.apiBaseUrl}/items/${item.id}/move`, { 
       targetLocationId: targetLoc.id 
     }).subscribe({
       next: () => {
         const oldLoc = this.flatLocations.find(l => l.id === item.storageLocationId);
-        if (oldLoc && oldLoc.items) {
+        if (oldLoc?.items) {
           oldLoc.items = oldLoc.items.filter(i => i.id !== item.id);
         }
         
         item.storageLocationId = targetLoc.id;
+        item.status = targetLoc.isSalesLocation ? 6 : targetLoc.isLendingLocation ? 1 : 0;
+
         (targetLoc.items ??= []).push(item);
         
         this.locations = [...this.locations];
         this.refreshState();
+
+        if (!this.activeBoardIds.includes(targetLocationId)) {
+          if(confirm('Предмет перемещен. Перейти к новой локации?')) {
+            this.jumpToLocation(targetLocationId);
+          }
+        }
       }
     });
   }

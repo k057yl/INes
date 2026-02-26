@@ -1,14 +1,25 @@
 ﻿using INest.Models.DTOs.Category;
 using INest.Models.Entities;
-using INest.Services.Interfaces;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.EntityFrameworkCore;
+using INest.Services.Interfaces;
 
 namespace INest.Services
 {
     public class CategoryService : ICategoryService
     {
         private readonly AppDbContext _context;
-        public CategoryService(AppDbContext context) => _context = context;
+        private readonly IMemoryCache _cache;
+
+        private readonly TimeSpan _cacheDuration = TimeSpan.FromHours(1);
+
+        public CategoryService(AppDbContext context, IMemoryCache cache)
+        {
+            _context = context;
+            _cache = cache;
+        }
+
+        private string GetCacheKey(Guid userId) => $"categories_tree_{userId}";
 
         public async Task<Category> CreateAsync(Guid userId, CreateCategoryDto dto)
         {
@@ -23,14 +34,28 @@ namespace INest.Services
 
             _context.Categories.Add(cat);
             await _context.SaveChangesAsync();
+
+            _cache.Remove(GetCacheKey(userId));
+
             return cat;
         }
 
         public async Task<IEnumerable<Category>> GetAllAsync(Guid userId)
         {
-            return await _context.Categories
+            var key = GetCacheKey(userId);
+
+            if (_cache.TryGetValue(key, out IEnumerable<Category>? cachedCategories))
+            {
+                return cachedCategories!;
+            }
+
+            var categories = await _context.Categories
                 .Where(c => c.UserId == userId)
                 .ToListAsync();
+
+            _cache.Set(key, categories, _cacheDuration);
+
+            return categories;
         }
 
         public async Task<Category?> UpdateAsync(Guid userId, Guid categoryId, CreateCategoryDto dto)
@@ -45,6 +70,9 @@ namespace INest.Services
             category.ParentCategoryId = dto.ParentCategoryId;
 
             await _context.SaveChangesAsync();
+
+            _cache.Remove(GetCacheKey(userId));
+
             return category;
         }
 
@@ -56,7 +84,11 @@ namespace INest.Services
             if (category == null) return false;
 
             _context.Categories.Remove(category);
+
             await _context.SaveChangesAsync();
+
+            _cache.Remove(GetCacheKey(userId));
+
             return true;
         }
     }

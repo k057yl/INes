@@ -5,15 +5,11 @@ using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ---------- Services ----------
-builder.Services.AddAppServices(builder.Configuration);
+// ---------- Регистрация слоев ----------
+builder.Services.AddInfrastructure(builder.Configuration);
 
-// ---------- Controllers ----------
-builder.Services.AddControllers()
-    .AddJsonOptions(options => {
-        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
-    });
-//builder.Services.AddControllers();
+// Здесь живут сервисы и их декораторы для кэширования
+builder.Services.AddBusinessServices();
 
 // ---------- Swagger ----------
 builder.Services.AddOpenApi();
@@ -23,12 +19,8 @@ var app = builder.Build();
 // ---------- Миграции + сидирование ----------
 using (var scope = app.Services.CreateScope())
 {
-    var userManager = scope.ServiceProvider
-        .GetRequiredService<UserManager<AppUser>>();
-
-    var roleManager = scope.ServiceProvider
-        .GetRequiredService<RoleManager<IdentityRole<Guid>>>();
-
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
     await AdminSeeder.SeedAsync(userManager, roleManager);
 }
 
@@ -39,8 +31,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseCors("AllowAngular");
+
 app.UseAuthentication();
 app.UseAuthorization();
 

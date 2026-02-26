@@ -1,9 +1,10 @@
-﻿using INest.Data;
-using INest.Models.Entities;
+﻿using INest.Models.Entities;
+using INest.Services.Decorator;
 using INest.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -11,33 +12,25 @@ namespace INest.Services
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddAppServices(this IServiceCollection services, IConfiguration config)
+        public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration config)
         {
-            services.AddControllers();
+            services.AddControllers()
+            .AddJsonOptions(options => {
+                options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+            });
 
-            // ---------- DB ----------
             services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(config.GetConnectionString("DefaultConnection"))
             );
 
-            // ---------- Identity ----------
+            services.AddMemoryCache();
+
             services.AddIdentity<AppUser, IdentityRole<Guid>>()
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
 
-            // ---------- JWT ----------
             var jwt = config.GetSection("Jwt");
-            var key = jwt["Key"]?.Trim();
-            var issuer = jwt["Issuer"]?.Trim();
-            var audience = jwt["Audience"]?.Trim();
-
-            if (string.IsNullOrEmpty(key))
-                throw new InvalidOperationException("JWT Key missing.");
-
-            if (string.IsNullOrEmpty(issuer) || string.IsNullOrEmpty(audience))
-                throw new InvalidOperationException("JWT Issuer or Audience missing.");
-
-            var keyBytes = Encoding.UTF8.GetBytes(key);
+            var keyBytes = Encoding.UTF8.GetBytes(jwt["Key"]?.Trim() ?? throw new InvalidOperationException("JWT Key missing"));
 
             services.AddAuthentication(options =>
             {
@@ -46,35 +39,21 @@ namespace INest.Services
             })
             .AddJwtBearer(options =>
             {
-                options.RequireHttpsMetadata = false;
-                options.SaveToken = true;
-
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = issuer,
-                    ValidAudience = audience,
+                    ValidIssuer = jwt["Issuer"],
+                    ValidAudience = jwt["Audience"],
                     IssuerSigningKey = new SymmetricSecurityKey(keyBytes)
-                };
-
-                options.Events = new JwtBearerEvents
-                {
-                    OnChallenge = context =>
-                    {
-                        context.HandleResponse();
-                        context.Response.StatusCode = 401;
-                        context.Response.ContentType = "application/json";
-                        return context.Response.WriteAsync("{\"error\": \"Unauthorized: token invalid or missing.\"}");
-                    }
                 };
             });
 
-            services.AddAuthorization();
+            var allowedOrigins = config.GetSection("CorsSettings:AllowedOrigins").Get<string[]>()
+                                 ?? new[] { "http://localhost:4200" };
 
-            // ---------- CORS ----------
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowAngular", policy =>
@@ -86,15 +65,36 @@ namespace INest.Services
 
             services.Configure<CloudinarySettings>(config.GetSection("CloudinarySettings"));
 
-            // ---------- Custom services ----------
+            return services;
+        }
+
+        public static IServiceCollection AddBusinessServices(this IServiceCollection services)
+        {
+            // Обычные сервисы
             services.AddScoped<IEmailService, EmailService>();
-            services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ITokenService, TokenService>();
-            services.AddScoped<IItemService, ItemService>();
-            services.AddScoped<ILocationService, LocationService>();
-            services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IPhotoService, PhotoService>();
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IItemService, ItemService>();
             services.AddScoped<ISalesService, SalesService>();
+
+            // --- ДЕКОРАТОРЫ ДЛЯ КЭША ---
+
+            // Категории
+            services.AddScoped<CategoryService>();
+            services.AddScoped<ICategoryService>(sp =>
+                new CachedCategoryService(
+                    sp.GetRequiredService<CategoryService>(),
+                    sp.GetRequiredService<IMemoryCache>()
+                ));
+
+            // Локации
+            services.AddScoped<LocationService>();
+            services.AddScoped<ILocationService>(sp =>
+                new CachedLocationService(
+                    sp.GetRequiredService<LocationService>(),
+                    sp.GetRequiredService<IMemoryCache>()
+                ));
 
             return services;
         }
