@@ -13,7 +13,6 @@
   overflow: visible; 
 }
 
-/* Состояние когда меню открыто — поднимаем карточку над всеми соседями */
 .item-card.menu-open {
   z-index: 1000 !important;
   border-color: var(--turquoise);
@@ -26,7 +25,7 @@
   background: rgba(0, 245, 212, 0.05);
 }
 
-/* --- МИНИАТЮРА --- */
+/* --- КОНТЕНТ --- */
 .item-thumb {
   width: 60px;
   height: 60px;
@@ -38,188 +37,136 @@
   position: relative;
 }
 
-.item-thumb img { 
-  width: 100%; 
-  height: 100%; 
-  object-fit: cover; 
-}
+.item-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.item-content { flex: 1; margin: 0 15px; overflow: hidden; }
 
-.category-badge {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: rgba(0, 0, 0, 0.7);
-  color: #fff;
-  font-size: 0.6rem;
-  padding: 2px;
-  text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.no-image { 
-  width: 100%; height: 100%; 
-  display: flex; align-items: center; justify-content: center; 
-  color: var(--text-muted); 
-}
-
-/* --- КОНТЕНТ (ИНФО) --- */
-.item-content { 
-  flex: 1; 
-  margin: 0 15px; 
-  overflow: hidden; 
-}
-
-.item-header { 
-  display: flex; 
-  align-items: center; 
-  gap: 8px; 
-}
-
-.item-name { 
-  color: var(--text-main); 
-  font-weight: 600; 
-  font-size: 0.95rem;
-  white-space: nowrap; 
-  overflow: hidden; 
-  text-overflow: ellipsis;
-}
-
-.price-tag { 
-  font-size: 0.9rem; 
-  color: var(--turquoise); 
-  font-weight: 700; 
-  margin-top: 2px;
-  display: block;
-}
-
-/* --- КНОПКИ ДЕЙСТВИЙ (DESKTOP) --- */
+/* --- ЭКШЕНЫ (Универсальные) --- */
 .item-actions {
-  display: flex;
-  gap: 6px;
-  margin-left: auto;
-}
-
-.action-btn {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1); 
-  color: var(--text-muted);
-  padding: 6px 12px;
-  height: 34px;
-  border-radius: 8px;
-  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 0.8rem;
+  margin-left: auto;
+  position: relative;
+}
+
+/* Кнопка Продать (только десктоп, инлайновая) */
+.action-btn.sell-inline {
+  background: rgba(0, 245, 212, 0.07);
+  border: 1px solid rgba(0, 245, 212, 0.3);
+  color: var(--turquoise);
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
   transition: all 0.2s ease;
 }
 
-.action-btn.details:hover { border-color: #94a3b8; color: #fff; background: rgba(148, 163, 184, 0.1); }
-.action-btn.sell:hover { border-color: var(--turquoise); color: var(--turquoise); background: rgba(0, 245, 212, 0.1); }
-.action-btn.delete:hover { border-color: #ff4d4d; color: #ff4d4d; background: rgba(255, 77, 77, 0.1); }
-
-.action-btn:active { transform: scale(0.95); }
-
-/* --- МОБИЛЬНАЯ ВЕРСИЯ --- */
-.mobile-only { display: none; }
-
-@media (max-width: 768px) {
-  .desktop-only { display: none; }
-  .mobile-only { display: block; }
-  
-  .item-card { 
-    touch-action: auto !important; 
-    cursor: default; 
-  }
-
-  /* Увеличенная кнопка вызова меню */
-  .menu-btn {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: var(--turquoise);
-    width: 44px;
-    height: 44px; 
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-    cursor: pointer;
-  }
-
-  /* ВЫПАДАЮЩЕЕ МЕНЮ */
-  .menu-dropdown.item-menu {
-    position: absolute;
-    right: 0;
-    top: 55px;
-    background: #1e293b;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
-    z-index: 2000;
-    width: 220px;
-    border-radius: 12px;
-    padding: 8px 0;
-    animation: fadeIn 0.2s ease-out;
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .menu-dropdown button {
-    width: 100%;
-    padding: 12px 16px;
-    background: transparent;
-    border: none;
-    color: #f1f5f9;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 0.95rem;
-    cursor: pointer;
-  }
-
-  .menu-dropdown button i {
-    width: 20px;
-    color: var(--turquoise);
-    text-align: center;
-  }
-
-  .menu-dropdown button:active { background: rgba(255, 255, 255, 0.05); }
-  .menu-dropdown button.delete-btn { color: #ff4d4d; }
-  .menu-dropdown button.delete-btn i { color: #ff4d4d; }
-
-  .divider { 
-    height: 1px; 
-    background: rgba(255, 255, 255, 0.1); 
-    margin: 6px 0; 
-  }
-  
-  .menu-section label {
-    display: block;
-    padding: 6px 16px;
-    font-size: 0.7rem;
-    color: var(--text-muted);
-    text-transform: uppercase;
-  }
-
-  .select-wrapper { padding: 0 12px 8px; }
-  .select-wrapper select {
-    width: 100%;
-    background: #0f172a;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
-    padding: 8px;
-    border-radius: 6px;
-    outline: none;
-  }
+.action-btn.sell-inline:hover {
+  background: rgba(0, 245, 212, 0.15);
+  border-color: var(--turquoise);
 }
 
-/* Стилизация Drag Placeholder */
+/* КНОПКА МЕНЮ (Три точки) */
+.menu-btn {
+  background: rgba(0, 245, 212, 0.07);
+  border: 1px solid rgba(0, 245, 212, 0.3);
+  color: var(--turquoise);
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.menu-btn:hover, .menu-btn.active {
+  background: rgba(0, 245, 212, 0.15);
+  border-color: var(--turquoise);
+}
+
+/* ВЫПАДАЮЩЕЕ МЕНЮ */
+.menu-dropdown.item-menu {
+  position: absolute;
+  right: 0;
+  top: 45px;
+  background: #1e293b;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  z-index: 2000;
+  width: 220px;
+  border-radius: 12px;
+  padding: 8px 0;
+  animation: fadeIn 0.15s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.menu-dropdown button {
+  width: 100%;
+  padding: 10px 16px;
+  background: transparent;
+  border: none;
+  color: #f1f5f9;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-align: left;
+}
+
+.menu-dropdown button i { width: 18px; color: var(--turquoise); text-align: center; }
+.menu-dropdown button:hover { background: rgba(255, 255, 255, 0.05); }
+.menu-dropdown button.delete-btn { color: #ff4d4d; }
+.menu-dropdown button.delete-btn i { color: #ff4d4d; }
+
+.divider { height: 1px; background: rgba(255, 255, 255, 0.1); margin: 4px 0; }
+
+.menu-section label {
+  display: block;
+  padding: 4px 16px;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.select-wrapper { padding: 4px 12px 8px; }
+.select-wrapper select {
+  width: 100%;
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* АДАПТИВНОСТЬ */
+@media (max-width: 768px) {
+  .item-card { touch-action: auto !important; cursor: default; }
+  
+  /* На мобилке кнопку меню делаем ярче и больше */
+  .menu-btn { 
+    width: 44px; 
+    height: 44px; 
+    font-size: 1.1rem; 
+    color: var(--turquoise);
+  }
+  
+  .menu-dropdown.item-menu { top: 52px; }
+}
+
 .item-drag-placeholder {
   background: rgba(0, 245, 212, 0.05);
   border: 2px dashed var(--turquoise);

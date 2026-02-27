@@ -22,7 +22,6 @@
         <i *ngIf="item.status === 1" class="fa fa-handshake status-lend" title="Одолжено"></i>
       </div>
     </div>
-
     <div class="item-details">
       <span class="price-tag" *ngIf="featureService.isSalesModeEnabled() && item.estimatedValue">
         {{ item.estimatedValue | number:'1.0-0' }} $
@@ -30,30 +29,22 @@
     </div>
   </div>
 
-  <div class="item-actions desktop-only">
-    <button *ngIf="featureService.isSalesModeEnabled() && item.status !== 4" 
-            class="action-btn sell" (click)="onSell($event)">
-      <i class="fa fa-dollar-sign"></i>
-      <span>{{'ITEM_CARD.SELL' | translate}}</span>
-    </button>
-    
-    <button class="action-btn details" [routerLink]="['/item', item.id]">
-      <i class="fa fa-eye"></i>
-      <span>{{'ITEM_CARD.INFO' | translate}}</span>
-    </button>
-    
-    <button class="action-btn delete" (click)="onDelete($event)">
-      <i class="fa fa-trash-alt"></i>
-      <span>{{'ITEM_CARD.DELETE' | translate}}</span>
-    </button>
-  </div>
+  <div class="item-actions">
+    <div class="item-actions">
+      <button *ngIf="!isMobile && featureService.isSalesModeEnabled() && item.status !== 4" 
+              class="action-btn sell-inline" 
+              (click)="onSell($event)"
+              [title]="'ITEM_CARD.SELL' | translate">
+        <i class="fa fa-dollar-sign"></i>
+        <span class="currency-symbol">$</span>
+      </button>
 
-  <div class="item-actions mobile-only">
-    <button class="menu-btn" (click)="toggleMenu($event)">
-      <i class="fa fa-ellipsis-v"></i>
-    </button>
+      <button class="menu-btn" (click)="toggleMenu($event)" [class.active]="showMenu">
+        <i class="fa fa-ellipsis-v"></i>...
+      </button>
 
     <div class="menu-dropdown item-menu" *ngIf="showMenu" (click)="$event.stopPropagation()">
+      
       <div class="menu-section">
         <label><i class="fa fa-exchange-alt"></i> {{'ITEM_CARD.M_MOVE' | translate}}</label>
         <div class="select-wrapper">
@@ -65,10 +56,20 @@
           </select>
         </div>
       </div>
+
       <div class="divider"></div>
-      <button [routerLink]="['/item', item.id]"><i class="fa fa-info-circle"></i>{{'ITEM_CARD.INFO' | translate}}</button>
-      <button *ngIf="featureService.isSalesModeEnabled()" (click)="onSell($event)"><i class="fa fa-dollar-sign"></i> {{'ITEM_CARD.SELL' | translate}}</button>
-      <button (click)="onDelete($event)" class="delete-btn"><i class="fa fa-trash-alt"></i>{{'ITEM_CARD.DELETE' | translate}}</button>
+
+      <button [routerLink]="['/item', item.id]">
+        <i class="fa fa-info-circle"></i> {{'ITEM_CARD.INFO' | translate}}
+      </button>
+
+      <button *ngIf="isMobile && featureService.isSalesModeEnabled()" (click)="onSell($event)">
+        <i class="fa fa-dollar-sign"></i> {{'ITEM_CARD.SELL' | translate}}
+      </button>
+
+      <button (click)="onDelete($event)" class="delete-btn">
+        <i class="fa fa-trash-alt"></i> {{'ITEM_CARD.DELETE' | translate}}
+      </button>
     </div>
   </div>
 
