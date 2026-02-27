@@ -85,5 +85,12 @@ namespace INest.Controllers
             var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
             return Ok(new { email, roles });
         }
+
+        [Authorize]
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            return Ok();
+        }
     }
 }

@@ -1,6 +1,7 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 import { LocalizationService } from '../../services/localization.service';
 import { ThemeService } from '../../services/theme.service';
 import { TranslateModule } from '@ngx-translate/core';
@@ -13,27 +14,45 @@ import { TranslateModule } from '@ngx-translate/core';
   styleUrl: './header.component.css'
 })
 export class HeaderComponent {
-  private loc = inject(LocalizationService);
+  public authService = inject(AuthService);
+  public loc = inject(LocalizationService);
   public themeService = inject(ThemeService);
+  private router = inject(Router);
 
-  // Состояние мобильного меню
   isMenuOpen = signal(false);
+  isLangMenuOpen = signal(false);
+  user$ = this.authService.user$;
 
   get currentLang() { return this.loc.currentLang; }
 
-  get userEmail(): string | null {
-    const token = localStorage.getItem('token');
-    if (!token) return null;
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] 
-             || payload.name || payload.sub || 'User';
-    } catch { return null; }
+  onLogout() {
+    this.authService.logout().subscribe({
+      next: () => this.handleLogoutRedirect(),
+      error: () => this.handleLogoutRedirect() 
+    });
   }
 
-  changeLang(lang: string) { this.loc.setLanguage(lang); }
+  private handleLogoutRedirect() {
+    this.isMenuOpen.set(false);
+    this.router.navigate(['/login']);
+  }
+
+  toggleLangMenu(event: MouseEvent) {
+    event.stopPropagation();
+    this.isLangMenuOpen.set(!this.isLangMenuOpen());
+  }
+
+  @HostListener('document:click', ['$event'])
+  onClickOutside(event: MouseEvent) {
+    this.isLangMenuOpen.set(false);
+  }
+
+  changeLang(lang: string) {
+    this.loc.setLanguage(lang);
+    this.isLangMenuOpen.set(false);
+  }
+
   toggleTheme() { this.themeService.toggleTheme(); }
-  
   toggleMenu() { this.isMenuOpen.set(!this.isMenuOpen()); }
   closeMenu() { this.isMenuOpen.set(false); }
 }

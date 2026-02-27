@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { tap, finalize, catchError } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
 export interface AppUser {
@@ -12,8 +12,9 @@ export interface AppUser {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-
+  private http = inject(HttpClient);
   private apiUrl = `${environment.apiBaseUrl}/auth`;
+  private readonly TOKEN_KEY = 'jwt';
 
   private tokenSubject = new BehaviorSubject<string | null>(null);
   token$ = this.tokenSubject.asObservable();
@@ -21,98 +22,79 @@ export class AuthService {
   private userSubject = new BehaviorSubject<AppUser | null>(null);
   user$ = this.userSubject.asObservable();
 
-  private pendingEmailKey = 'pending_email';
-
-  constructor(private http: HttpClient) {
+  constructor() {
     this.restoreSession();
   }
 
-  // ================= REGISTER =================
+  // ================= LOGIN / LOGOUT =================
 
-  register(email: string, username: string, password: string) {
-    localStorage.setItem(this.pendingEmailKey, email);
-
-    return this.http.post(`${this.apiUrl}/register`, {
-      email,
-      username,
-      password
-    });
-  }
-
-  confirmEmail(code: string) {
-    const email = localStorage.getItem(this.pendingEmailKey);
-
-    return this.http.post(`${this.apiUrl}/confirm-email`, {
-      email,
-      code
-    });
-  }
-
-  // ================= LOGIN =================
-
-  login(email: string, password: string) {
+  login(email: string, password: string): Observable<any> {
     return this.http
       .post<{ token: string | "unconfirmed" }>(`${this.apiUrl}/login`, { email, password })
       .pipe(
         tap(res => {
-
-          if (res.token === 'unconfirmed') {
-            throw { error: 'unconfirmed' };
-          }
-
+          if (res.token === 'unconfirmed') throw { error: 'unconfirmed' };
           this.setSession(res.token);
         })
       );
   }
 
-  logout() {
-    localStorage.removeItem('jwt');
+  logout(): Observable<any> {
+    return this.http.post(`${this.apiUrl}/logout`, {}).pipe(
+      finalize(() => {
+        this.clearLocalSession();
+      }),
+      catchError(err => {
+        console.error('Server logout failed, but local session cleared', err);
+        return of(null);
+      })
+    );
+  }
+
+  // ================= SESSION MANAGEMENT =================
+
+  private setSession(token: string) {
+    localStorage.setItem(this.TOKEN_KEY, token);
+    this.tokenSubject.next(token);
+    this.userSubject.next(this.parseUser(token));
+  }
+
+  private clearLocalSession() {
+    localStorage.removeItem(this.TOKEN_KEY);
     this.tokenSubject.next(null);
     this.userSubject.next(null);
   }
 
-  // ================= SESSION =================
-
-  private setSession(token: string) {
-    localStorage.setItem('jwt', token);
-    this.tokenSubject.next(token);
-    this.userSubject.next(this.parseUser(token));
-  }
-
   private restoreSession() {
-    const token = localStorage.getItem('jwt');
-    if (!token) return;
-
-    if (this.isTokenExpired(token)) {
-      this.logout();
-      return;
+    const token = localStorage.getItem(this.TOKEN_KEY);
+    if (token && !this.isTokenExpired(token)) {
+      this.tokenSubject.next(token);
+      this.userSubject.next(this.parseUser(token));
+    } else {
+      this.clearLocalSession();
     }
-
-    this.tokenSubject.next(token);
-    this.userSubject.next(this.parseUser(token));
-  }
-
-  getToken(): string | null {
-    return localStorage.getItem('jwt');
   }
 
   // ================= JWT PARSE =================
 
   private parseUser(token: string): AppUser {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-
-    return {
-      id: payload.sub ?? '',
-      email: payload.email ?? '',
-      roles: payload.roles ?? []
-    };
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return {
+        id: payload.sub || payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] || '',
+        email: payload.email || payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'] || payload.sub || 'User',
+        roles: payload.roles || []
+      };
+    } catch {
+      return { id: '', email: '', roles: [] };
+    }
   }
 
   private isTokenExpired(token: string): boolean {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    if (!payload.exp) return false;
-
-    return Date.now() >= payload.exp * 1000;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.exp ? Date.now() >= payload.exp * 1000 : false;
+    } catch { return true; }
   }
 
   // ================= HELPERS =================
@@ -120,16 +102,4 @@ export class AuthService {
   isAuthenticated(): boolean {
     return !!this.tokenSubject.value;
   }
-
-  getUserEmail(): string | null {
-  const token = this.getToken();
-  if (!token) return null;
-  
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    return payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'] || payload.email;
-  } catch {
-    return null;
-  }
-}
 }

@@ -35,6 +35,7 @@
   "HEADER":{
     "HOME": "Home",
     "LOGIN": "Login",
+    "LOGOUT": "Logout",
     "REGISTER": "Register",
     "SETTINGS": "Settings",
     "SALES": "Sales"
