@@ -5,11 +5,13 @@ namespace INest.Services.Interfaces
 {
     public interface IAuthService
     {
-        public Task SendConfirmationCodeAsync(RegisterDto dto);
-        public Task<bool> ConfirmRegistrationAsync(string email, string code);
-        public Task<string?> LoginAsync(LoginDto dto);
-        public Task ForgotPasswordAsync(ForgotPasswordDto dto);
-        public Task<IdentityResult?> ResetPasswordAsync(ResetPasswordDto dto);
-        public Task LogoutAsync(string userId);
+        Task SendConfirmationCodeAsync(RegisterDto dto);
+        Task<bool> ConfirmRegistrationAsync(string email, string code);
+        Task<string?> LoginAsync(LoginDto dto);
+        Task ForgotPasswordAsync(ForgotPasswordDto dto);
+        Task<IdentityResult?> ResetPasswordAsync(ResetPasswordDto dto);
+        Task LogoutAsync(string userId);
+        Task<bool> IsEmailUniqueAsync(string email);
+        Task<string?> GoogleLoginAsync(string idToken);
     }
 }

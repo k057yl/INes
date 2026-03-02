@@ -18,7 +18,9 @@
     "PASSWORD_MISMATCH": "Паролі не збігаються",
     "BUTTON_START": "Зареєструватися",
     "ALREADY_HAVE_ACC": "Вже маєте акаунт? ",
-    "GO_TO_LOGIN": " Перейти до входу"
+    "GO_TO_LOGIN": " Перейти до входу",
+    "CHECKING_MAIL": "Перевіряємо, чи зайнята пошта...",
+    "WARNING_MAIL_ALREADY_EXISTS": "Користувач з такою поштою вже зареєстрований"
   },
   "LOGIN": {
     "TITLE": "З поверненням!",

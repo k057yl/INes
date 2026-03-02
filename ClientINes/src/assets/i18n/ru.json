@@ -19,7 +19,9 @@
     "PASSWORD_MISMATCH": "Пароли не совпадают",
     "BUTTON_START": "Зарегистрироваться",
     "ALREADY_HAVE_ACC": "Уже есть аккаунт? ",
-    "GO_TO_LOGIN": " Перейти к логину"
+    "GO_TO_LOGIN": " Перейти к логину",
+    "CHECKING_MAIL": "Проверяем, занята ли почта...",
+    "WARNING_MAIL_ALREADY_EXISTS": "Пользователь с такой почтой уже зарегистрирован"
   },
   "LOGIN": {
     "TITLE": "С возвращением!",

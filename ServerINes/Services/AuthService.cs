@@ -3,6 +3,7 @@ using INest.Models.Entities;
 using INest.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using System.Collections.Concurrent;
+using Google.Apis.Auth;
 
 namespace INest.Services
 {
@@ -107,5 +108,50 @@ namespace INest.Services
         }
 
         public async Task LogoutAsync(string userId) => await Task.CompletedTask;
+
+        public async Task<bool> IsEmailUniqueAsync(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email)) return false;
+
+            var user = await _userManager.FindByEmailAsync(email);
+            return user == null;
+        }
+
+        public async Task<string?> GoogleLoginAsync(string idToken)
+        {
+            try
+            {
+                var settings = new GoogleJsonWebSignature.ValidationSettings()
+                {
+                    Audience = new List<string> { _config["Google:ClientId"]! }
+                };
+
+                var payload = await GoogleJsonWebSignature.ValidateAsync(idToken, settings);
+                var user = await _userManager.FindByEmailAsync(payload.Email);
+
+                if (user == null)
+                {
+                    user = new AppUser
+                    {
+                        Email = payload.Email,
+                        UserName = payload.Email,
+                        EmailConfirmed = true
+                    };
+
+                    var result = await _userManager.CreateAsync(user);
+                    if (!result.Succeeded) return null;
+
+                    await _userManager.AddToRoleAsync(user, "User");
+                }
+
+                var roles = await _userManager.GetRolesAsync(user);
+
+                return _tokenService.GenerateJwtToken(user, roles);
+            }
+            catch
+            {
+                return null;
+            }
+        }
     }
 }

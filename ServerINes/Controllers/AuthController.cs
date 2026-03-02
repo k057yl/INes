@@ -92,5 +92,28 @@ namespace INest.Controllers
         {
             return Ok();
         }
+
+        [AllowAnonymous]
+        [HttpGet("check-email")]
+        public async Task<IActionResult> CheckEmail([FromQuery] string email)
+        {
+            if (string.IsNullOrEmpty(email)) return BadRequest("Email is required");
+
+            var isUnique = await _authService.IsEmailUniqueAsync(email);
+
+            return Ok(new { isUnique });
+        }
+
+        [AllowAnonymous]
+        [HttpPost("google-login")]
+        public async Task<IActionResult> GoogleLogin([FromBody] ExternalAuthDto dto)
+        {
+            var token = await _authService.GoogleLoginAsync(dto.IdToken);
+
+            if (token == null)
+                return Unauthorized(new { error = "Ошибка авторизации через Google" });
+
+            return Ok(new { token });
+        }
     }
 }

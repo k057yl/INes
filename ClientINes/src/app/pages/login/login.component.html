@@ -6,6 +6,8 @@
       <p>{{ 'LOGIN.SUBTITLE' | translate }}</p>
     </header>
 
+    
+
     <form (ngSubmit)="login()" #loginForm="ngForm">
       <div class="form-group">
         <label>{{ 'LOGIN.USERNAME' | translate }}</label>
@@ -34,6 +36,12 @@
         {{ 'LOGIN.BUTTON_START' | translate }}
       </button>
     </form>
+
+    <div class="divider">
+      <span>{{ 'LOGIN.OR' | translate }}</span>
+    </div>
+
+    <div id="googleBtn" class="google-btn-container"></div>
 
     <footer class="auth-footer">
       <span>{{ 'LOGIN.NO_ACC_YET' | translate }}</span>

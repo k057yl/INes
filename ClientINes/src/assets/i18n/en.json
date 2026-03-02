@@ -18,7 +18,9 @@
     "PASSWORD_MISMATCH": "Passwords do not match",
     "BUTTON_START": "Register",
     "ALREADY_HAVE_ACC": "Already have an account? ",
-    "GO_TO_LOGIN": " Go to login"
+    "GO_TO_LOGIN": " Go to login",
+    "CHECKING_MAIL": "Checking if email is already in use...",
+    "WARNING_MAIL_ALREADY_EXISTS": "A user with this email is already registered"
   },
   "LOGIN": {
     "TITLE": "Welcome back!",

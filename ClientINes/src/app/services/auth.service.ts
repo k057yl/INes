@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { tap, finalize, catchError } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
+import { map } from 'rxjs/operators';
 
 export interface AppUser {
   id: string;
@@ -34,6 +35,16 @@ export class AuthService {
       .pipe(
         tap(res => {
           if (res.token === 'unconfirmed') throw { error: 'unconfirmed' };
+          this.setSession(res.token);
+        })
+      );
+  }
+
+  googleLogin(idToken: string): Observable<any> {
+    return this.http
+      .post<{ token: string }>(`${this.apiUrl}/google-login`, { idToken })
+      .pipe(
+        tap(res => {
           this.setSession(res.token);
         })
       );
@@ -101,5 +112,14 @@ export class AuthService {
 
   isAuthenticated(): boolean {
     return !!this.tokenSubject.value;
+  }
+
+  checkEmailUnique(email: string): Observable<boolean> {
+    return this.http.get<{ isUnique: boolean }>(`${this.apiUrl}/check-email`, {
+      params: { email }
+    }).pipe(
+      map(res => res.isUnique),
+      catchError(() => of(true))
+    );
   }
 }
