@@ -1,18 +1,28 @@
-﻿using INest.Models.DTOs.Sale;
+﻿using INest.Constants;
+using INest.Models.DTOs.Sale;
 using INest.Models.Entities;
 using INest.Models.Enums;
 using INest.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace INest.Services
 {
     public class SalesService : ISalesService
     {
         private readonly AppDbContext _context;
+        private readonly IMemoryCache _cache;
 
-        public SalesService(AppDbContext context)
+        public SalesService(AppDbContext context, IMemoryCache cache)
         {
             _context = context;
+            _cache = cache;
+        }
+
+        private void InvalidateCache(Guid userId)
+        {
+            _cache.Remove(CacheConstants.GetLocationsTreeKey(userId));
+            _cache.Remove(CacheConstants.GetUserLocationsListKey(userId));
         }
 
         public async Task<SaleResponseDto> SellItemAsync(Guid userId, SellItemRequestDto request)
@@ -60,6 +70,8 @@ namespace INest.Services
             _context.Add(history);
 
             await _context.SaveChangesAsync();
+
+            InvalidateCache(userId);
 
             string? platformName = null;
             if (request.PlatformId.HasValue)
@@ -132,6 +144,9 @@ namespace INest.Services
             _context.ItemHistories.Add(history);
 
             await _context.SaveChangesAsync();
+
+            InvalidateCache(userId);
+
             return true;
         }
     }

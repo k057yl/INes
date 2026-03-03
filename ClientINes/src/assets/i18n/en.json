@@ -20,7 +20,17 @@
     "ALREADY_HAVE_ACC": "Already have an account? ",
     "GO_TO_LOGIN": " Go to login",
     "CHECKING_MAIL": "Checking if email is already in use...",
-    "WARNING_MAIL_ALREADY_EXISTS": "A user with this email is already registered"
+    "WARNING_MAIL_ALREADY_EXISTS": "A user with this email is already registered",
+    "CONFIRM_TITLE": "Confirm your email",
+    "CONFIRM_SUBTITLE": "Enter the one-time code we sent to your email",
+    "CONFIRM_CODE": "Code",
+    "FIELD_CONFIRM_CODE": "Code",
+    "BUTTON_CONFIRM_SUBMIT": "Continue",
+    "CONFIRM_DIDNT_GET_CODE": "Didn't receive the code?",
+    "CONFIRM_RESEND": "Resend",
+    "OR": "Or",
+    "BUTTON_HIDE_GOOGLE": "Hide button",
+    "BUTTON_SHOW_GOOGLE": "Sign up with Google"
   },
   "LOGIN": {
     "TITLE": "Welcome back!",
@@ -32,7 +42,10 @@
     "PASSWORD_MISMATCH": "Password is incorrect",
     "BUTTON_START": "Sign In",
     "NO_ACC_YET": "Don't have an account yet? ",
-    "GO_TO_REGISTER": " Go to registration"
+    "GO_TO_REGISTER": " Go to registration",
+    "OR": "Or",
+    "BUTTON_HIDE_GOOGLE": "Hide button",
+    "BUTTON_SHOW_GOOGLE": "Sign in with Google"
   },
   "HEADER":{
     "HOME": "Home",

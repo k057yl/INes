@@ -6,12 +6,6 @@
       <p>{{ 'REG.SUBTITLE' | translate }}</p>
     </header>
 
-    <div class="divider">
-      <span>{{ 'REG.OR' | translate }}</span>
-    </div>
-
-    <div id="googleBtn" class="google-btn-container"></div>
-
     <form [formGroup]="registerForm" (ngSubmit)="register()">
       <div class="form-group">
         <label>{{ 'REG.USERNAME' | translate }}</label>
@@ -65,6 +59,17 @@
         {{ 'REG.BUTTON_START' | translate }}
       </button>
     </form>
+
+    <div class="divider">
+      <span>{{ 'REG.OR' | translate }}</span>
+    </div>
+
+    <button type="button" class="google-toggle-btn" (click)="toggleGoogle()">
+      <i class="fab fa-google"></i>
+      {{ (showGoogle ? 'REG.BUTTON_HIDE_GOOGLE' : 'REG.BUTTON_SHOW_GOOGLE') | translate }}
+    </button>
+
+    <div id="googleBtn" *ngIf="showGoogle" class="google-btn-container"></div>
 
     <footer class="auth-footer">
       <span>{{ 'REG.ALREADY_HAVE_ACC' | translate }}</span>  

@@ -10,7 +10,7 @@
           <i *ngIf="location.isSalesLocation" class="fa fa-shopping-cart status-icon sales" title="Sales Location"></i>
           <i *ngIf="location.isLendingLocation" class="fa fa-handshake status-icon lending" title="Lending Location"></i>
         </h3>
-        <span class="item-count">{{ location.items.length }} 📦</span>
+        <span class="item-count">{{ (location.items.length || 0) }} 📦</span>
       </div>
     </div>
     
@@ -60,7 +60,7 @@
     class="items-container">
     
     <app-item-card 
-      *ngFor="let item of location.items" 
+      *ngFor="let item of (location.items || [])" 
       [item]="item"
       [flatLocations]="flatLocations"
       (sell)="sellItem.emit($event)"

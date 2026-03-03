@@ -25,7 +25,12 @@
 
       <div class="form-row">
         <div class="form-group">
-          <label>{{ 'CREATE_ITEM.CATEGORY' | translate }}</label>
+          <label class="label-with-action">
+            <span>{{ 'CREATE_ITEM.CATEGORY' | translate }}</span>
+            <button type="button" class="inline-add-btn" (click)="addCategory()">
+              <i class="fa fa-plus"></i> {{ 'COMMON.ADD' | translate }}
+            </button>
+          </label>
           <div class="input-with-icon">
             <i class="fa fa-folder"></i>
             <select formControlName="categoryId">

@@ -10,18 +10,21 @@ import { LocationDetailComponent } from './pages/location/location-detail.compon
 import { SalesListComponent } from './pages/sales/sales-list.component';
 import { SettingsComponent } from './pages/setting/settings.component';
 import { ItemDetailComponent } from './pages/item/details/item-detail.component';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'confirm-register', component: ConfirmRegisterComponent },
-  { path: 'main', component: MainPageComponent }, 
-  { path: 'location-create', component: LocationCreateComponent },
-  { path: 'create-item', component: ItemCreateComponent },
-  { path: 'category', component: CategoryListComponent },
-  { path: 'location/:id', component: LocationDetailComponent },
-  { path: 'sales', component: SalesListComponent },
-  { path: 'settings', component: SettingsComponent },
-  { path: 'item/:id', component: ItemDetailComponent },
+  
+  // Защищенные роуты (добавляем canActivate)
+  { path: 'main', component: MainPageComponent, canActivate: [authGuard] }, 
+  { path: 'location-create', component: LocationCreateComponent, canActivate: [authGuard] },
+  { path: 'create-item', component: ItemCreateComponent, canActivate: [authGuard] },
+  { path: 'category', component: CategoryListComponent, canActivate: [authGuard] },
+  { path: 'location/:id', component: LocationDetailComponent, canActivate: [authGuard] },
+  { path: 'sales', component: SalesListComponent, canActivate: [authGuard] },
+  { path: 'settings', component: SettingsComponent, canActivate: [authGuard] },
+  { path: 'item/:id', component: ItemDetailComponent, canActivate: [authGuard] },
 ];

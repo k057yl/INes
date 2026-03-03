@@ -21,7 +21,17 @@
     "ALREADY_HAVE_ACC": "Уже есть аккаунт? ",
     "GO_TO_LOGIN": " Перейти к логину",
     "CHECKING_MAIL": "Проверяем, занята ли почта...",
-    "WARNING_MAIL_ALREADY_EXISTS": "Пользователь с такой почтой уже зарегистрирован"
+    "WARNING_MAIL_ALREADY_EXISTS": "Пользователь с такой почтой уже зарегистрирован",
+    "CONFIRM_TITLE": "Подтвердите почту",
+    "CONFIRM_SUBTITLE": "Введите одноразовый код, который мы вам отправили на почту",
+    "CONFIRM_CODE": "Код",
+    "FIELD_CONFIRM_CODE": "Код",
+    "BUTTON_CONFIRM_SUBMIT": "Продолжить",
+    "CONFIRM_DIDNT_GET_CODE": "Не пришел код?",
+    "CONFIRM_RESEND": "Повторно отправить",
+    "OR": "Или",
+    "BUTTON_HIDE_GOOGLE": "Скрыть кнопку",
+    "BUTTON_SHOW_GOOGLE": "Зарегистрироваться с гугл"
   },
   "LOGIN": {
     "TITLE": "С возвращением!",
@@ -33,7 +43,10 @@
     "PASSWORD_MISMATCH": "Пароль не верный",
     "BUTTON_START": "Войти",
     "NO_ACC_YET": "Ещё нет аккаунта? ",
-    "GO_TO_REGISTER": " Перейти к регистрации"
+    "GO_TO_REGISTER": " Перейти к регистрации",
+    "OR": "Или",
+    "BUTTON_HIDE_GOOGLE": "Скрыть кнопку",
+    "BUTTON_SHOW_GOOGLE": "Войти с гугл"
   },
   "HEADER":{
     "HOME": "Главная",

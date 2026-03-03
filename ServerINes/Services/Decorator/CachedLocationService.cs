@@ -1,4 +1,5 @@
-﻿using INest.Models.DTOs.Location;
+﻿using INest.Constants;
+using INest.Models.DTOs.Location;
 using INest.Models.Entities;
 using INest.Services.Interfaces;
 using Microsoft.Extensions.Caching.Memory;
@@ -83,8 +84,8 @@ namespace INest.Services.Decorator
 
         private void InvalidateCache(Guid userId)
         {
-            _cache.Remove(GetKey(userId));
-            _cache.Remove($"user_locations_list_{userId}");
+            _cache.Remove(CacheConstants.GetLocationsTreeKey(userId));
+            _cache.Remove(CacheConstants.GetUserLocationsListKey(userId));
         }
     }
 }

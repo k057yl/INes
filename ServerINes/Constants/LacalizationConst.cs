@@ -1,4 +1,4 @@
-﻿namespace INest
+﻿namespace INest.Constants
 {
     public static class LacalizationConst
     {

@@ -1,6 +1,10 @@
-﻿using INest.Models.DTOs.Auth;
+﻿using INest.Constants;
+using INest.Models.DTOs.Auth;
+using INest.Models.Entities;
+using INest.Services;
 using INest.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -11,8 +15,18 @@ namespace INest.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
+        private readonly UserManager<AppUser> _userManager;
+        private readonly ITokenService _tokenService;
 
-        public AuthController(IAuthService authService) => _authService = authService;
+        public AuthController(
+            IAuthService authService,
+            UserManager<AppUser> userManager,
+            ITokenService tokenService)
+        {
+            _authService = authService;
+            _userManager = userManager;
+            _tokenService = tokenService;
+        }
 
         [AllowAnonymous]
         [HttpPost("register")]
@@ -35,7 +49,13 @@ namespace INest.Controllers
             var success = await _authService.ConfirmRegistrationAsync(dto.Email, dto.Code);
             if (!success) return BadRequest(new { error = "Код неверный или истёк" });
 
-            return Ok(new { message = "Регистрация завершена" });
+            var user = await _userManager.FindByEmailAsync(dto.Email);
+            if (user == null) return BadRequest(new { error = "Пользователь не найден" });
+
+            var roles = await _userManager.GetRolesAsync(user);
+            var token = _tokenService.GenerateJwtToken(user, roles);
+
+            return Ok(new { token, message = "Регистрация завершена" });
         }
 
         [AllowAnonymous]

@@ -7,6 +7,8 @@ import { LocationService } from '../../../services/location.service';
 import { CategoryService } from '../../../services/category.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { ITEM_STATUS_LABELS } from '../../../models/enums/status-mappings';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-item-create',
@@ -16,6 +18,7 @@ import { ITEM_STATUS_LABELS } from '../../../models/enums/status-mappings';
   styleUrl: './item-create.component.css'
 })
 export class ItemCreateComponent implements OnInit {
+  private http = inject(HttpClient);
   private route = inject(ActivatedRoute);
   private fb = inject(FormBuilder);
   private itemService = inject(ItemService);
@@ -145,6 +148,23 @@ export class ItemCreateComponent implements OnInit {
         this.router.navigate(path);
       },
     });
+  }
+
+  addCategory() {
+    const name = prompt('Введите название новой категории:');
+    if (name && name.trim()) {
+      this.http.post<any>(`${environment.apiBaseUrl}/categories`, { name: name.trim() }).subscribe({
+        next: (newCat) => {
+          this.categories.push(newCat);
+          this.categories.sort((a, b) => a.name.localeCompare(b.name));
+          this.form.patchValue({ categoryId: newCat.id });
+        },
+        error: (err) => {
+          console.error('Ошибка создания категории', err);
+          alert('Не удалось создать категорию. Возможно, она уже существует.');
+        }
+      });
+    }
   }
 
   cancel() {

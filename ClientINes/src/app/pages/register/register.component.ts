@@ -28,6 +28,15 @@ export class RegisterComponent implements OnInit, AfterViewInit {
   message?: string;
   error?: string;
 
+  showGoogle = false;
+
+  toggleGoogle() {
+    this.showGoogle = !this.showGoogle;
+    if (this.showGoogle) {
+      setTimeout(() => this.initGoogleSignIn(), 50);
+    }
+  }
+
   ngOnInit() {
     this.initForm();
   }
@@ -38,26 +47,25 @@ export class RegisterComponent implements OnInit, AfterViewInit {
 
   private initGoogleSignIn() {
     const clientId = '477633498097-9ovq0psecdt4iu5lhh631dfjofgdlt2e.apps.googleusercontent.com';
-
-    if (typeof google !== 'undefined' && google.accounts) {
-      google.accounts.id.initialize({
-        client_id: clientId,
-        callback: (response: any) => this.handleGoogleLogin(response),
-        auto_select: false,
-      });
-
-      const btnContainer = document.getElementById('googleBtn');
-      if (btnContainer) {
-        btnContainer.innerHTML = '';
-        google.accounts.id.renderButton(btnContainer, { 
-          theme: 'outline', 
-          size: 'large', 
-          width: 350
+    const renderAction = () => {
+      if (typeof google !== 'undefined' && google.accounts) {
+        google.accounts.id.initialize({
+          client_id: clientId,
+          callback: (response: any) => this.handleGoogleLogin(response),
+          auto_select: false
         });
+        const btnContainer = document.getElementById('googleBtn');
+        if (btnContainer) {
+          btnContainer.innerHTML = ''; 
+          google.accounts.id.renderButton(btnContainer, { 
+            theme: 'outline', size: 'large', width: 370 
+          });
+        }
+      } else {
+        setTimeout(renderAction, 100);
       }
-    } else {
-      setTimeout(() => this.initGoogleSignIn(), 300);
-    }
+    };
+    renderAction();
   }
   
   private handleGoogleLogin(response: any) {

@@ -4,14 +4,14 @@
       <div class="logo-circle">
         <i class="fa fa-envelope-open-text"></i>
       </div>
-      <h2>{{ 'AUTH.CONFIRM.TITLE' | translate }}</h2>
-      <p>{{ 'AUTH.CONFIRM.SUBTITLE' | translate }}</p>
+      <h2>{{ 'REG.CONFIRM_TITLE' | translate }}</h2>
+      <p>{{ 'REG.CONFIRM_SUBTITLE' | translate }}</p>
       <small class="target-email" *ngIf="email">{{ email }}</small>
     </header>
 
     <form (ngSubmit)="confirm()" #confirmForm="ngForm">
       <div class="form-group">
-        <label>{{ 'AUTH.FIELDS.CONFIRM_CODE' | translate }}</label>
+        <label>{{ 'REG.CONFIRM_CODE' | translate }}</label>
         <div class="input-with-icon">
           <i class="fa fa-key"></i>
           <input type="text" 
@@ -19,7 +19,7 @@
                  name="code" 
                  required 
                  maxlength="6"
-                 [placeholder]="'AUTH.FIELDS.CODE_PLACEHOLDER' | translate"
+                 [placeholder]="'REG.FIELD_CONFIRM_CODE' | translate"
                  autocomplete="one-time-code">
         </div>
       </div>
@@ -33,14 +33,14 @@
       </div>
 
       <button type="submit" class="auth-submit-btn" [disabled]="!confirmForm.valid">
-        {{ 'AUTH.CONFIRM.SUBMIT' | translate }}
+        {{ 'REG.BUTTON_CONFIRM_SUBMIT' | translate }}
         <i class="fa fa-check"></i>
       </button>
     </form>
 
     <footer class="auth-footer">
-      <span>{{ 'AUTH.CONFIRM.DIDNT_GET_CODE' | translate }}</span>
-      <a href="javascript:void(0)" (click)="confirm()">{{ 'AUTH.CONFIRM.RESEND' | translate }}</a>
+      <span>{{ 'REG.CONFIRM_DIDNT_GET_CODE' | translate }}</span>
+      <a href="javascript:void(0)" (click)="resendCode()">{{ 'REG.CONFIRM_RESEND' | translate }}</a>
     </footer>
   </div>
 </div>

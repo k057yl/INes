@@ -110,5 +110,63 @@
 .google-btn-container {
   display: flex;
   justify-content: center;
-  min-height: 40px; /* Чтобы не прыгало при загрузке */
+  min-height: 40px;
 }
+
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: calc(100vh - 70px);
+  padding: 100px 20px 40px;
+}
+
+/* Кнопка-флаг */
+.google-toggle-btn {
+  width: 100%;
+  background: transparent;
+  color: #fff;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  padding: 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  transition: 0.3s;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+}
+
+.google-toggle-btn:hover {
+  border-color: var(--turquoise);
+  color: var(--turquoise);
+  background: rgba(0, 245, 214, 0.05);
+}
+
+/* Состояние disabled для основной кнопки */
+.auth-submit-btn:disabled {
+  background: #2a3a4f !important;
+  color: #5d708d !important;
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: none;
+}
+
+/* Контейнер Google */
+.google-btn-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 15px;
+  min-height: 44px;
+}
+
+/* Исправленный разделитель для темной темы */
+.divider {
+  display: flex; align-items: center; margin: 20px 0; color: var(--text-muted);
+}
+.divider::before, .divider::after {
+  content: ''; flex: 1; border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+.divider span { padding: 0 10px; font-size: 0.8rem; text-transform: uppercase; }

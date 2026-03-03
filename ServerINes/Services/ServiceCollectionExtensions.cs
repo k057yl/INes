@@ -17,6 +17,7 @@ namespace INest.Services
             services.AddControllers()
             .AddJsonOptions(options => {
                 options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+                options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
             });
 
             services.AddDbContext<AppDbContext>(options =>

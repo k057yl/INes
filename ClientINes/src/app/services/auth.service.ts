@@ -54,17 +54,13 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}/logout`, {}).pipe(
       finalize(() => {
         this.clearLocalSession();
-      }),
-      catchError(err => {
-        console.error('Server logout failed, but local session cleared', err);
-        return of(null);
       })
     );
   }
 
   // ================= SESSION MANAGEMENT =================
 
-  private setSession(token: string) {
+  public setSession(token: string) {
     localStorage.setItem(this.TOKEN_KEY, token);
     this.tokenSubject.next(token);
     this.userSubject.next(this.parseUser(token));

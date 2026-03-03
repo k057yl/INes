@@ -20,7 +20,17 @@
     "ALREADY_HAVE_ACC": "Вже маєте акаунт? ",
     "GO_TO_LOGIN": " Перейти до входу",
     "CHECKING_MAIL": "Перевіряємо, чи зайнята пошта...",
-    "WARNING_MAIL_ALREADY_EXISTS": "Користувач з такою поштою вже зареєстрований"
+    "WARNING_MAIL_ALREADY_EXISTS": "Користувач з такою поштою вже зареєстрований",
+    "CONFIRM_TITLE": "Підтвердіть електронну пошту",
+    "CONFIRM_SUBTITLE": "Введіть одноразовий код, який ми надіслали вам на електронну пошту",
+    "CONFIRM_CODE": "Код",
+    "FIELD_CONFIRM_CODE": "Код",
+    "BUTTON_CONFIRM_SUBMIT": "Продовжити",
+    "CONFIRM_DIDNT_GET_CODE": "Не отримали код?",
+    "CONFIRM_RESEND": "Надіслати повторно",
+    "OR": "Або",
+    "BUTTON_HIDE_GOOGLE": "Приховати кнопку",
+    "BUTTON_SHOW_GOOGLE": "Зареєструватися через Google"
   },
   "LOGIN": {
     "TITLE": "З поверненням!",
@@ -32,7 +42,10 @@
     "PASSWORD_MISMATCH": "Пароль не вірний",
     "BUTTON_START": "Увійти",
     "NO_ACC_YET": "Ще немає акаунта? ",
-    "GO_TO_REGISTER": " Перейти до реєстрації"
+    "GO_TO_REGISTER": " Перейти до реєстрації",
+    "OR": "Або",
+    "BUTTON_HIDE_GOOGLE": "Приховати кнопку",
+    "BUTTON_SHOW_GOOGLE": "Увійти через Google"
   },
   "HEADER":{
     "HOME": "Головна",

@@ -28,48 +28,66 @@ namespace INest.Services
 
         public async Task SendConfirmationCodeAsync(RegisterDto dto)
         {
-            if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.Username) || string.IsNullOrWhiteSpace(dto.Password))
-                throw new ArgumentException("Auth.RequiredFields");
+            if (string.IsNullOrWhiteSpace(dto.Email)) throw new ArgumentException("Auth.RequiredFields");
 
-            var existing = await _userManager.FindByEmailAsync(dto.Email);
-            if (existing != null)
+            var normalizedEmail = dto.Email.ToLowerInvariant();
+            var user = await _userManager.FindByEmailAsync(normalizedEmail);
+
+            if (user != null && user.EmailConfirmed)
                 throw new InvalidOperationException("Auth.UserAlreadyExists");
 
-            var user = new AppUser
+            if (user == null)
             {
-                Email = dto.Email,
-                UserName = dto.Username,
-                EmailConfirmed = false
-            };
-
-            var result = await _userManager.CreateAsync(user, dto.Password);
-            if (!result.Succeeded)
-                throw new InvalidOperationException("Ошибка создания пользователя");
+                user = new AppUser
+                {
+                    Email = normalizedEmail,
+                    UserName = dto.Username,
+                    EmailConfirmed = false
+                };
+                var result = await _userManager.CreateAsync(user, dto.Password);
+                if (!result.Succeeded) throw new InvalidOperationException("Ошибка создания пользователя");
+            }
 
             var code = new Random().Next(100000, 999999).ToString();
-            var expire = DateTime.UtcNow.AddMinutes(3);
-            _otpStore[dto.Email] = (code, expire);
+            var expire = DateTime.UtcNow.AddMinutes(10);
 
-            var html = $"<p>Ваш одноразовый код подтверждения регистрации: <b>{code}</b></p>";
-            await _emailService.SendEmailAsync(dto.Email!, "Подтверждение регистрации", html);
+            _otpStore[normalizedEmail] = (code, expire);
+
+            Console.WriteLine($"DEBUG: OTP для {normalizedEmail} -> {code}");
+
+            var html = $"<p>Ваш код: <b>{code}</b></p>";
+            await _emailService.SendEmailAsync(normalizedEmail, "Подтверждение регистрации", html);
         }
 
         public async Task<bool> ConfirmRegistrationAsync(string email, string code)
         {
-            if (!_otpStore.TryGetValue(email, out var entry))
+            var normalizedEmail = email.Trim().ToLowerInvariant();
+
+            if (!_otpStore.TryGetValue(normalizedEmail, out var entry))
                 return false;
 
             if (entry.Code != code || entry.Expire < DateTime.UtcNow)
                 return false;
 
-            var user = await _userManager.FindByEmailAsync(email);
+            var user = await _userManager.FindByEmailAsync(normalizedEmail);
             if (user == null) return false;
 
             user.EmailConfirmed = true;
-            await _userManager.UpdateAsync(user);
 
-            _otpStore.TryRemove(email, out _);
-            return true;
+            if (!await _userManager.IsInRoleAsync(user, "inest_app_user"))
+            {
+                await _userManager.AddToRoleAsync(user, "inest_app_user");
+            }
+
+            var result = await _userManager.UpdateAsync(user);
+
+            if (result.Succeeded)
+            {
+                _otpStore.TryRemove(normalizedEmail, out _);
+                return true;
+            }
+
+            return false;
         }
 
         public async Task<string?> LoginAsync(LoginDto dto)
@@ -141,15 +159,16 @@ namespace INest.Services
                     var result = await _userManager.CreateAsync(user);
                     if (!result.Succeeded) return null;
 
-                    await _userManager.AddToRoleAsync(user, "User");
+                    await _userManager.AddToRoleAsync(user, "inest_app_user");
                 }
 
                 var roles = await _userManager.GetRolesAsync(user);
 
                 return _tokenService.GenerateJwtToken(user, roles);
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine($"Google Login Error: {ex.Message}");
                 return null;
             }
         }

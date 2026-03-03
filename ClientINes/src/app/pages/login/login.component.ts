@@ -15,7 +15,7 @@ declare var google: any;
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
-export class LoginComponent implements OnInit, AfterViewInit {
+export class LoginComponent implements OnInit {
   public themeService = inject(ThemeService);
   private authService = inject(AuthService);
   private router = inject(Router);
@@ -24,13 +24,17 @@ export class LoginComponent implements OnInit, AfterViewInit {
   email = '';
   password = '';
   error?: string;
+  showGoogle = false;
 
   ngOnInit() {
     this.resetForm();
   }
 
-  ngAfterViewInit() {
-    this.initGoogleButton();
+  toggleGoogle() {
+    this.showGoogle = !this.showGoogle;
+    if (this.showGoogle) {
+      setTimeout(() => this.initGoogleButton(), 50);
+    }
   }
 
   private resetForm() {
@@ -42,25 +46,29 @@ export class LoginComponent implements OnInit, AfterViewInit {
   private initGoogleButton() {
     const clientId = '477633498097-9ovq0psecdt4iu5lhh631dfjofgdlt2e.apps.googleusercontent.com';
 
-    if (typeof google !== 'undefined' && google.accounts) {
-      google.accounts.id.initialize({
-        client_id: clientId,
-        callback: (response: any) => this.handleGoogleLogin(response),
-        auto_select: false,
-      });
-
-      const btnContainer = document.getElementById('googleBtn');
-      if (btnContainer) {
-        btnContainer.innerHTML = ''; 
-        google.accounts.id.renderButton(btnContainer, { 
-          theme: 'outline', 
-          size: 'large', 
-          width: 350 
+    const renderAction = () => {
+      if (typeof google !== 'undefined' && google.accounts) {
+        google.accounts.id.initialize({
+          client_id: clientId,
+          callback: (response: any) => this.handleGoogleLogin(response),
+          auto_select: false
         });
+
+        const btnContainer = document.getElementById('googleBtn');
+        if (btnContainer) {
+          btnContainer.innerHTML = ''; 
+          google.accounts.id.renderButton(btnContainer, { 
+            theme: 'outline', 
+            size: 'large', 
+            width: 370
+          });
+        }
+      } else {
+        setTimeout(renderAction, 100);
       }
-    } else {
-      setTimeout(() => this.initGoogleButton(), 300);
-    }
+    };
+
+    setTimeout(renderAction, 50);
   }
 
   private handleGoogleLogin(response: any) {

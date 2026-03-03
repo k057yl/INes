@@ -6,15 +6,13 @@
       <p>{{ 'LOGIN.SUBTITLE' | translate }}</p>
     </header>
 
-    
-
     <form (ngSubmit)="login()" #loginForm="ngForm">
       <div class="form-group">
         <label>{{ 'LOGIN.USERNAME' | translate }}</label>
         <div class="input-with-icon">
           <i class="fa fa-user"></i>
           <input [(ngModel)]="email" name="email" required 
-                [placeholder]="'LOGIN.FIELD_USERNAME' | translate">
+                 [placeholder]="'LOGIN.FIELD_USERNAME' | translate">
         </div>
       </div>
 
@@ -41,7 +39,12 @@
       <span>{{ 'LOGIN.OR' | translate }}</span>
     </div>
 
-    <div id="googleBtn" class="google-btn-container"></div>
+    <button type="button" class="google-toggle-btn" (click)="toggleGoogle()">
+      <i class="fab fa-google"></i>
+      {{ (showGoogle ? 'LOGIN.BUTTON_HIDE_GOOGLE' : 'LOGIN.BUTTON_SHOW_GOOGLE') | translate }}
+    </button>
+
+    <div id="googleBtn" *ngIf="showGoogle" class="google-btn-container"></div>
 
     <footer class="auth-footer">
       <span>{{ 'LOGIN.NO_ACC_YET' | translate }}</span>

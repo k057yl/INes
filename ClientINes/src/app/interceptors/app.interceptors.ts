@@ -4,17 +4,22 @@ import { catchError, throwError } from 'rxjs';
 export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
   const token = localStorage.getItem('jwt');
 
-  if (req.url.includes('/auth/')) {
-    return next(req);
-  }
+  const publicApiPaths = [
+    '/auth/login',
+    '/auth/register',
+    '/auth/google-login',
+    '/auth/confirm-register',
+    '/auth/check-email'
+  ];
 
-  if (token) {
-    const authReq = req.clone({
+  const isPublic = publicApiPaths.some(path => req.url.includes(path));
+
+  if (!isPublic && token) {
+    req = req.clone({
       setHeaders: {
         Authorization: `Bearer ${token}`
       }
     });
-    return next(authReq);
   }
 
   return next(req);

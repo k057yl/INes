@@ -201,3 +201,43 @@ label {
   opacity: 0;
   cursor: pointer;
 }
+
+.label-with-action {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  width: 100%;
+}
+
+.label-with-action span {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Кнопка добавления категории */
+.inline-add-btn {
+  background: transparent;
+  border: 1px dashed var(--turquoise);
+  color: var(--turquoise);
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.inline-add-btn:hover {
+  background: var(--turquoise);
+  color: var(--dark-blue);
+  border-style: solid;
+}
+
+.inline-add-btn i {
+  font-size: 0.6rem;
+}

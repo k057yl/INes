@@ -1,8 +1,10 @@
-﻿using INest.Models.DTOs.Item;
+﻿using INest.Constants;
+using INest.Models.DTOs.Item;
 using INest.Models.Entities;
 using INest.Models.Enums;
 using INest.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace INest.Services
 {
@@ -10,11 +12,13 @@ namespace INest.Services
     {
         private readonly AppDbContext _context;
         private readonly IPhotoService _photoService;
+        private readonly IMemoryCache _cache;
 
-        public ItemService(AppDbContext context, IPhotoService photoService)
+        public ItemService(AppDbContext context, IPhotoService photoService, IMemoryCache cache)
         {
             _context = context;
             _photoService = photoService;
+            _cache = cache;
         }
 
         public async Task<Item> CreateItemAsync(Guid userId, CreateItemDto dto, List<IFormFile> photos)
@@ -72,6 +76,10 @@ namespace INest.Services
             });
 
             await _context.SaveChangesAsync();
+
+            _cache.Remove(CacheConstants.GetLocationsTreeKey(userId));
+            _cache.Remove(CacheConstants.GetUserLocationsListKey(userId));
+
             return item;
         }
 
