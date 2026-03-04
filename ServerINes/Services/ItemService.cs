@@ -281,11 +281,10 @@ namespace INest.Services
             return true;
         }
 
-        public async Task<bool> DeleteItemAsync(Guid userId, Guid itemId, bool keepSaleHistory = true)
+        public async Task<bool> DeleteAsync(Guid userId, Guid itemId)
         {
             var item = await _context.Items
                 .Include(i => i.Photos)
-                .Include(i => i.Sale)
                 .FirstOrDefaultAsync(i => i.Id == itemId && i.UserId == userId);
 
             if (item == null) return false;
@@ -294,18 +293,6 @@ namespace INest.Services
             {
                 if (!string.IsNullOrEmpty(photo.PublicId))
                     await _photoService.DeletePhotoAsync(photo.PublicId);
-            }
-
-            if (item.Sale != null)
-            {
-                if (keepSaleHistory)
-                {
-                    item.Sale.ItemId = null;
-                }
-                else
-                {
-                    _context.Sales.Remove(item.Sale);
-                }
             }
 
             var history = await _context.ItemHistories.Where(h => h.ItemId == itemId).ToListAsync();
@@ -315,32 +302,6 @@ namespace INest.Services
 
             await _context.SaveChangesAsync();
 
-            _cache.Remove(CacheConstants.GetLocationsTreeKey(userId));
-            _cache.Remove(CacheConstants.GetUserLocationsListKey(userId));
-
-            return true;
-        }
-
-        public async Task<bool> PermanentDeleteAsync(Guid userId, Guid itemId)
-        {
-            var item = await _context.Items
-                .Include(i => i.Sale)
-                .Include(i => i.Photos)
-                .FirstOrDefaultAsync(i => i.Id == itemId && i.UserId == userId);
-
-            if (item == null) return false;
-
-            foreach (var photo in item.Photos)
-            {
-                if (!string.IsNullOrEmpty(photo.PublicId))
-                    await _photoService.DeletePhotoAsync(photo.PublicId);
-            }
-
-            if (item.Sale != null) _context.Sales.Remove(item.Sale);
-
-            _context.Items.Remove(item);
-
-            await _context.SaveChangesAsync();
             _cache.Remove(CacheConstants.GetLocationsTreeKey(userId));
             return true;
         }

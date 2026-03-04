@@ -2,6 +2,7 @@
 using INest.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace INest.Controllers
@@ -13,11 +14,13 @@ namespace INest.Controllers
     {
         private readonly ISalesService _salesService;
         private readonly IItemService _itemService;
+        private readonly AppDbContext _context;
 
-        public SalesController(ISalesService salesService, IItemService itemService)
+        public SalesController(ISalesService salesService, IItemService itemService, AppDbContext context)
         {
             _salesService = salesService;
             _itemService = itemService;
+            _context = context;
         }
 
         [HttpPost]
@@ -91,27 +94,29 @@ namespace INest.Controllers
             }
         }
 
-        [HttpDelete("{saleId}/permanent")]
-        public async Task<IActionResult> DeletePermanent(Guid saleId)
+        [HttpDelete("smart-delete/{saleId}")]
+        public async Task<IActionResult> SmartDelete(Guid saleId, [FromQuery] bool keepHistory = true)
         {
-            try
+            var userId = GetCurrentUserId();
+
+            var sale = await _context.Sales.FirstOrDefaultAsync(s => s.Id == saleId);
+            if (sale == null) return NotFound();
+
+            if (keepHistory)
             {
-                var userId = GetCurrentUserId();
-                var sales = await _salesService.GetSalesAsync(userId);
-                var sale = sales.FirstOrDefault(s => s.SaleId == saleId);
-
-                if (sale == null) return NotFound("Продажа не найдена");
-
-                var result = await _itemService.PermanentDeleteAsync(userId, sale.ItemId);
-
-                if (!result) return BadRequest("Не удалось удалить объект");
-
-                return NoContent();
+                if (sale.ItemId.HasValue)
+                    await _itemService.DeleteAsync(userId, sale.ItemId.Value);
             }
-            catch (Exception ex)
+            else
             {
-                return StatusCode(500, $"Internal error: {ex.Message}");
+                var itemId = sale.ItemId;
+                await _salesService.DeleteSaleRecordAsync(userId, saleId);
+
+                if (itemId.HasValue)
+                    await _itemService.DeleteAsync(userId, itemId.Value);
             }
+
+            return NoContent();
         }
     }
 }

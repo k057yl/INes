@@ -1,51 +1,42 @@
-* { box-sizing: border-box; }
-
 :root {
-  --bg-main: #f4f7f6;
+  /* Светлая тема (Light) - Сделаем её более "стеклянной" и чистой */
+  --bg-main: #f0f2f5;
   --bg-card: #ffffff;
-  --bg-input: #edf2f7;
-  --text-main: #2d3436;
-  --text-muted: #636e72;
+  --bg-input: #f8fafc;
+  --text-main: #1e293b;
+  --text-muted: #64748b;
   --border-color: #e2e8f0;
   --accent-color: #00b894;
+  
+  /* Константы (не меняются) */
   --dark-blue: #0b132b;
   --navy-blue: #1c2541;
   --turquoise: #00f5d4;
+  --error-red: #ff4d4d;
 }
 
+/* Твоя любимая Темная тема */
 body.dark-theme {
   --bg-main: #0b132b;
   --bg-card: #1c2541;
-  --bg-input: #0b132b;
-  --text-main: #b1b1b1;
+  --bg-input: #0b132b; /* или чуть светлее для контраста */
+  --text-main: #e2e8f0;
   --text-muted: #94a3b8;
   --border-color: #3a506b;
+  --accent-color: #00f5d4;
 }
 
 html, body {
   height: 100%; width: 100%;
   margin: 0; padding: 0;
-  overflow-x: hidden;
   background-color: var(--bg-main);
   color: var(--text-main);
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', -apple-system, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease; /* Плавный переход тем */
 }
 
-input:-webkit-autofill,
-input:-webkit-autofill:hover, 
-input:-webkit-autofill:focus, 
-input:-webkit-autofill:active {
-    -webkit-box-shadow: 0 0 0 1000px var(--dark-blue) inset !important;
-    -webkit-text-fill-color: var(--text-main) !important;
-
-    transition: background-color 5000s ease-in-out 0s;
-}
-
-.input-with-icon {
-    overflow: hidden; 
-    z-index: 1;
-}
-
-.input-with-icon input {
-    border-radius: inherit;
+/* Фикс автозаполнения для темной темы (чтобы не было белых пятен) */
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px var(--bg-input) inset !important;
+  -webkit-text-fill-color: var(--text-main) !important;
 }

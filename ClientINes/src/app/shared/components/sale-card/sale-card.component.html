@@ -1,0 +1,62 @@
+<div class="sale-card" [class.archived]="!sale.itemId">
+  <div class="sale-main-info">
+    <div class="item-details">
+      <span class="name">{{ sale.itemName }}</span>
+      <span class="platform" *ngIf="sale.platformName">
+        <i class="fa fa-shopping-cart"></i> {{ sale.platformName }}
+      </span>
+    </div>
+    <div class="date">{{ sale.soldDate | date:'dd.MM.yyyy' }}</div>
+  </div>
+
+  <div class="sale-finance">
+    <div class="price">{{ sale.salePrice | number:'1.2-2' }} $</div>
+    <div class="profit" [ngClass]="sale.profit >= 0 ? 'turquoise' : 'red'">
+      {{ sale.profit > 0 ? '+' : '' }}{{ sale.profit | number:'1.2-2' }} $
+    </div>
+  </div>
+
+  <div class="sale-actions">
+    <button class="action-btn undo" 
+        *ngIf="isItemExists" 
+        (click)="onUndo()"
+        title="Вернуть в инвентарь">
+        <i class="fa fa-undo"></i>
+    </button>
+
+    <button class="action-btn trash" 
+            (click)="onDelete()" 
+            title="Удалить">
+      <i class="fa fa-trash-alt"></i>
+    </button>
+    
+    <i class="fa fa-archive archived-icon" *ngIf="!sale.itemId" title="Предмет удален из инвентаря"></i>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="showDeleteModal" (click)="closeModal()">
+  <div class="custom-modal" (click)="$event.stopPropagation()">
+    <h3>Удалить запись?</h3>
+    <p>Выберите способ удаления для <b>{{ sale.itemName }}</b>:</p>
+    
+    <div class="modal-options">
+      <button class="opt-btn smart" (click)="confirmDelete(true)">
+        <i class="fa fa-box-archive"></i>
+        <div class="text">
+          <span class="title">Smart Delete</span>
+          <span class="desc">Удалить фото и айтем, но оставить прибыль в истории.</span>
+        </div>
+      </button>
+
+      <button class="opt-btn hard" (click)="confirmDelete(false)">
+        <i class="fa fa-fire-alt"></i>
+        <div class="text">
+          <span class="title">Hard Delete</span>
+          <span class="desc">Стереть всё полностью (включая запись о прибыли).</span>
+        </div>
+      </button>
+    </div>
+
+    <button class="btn-cancel" (click)="closeModal()">Отмена</button>
+  </div>
+</div>

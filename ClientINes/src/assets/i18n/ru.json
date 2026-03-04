@@ -54,7 +54,8 @@
     "LOGOUT": "Выйти",
     "REGISTER": "Регистрация",
     "SETTINGS": "Настройки",
-    "SALES": "Продажи"
+    "SALES": "Продажи",
+    "MANAGEMENT": "Управление"
   },
   "CREATE_ITEM":{
     "TITLE": "Создайте предмет",

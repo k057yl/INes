@@ -31,7 +31,9 @@ export class SalesService {
     return this.http.delete<void>(`${environment.apiBaseUrl}/sales/${itemId}`);
   }
 
-  deletePermanent(saleId: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${saleId}/permanent`);
+  smartDelete(saleId: string, keepHistory: boolean): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/smart-delete/${saleId}`, {
+      params: { keepHistory: keepHistory.toString() }
+    });
   }
 }

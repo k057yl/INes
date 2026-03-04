@@ -15,49 +15,16 @@
     </div>
   </header>
 
-  <div class="table-container">
-    <table class="sales-table">
-      <thead>
-        <tr>
-          <th>{{ 'SALES.COL_ITEM' | translate }}</th>
-          <th>{{ 'SALES.COL_DATE' | translate }}</th>
-          <th>{{ 'SALES.COL_PRICE' | translate }}</th>
-          <th>{{ 'SALES.COL_PROFIT' | translate }}</th>
-          <th class="actions-head"></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let sale of sales">
-          <td>
-            <div class="item-name">{{ sale.itemName }}</div>
-            <div class="platform-hint" *ngIf="sale.platformName">
-              <i class="fa fa-shopping-cart"></i> {{ sale.platformName }}
-            </div>
-          </td>
-          <td class="date-cell">{{ sale.soldDate | date:'dd.MM.yyyy' }}</td>
-          <td class="price-cell">{{ sale.salePrice | number:'1.2-2' }} $</td>
-          <td class="profit-cell" [ngClass]="sale.profit >= 0 ? 'turquoise' : 'red'">
-            {{ sale.profit > 0 ? '+' : '' }}{{ sale.profit | number:'1.2-2' }} $
-          </td>
-          <td class="actions-cell">
-            <button class="action-btn undo" 
-                    *ngIf="sale.itemId" 
-                    (click)="onCancelSale(sale)" 
-                    title="Вернуть в инвентарь">
-                <i class="fa fa-undo"></i>
-            </button>
+  <div class="sales-container">
+    <app-sale-card 
+      *ngFor="let s of sales" 
+      [sale]="s"
+      (undo)="handleUndo($event)"
+      (delete)="handleDelete($event)">
+    </app-sale-card>
 
-            <button class="action-btn delete-full" 
-                    (click)="onDeletePermanent(sale)" 
-                    title="Удалить полностью (без возврата)">
-                <i class="fa fa-trash-alt"></i>
-            </button>
-            </td>
-        </tr>
-        <tr *ngIf="sales.length === 0">
-          <td colspan="5" class="empty-msg">{{ 'SALES.NO_SALES' | translate }}</td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="empty-msg" *ngIf="sales.length === 0">
+      {{ 'SALES.NO_SALES' | translate }}
+    </div>
   </div>
 </div>

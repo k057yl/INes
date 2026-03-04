@@ -1,13 +1,14 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 import { SalesService } from '../../shared/services/sales.service';
 import { SaleResponseDto } from '../../models/dtos/sale.dto';
-import { TranslateModule } from '@ngx-translate/core';
+import { SaleCardComponent } from '../../shared/components/sale-card/sale-card.component';
 
 @Component({
   selector: 'app-sales-list',
   standalone: true,
-  imports: [CommonModule, TranslateModule],
+  imports: [CommonModule, TranslateModule, SaleCardComponent], 
   templateUrl: './sales-list.component.html',
   styleUrl: './sales-list.component.scss'
 })
@@ -29,38 +30,28 @@ export class SalesListComponent implements OnInit {
 
   loadHistory() {
     this.salesService.getHistory().subscribe({
-      next: (data) => this.sales = data,
+      next: (data: SaleResponseDto[]) => this.sales = data,
       error: (err) => console.error('Error fetching sales', err)
     });
   }
 
-  onCancelSale(sale: SaleResponseDto) {
-    if (!sale.itemId) {
-      alert('Невозможно отменить: предмет был удален из инвентаря.');
-      return;
-    }
-
-    if (confirm(`Отменить продажу "${sale.itemName}"? Предмет снова станет активным.`)) {
+  handleUndo(sale: SaleResponseDto) {
+    if (confirm(`Вернуть "${sale.itemName}" в инвентарь?`)) {
       this.salesService.cancelSale(sale.itemId).subscribe({
         next: () => {
           this.sales = this.sales.filter(s => s.saleId !== sale.saleId);
         },
-        error: (err) => console.error('Failed to cancel sale', err)
+        error: (err: any) => console.error('Undo failed', err)
       });
     }
   }
 
-  onDeletePermanent(sale: SaleResponseDto) {
-  if (confirm(`Внимание! Это полностью удалит предмет и запись о продаже. Продолжить?`)) {
-    this.salesService.deletePermanent(sale.saleId).subscribe({
+  handleDelete(event: { sale: SaleResponseDto, keepHistory: boolean }) {
+    this.salesService.smartDelete(event.sale.saleId, event.keepHistory).subscribe({
       next: () => {
-        this.sales = this.sales.filter(s => s.saleId !== sale.saleId);
+        this.sales = this.sales.filter(s => s.saleId !== event.sale.saleId);
       },
-      error: (err: any) => {
-        console.error('Failed to delete sale permanently', err);
-        alert('Не удалось выполнить полное удаление.');
-      }
+      error: (err: any) => console.error('Delete failed', err)
     });
   }
-}
 }

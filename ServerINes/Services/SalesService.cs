@@ -148,5 +148,18 @@ namespace INest.Services
 
             return true;
         }
+
+        public async Task<bool> DeleteSaleRecordAsync(Guid userId, Guid saleId)
+        {
+            var sale = await _context.Sales
+                .Include(s => s.Item)
+                .FirstOrDefaultAsync(s => s.Id == saleId && (s.Item == null || s.Item.UserId == userId));
+
+            if (sale == null) return false;
+
+            _context.Sales.Remove(sale);
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }

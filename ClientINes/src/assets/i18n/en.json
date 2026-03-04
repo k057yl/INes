@@ -53,7 +53,8 @@
     "LOGOUT": "Logout",
     "REGISTER": "Register",
     "SETTINGS": "Settings",
-    "SALES": "Sales"
+    "SALES": "Sales",
+    "MANAGEMENT": "Management"
   },
   "CREATE_ITEM": {
     "TITLE": "Create Item",

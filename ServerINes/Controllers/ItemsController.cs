@@ -85,7 +85,7 @@ namespace INest.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var deleted = await _itemService.DeleteItemAsync(GetUserId(), id);
+            var deleted = await _itemService.DeleteAsync(GetUserId(), id);
             if (!deleted) return NotFound();
             return Ok();
         }
