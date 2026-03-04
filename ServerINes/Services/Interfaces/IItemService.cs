@@ -10,7 +10,8 @@ namespace INest.Services.Interfaces
         Task<IEnumerable<Item>> GetUserItemsAsync(Guid userId);
         Task<Item?> GetItemAsync(Guid userId, Guid itemId);
         Task<bool> UpdateItemAsync(Guid userId, Guid itemId, UpdateItemDto dto);
-        Task<bool> DeleteItemAsync(Guid userId, Guid itemId);
+        Task<bool> DeleteItemAsync(Guid userId, Guid itemId, bool keepSaleHistory = true);
+        Task<bool> PermanentDeleteAsync(Guid userId, Guid itemId);
 
         Task<bool> MoveItemAsync(Guid userId, Guid itemId, Guid? targetLocationId);
         Task<bool> ChangeStatusAsync(Guid userId, Guid itemId, ItemStatus newStatus);

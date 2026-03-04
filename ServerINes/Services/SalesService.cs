@@ -44,6 +44,8 @@ namespace INest.Services
             {
                 Id = Guid.NewGuid(),
                 ItemId = item.Id,
+                ItemNameSnapshot = item.Name,
+                CategoryNameSnapshot = item.Category?.Name,
                 SalePrice = request.SalePrice,
                 Profit = profit,
                 SoldDate = request.SoldDate,
@@ -70,24 +72,22 @@ namespace INest.Services
             _context.Add(history);
 
             await _context.SaveChangesAsync();
-
             InvalidateCache(userId);
 
             string? platformName = null;
             if (request.PlatformId.HasValue)
             {
-                var platform = await _context.StorageLocations
+                platformName = await _context.StorageLocations
                     .Where(p => p.Id == request.PlatformId)
                     .Select(p => p.Name)
                     .FirstOrDefaultAsync();
-                platformName = platform;
             }
 
             return new SaleResponseDto
             {
                 SaleId = sale.Id,
                 ItemId = item.Id,
-                ItemName = item.Name,
+                ItemName = sale.ItemNameSnapshot,
                 SalePrice = sale.SalePrice,
                 Profit = sale.Profit,
                 SoldDate = sale.SoldDate,
@@ -98,15 +98,14 @@ namespace INest.Services
         public async Task<List<SaleResponseDto>> GetSalesAsync(Guid userId)
         {
             return await _context.Sales
-                .Include(s => s.Item)
                 .Include(s => s.Platform)
-                .Where(s => s.Item.UserId == userId)
+                .Where(s => _context.Items.Any(i => i.Id == s.ItemId && i.UserId == userId) || s.ItemId == null)
                 .OrderByDescending(s => s.SoldDate)
                 .Select(s => new SaleResponseDto
                 {
                     SaleId = s.Id,
-                    ItemId = s.ItemId,
-                    ItemName = s.Item.Name,
+                    ItemId = s.ItemId ?? Guid.Empty,
+                    ItemName = s.ItemNameSnapshot,
                     SalePrice = s.SalePrice,
                     Profit = s.Profit,
                     SoldDate = s.SoldDate,

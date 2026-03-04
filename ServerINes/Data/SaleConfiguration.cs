@@ -12,11 +12,13 @@ namespace INest.Data
 
             builder.Property(x => x.SalePrice).HasPrecision(18, 2);
             builder.Property(x => x.Profit).HasPrecision(18, 2);
+            builder.Property(x => x.ItemNameSnapshot).IsRequired().HasMaxLength(200);
+            builder.Property(x => x.CategoryNameSnapshot).HasMaxLength(100);
 
             builder.HasOne(x => x.Item)
                 .WithOne(x => x.Sale)
                 .HasForeignKey<Sale>(x => x.ItemId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.SetNull);
 
             builder.HasOne(x => x.Platform)
                 .WithMany()

@@ -5,7 +5,7 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 import { routes } from './app.routes';
 
-import { jwtInterceptor, cultureInterceptor, globalErrorInterceptor } from '../app/interceptors/app.interceptors';
+import { jwtInterceptor, cultureInterceptor, globalErrorInterceptor } from './core/interceptors/app.interceptors';
 
 import { provideTranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';

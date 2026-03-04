@@ -1,0 +1,37 @@
+<div class="admin-container">
+  <div class="admin-grid">
+    
+    <div class="auth-card admin-card">
+      <div class="card-header">
+        <h3><i class="fa fa-tags"></i> {{ 'ADMIN.CATEGORIES' | translate }}</h3>
+        <button class="add-btn-circle" (click)="addCategory()">+</button>
+      </div>
+      <div class="admin-list">
+        <div class="admin-list-item" *ngFor="let c of categories">
+          <span class="name">{{ c.name }}</span>
+          <div class="actions">
+            <button (click)="renameCategory(c)"><i class="fa fa-pen"></i></button>
+            <button class="del" (click)="deleteCategory(c)"><i class="fa fa-trash"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="auth-card admin-card">
+      <div class="card-header">
+        <h3><i class="fa fa-share-nodes"></i> {{ 'ADMIN.PLATFORMS' | translate }}</h3>
+        <button class="add-btn-circle" (click)="addPlatform()">+</button>
+      </div>
+      <div class="admin-list">
+        <div class="admin-list-item" *ngFor="let p of platforms">
+          <span class="name">{{ p.name }}</span>
+          <div class="actions">
+            <button (click)="renamePlatform(p)"><i class="fa fa-pen"></i></button>
+            <button class="del" (click)="deletePlatform(p.id)"><i class="fa fa-trash"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

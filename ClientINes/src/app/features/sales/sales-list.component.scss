@@ -1,0 +1,44 @@
+$navy: #0b132b;
+$dark: #1c2541;
+$blue-border: #3a506b;
+$turquoise: #00f5d4;
+$red: #ff4d4d;
+
+.sales-page, .admin-container {
+  padding: 40px;
+  background: $navy;
+  min-height: 100vh;
+  color: white;
+
+  .table-container, .admin-card {
+    background: $dark;
+    border-radius: 16px;
+    border: 1px solid $blue-border;
+    overflow: hidden;
+  }
+}
+
+.archived-tag {
+  color: #64748b;
+  font-size: 1.2rem;
+  padding: 0 10px;
+  cursor: help;
+}
+
+.cancel-sale-btn {
+  background: rgba(148, 163, 184, 0.1);
+  border: 1px solid $blue-border;
+  color: #94a3b8;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  
+  &:hover {
+    background: rgba($red, 0.1);
+    color: $red;
+    border-color: $red;
+    transform: rotate(-15deg);
+  }
+}

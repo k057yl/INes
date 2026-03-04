@@ -42,10 +42,15 @@ namespace INest.Services.Decorator
             return result;
         }
 
-        public async Task<bool> DeleteAsync(Guid userId, Guid categoryId)
+        public async Task<bool> DeleteAsync(Guid userId, Guid categoryId, Guid? targetCategoryId = null)
         {
-            var result = await _inner.DeleteAsync(userId, categoryId);
-            if (result) _cache.Remove(GetCacheKey(userId));
+            var result = await _inner.DeleteAsync(userId, categoryId, targetCategoryId);
+
+            if (result)
+            {
+                _cache.Remove(GetCacheKey(userId));
+            }
+
             return result;
         }
     }

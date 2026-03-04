@@ -1,0 +1,62 @@
+.admin-container {
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.admin-card {
+  max-width: 900px;
+  width: 100%;
+}
+
+.admin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 25px;
+  margin-top: 2rem;
+}
+
+.admin-section {
+  background: var(--dark-blue);
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.scroll-list {
+  max-height: 250px;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+.admin-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  font-size: 0.9rem;
+}
+
+.item-actions button {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.item-actions button:hover { color: var(--turquoise); }
+.item-actions button.delete:hover { color: #ff4d4d; }
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}

@@ -43,14 +43,29 @@ namespace INest.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> Delete(Guid id, [FromQuery] Guid? targetCategoryId = null)
         {
-            var success = await _service.DeleteAsync(GetUserId(), id);
+            try
+            {
+                var success = await _service.DeleteAsync(GetUserId(), id, targetCategoryId);
 
-            if (!success)
-                return NotFound(new { message = "Категория не найдена или доступ запрещен" });
+                if (!success)
+                    return NotFound(new { message = "Категория не найдена или доступ запрещен" });
 
-            return NoContent();
+                return NoContent();
+            }
+            catch (InvalidOperationException ex) when (ex.Message == "CategoryIsNotEmpty")
+            {
+                return BadRequest(new
+                {
+                    error = "CategoryIsNotEmpty",
+                    message = "Категория содержит предметы. Укажите targetCategoryId для переноса."
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Произошла внутренняя ошибка сервера", details = ex.Message });
+            }
         }
     }
 }

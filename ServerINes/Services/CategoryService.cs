@@ -76,19 +76,49 @@ namespace INest.Services
             return category;
         }
 
-        public async Task<bool> DeleteAsync(Guid userId, Guid categoryId)
+        public async Task<bool> DeleteAsync(Guid userId, Guid categoryId, Guid? targetCategoryId = null)
         {
             var category = await _context.Categories
+                .Include(c => c.Items)
                 .FirstOrDefaultAsync(c => c.Id == categoryId && c.UserId == userId);
 
             if (category == null) return false;
 
+            if (category.Name == "Other")
+                throw new InvalidOperationException("CannotDeleteDefaultCategory");
+
+            if (category.Items.Any())
+            {
+                var targetId = targetCategoryId;
+
+                if (targetId == null)
+                {
+                    var defaultCat = await _context.Categories
+                        .FirstOrDefaultAsync(c => c.UserId == userId && c.Name == "Other");
+
+                    if (defaultCat == null)
+                    {
+                        defaultCat = new Category
+                        {
+                            Id = Guid.NewGuid(),
+                            UserId = userId,
+                            Name = "Other",
+                            Color = "#64748b"
+                        };
+                        _context.Categories.Add(defaultCat);
+                    }
+                    targetId = defaultCat.Id;
+                }
+
+                foreach (var item in category.Items)
+                {
+                    item.CategoryId = targetId.Value;
+                }
+            }
+
             _context.Categories.Remove(category);
-
             await _context.SaveChangesAsync();
-
             _cache.Remove(GetCacheKey(userId));
-
             return true;
         }
     }

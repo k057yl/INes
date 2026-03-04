@@ -1,0 +1,49 @@
+<div class="settings-container">
+  <div class="auth-card settings-card">
+    <header class="auth-header">
+      <div class="logo-circle"><i class="fa fa-sliders-h"></i></div>
+      <h2>{{ 'SETTINGS.TITLE' | translate }}</h2>
+      <p>{{ 'SETTINGS.SUBTITLE' | translate }}</p>
+    </header>
+
+    <div class="settings-sections">
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-label">
+             <i class="fa fa-shopping-cart"></i> {{ 'SETTINGS.SALES_MODULE' | translate }}
+          </span>
+          <p class="setting-hint">{{ 'SETTINGS.SALES_HINT' | translate }}</p>
+        </div>
+        <label class="switch">
+          <input type="checkbox" 
+                 [checked]="featureService.isSalesModeEnabled()"
+                 (change)="featureService.toggleSalesMode(s.checked)" #s>
+          <span class="slider round"></span>
+        </label>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-label">
+            <i class="fa fa-handshake"></i> {{ 'SETTINGS.LENDING_MODULE' | translate }}
+          </span>
+          <p class="setting-hint">{{ 'SETTINGS.LENDING_HINT' | translate }}</p>
+        </div>
+        <label class="switch">
+          <input type="checkbox" 
+                 [checked]="featureService.isLendingModeEnabled()"
+                 (change)="featureService.toggleLendingMode(l.checked)" #l>
+          <span class="slider round"></span>
+        </label>
+      </div>
+    </div>
+
+    <footer class="settings-footer">
+      <button class="admin-link-btn" routerLink="/admin">
+        <i class="fa fa-tools"></i> {{ 'SETTINGS.GO_TO_ADMIN' | translate }}
+      </button>
+    </footer>
+  </div>
+</div>

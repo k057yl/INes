@@ -7,12 +7,19 @@ namespace INest.Models.Entities
     {
         [Key]
         public Guid Id { get; set; }
-        public Guid ItemId { get; set; }
-        public Item Item { get; set; } = null!;
+        public Guid? ItemId { get; set; }
+        public Item? Item { get; set; }
+
+        [Required]
+        public string ItemNameSnapshot { get; set; } = null!;
+        public string? CategoryNameSnapshot { get; set; }
+
         [Column(TypeName = "decimal(18,2)")]
         public decimal SalePrice { get; set; }
+
         [Column(TypeName = "decimal(18,2)")]
         public decimal Profit { get; set; }
+
         public DateTime SoldDate { get; set; }
         public Guid? PlatformId { get; set; }
         public Platform? Platform { get; set; }

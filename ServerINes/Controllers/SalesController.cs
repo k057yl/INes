@@ -12,8 +12,13 @@ namespace INest.Controllers
     public class SalesController : ControllerBase
     {
         private readonly ISalesService _salesService;
+        private readonly IItemService _itemService;
 
-        public SalesController(ISalesService salesService) => _salesService = salesService;
+        public SalesController(ISalesService salesService, IItemService itemService)
+        {
+            _salesService = salesService;
+            _itemService = itemService;
+        }
 
         [HttpPost]
         public async Task<ActionResult<SaleResponseDto>> SellItem([FromBody] SellItemRequestDto request)
@@ -83,6 +88,29 @@ namespace INest.Controllers
             catch (Exception)
             {
                 return StatusCode(500, "Internal server error during sale cancellation");
+            }
+        }
+
+        [HttpDelete("{saleId}/permanent")]
+        public async Task<IActionResult> DeletePermanent(Guid saleId)
+        {
+            try
+            {
+                var userId = GetCurrentUserId();
+                var sales = await _salesService.GetSalesAsync(userId);
+                var sale = sales.FirstOrDefault(s => s.SaleId == saleId);
+
+                if (sale == null) return NotFound("Продажа не найдена");
+
+                var result = await _itemService.PermanentDeleteAsync(userId, sale.ItemId);
+
+                if (!result) return BadRequest("Не удалось удалить объект");
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal error: {ex.Message}");
             }
         }
     }
