@@ -3,22 +3,15 @@
     
     <div class="auth-card admin-card">
       <div class="card-header">
-        <h3><i class="fa fa-tags"></i> {{ 'ADMIN.CATEGORIES' | translate }}</h3>
-        <button class="add-btn-circle" (click)="addCategory()" title="Добавить">+</button>
+        <h3><i class="fa fa-tags"></i> {{ 'MANAGEMENT.TITLE_CATEGORY' | translate }}</h3>
+        <button class="inest-action-btn" (click)="addCategory()" [title]="'SHARED.TOOLTIP_ADD' | translate">+</button>
       </div>
       <div class="admin-list">
         <div class="admin-list-item" *ngFor="let c of categories">
           <span class="name">{{ c.name }}</span>
           <div class="actions">
-            <button class="btn-action" (click)="renameCategory(c)" title="Переименовать">
-              <i class="fa fa-pen"></i>
-            </button>
-            <button class="btn-action btn-del" 
-                    *ngIf="c.name !== 'Разное' && c.name !== 'Other'" 
-                    (click)="deleteCategory(c)" 
-                    title="Удалить">
-              <i class="fa fa-trash"></i>
-            </button>
+            <button class="inest-action-btn" (click)="renameCategory(c)" [title]="'SHARED.TOOLTIP_RENAME' | translate">📝</button>
+            <button class="inest-action-btn is-danger" (click)="deleteCategory(c)" [title]="'SHARED.TOOLTIP_DELETE' | translate">❌</button>
           </div>
         </div>
       </div>
@@ -26,19 +19,15 @@
 
     <div class="auth-card admin-card">
       <div class="card-header">
-        <h3><i class="fa fa-share-nodes"></i> {{ 'ADMIN.PLATFORMS' | translate }}</h3>
-        <button class="add-btn-circle" (click)="addPlatform()" title="Добавить">+</button>
+        <h3><i class="fa fa-share-nodes"></i> {{ 'MANAGEMENT.TITLE_PLATFORM' | translate }}</h3>
+        <button class="inest-action-btn" (click)="addPlatform()" [title]="'SHARED.TOOLTIP_ADD' | translate">+</button>
       </div>
       <div class="admin-list">
         <div class="admin-list-item" *ngFor="let p of platforms">
           <span class="name">{{ p.name }}</span>
           <div class="actions">
-            <button class="btn-action" (click)="renamePlatform(p)" title="Переименовать">
-              <i class="fa fa-pen"></i>
-            </button>
-            <button class="btn-action btn-del" (click)="deletePlatform(p)" title="Удалить">
-              <i class="fa fa-trash"></i>
-            </button>
+            <button class="inest-action-btn" (click)="renamePlatform(p)" [title]="'SHARED.TOOLTIP_RENAME' | translate">📝</button>
+            <button class="inest-action-btn is-danger" (click)="deletePlatform(p)" [title]="'SHARED.TOOLTIP_DELETE' | translate">❌</button>
           </div>
         </div>
       </div>

@@ -2,8 +2,8 @@
   display: grid;
   grid-template-columns: 2fr 1fr 1fr;
   align-items: center;
-  background: #1c2541;
-  border: 1px solid #3a506b;
+  background: var(--bg-card); // Берем цвет карты из темы
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 15px 20px;
   margin-bottom: 12px;
@@ -11,48 +11,40 @@
 
   &:hover {
     transform: translateX(5px);
-    border-color: #00f5d4;
+    border-color: var(--accent-color);
   }
 
-  &.archived { opacity: 0.8; border-style: dashed; }
+  &.archived { 
+    opacity: 0.7; 
+    border-style: dashed; 
+  }
   
-  .name { font-weight: 700; color: #e2e8f0; display: block; }
-  .platform { font-size: 0.8rem; color: #00f5d4; }
-  .profit { font-weight: 800; }
-  .red { color: #ff4d4d; }
-  .turquoise { color: #00f5d4; }
+  .name { font-weight: 700; color: var(--text-main); display: block; }
+  .platform { font-size: 0.8rem; color: var(--accent-color); }
+  .date { font-size: 0.85rem; color: var(--text-muted); }
+  
+  .sale-finance {
+    .price { color: var(--text-main); font-weight: 600; }
+    .profit { font-weight: 800; }
+    .red { color: var(--error-red); }
+    .turquoise { color: var(--accent-color); }
+  }
 
   .sale-actions {
     display: flex;
     justify-content: flex-end;
     gap: 12px;
-    
-    .action-btn {
-      background: none;
-      border: 1px solid #3a506b;
-      color: #94a3b8;
-      padding: 8px;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: 0.2s;
-
-      &:hover {
-        color: #fff;
-        background: rgba(255,255,255,0.05);
-      }
-      &.trash:hover { color: #ff4d4d; border-color: #ff4d4d; }
-      &.undo:hover { color: #00f5d4; border-color: #00f5d4; }
-    }
+    align-items: center;
   }
 }
 
-// Стили модалки
+// Стили модалки (тоже привязываем к теме)
 .modal-overlay {
   position: fixed;
   top: 0; left: 0;
   width: 100vw; height: 100vh;
-  background: rgba(11, 19, 43, 0.85); // Твой основной темный цвет
-  backdrop-filter: blur(6px);
+  background: rgba(var(--bg-main), 0.8); // Используем основной фон с прозрачностью
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -60,64 +52,59 @@
 }
 
 .custom-modal {
-  background: #1c2541;
-  border: 1px solid #3a506b;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
   border-radius: 16px;
   padding: 30px;
-  width: 90%;
-  max-width: 480px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  width: 95%;
+  max-width: 450px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
 
-  h3 { color: #00f5d4; font-size: 1.4rem; margin-bottom: 8px; }
-  p { color: #94a3b8; margin-bottom: 24px; b { color: #fff; } }
+  h3 { color: var(--accent-color); margin-bottom: 10px; }
+  p { color: var(--text-muted); margin-bottom: 25px; b { color: var(--text-main); } }
 
   .modal-options {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    margin-bottom: 20px;
+    gap: 15px;
 
     .opt-btn {
       display: flex;
       align-items: center;
-      gap: 20px;
-      padding: 16px;
-      background: rgba(255,255,255,0.02);
-      border: 1px solid #3a506b;
-      border-radius: 10px;
-      color: #e2e8f0;
-      text-align: left;
+      gap: 15px;
+      padding: 15px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      color: var(--text-main);
       cursor: pointer;
-      transition: all 0.2s;
+      transition: 0.2s;
 
-      i { font-size: 1.5rem; width: 30px; text-align: center; }
+      .opt-icon { font-size: 1.8rem; }
       .text {
-        .title { display: block; font-weight: 700; margin-bottom: 2px; }
-        .desc { font-size: 0.8rem; color: #94a3b8; line-height: 1.3; }
+        .title { display: block; font-weight: 700; }
+        .desc { font-size: 0.8rem; color: var(--text-muted); }
       }
 
       &.smart:hover { 
-        border-color: #00f5d4; 
-        background: rgba(0, 245, 212, 0.05);
-        i { color: #00f5d4; }
+        border-color: var(--accent-color); 
+        background: rgba(0, 245, 212, 0.05); 
       }
 
       &.hard:hover { 
-        border-color: #ff4d4d; 
-        background: rgba(255, 77, 77, 0.05);
-        i { color: #ff4d4d; }
+        border-color: var(--error-red); 
+        background: rgba(255, 77, 77, 0.05); 
       }
     }
   }
 
   .btn-cancel {
+    margin-top: 15px;
     width: 100%;
     background: transparent;
     border: none;
-    color: #94a3b8;
-    padding: 10px;
+    color: var(--text-muted);
     cursor: pointer;
-    font-size: 0.95rem;
-    &:hover { color: #fff; text-decoration: underline; }
+    &:hover { color: var(--text-main); text-decoration: underline; }
   }
 }

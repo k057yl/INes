@@ -4,6 +4,16 @@
     "UNCONFIRMED_PASSWORD": "Невірний пароль",
     "UNCONFIRMED_USERNAME": "Невірне ім'я користувача"
   },
+  "SHARED": {
+    "TOOLTIP_INFO": "Інформація",
+    "TOOLTIP_RENAME": "Перейменувати",
+    "TOOLTIP_DELETE": "Видалити",
+    "TOOLTIP_ADD": "Додати"
+  },
+  "MANAGEMENT": {
+    "TITLE_CATEGORY": "Керування категоріями",
+    "TITLE_PLATFORM": "Керування платформами"
+  },
   "REG": {
     "TITLE": "О, привіт!",
     "SUBTITLE": "Зареєструйтеся в системі",

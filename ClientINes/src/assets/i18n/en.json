@@ -4,6 +4,16 @@
     "UNCONFIRMED_PASSWORD": "Incorrect password",
     "UNCONFIRMED_USERNAME": "Incorrect username"
   },
+  "SHARED": {
+    "TOOLTIP_INFO": "Information",
+    "TOOLTIP_RENAME": "Rename",
+    "TOOLTIP_DELETE": "Delete",
+    "TOOLTIP_ADD": "Add"
+  },
+  "MANAGEMENT": {
+    "TITLE_CATEGORY": "Category Management",
+    "TITLE_PLATFORM": "Platform Management"
+  },
   "REG": {
     "TITLE": "Oh, hello!",
     "SUBTITLE": "Register in the system",

@@ -1,0 +1,22 @@
+@import 'variables';
+@import 'buttons';
+
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%; width: 100%;
+  margin: 0; padding: 0;
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  font-family: 'Inter', -apple-system, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  overflow-x: hidden;
+}
+
+/* Фикс автозаполнения */
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px var(--bg-input) inset !important;
+  -webkit-text-fill-color: var(--text-main) !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+

@@ -17,20 +17,20 @@
   </div>
 
   <div class="sale-actions">
-    <button class="action-btn undo" 
+    <button class="inest-action-btn" 
         *ngIf="isItemExists" 
         (click)="onUndo()"
-        title="Вернуть в инвентарь">
-        <i class="fa fa-undo"></i>
+        [title]="'SHARED.TOOLTIP_UNDO' | translate">
+        ↩️
     </button>
 
-    <button class="action-btn trash" 
+    <button class="inest-action-btn is-danger" 
             (click)="onDelete()" 
-            title="Удалить">
-      <i class="fa fa-trash-alt"></i>
+            [title]="'SHARED.TOOLTIP_DELETE' | translate">
+      ❌
     </button>
     
-    <i class="fa fa-archive archived-icon" *ngIf="!sale.itemId" title="Предмет удален из инвентаря"></i>
+    <span class="archived-label" *ngIf="!sale.itemId" title="Предмет удален из инвентаря">📦💨</span>
   </div>
 </div>
 
@@ -41,7 +41,7 @@
     
     <div class="modal-options">
       <button class="opt-btn smart" (click)="confirmDelete(true)">
-        <i class="fa fa-box-archive"></i>
+        <span class="opt-icon">📥</span>
         <div class="text">
           <span class="title">Smart Delete</span>
           <span class="desc">Удалить фото и айтем, но оставить прибыль в истории.</span>
@@ -49,7 +49,7 @@
       </button>
 
       <button class="opt-btn hard" (click)="confirmDelete(false)">
-        <i class="fa fa-fire-alt"></i>
+        <span class="opt-icon">🔥</span>
         <div class="text">
           <span class="title">Hard Delete</span>
           <span class="desc">Стереть всё полностью (включая запись о прибыли).</span>

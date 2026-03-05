@@ -1,0 +1,46 @@
+.inest-action-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--accent-color);
+  color: var(--text-main);
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 0;
+
+  i {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    transition: color 0.2s;
+  }
+
+  &:hover {
+    background: var(--accent-color);
+    color: var(--bg-card);
+    
+    i { color: var(--bg-card); }
+    
+    .dark-theme & {
+      box-shadow: 0 0 12px rgba(0, 245, 212, 0.4);
+    }
+  }
+
+  &.is-danger {
+    border-color: var(--error-red);
+    i { color: var(--error-red); }
+
+    &:hover {
+      background: var(--error-red);
+      color: #000;
+      i { color: #000; }
+
+      .dark-theme & {
+        box-shadow: 0 0 12px rgba(255, 77, 77, 0.4);
+      }
+    }
+  }
+}

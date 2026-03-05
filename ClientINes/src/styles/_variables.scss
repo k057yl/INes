@@ -1,0 +1,25 @@
+:root {
+  --bg-main: #f0f2f5;
+  --bg-card: #ffffff;
+  --bg-input: #f8fafc;
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+  --border-color: #cbd5e1;
+  --accent-color: #00b894;
+  
+  /* Константы */
+  --dark-blue: #0b132b;
+  --navy-blue: #1c2541;
+  --turquoise: #00f5d4;
+  --error-red: #ff4d4d;
+}
+
+body.dark-theme {
+  --bg-main: #0b132b;
+  --bg-card: #1c2541;
+  --bg-input: #0b132b;
+  --text-main: #e2e8f0;
+  --text-muted: #94a3b8;
+  --border-color: #3a506b;
+  --accent-color: #00f5d4;
+}

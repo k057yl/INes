@@ -5,6 +5,16 @@
     "UNCONFIRMED_USERNAME": "Имя не верное",
     "FUTURE_DATE": "Дата не может быть в будующем"
   },
+  "SHARED": {
+    "TOOLTIP_INFO": "Информация",
+    "TOOLTIP_RENAME": "Переименовать",
+    "TOOLTIP_DELETE": "Удалить",
+    "TOOLTIP_ADD": "Добавить"
+  },
+  "MANAGEMENT": {
+    "TITLE_CATEGORY": "Управление категориями",
+    "TITLE_PLATFORM": "Управление платформами"
+  },
   "REG": {
     "TITLE": "О, Привет!",
     "SUBTITLE": "Зарегистрируйтесь в системе",
