@@ -97,6 +97,14 @@ namespace INest.Services
                     sp.GetRequiredService<IMemoryCache>()
                 ));
 
+            // Платформы
+            services.AddScoped<PlatformService>();
+            services.AddScoped<IPlatformService>(sp =>
+                new CachedPlatformService(
+                    sp.GetRequiredService<PlatformService>(),
+                    sp.GetRequiredService<IMemoryCache>()
+                ));
+
             return services;
         }
     }

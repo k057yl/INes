@@ -2,61 +2,108 @@
   display: flex;
   justify-content: center;
   padding: 40px 20px;
-}
-
-.admin-card {
-  max-width: 900px;
-  width: 100%;
+  background: var(--bg-main);
+  min-height: calc(100vh - 64px);
 }
 
 .admin-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 25px;
-  margin-top: 2rem;
+  // Сетка: 2 колонки на широком экране, 1 на мобилках
+  grid-template-columns: repeat(2, 1fr);
+  gap: 30px;
+  max-width: 1000px;
+  width: 100%;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
 }
 
-.admin-section {
-  background: var(--dark-blue);
-  padding: 20px;
+.admin-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  padding: 25px;
   border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
 }
 
-.section-header {
+.card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-color);
+
+  h3 {
+    margin: 0;
+    color: var(--accent-color);
+    font-size: 1.2rem;
+    i { margin-right: 10px; }
+  }
 }
 
-.scroll-list {
-  max-height: 250px;
-  overflow-y: auto;
-  padding-right: 5px;
-}
-
-.admin-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-  font-size: 0.9rem;
-}
-
-.item-actions button {
-  background: transparent;
-  border: none;
-  color: var(--text-muted);
+.add-btn-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--accent-color);
+  background: rgba(0, 245, 212, 0.1);
+  color: var(--accent-color);
   cursor: pointer;
-  margin-left: 10px;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.3s;
+
+  &:hover {
+    background: var(--accent-color);
+    color: var(--bg-card);
+  }
 }
 
-.item-actions button:hover { color: var(--turquoise); }
-.item-actions button.delete:hover { color: #ff4d4d; }
-
-.action-buttons {
+.admin-list {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 5px;
+
+  /* Кастомный скроллбар */
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
+}
+
+.admin-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  transition: 0.2s;
+
+  &:hover {
+    border-color: var(--accent-color);
+    transform: translateX(5px);
+  }
+
+  .name { color: var(--text-main); font-weight: 500; }
+
+  .actions {
+    display: flex;
+    gap: 12px;
+    button {
+      background: none; border: none;
+      color: var(--text-muted); cursor: pointer;
+      font-size: 1rem; transition: 0.2s;
+      &:hover { color: var(--accent-color); }
+      &.del:hover { color: #ff4d4d; }
+    }
+  }
 }

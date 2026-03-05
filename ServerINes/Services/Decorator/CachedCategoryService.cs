@@ -1,4 +1,5 @@
-﻿using INest.Models.DTOs.Category;
+﻿using INest.Constants;
+using INest.Models.DTOs.Category;
 using INest.Models.Entities;
 using INest.Services.Interfaces;
 using Microsoft.Extensions.Caching.Memory;
@@ -17,11 +18,10 @@ namespace INest.Services.Decorator
             _cache = cache;
         }
 
-        private string GetCacheKey(Guid userId) => $"categories_tree_{userId}";
-
         public async Task<IEnumerable<Category>> GetAllAsync(Guid userId)
         {
-            return await _cache.GetOrCreateAsync(GetCacheKey(userId), async entry =>
+            var key = CacheConstants.GetCategoriesKey(userId);
+            return await _cache.GetOrCreateAsync(key, async entry =>
             {
                 entry.AbsoluteExpirationRelativeToNow = _cacheDuration;
                 return await _inner.GetAllAsync(userId);
@@ -31,14 +31,14 @@ namespace INest.Services.Decorator
         public async Task<Category> CreateAsync(Guid userId, CreateCategoryDto dto)
         {
             var result = await _inner.CreateAsync(userId, dto);
-            _cache.Remove(GetCacheKey(userId));
+            _cache.Remove(CacheConstants.GetCategoriesKey(userId));
             return result;
         }
 
         public async Task<Category?> UpdateAsync(Guid userId, Guid categoryId, CreateCategoryDto dto)
         {
             var result = await _inner.UpdateAsync(userId, categoryId, dto);
-            if (result != null) _cache.Remove(GetCacheKey(userId));
+            if (result != null) _cache.Remove(CacheConstants.GetCategoriesKey(userId));
             return result;
         }
 
@@ -48,7 +48,7 @@ namespace INest.Services.Decorator
 
             if (result)
             {
-                _cache.Remove(GetCacheKey(userId));
+                _cache.Remove(CacheConstants.GetCategoriesKey(userId));
             }
 
             return result;

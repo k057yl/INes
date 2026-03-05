@@ -49,15 +49,15 @@ export class AdminPanelComponent implements OnInit {
   }
 
   deleteCategory(cat: Category) {
-    if (cat.name === 'Разное') {
-      alert('Категорию "Разное" нельзя удалить, она системная.');
+    if (cat.name === 'Other') {
+      alert('Эту категорию нельзя удалить, она системная.');
       return;
     }
 
     if (confirm(`Удалить категорию "${cat.name}"? Предметы будут перенесены в "Разное".`)) {
       this.categoryService.delete(cat.id).subscribe({
         next: () => this.loadAllData(),
-        error: (err: any) => alert('Ошибка удаления')
+        error: () => alert('Ошибка удаления')
       });
     }
   }
@@ -77,9 +77,9 @@ export class AdminPanelComponent implements OnInit {
     }
   }
 
-  deletePlatform(id: string) {
-    if (confirm('Удалить платформу?')) {
-      this.platformService.delete(id).subscribe(() => this.loadAllData());
+  deletePlatform(p: SimpleEntity) {
+    if (confirm(`Удалить платформу "${p.name}"?`)) {
+      this.platformService.delete(p.id).subscribe(() => this.loadAllData());
     }
   }
 }

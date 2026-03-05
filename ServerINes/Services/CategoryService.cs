@@ -3,6 +3,7 @@ using INest.Models.Entities;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.EntityFrameworkCore;
 using INest.Services.Interfaces;
+using INest.Constants;
 
 namespace INest.Services
 {
@@ -84,7 +85,7 @@ namespace INest.Services
 
             if (category == null) return false;
 
-            if (category.Name == "Other")
+            if (category.Name == NameConstants.CATEGORY_OTHER)
                 throw new InvalidOperationException("CannotDeleteDefaultCategory");
 
             if (category.Items.Any())
@@ -94,7 +95,7 @@ namespace INest.Services
                 if (targetId == null)
                 {
                     var defaultCat = await _context.Categories
-                        .FirstOrDefaultAsync(c => c.UserId == userId && c.Name == "Other");
+                        .FirstOrDefaultAsync(c => c.UserId == userId && c.Name == NameConstants.CATEGORY_OTHER);
 
                     if (defaultCat == null)
                     {
@@ -102,7 +103,7 @@ namespace INest.Services
                         {
                             Id = Guid.NewGuid(),
                             UserId = userId,
-                            Name = "Other",
+                            Name = NameConstants.CATEGORY_OTHER,
                             Color = "#64748b"
                         };
                         _context.Categories.Add(defaultCat);

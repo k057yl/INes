@@ -65,10 +65,10 @@ namespace INest.Controllers
             var token = await _authService.LoginAsync(dto);
 
             if (token == null)
-                return Unauthorized(new { error = LacalizationConst.UnconfirmedPassword });
+                return Unauthorized(new { error = LocalizationConstants.UNCORFIMED_PASSWORD });
 
             if (token == "unconfirmed")
-                return Unauthorized(new { error = LacalizationConst.UnconfirmedMail });
+                return Unauthorized(new { error = LocalizationConstants.UNCONFIRMED_MAIL });
 
             return Ok(new { token });
         }

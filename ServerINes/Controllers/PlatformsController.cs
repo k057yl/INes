@@ -43,5 +43,18 @@ namespace INest.Controllers
             await _context.SaveChangesAsync();
             return NoContent();
         }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(Guid id, [FromBody] string name)
+        {
+            var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var platform = await _context.Platforms.FirstOrDefaultAsync(p => p.Id == id && p.UserId == userId);
+
+            if (platform == null) return NotFound();
+
+            platform.Name = name;
+            await _context.SaveChangesAsync();
+            return Ok(platform);
+        }
     }
 }
