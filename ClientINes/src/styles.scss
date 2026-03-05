@@ -40,3 +40,60 @@ input:-webkit-autofill {
   -webkit-box-shadow: 0 0 0 1000px var(--bg-input) inset !important;
   -webkit-text-fill-color: var(--text-main) !important;
 }
+
+/* Глобальные стили кнопок действий */
+.btn-action {
+  /* Фон берем из переменной карты, чтобы он сливался с подложкой */
+  background: var(--bg-card); 
+  border: 1px solid var(--accent-color);
+  color: var(--text-main);
+  
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 0.9rem;
+
+  i {
+    color: var(--text-muted);
+    transition: color 0.2s;
+  }
+
+  /* Состояние при наведении */
+  &:hover {
+    background: var(--accent-color);
+    /* В светлой теме текст будет белым на изумрудном, в темной - черным на бирюзовом */
+    color: var(--bg-card) !important; 
+    
+    i {
+      color: var(--bg-card) !important;
+    }
+    
+    /* Добавим небольшое свечение для темной темы */
+    .dark-theme & {
+      box-shadow: 0 0 12px rgba(0, 245, 212, 0.3);
+    }
+  }
+
+  /* Кнопка удаления (Danger) */
+  &.btn-del {
+    border-color: var(--error-red);
+    
+    i { color: var(--error-red); }
+
+    &:hover {
+      background: var(--error-red);
+      color: white !important;
+      
+      i { color: white !important; }
+
+      .dark-theme & {
+        box-shadow: 0 0 12px rgba(255, 77, 77, 0.3);
+      }
+    }
+  }
+}

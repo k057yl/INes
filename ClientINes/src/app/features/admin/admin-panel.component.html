@@ -10,8 +10,10 @@
         <div class="admin-list-item" *ngFor="let c of categories">
           <span class="name">{{ c.name }}</span>
           <div class="actions">
-            <button (click)="renameCategory(c)" title="Переименовать"><i class="fa fa-pen"></i></button>
-            <button class="del" 
+            <button class="btn-action" (click)="renameCategory(c)" title="Переименовать">
+              <i class="fa fa-pen"></i>
+            </button>
+            <button class="btn-action btn-del" 
                     *ngIf="c.name !== 'Разное' && c.name !== 'Other'" 
                     (click)="deleteCategory(c)" 
                     title="Удалить">
@@ -31,8 +33,12 @@
         <div class="admin-list-item" *ngFor="let p of platforms">
           <span class="name">{{ p.name }}</span>
           <div class="actions">
-            <button (click)="renamePlatform(p)" title="Переименовать"><i class="fa fa-pen"></i></button>
-            <button class="del" (click)="deletePlatform(p)" title="Удалить"><i class="fa fa-trash"></i></button>
+            <button class="btn-action" (click)="renamePlatform(p)" title="Переименовать">
+              <i class="fa fa-pen"></i>
+            </button>
+            <button class="btn-action btn-del" (click)="deletePlatform(p)" title="Удалить">
+              <i class="fa fa-trash"></i>
+            </button>
           </div>
         </div>
       </div>
