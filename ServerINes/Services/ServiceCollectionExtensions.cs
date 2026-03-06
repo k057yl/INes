@@ -105,6 +105,14 @@ namespace INest.Services
                     sp.GetRequiredService<IMemoryCache>()
                 ));
 
+            // Предметы
+            services.AddScoped<ItemService>();
+            services.AddScoped<IItemService>(sp =>
+                new CachedItemService(
+                    sp.GetRequiredService<ItemService>(),
+                    sp.GetRequiredService<IMemoryCache>()
+                ));
+
             return services;
         }
     }

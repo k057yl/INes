@@ -1,10 +1,8 @@
-﻿using INest.Constants;
-using INest.Models.DTOs.Item;
+﻿using INest.Models.DTOs.Item;
 using INest.Models.Entities;
 using INest.Models.Enums;
 using INest.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace INest.Services
 {
@@ -12,13 +10,11 @@ namespace INest.Services
     {
         private readonly AppDbContext _context;
         private readonly IPhotoService _photoService;
-        private readonly IMemoryCache _cache;
 
-        public ItemService(AppDbContext context, IPhotoService photoService, IMemoryCache cache)
+        public ItemService(AppDbContext context, IPhotoService photoService)
         {
             _context = context;
             _photoService = photoService;
-            _cache = cache;
         }
 
         public async Task<Item> CreateItemAsync(Guid userId, CreateItemDto dto, List<IFormFile> photos)
@@ -76,10 +72,6 @@ namespace INest.Services
             });
 
             await _context.SaveChangesAsync();
-
-            _cache.Remove(CacheConstants.GetLocationsTreeKey(userId));
-            _cache.Remove(CacheConstants.GetUserLocationsListKey(userId));
-
             return item;
         }
 
@@ -121,32 +113,34 @@ namespace INest.Services
                 });
             }
 
-            if (!string.IsNullOrEmpty(dto.Name) && dto.Name != item.Name)
+            if (dto.Name != null && dto.Name != item.Name)
                 AddHistory(ItemHistoryType.ValueUpdated, item.Name, dto.Name);
 
-            if (!string.IsNullOrEmpty(dto.Description) && dto.Description != item.Description)
+            if (dto.Description != item.Description)
                 AddHistory(ItemHistoryType.ValueUpdated, item.Description, dto.Description);
 
             if (dto.CategoryId.HasValue && dto.CategoryId.Value != item.CategoryId)
                 AddHistory(ItemHistoryType.ValueUpdated, item.CategoryId.ToString(), dto.CategoryId.Value.ToString());
 
-            if (dto.StorageLocationId.HasValue && dto.StorageLocationId != item.StorageLocationId)
+            if (dto.StorageLocationId != item.StorageLocationId)
                 AddHistory(ItemHistoryType.Moved, item.StorageLocationId?.ToString(), dto.StorageLocationId?.ToString());
 
-            if (dto.PurchasePrice.HasValue && dto.PurchasePrice != item.PurchasePrice)
+            if (dto.PurchasePrice != item.PurchasePrice)
                 AddHistory(ItemHistoryType.ValueUpdated, item.PurchasePrice?.ToString(), dto.PurchasePrice?.ToString());
 
-            if (dto.EstimatedValue.HasValue && dto.EstimatedValue != item.EstimatedValue)
+            if (dto.EstimatedValue != item.EstimatedValue)
                 AddHistory(ItemHistoryType.ValueUpdated, item.EstimatedValue?.ToString(), dto.EstimatedValue?.ToString());
 
-            // Apply updates
-            if (!string.IsNullOrEmpty(dto.Name)) item.Name = dto.Name;
-            if (!string.IsNullOrEmpty(dto.Description)) item.Description = dto.Description;
+            if (dto.PurchaseDate != item.PurchaseDate)
+                AddHistory(ItemHistoryType.ValueUpdated, item.PurchaseDate?.ToString(), dto.PurchaseDate?.ToString());
+
+            if (dto.Name != null) item.Name = dto.Name;
+            item.Description = dto.Description;
             if (dto.CategoryId.HasValue) item.CategoryId = dto.CategoryId.Value;
-            if (dto.StorageLocationId.HasValue) item.StorageLocationId = dto.StorageLocationId;
-            if (dto.PurchasePrice.HasValue) item.PurchasePrice = dto.PurchasePrice;
-            if (dto.EstimatedValue.HasValue) item.EstimatedValue = dto.EstimatedValue;
-            if (dto.PurchaseDate.HasValue) item.PurchaseDate = dto.PurchaseDate;
+            item.StorageLocationId = dto.StorageLocationId;
+            item.PurchasePrice = dto.PurchasePrice;
+            item.EstimatedValue = dto.EstimatedValue;
+            item.PurchaseDate = dto.PurchaseDate;
 
             await _context.SaveChangesAsync();
             return true;
@@ -178,24 +172,13 @@ namespace INest.Services
 
                     if (targetLocation != null)
                     {
-                        if (targetLocation.IsSalesLocation)
-                        {
-                            item.Status = ItemStatus.Listed;
-                        }
-                        else if (targetLocation.IsLendingLocation)
-                        {
-                            item.Status = ItemStatus.Lent;
-                        }
-                        else
-                        {
-                            if (item.Status == ItemStatus.Listed || item.Status == ItemStatus.Lent)
-                            {
-                                item.Status = ItemStatus.Active;
-                            }
-                        }
+                        if (targetLocation.IsSalesLocation) item.Status = ItemStatus.Listed;
+                        else if (targetLocation.IsLendingLocation) item.Status = ItemStatus.Lent;
+                        else if (item.Status == ItemStatus.Listed || item.Status == ItemStatus.Lent)
+                            item.Status = ItemStatus.Active;
                     }
                 }
-                else if (item.Status == ItemStatus.Listed)
+                else if (item.Status == ItemStatus.Listed || item.Status == ItemStatus.Lent)
                 {
                     item.Status = ItemStatus.Active;
                 }
@@ -264,7 +247,6 @@ namespace INest.Services
             if (item == null || item.Sale == null) return false;
 
             _context.Sales.Remove(item.Sale);
-
             item.Status = ItemStatus.Active;
 
             _context.ItemHistories.Add(new ItemHistory
@@ -299,10 +281,7 @@ namespace INest.Services
             _context.ItemHistories.RemoveRange(history);
 
             _context.Items.Remove(item);
-
             await _context.SaveChangesAsync();
-
-            _cache.Remove(CacheConstants.GetLocationsTreeKey(userId));
             return true;
         }
     }
