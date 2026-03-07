@@ -1,10 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { Item } from '../../../models/entities/item.entity';
 import { SellItemRequestDto } from '../../../models/dtos/sale.dto';
-import { environment } from '../../../../environments/environment';
+import { PlatformDto } from '../../../models/dtos/platform.dto';
+import { SalesService } from '../../services/sales.service';
 
 @Component({
   selector: 'app-sell-modal',
@@ -15,10 +15,10 @@ import { environment } from '../../../../environments/environment';
 })
 export class SellModalComponent implements OnInit {
   private fb = inject(FormBuilder);
-  private http = inject(HttpClient);
+  private salesService = inject(SalesService);
 
   @Input() item!: Item;
-  platforms: any[] = []; 
+  platforms: PlatformDto[] = []; 
   
   @Output() close = new EventEmitter<void>();
   @Output() confirm = new EventEmitter<SellItemRequestDto>();
@@ -35,7 +35,7 @@ export class SellModalComponent implements OnInit {
   }
 
   loadPlatforms() {
-    this.http.get<any[]>(`${environment.apiBaseUrl}/platforms`).subscribe({
+    this.salesService.getPlatforms().subscribe({
       next: (data) => this.platforms = data,
       error: (err) => console.error('Ошибка при загрузке платформ', err)
     });
@@ -44,9 +44,7 @@ export class SellModalComponent implements OnInit {
   addPlatform() {
     const name = prompt('Введите название платформы (например: Avito, eBay):');
     if (name && name.trim()) {
-      this.http.post<any>(`${environment.apiBaseUrl}/platforms`, JSON.stringify(name.trim()), {
-        headers: { 'Content-Type': 'application/json' }
-      }).subscribe({
+      this.salesService.addPlatform(name.trim()).subscribe({
         next: (newPlatform) => {
           this.platforms.push(newPlatform);
           this.sellForm.patchValue({ platformId: newPlatform.id });

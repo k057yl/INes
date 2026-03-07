@@ -1,6 +1,10 @@
-﻿using INest.Models.Entities;
+﻿using INest.Constants;
+using INest.Models.Entities;
 using INest.Services.Decorator;
 using INest.Services.Interfaces;
+using INest.Models.Validators;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -14,22 +18,47 @@ namespace INest.Services
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration config)
         {
-            services.AddControllers()
-            .AddJsonOptions(options => {
-                options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
-                options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
-            });
+            services.AddCustomControllers();
+            services.AddCustomDatabase(config);
+            services.AddCustomIdentity(config);
+            services.AddCustomAuth(config);
+            services.AddCustomCors(config);
 
+            services.AddMemoryCache();
+            services.AddLocalization(options => options.ResourcesPath = "Resources");
+            services.Configure<CloudinarySettings>(config.GetSection("CloudinarySettings"));
+
+            return services;
+        }
+
+        private static void AddCustomControllers(this IServiceCollection services)
+        {
+            services.AddControllers()
+                .AddJsonOptions(options => {
+                    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+                    options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+                });
+
+            services.AddFluentValidationAutoValidation();
+            services.AddValidatorsFromAssemblyContaining<CategoryRules>();
+        }
+
+        private static void AddCustomDatabase(this IServiceCollection services, IConfiguration config)
+        {
             services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(config.GetConnectionString("DefaultConnection"))
             );
+        }
 
-            services.AddMemoryCache();
-
+        private static void AddCustomIdentity(this IServiceCollection services, IConfiguration config)
+        {
             services.AddIdentity<AppUser, IdentityRole<Guid>>()
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
+        }
 
+        private static void AddCustomAuth(this IServiceCollection services, IConfiguration config)
+        {
             var jwt = config.GetSection("Jwt");
             var keyBytes = Encoding.UTF8.GetBytes(jwt["Key"]?.Trim() ?? throw new InvalidOperationException("JWT Key missing"));
 
@@ -51,69 +80,51 @@ namespace INest.Services
                     IssuerSigningKey = new SymmetricSecurityKey(keyBytes)
                 };
             });
+        }
 
-            var allowedOrigins = config.GetSection("CorsSettings:AllowedOrigins").Get<string[]>()
-                                 ?? new[] { "http://localhost:4200" };
-
+        private static void AddCustomCors(this IServiceCollection services, IConfiguration config)
+        {
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowAngular", policy =>
-                    policy.WithOrigins("http://localhost:4200")
+                    policy.WithOrigins(SharedConstants.LOCALHOST)
                           .AllowAnyMethod()
                           .AllowAnyHeader()
                           .AllowCredentials());
             });
-
-            services.Configure<CloudinarySettings>(config.GetSection("CloudinarySettings"));
-
-            return services;
         }
 
         public static IServiceCollection AddBusinessServices(this IServiceCollection services)
         {
-            // Обычные сервисы
+            // Базовые сервисы
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IPhotoService, PhotoService>();
             services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped<IItemService, ItemService>();
-            services.AddScoped<ISalesService, SalesService>();
 
-            // --- ДЕКОРАТОРЫ ДЛЯ КЭША ---
-
-            // Категории
-            services.AddScoped<CategoryService>();
-            services.AddScoped<ICategoryService>(sp =>
-                new CachedCategoryService(
-                    sp.GetRequiredService<CategoryService>(),
-                    sp.GetRequiredService<IMemoryCache>()
-                ));
-
-            // Локации
-            services.AddScoped<LocationService>();
-            services.AddScoped<ILocationService>(sp =>
-                new CachedLocationService(
-                    sp.GetRequiredService<LocationService>(),
-                    sp.GetRequiredService<IMemoryCache>()
-                ));
-
-            // Платформы
-            services.AddScoped<PlatformService>();
-            services.AddScoped<IPlatformService>(sp =>
-                new CachedPlatformService(
-                    sp.GetRequiredService<PlatformService>(),
-                    sp.GetRequiredService<IMemoryCache>()
-                ));
-
-            // Предметы
-            services.AddScoped<ItemService>();
-            services.AddScoped<IItemService>(sp =>
-                new CachedItemService(
-                    sp.GetRequiredService<ItemService>(),
-                    sp.GetRequiredService<IMemoryCache>()
-                ));
+            // Регистрация декораторов (вынесено в хелпер для читаемости)
+            services.AddDecoratedService<ICategoryService, CategoryService, CachedCategoryService>();
+            services.AddDecoratedService<ILocationService, LocationService, CachedLocationService>();
+            services.AddDecoratedService<IPlatformService, PlatformService, CachedPlatformService>();
+            services.AddDecoratedService<ISalesService, SalesService, CachedSalesService>();
+            services.AddDecoratedService<IItemService, ItemService, CachedItemService>();
 
             return services;
+        }
+
+        // Хелпер для регистрации декораторов, чтобы не дублировать код
+        private static void AddDecoratedService<TInterface, TService, TDecorator>(this IServiceCollection services)
+            where TInterface : class
+            where TService : class, TInterface
+            where TDecorator : class, TInterface
+        {
+            services.AddScoped<TService>();
+            services.AddScoped<TInterface>(sp =>
+            {
+                var inner = sp.GetRequiredService<TService>();
+                var cache = sp.GetRequiredService<IMemoryCache>();
+                return (TDecorator)Activator.CreateInstance(typeof(TDecorator), inner, cache)!;
+            });
         }
     }
 }

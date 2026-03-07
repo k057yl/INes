@@ -1,4 +1,5 @@
-﻿using INest.Models.Entities;
+﻿using INest.Models.DTOs.Platform;
+using INest.Models.Entities;
 using INest.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,12 +22,12 @@ namespace INest.Services
                 .ToListAsync();
         }
 
-        public async Task<Platform> CreateAsync(Guid userId, string name)
+        public async Task<Platform> CreateAsync(Guid userId, PlatformDto dto)
         {
             var platform = new Platform
             {
                 Id = Guid.NewGuid(),
-                Name = name,
+                Name = dto.Name,
                 UserId = userId
             };
 
@@ -35,14 +36,14 @@ namespace INest.Services
             return platform;
         }
 
-        public async Task<Platform?> UpdateAsync(Guid userId, Guid id, string name)
+        public async Task<Platform?> UpdateAsync(Guid userId, Guid id, PlatformDto dto)
         {
             var platform = await _context.Platforms
                 .FirstOrDefaultAsync(p => p.Id == id && p.UserId == userId);
 
             if (platform == null) return null;
 
-            platform.Name = name;
+            platform.Name = dto.Name;
             await _context.SaveChangesAsync();
             return platform;
         }

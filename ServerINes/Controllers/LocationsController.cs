@@ -12,117 +12,42 @@ namespace INest.Controllers
     public class LocationsController : ControllerBase
     {
         private readonly ILocationService _locationService;
+        public LocationsController(ILocationService locationService) => _locationService = locationService;
 
-        public LocationsController(ILocationService locationService)
-        {
-            _locationService = locationService;
-        }
+        private Guid GetUserId() => Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll() => Ok(await _locationService.GetUserLocationsAsync(GetUserId()));
+
+        [HttpGet("tree")]
+        public async Task<IActionResult> GetTree() => Ok(await _locationService.GetTreeAsync(GetUserId()));
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateLocationDto dto)
         {
-            try
-            {
-                var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-                var location = await _locationService.CreateLocationAsync(userId, dto);
-                return Ok(location);
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(new { error = ex.Message });
-            }
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
-        {
-            try
-            {
-                var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub");
-
-                if (string.IsNullOrEmpty(userIdStr))
-                    return BadRequest(new { error = "В токене отсутствует ID пользователя" });
-
-                if (!Guid.TryParse(userIdStr, out var userId))
-                    return BadRequest(new { error = $"ID в токене ({userIdStr}) не является валидным GUID" });
-
-                var locations = await _locationService.GetUserLocationsAsync(userId);
-                return Ok(locations);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { error = ex.Message, stack = ex.StackTrace });
-            }
+            var location = await _locationService.CreateLocationAsync(GetUserId(), dto);
+            return CreatedAtAction(nameof(GetById), new { id = location.Id }, location);
         }
 
         [HttpPatch("{id}/move")]
         public async Task<IActionResult> Move(Guid id, [FromBody] MoveLocationDto dto)
         {
-            var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-
-            await _locationService.MoveLocationAsync(userId, id, dto.NewParentId);
-
+            await _locationService.MoveLocationAsync(GetUserId(), id, dto.NewParentId);
             return Ok();
-        }
-
-        [HttpPatch("reorder")]
-        public async Task<IActionResult> Reorder([FromBody] ReorderLocationsDto dto)
-        {
-            var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-
-            await _locationService.ReorderLocationsAsync(userId, dto.ParentId, dto.OrderedIds);
-
-            return Ok();
-        }
-
-        [HttpGet("tree")]
-        public async Task<IActionResult> GetTree()
-        {
-            var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-
-            var tree = await _locationService.GetTreeAsync(userId);
-
-            return Ok(tree);
-        }
-
-        [HttpPatch("{id}/rename")]
-        public async Task<IActionResult> Rename(Guid id, [FromBody] RenameLocationDto dto)
-        {
-            try
-            {
-                var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-                await _locationService.RenameLocationAsync(userId, id, dto.Name);
-                return Ok();
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            try
-            {
-                var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-                await _locationService.DeleteLocationAsync(userId, id);
-                return Ok();
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
+            await _locationService.DeleteLocationAsync(GetUserId(), id);
+            return NoContent();
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-            var location = await _locationService.GetLocationByIdAsync(userId, id);
-
-            if (location == null) return NotFound();
-            return Ok(location);
+            var loc = await _locationService.GetLocationByIdAsync(GetUserId(), id);
+            return loc == null ? NotFound() : Ok(loc);
         }
     }
 }

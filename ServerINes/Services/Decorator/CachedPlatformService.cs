@@ -1,4 +1,5 @@
 ﻿using INest.Constants;
+using INest.Models.DTOs.Platform;
 using INest.Models.Entities;
 using INest.Services.Interfaces;
 using Microsoft.Extensions.Caching.Memory;
@@ -27,16 +28,16 @@ namespace INest.Services.Decorator
             }) ?? Enumerable.Empty<Platform>();
         }
 
-        public async Task<Platform> CreateAsync(Guid userId, string name)
+        public async Task<Platform> CreateAsync(Guid userId, PlatformDto dto)
         {
-            var result = await _inner.CreateAsync(userId, name);
+            var result = await _inner.CreateAsync(userId, dto);
             _cache.Remove(CacheConstants.GetPlatformsKey(userId));
             return result;
         }
 
-        public async Task<Platform?> UpdateAsync(Guid userId, Guid id, string name)
+        public async Task<Platform?> UpdateAsync(Guid userId, Guid id, PlatformDto dto)
         {
-            var result = await _inner.UpdateAsync(userId, id, name);
+            var result = await _inner.UpdateAsync(userId, id, dto);
             if (result != null) _cache.Remove(CacheConstants.GetPlatformsKey(userId));
             return result;
         }

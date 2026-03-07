@@ -1,28 +1,18 @@
-﻿using INest.Constants;
-using INest.Models.DTOs.Sale;
+﻿using INest.Models.DTOs.Sale;
 using INest.Models.Entities;
 using INest.Models.Enums;
 using INest.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace INest.Services
 {
     public class SalesService : ISalesService
     {
         private readonly AppDbContext _context;
-        private readonly IMemoryCache _cache;
 
-        public SalesService(AppDbContext context, IMemoryCache cache)
+        public SalesService(AppDbContext context)
         {
             _context = context;
-            _cache = cache;
-        }
-
-        private void InvalidateCache(Guid userId)
-        {
-            _cache.Remove(CacheConstants.GetLocationsTreeKey(userId));
-            _cache.Remove(CacheConstants.GetUserLocationsListKey(userId));
         }
 
         public async Task<SaleResponseDto> SellItemAsync(Guid userId, SellItemRequestDto request)
@@ -31,11 +21,8 @@ namespace INest.Services
                 .Include(i => i.Category)
                 .FirstOrDefaultAsync(i => i.Id == request.ItemId && i.UserId == userId);
 
-            if (item == null)
-                throw new KeyNotFoundException("Item not found");
-
-            if (item.Status == ItemStatus.Sold)
-                throw new InvalidOperationException("Item already sold");
+            if (item == null) throw new KeyNotFoundException("Item not found");
+            if (item.Status == ItemStatus.Sold) throw new InvalidOperationException("Item already sold");
 
             decimal purchasePrice = item.PurchasePrice ?? 0;
             decimal profit = request.SalePrice - purchasePrice;
@@ -72,12 +59,11 @@ namespace INest.Services
             _context.Add(history);
 
             await _context.SaveChangesAsync();
-            InvalidateCache(userId);
 
             string? platformName = null;
             if (request.PlatformId.HasValue)
             {
-                platformName = await _context.StorageLocations
+                platformName = await _context.Platforms
                     .Where(p => p.Id == request.PlatformId)
                     .Select(p => p.Name)
                     .FirstOrDefaultAsync();
@@ -116,20 +102,16 @@ namespace INest.Services
 
         public async Task<bool> CancelSaleAsync(Guid userId, Guid itemId)
         {
-            var item = await _context.Items
-                .Include(i => i.Sale)
+            var item = await _context.Items.Include(i => i.Sale)
                 .FirstOrDefaultAsync(i => i.Id == itemId && i.UserId == userId);
 
-            if (item == null || item.Sale == null)
-                return false;
+            if (item == null || item.Sale == null) return false;
 
             var oldStatus = item.Status;
-
             _context.Sales.Remove(item.Sale);
-
             item.Status = ItemStatus.Active;
 
-            var history = new ItemHistory
+            _context.ItemHistories.Add(new ItemHistory
             {
                 Id = Guid.NewGuid(),
                 ItemId = item.Id,
@@ -138,18 +120,25 @@ namespace INest.Services
                 Comment = "Sale cancelled, item returned to inventory",
                 OldValue = oldStatus.ToString(),
                 NewValue = ItemStatus.Active.ToString()
-            };
-
-            _context.ItemHistories.Add(history);
+            });
 
             await _context.SaveChangesAsync();
-
-            InvalidateCache(userId);
-
             return true;
         }
 
         public async Task<bool> DeleteSaleRecordAsync(Guid userId, Guid saleId)
+        {
+            var sale = await _context.Sales.Include(s => s.Item)
+                .FirstOrDefaultAsync(s => s.Id == saleId && (s.Item == null || s.Item.UserId == userId));
+
+            if (sale == null) return false;
+
+            _context.Sales.Remove(sale);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> SmartDeleteAsync(Guid userId, Guid saleId)
         {
             var sale = await _context.Sales
                 .Include(s => s.Item)
@@ -157,8 +146,17 @@ namespace INest.Services
 
             if (sale == null) return false;
 
-            _context.Sales.Remove(sale);
-            await _context.SaveChangesAsync();
+            if (sale.ItemId.HasValue)
+            {
+                var item = await _context.Items.FindAsync(sale.ItemId.Value);
+                if (item != null)
+                {
+                    _context.Items.Remove(item);
+                    sale.ItemId = null;
+                    await _context.SaveChangesAsync();
+                }
+            }
+
             return true;
         }
     }

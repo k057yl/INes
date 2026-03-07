@@ -10,10 +10,7 @@ namespace INest.Services
     {
         private readonly AppDbContext _context;
 
-        public LocationService(AppDbContext context)
-        {
-            _context = context;
-        }
+        public LocationService(AppDbContext context) => _context = context;
 
         public async Task<StorageLocation> CreateLocationAsync(Guid userId, CreateLocationDto dto)
         {

@@ -23,7 +23,8 @@ export class SaleCardComponent {
   }
 
   get isItemExists(): boolean {
-    return !!this.sale.itemId && this.sale.itemId !== '00000000-0000-0000-0000-000000000000';
+    const zeroGuid = '00000000-0000-0000-0000-000000000000';
+    return !!this.sale.itemId && this.sale.itemId !== zeroGuid;
   }
 
   onDelete() {

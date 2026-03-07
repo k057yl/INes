@@ -15,31 +15,23 @@ namespace INest.Controllers
         public CategoriesController(ICategoryService service) => _service = service;
 
         private Guid GetUserId() =>
-            Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new Exception("UserId missing"));
+            Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new UnauthorizedAccessException());
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll() => Ok(await _service.GetAllAsync(GetUserId()));
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateCategoryDto dto)
         {
             var cat = await _service.CreateAsync(GetUserId(), dto);
-            return Ok(cat);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
-        {
-            var cats = await _service.GetAllAsync(GetUserId());
-            return Ok(cats);
+            return CreatedAtAction(nameof(GetAll), new { }, cat);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, [FromBody] CreateCategoryDto dto)
         {
             var updated = await _service.UpdateAsync(GetUserId(), id, dto);
-
-            if (updated == null)
-                return NotFound(new { message = "Категория не найдена или доступ запрещен" });
-
-            return Ok(updated);
+            return updated == null ? NotFound() : Ok(updated);
         }
 
         [HttpDelete("{id}")]
@@ -48,23 +40,11 @@ namespace INest.Controllers
             try
             {
                 var success = await _service.DeleteAsync(GetUserId(), id, targetCategoryId);
-
-                if (!success)
-                    return NotFound(new { message = "Категория не найдена или доступ запрещен" });
-
-                return NoContent();
+                return success ? NoContent() : NotFound();
             }
-            catch (InvalidOperationException ex) when (ex.Message == "CategoryIsNotEmpty")
+            catch (InvalidOperationException ex)
             {
-                return BadRequest(new
-                {
-                    error = "CategoryIsNotEmpty",
-                    message = "Категория содержит предметы. Укажите targetCategoryId для переноса."
-                });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "Произошла внутренняя ошибка сервера", details = ex.Message });
+                return BadRequest(new { error = ex.Message });
             }
         }
     }

@@ -1,10 +1,6 @@
-﻿using INest.Constants;
-using INest.Models.DTOs.Auth;
-using INest.Models.Entities;
-using INest.Services;
+﻿using INest.Models.DTOs.Auth;
 using INest.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -15,18 +11,8 @@ namespace INest.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
-        private readonly UserManager<AppUser> _userManager;
-        private readonly ITokenService _tokenService;
 
-        public AuthController(
-            IAuthService authService,
-            UserManager<AppUser> userManager,
-            ITokenService tokenService)
-        {
-            _authService = authService;
-            _userManager = userManager;
-            _tokenService = tokenService;
-        }
+        public AuthController(IAuthService authService) => _authService = authService;
 
         [AllowAnonymous]
         [HttpPost("register")]
@@ -35,9 +21,9 @@ namespace INest.Controllers
             try
             {
                 await _authService.SendConfirmationCodeAsync(dto);
-                return Ok(new { message = "Код подтверждения отправлен на почту" });
+                return Ok(new { message = "OTP_SENT" });
             }
-            catch (Exception ex) when (ex is InvalidOperationException || ex is ArgumentException)
+            catch (Exception ex)
             {
                 return BadRequest(new { error = ex.Message });
             }
@@ -46,81 +32,57 @@ namespace INest.Controllers
         [HttpPost("confirm-register")]
         public async Task<IActionResult> ConfirmRegister([FromBody] ConfirmRegisterDto dto)
         {
-            var success = await _authService.ConfirmRegistrationAsync(dto.Email, dto.Code);
-            if (!success) return BadRequest(new { error = "Код неверный или истёк" });
-
-            var user = await _userManager.FindByEmailAsync(dto.Email);
-            if (user == null) return BadRequest(new { error = "Пользователь не найден" });
-
-            var roles = await _userManager.GetRolesAsync(user);
-            var token = _tokenService.GenerateJwtToken(user, roles);
-
-            return Ok(new { token, message = "Регистрация завершена" });
+            var result = await _authService.ConfirmRegistrationAsync(dto);
+            if (result == null) return BadRequest(new { error = "INVALID_OR_EXPIRED_CODE" });
+            return Ok(result);
         }
 
         [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
-            var token = await _authService.LoginAsync(dto);
-
-            if (token == null)
-                return Unauthorized(new { error = LocalizationConstants.UNCORFIMED_PASSWORD });
-
-            if (token == "unconfirmed")
-                return Unauthorized(new { error = LocalizationConstants.UNCONFIRMED_MAIL });
-
-            return Ok(new { token });
+            var result = await _authService.LoginAsync(dto);
+            if (!result.Success)
+            {
+                if (!result.IsEmailConfirmed) return Unauthorized(new { error = "EMAIL_UNCONFIRMED" });
+                return Unauthorized(new { error = result.Message });
+            }
+            return Ok(result);
         }
 
         [HttpPost("forgot-password")]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto dto)
         {
             await _authService.ForgotPasswordAsync(dto);
-            return Ok(new { message = "Письмо отправлено" });
+            return Ok(new { message = "RESET_EMAIL_SENT" });
         }
 
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
         {
             var result = await _authService.ResetPasswordAsync(dto);
-            if (result == null) return BadRequest(new { error = "Пользователь не найден" });
-            if (!result.Succeeded) return BadRequest(result.Errors);
+            if (result == null) return NotFound(new { error = "USER_NOT_FOUND" });
+            if (!result.Succeeded) return BadRequest(new { errors = result.Errors });
 
-            return Ok(new { message = "Пароль изменен" });
-        }
-
-        [HttpPost("logout/{userId}")]
-        public async Task<IActionResult> Logout(string userId)
-        {
-            await _authService.LogoutAsync(userId);
-            return Ok(new { message = "Вы вышли" });
+            return Ok(new { message = "PASSWORD_CHANGED" });
         }
 
         [Authorize]
         [HttpGet("me")]
         public IActionResult Me()
         {
-            var email = User.Identity?.Name;
-            var roles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
-            return Ok(new { email, roles });
-        }
-
-        [Authorize]
-        [HttpPost("logout")]
-        public async Task<IActionResult> Logout()
-        {
-            return Ok();
+            return Ok(new
+            {
+                email = User.Identity?.Name,
+                roles = User.FindAll(ClaimTypes.Role).Select(c => c.Value)
+            });
         }
 
         [AllowAnonymous]
         [HttpGet("check-email")]
         public async Task<IActionResult> CheckEmail([FromQuery] string email)
         {
-            if (string.IsNullOrEmpty(email)) return BadRequest("Email is required");
-
             var isUnique = await _authService.IsEmailUniqueAsync(email);
-
             return Ok(new { isUnique });
         }
 
@@ -128,12 +90,12 @@ namespace INest.Controllers
         [HttpPost("google-login")]
         public async Task<IActionResult> GoogleLogin([FromBody] ExternalAuthDto dto)
         {
-            var token = await _authService.GoogleLoginAsync(dto.IdToken);
-
-            if (token == null)
-                return Unauthorized(new { error = "Ошибка авторизации через Google" });
-
-            return Ok(new { token });
+            var result = await _authService.GoogleLoginAsync(dto.IdToken);
+            return result != null ? Ok(result) : Unauthorized(new { error = "GOOGLE_AUTH_FAILED" });
         }
+
+        [Authorize]
+        [HttpPost("logout")]
+        public IActionResult Logout() => Ok();
     }
 }

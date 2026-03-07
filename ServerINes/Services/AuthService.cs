@@ -14,10 +14,12 @@ namespace INest.Services
         private readonly IEmailService _emailService;
         private readonly IConfiguration _config;
 
-        private static readonly ConcurrentDictionary<string, (string Code, DateTime Expire)> _otpStore
-            = new();
+        private static readonly ConcurrentDictionary<string, (string Code, DateTime Expire)> _otpStore = new();
 
-        public AuthService(UserManager<AppUser> userManager, ITokenService tokenService, IEmailService emailService,
+        public AuthService(
+            UserManager<AppUser> userManager,
+            ITokenService tokenService,
+            IEmailService emailService,
             IConfiguration config)
         {
             _userManager = userManager;
@@ -28,80 +30,58 @@ namespace INest.Services
 
         public async Task SendConfirmationCodeAsync(RegisterDto dto)
         {
-            if (string.IsNullOrWhiteSpace(dto.Email)) throw new ArgumentException("Auth.RequiredFields");
-
             var normalizedEmail = dto.Email.ToLowerInvariant();
             var user = await _userManager.FindByEmailAsync(normalizedEmail);
 
             if (user != null && user.EmailConfirmed)
-                throw new InvalidOperationException("Auth.UserAlreadyExists");
+                throw new InvalidOperationException("EMAIL_ALREADY_EXISTS");
 
             if (user == null)
             {
-                user = new AppUser
-                {
-                    Email = normalizedEmail,
-                    UserName = dto.Username,
-                    EmailConfirmed = false
-                };
+                user = new AppUser { Email = normalizedEmail, UserName = dto.Username, EmailConfirmed = false };
                 var result = await _userManager.CreateAsync(user, dto.Password);
-                if (!result.Succeeded) throw new InvalidOperationException("Ошибка создания пользователя");
+                if (!result.Succeeded) throw new Exception(string.Join(", ", result.Errors.Select(e => e.Description)));
             }
 
             var code = new Random().Next(100000, 999999).ToString();
-            var expire = DateTime.UtcNow.AddMinutes(10);
+            _otpStore[normalizedEmail] = (code, DateTime.UtcNow.AddMinutes(10));
 
-            _otpStore[normalizedEmail] = (code, expire);
+            Console.WriteLine($"[DEBUG] OTP for {normalizedEmail}: {code}");
 
-            Console.WriteLine($"DEBUG: OTP для {normalizedEmail} -> {code}");
-
-            var html = $"<p>Ваш код: <b>{code}</b></p>";
-            await _emailService.SendEmailAsync(normalizedEmail, "Подтверждение регистрации", html);
+            var html = $"<h3>Welcome to INest!</h3><p>Your confirmation code: <b>{code}</b></p>";
+            await _emailService.SendEmailAsync(normalizedEmail, "Confirm your registration", html);
         }
 
-        public async Task<bool> ConfirmRegistrationAsync(string email, string code)
+        public async Task<AuthResponseDto?> ConfirmRegistrationAsync(ConfirmRegisterDto dto)
         {
-            var normalizedEmail = email.Trim().ToLowerInvariant();
+            var email = dto.Email.ToLowerInvariant();
+            if (!_otpStore.TryGetValue(email, out var entry) || entry.Code != dto.Code || entry.Expire < DateTime.UtcNow)
+                return null;
 
-            if (!_otpStore.TryGetValue(normalizedEmail, out var entry))
-                return false;
-
-            if (entry.Code != code || entry.Expire < DateTime.UtcNow)
-                return false;
-
-            var user = await _userManager.FindByEmailAsync(normalizedEmail);
-            if (user == null) return false;
-
-            user.EmailConfirmed = true;
-
-            if (!await _userManager.IsInRoleAsync(user, "inest_app_user"))
-            {
-                await _userManager.AddToRoleAsync(user, "inest_app_user");
-            }
-
-            var result = await _userManager.UpdateAsync(user);
-
-            if (result.Succeeded)
-            {
-                _otpStore.TryRemove(normalizedEmail, out _);
-                return true;
-            }
-
-            return false;
-        }
-
-        public async Task<string?> LoginAsync(LoginDto dto)
-        {
-            var user = await _userManager.FindByEmailAsync(dto.Email);
+            var user = await _userManager.FindByEmailAsync(email);
             if (user == null) return null;
 
-            var valid = await _userManager.CheckPasswordAsync(user, dto.Password);
-            if (!valid) return null;
+            user.EmailConfirmed = true;
+            await _userManager.UpdateAsync(user);
 
-            if (!user.EmailConfirmed) return "unconfirmed";
+            if (!await _userManager.IsInRoleAsync(user, "inest_app_user"))
+                await _userManager.AddToRoleAsync(user, "inest_app_user");
 
-            var roles = await _userManager.GetRolesAsync(user);
-            return _tokenService.GenerateJwtToken(user, roles);
+            _otpStore.TryRemove(email, out _);
+
+            return await GenerateAuthResponse(user);
+        }
+
+        public async Task<AuthResponseDto> LoginAsync(LoginDto dto)
+        {
+            var user = await _userManager.FindByEmailAsync(dto.Email);
+            if (user == null || !await _userManager.CheckPasswordAsync(user, dto.Password))
+                return new AuthResponseDto { Success = false, Message = "INVALID_CREDENTIALS" };
+
+            if (!user.EmailConfirmed)
+                return new AuthResponseDto { Success = false, IsEmailConfirmed = false, Message = "EMAIL_UNCONFIRMED" };
+
+            return await GenerateAuthResponse(user);
         }
 
         public async Task ForgotPasswordAsync(ForgotPasswordDto dto)
@@ -110,11 +90,10 @@ namespace INest.Services
             if (user == null) return;
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var urlToken = Uri.EscapeDataString(token);
-            var resetUrl = $"{_config["Frontend:Url"]}/reset-password?email={dto.Email}&token={urlToken}";
+            var callbackUrl = $"{_config["Frontend:Url"]}/reset-password?email={dto.Email}&token={Uri.EscapeDataString(token)}";
 
-            var html = $"<p>Чтобы сбросить пароль, перейди по ссылке: <a href=\"{resetUrl}\">Сбросить пароль</a></p>";
-            await _emailService.SendEmailAsync(dto.Email, "Сброс пароля", html);
+            var html = $"<p>Click <a href='{callbackUrl}'>here</a> to reset your password.</p>";
+            await _emailService.SendEmailAsync(dto.Email, "Reset Password", html);
         }
 
         public async Task<IdentityResult?> ResetPasswordAsync(ResetPasswordDto dto)
@@ -125,52 +104,38 @@ namespace INest.Services
             return await _userManager.ResetPasswordAsync(user, dto.Token, dto.NewPassword);
         }
 
-        public async Task LogoutAsync(string userId) => await Task.CompletedTask;
-
         public async Task<bool> IsEmailUniqueAsync(string email)
         {
-            if (string.IsNullOrWhiteSpace(email)) return false;
-
-            var user = await _userManager.FindByEmailAsync(email);
-            return user == null;
+            return (await _userManager.FindByEmailAsync(email)) == null;
         }
 
-        public async Task<string?> GoogleLoginAsync(string idToken)
+        public async Task<AuthResponseDto?> GoogleLoginAsync(string idToken)
         {
             try
             {
-                var settings = new GoogleJsonWebSignature.ValidationSettings()
-                {
-                    Audience = new List<string> { _config["Google:ClientId"]! }
-                };
-
+                var settings = new GoogleJsonWebSignature.ValidationSettings { Audience = new[] { _config["Google:ClientId"] } };
                 var payload = await GoogleJsonWebSignature.ValidateAsync(idToken, settings);
-                var user = await _userManager.FindByEmailAsync(payload.Email);
 
+                var user = await _userManager.FindByEmailAsync(payload.Email);
                 if (user == null)
                 {
-                    user = new AppUser
-                    {
-                        Email = payload.Email,
-                        UserName = payload.Email,
-                        EmailConfirmed = true
-                    };
-
-                    var result = await _userManager.CreateAsync(user);
-                    if (!result.Succeeded) return null;
-
+                    user = new AppUser { Email = payload.Email, UserName = payload.Email, EmailConfirmed = true };
+                    await _userManager.CreateAsync(user);
                     await _userManager.AddToRoleAsync(user, "inest_app_user");
                 }
 
-                var roles = await _userManager.GetRolesAsync(user);
+                return await GenerateAuthResponse(user);
+            }
+            catch { return null; }
+        }
 
-                return _tokenService.GenerateJwtToken(user, roles);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Google Login Error: {ex.Message}");
-                return null;
-            }
+        public async Task LogoutAsync(string userId) => await Task.CompletedTask;
+
+        private async Task<AuthResponseDto> GenerateAuthResponse(AppUser user)
+        {
+            var roles = await _userManager.GetRolesAsync(user);
+            var token = _tokenService.GenerateJwtToken(user, roles);
+            return new AuthResponseDto { Token = token, Success = true };
         }
     }
 }

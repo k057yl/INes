@@ -31,27 +31,28 @@ namespace INest.Services.Decorator
         public async Task<Category> CreateAsync(Guid userId, CreateCategoryDto dto)
         {
             var result = await _inner.CreateAsync(userId, dto);
-            _cache.Remove(CacheConstants.GetCategoriesKey(userId));
+            InvalidateCache(userId);
             return result;
         }
 
         public async Task<Category?> UpdateAsync(Guid userId, Guid categoryId, CreateCategoryDto dto)
         {
             var result = await _inner.UpdateAsync(userId, categoryId, dto);
-            if (result != null) _cache.Remove(CacheConstants.GetCategoriesKey(userId));
+            if (result != null) InvalidateCache(userId);
             return result;
         }
 
         public async Task<bool> DeleteAsync(Guid userId, Guid categoryId, Guid? targetCategoryId = null)
         {
             var result = await _inner.DeleteAsync(userId, categoryId, targetCategoryId);
-
-            if (result)
-            {
-                _cache.Remove(CacheConstants.GetCategoriesKey(userId));
-            }
-
+            if (result) InvalidateCache(userId);
             return result;
+        }
+
+        private void InvalidateCache(Guid userId)
+        {
+            _cache.Remove(CacheConstants.GetCategoriesKey(userId));
+            _cache.Remove(CacheConstants.GetLocationsTreeKey(userId));
         }
     }
 }

@@ -49,9 +49,17 @@ export class SalesListComponent implements OnInit {
   handleDelete(event: { sale: SaleResponseDto, keepHistory: boolean }) {
     this.salesService.smartDelete(event.sale.saleId, event.keepHistory).subscribe({
       next: () => {
-        this.sales = this.sales.filter(s => s.saleId !== event.sale.saleId);
+        if (event.keepHistory) {
+          event.sale.itemId = '00000000-0000-0000-0000-000000000000';
+          
+        } else {
+          this.sales = this.sales.filter(s => s.saleId !== event.sale.saleId);
+        }
       },
-      error: (err: any) => console.error('Delete failed', err)
+      error: (err: any) => {
+        console.error('Delete failed', err);
+        alert('Ошибка при удалении');
+      }
     });
   }
 }

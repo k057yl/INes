@@ -1,4 +1,4 @@
-<div class="sale-card" [class.archived]="!sale.itemId">
+<div class="sale-card" [class.archived]="!isItemExists">
   <div class="sale-main-info">
     <div class="item-details">
       <span class="name">{{ sale.itemName }}</span>
@@ -24,13 +24,15 @@
         ↩️
     </button>
 
+    <span class="archived-label" *ngIf="!isItemExists" title="Предмет удален из инвентаря">
+        📦💨
+    </span>
+
     <button class="inest-action-btn is-danger" 
             (click)="onDelete()" 
             [title]="'SHARED.TOOLTIP_DELETE' | translate">
-      ❌
+        ❌
     </button>
-    
-    <span class="archived-label" *ngIf="!sale.itemId" title="Предмет удален из инвентаря">📦💨</span>
   </div>
 </div>
 
@@ -40,7 +42,7 @@
     <p>Выберите способ удаления для <b>{{ sale.itemName }}</b>:</p>
     
     <div class="modal-options">
-      <button class="opt-btn smart" (click)="confirmDelete(true)">
+      <button *ngIf="isItemExists" class="opt-btn smart" (click)="confirmDelete(true)">
         <span class="opt-icon">📥</span>
         <div class="text">
           <span class="title">Smart Delete</span>

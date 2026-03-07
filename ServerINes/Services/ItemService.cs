@@ -19,60 +19,75 @@ namespace INest.Services
 
         public async Task<Item> CreateItemAsync(Guid userId, CreateItemDto dto, List<IFormFile> photos)
         {
-            var item = new Item
-            {
-                Id = Guid.NewGuid(),
-                UserId = userId,
-                Name = dto.Name,
-                Description = dto.Description,
-                CategoryId = dto.CategoryId,
-                StorageLocationId = dto.StorageLocationId,
-                Status = dto.Status,
-                PurchaseDate = dto.PurchaseDate,
-                PurchasePrice = dto.PurchasePrice,
-                EstimatedValue = dto.EstimatedValue,
-                CreatedAt = DateTime.UtcNow,
-                Photos = new List<ItemPhoto>()
-            };
+            using var transaction = await _context.Database.BeginTransactionAsync();
 
-            if (photos != null && photos.Count > 0)
+            try
             {
-                foreach (var photo in photos)
+                var item = new Item
                 {
-                    var result = await _photoService.AddPhotoAsync(photo);
-                    if (result.Error == null)
+                    Id = Guid.NewGuid(),
+                    UserId = userId,
+                    Name = dto.Name,
+                    Description = dto.Description,
+                    CategoryId = dto.CategoryId,
+                    StorageLocationId = dto.StorageLocationId,
+                    Status = dto.Status,
+                    PurchaseDate = dto.PurchaseDate,
+                    PurchasePrice = dto.PurchasePrice,
+                    EstimatedValue = dto.EstimatedValue,
+                    CreatedAt = DateTime.UtcNow,
+                    Photos = new List<ItemPhoto>()
+                };
+
+                if (photos != null && photos.Count > 0)
+                {
+                    var uploadTasks = photos.Select(p => _photoService.AddPhotoAsync(p)).ToList();
+                    var results = await Task.WhenAll(uploadTasks);
+
+                    foreach (var result in results)
                     {
-                        var itemPhoto = new ItemPhoto
+                        if (result.Error == null)
                         {
-                            Id = Guid.NewGuid(),
-                            ItemId = item.Id,
-                            FilePath = result.SecureUrl.ToString(),
-                            PublicId = result.PublicId
-                        };
+                            var itemPhoto = new ItemPhoto
+                            {
+                                Id = Guid.NewGuid(),
+                                ItemId = item.Id,
+                                FilePath = result.SecureUrl.ToString(),
+                                PublicId = result.PublicId
+                            };
 
-                        if (string.IsNullOrEmpty(item.PhotoUrl))
-                        {
-                            item.PhotoUrl = itemPhoto.FilePath;
-                            item.PublicId = itemPhoto.PublicId;
+                            if (string.IsNullOrEmpty(item.PhotoUrl))
+                            {
+                                item.PhotoUrl = itemPhoto.FilePath;
+                                item.PublicId = itemPhoto.PublicId;
+                            }
+
+                            item.Photos.Add(itemPhoto);
                         }
-
-                        item.Photos.Add(itemPhoto);
                     }
                 }
+
+                _context.Items.Add(item);
+
+                _context.ItemHistories.Add(new ItemHistory
+                {
+                    Id = Guid.NewGuid(),
+                    ItemId = item.Id,
+                    Type = ItemHistoryType.Created,
+                    CreatedAt = DateTime.UtcNow
+                });
+
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+
+                return item;
             }
-
-            _context.Items.Add(item);
-
-            _context.ItemHistories.Add(new ItemHistory
+            catch (Exception)
             {
-                Id = Guid.NewGuid(),
-                ItemId = item.Id,
-                Type = ItemHistoryType.Created,
-                CreatedAt = DateTime.UtcNow
-            });
-
-            await _context.SaveChangesAsync();
-            return item;
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
 
         public async Task<IEnumerable<Item>> GetUserItemsAsync(Guid userId)
