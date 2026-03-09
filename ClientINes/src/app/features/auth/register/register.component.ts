@@ -2,7 +2,7 @@ import { Component, inject, OnInit, AfterViewInit, NgZone } from '@angular/core'
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { TranslateModule } from '@ngx-translate/core';
 import { environment } from '../../../../environments/environment';
 import { emailUniqueValidator } from '../../../shared/validators/email-unique.validator';
@@ -29,12 +29,15 @@ export class RegisterComponent implements OnInit, AfterViewInit {
   error?: string;
 
   showGoogle = false;
+  showPassword = false;
+
+  togglePassword() { 
+    this.showPassword = !this.showPassword; 
+  }
 
   toggleGoogle() {
     this.showGoogle = !this.showGoogle;
-    if (this.showGoogle) {
-      setTimeout(() => this.initGoogleSignIn(), 50);
-    }
+    if (this.showGoogle) setTimeout(() => this.initGoogleSignIn(), 50);
   }
 
   ngOnInit() {
@@ -81,10 +84,19 @@ export class RegisterComponent implements OnInit, AfterViewInit {
   }
 
   private initForm() {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
     this.registerForm = this.fb.group({
-      username: ['', [Validators.required]],
+      username: ['', [
+        Validators.required, 
+        Validators.minLength(3),
+        Validators.pattern(/^[a-zA-Z0-9]*$/)
+      ]],
       email: ['', 
-        [Validators.required, Validators.email], 
+        [
+          Validators.required, 
+          Validators.pattern(emailRegex)
+        ], 
         [emailUniqueValidator(this.authService)]
       ],
       password: ['', [Validators.required, Validators.minLength(6)]],
@@ -106,9 +118,7 @@ export class RegisterComponent implements OnInit, AfterViewInit {
     const { username, email, password } = this.registerForm.getRawValue();
 
     this.http.post(`${environment.apiBaseUrl}/auth/register`, {
-      username,
-      email,
-      password
+      username, email, password
     }).subscribe({
       next: () => {
         this.message = 'AUTH.REGISTER.SUCCESS_MSG';
@@ -116,7 +126,18 @@ export class RegisterComponent implements OnInit, AfterViewInit {
           this.router.navigate(['/confirm-register'], { state: { email, password } });
         }, 1500);
       },
-      error: err => this.error = err.error?.error || 'AUTH.ERRORS.REGISTER_FAILED'
+      error: (err: HttpErrorResponse) => {
+        if (err.status === 400 && err.error?.errors) {
+          const allErrors = Object.values(err.error.errors).flat() as string[];
+          this.error = allErrors.join(' • ');
+        } 
+        else if (err.error?.error) {
+          this.error = err.error.error;
+        } 
+        else {
+          this.error = 'AUTH.ERRORS.REGISTER_FAILED';
+        }
+      }
     });
   }
 }

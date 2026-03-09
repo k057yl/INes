@@ -39,11 +39,7 @@ export const cultureInterceptor: HttpInterceptorFn = (req, next) => {
 export const globalErrorInterceptor: HttpInterceptorFn = (req, next) => {
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
-      if (error.status === 400 && error.error?.errors) {
-        const message = Object.values(error.error.errors).flat().join('\n');
-        alert(message);
-      }
       return throwError(() => error);
     })
   )
-}
+};

@@ -13,7 +13,7 @@ declare var google: any;
   standalone: true,
   imports: [CommonModule, FormsModule, TranslateModule, RouterModule],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.css'
+  styleUrl: './login.component.scss'
 })
 export class LoginComponent implements OnInit {
   public themeService = inject(ThemeService);
@@ -25,9 +25,14 @@ export class LoginComponent implements OnInit {
   password = '';
   error?: string;
   showGoogle = false;
+  showPassword = false;
 
   ngOnInit() {
     this.resetForm();
+  }
+
+  togglePassword() {
+    this.showPassword = !this.showPassword;
   }
 
   toggleGoogle() {

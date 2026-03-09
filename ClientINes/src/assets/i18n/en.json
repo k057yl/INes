@@ -2,7 +2,14 @@
   "ERRORS": {
     "DEFAULT": "Invalid credentials",
     "UNCONFIRMED_PASSWORD": "Incorrect password",
-    "UNCONFIRMED_USERNAME": "Incorrect username"
+    "UNCONFIRMED_USERNAME": "Incorrect username",
+    "FUTURE_DATE": "The date cannot be in the future",
+    "USERNAME_LATIN_ONLY": "Only Latin letters and digits allowe",
+    "INVALID_EMAIL_FORMAT": "Invalid email format",
+    "PWD_MIN_LENGTH": "Min 6 characters",
+    "PWD_UPPER": "Uppercase letter (A-Z)",
+    "PWD_DIGIT": "At least one digit (0-9)",
+    "PWD_SPEC": "Special character (!@#...)"
   },
   "SHARED": {
     "TOOLTIP_INFO": "Information",

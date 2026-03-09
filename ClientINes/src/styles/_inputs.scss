@@ -1,0 +1,68 @@
+/* Контейнер-обертка */
+.inest-field-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: var(--dark-blue);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  transition: all 0.25s ease;
+  overflow: hidden;
+  padding: 1px;
+  z-index: 1;
+}
+
+.inest-field-group:focus-within {
+  border-color: var(--turquoise);
+  box-shadow: 0 0 0 4px rgba(0, 245, 214, 0.1);
+}
+
+/* Кастомный инпут */
+.inest-field-input {
+  width: 100%;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  color: var(--text-main);
+  padding: 14px 50px 14px 45px;
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+/* Иконка слева */
+.inest-field-action {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 26px !important; 
+  height: 26px !important;
+  border-radius: 12px !important;
+
+  i {
+    font-size: 0.8rem !important;
+  }
+}
+
+/* Позиция для твоей .inest-action-btn */
+.inest-field-action {
+  position: absolute;
+  right: 7px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5;
+}
+
+/* Жесткий фикс автозаполнения ТОЛЬКО для INest полей */
+.inest-field-input:-webkit-autofill,
+.inest-field-input:-webkit-autofill:hover, 
+.inest-field-input:-webkit-autofill:focus, 
+.inest-field-input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px var(--dark-blue) inset !important;
+  -webkit-text-fill-color: var(--text-main) !important;
+  border: none !important;
+  caret-color: var(--text-main);
+  transition: background-color 5000s ease-in-out 0s;
+}

@@ -7,23 +7,35 @@
     </header>
 
     <form [formGroup]="registerForm" (ngSubmit)="register()">
+      
       <div class="form-group">
         <label>{{ 'REG.USERNAME' | translate }}</label>
-        <div class="input-with-icon">
-          <i class="fa fa-user"></i>
-          <input formControlName="username" [placeholder]="'REG.FIELD_USERNAME' | translate">
+        <div class="inest-field-group">
+          <i class="fa fa-user inest-field-icon-left"></i>
+          <input formControlName="username" 
+                 class="inest-field-input"
+                 [placeholder]="'REG.FIELD_USERNAME' | translate">
         </div>
+        <small class="status-text error" *ngIf="registerForm.get('username')?.touched && registerForm.get('username')?.hasError('pattern')">
+          <i class="fa fa-info-circle"></i> {{ 'ERRORS.USERNAME_LATIN_ONLY' | translate }}
+        </small>
       </div>
 
       <div class="form-group">
         <label>{{ 'REG.EMAIL' | translate }}</label>
-        <div class="input-with-icon">
-          <i class="fa fa-envelope"></i>
-          <input type="email" formControlName="email" [placeholder]="'REG.FIELD_EMAIL' | translate">
+        <div class="inest-field-group">
+          <i class="fa fa-envelope inest-field-icon-left"></i>
+          <input type="email" 
+                 formControlName="email" 
+                 class="inest-field-input"
+                 [placeholder]="'REG.FIELD_EMAIL' | translate">
         </div>
         
         <small class="status-text info" *ngIf="registerForm.get('email')?.pending">
-          <i class="fa fa-spinner fa-spin"></i>{{ 'REG.CHECKING_MAIL' | translate }}
+          <i class="fa fa-spinner fa-spin"></i> {{ 'REG.CHECKING_MAIL' | translate }}
+        </small>
+        <small class="status-text error" *ngIf="registerForm.get('email')?.touched && registerForm.get('email')?.hasError('pattern')">
+          {{ 'ERRORS.INVALID_EMAIL_FORMAT' | translate }}
         </small>
         <small class="status-text error" *ngIf="registerForm.get('email')?.hasError('emailExists')">
           {{ 'REG.WARNING_MAIL_ALREADY_EXISTS' | translate }}
@@ -32,17 +44,50 @@
 
       <div class="form-group">
         <label>{{ 'REG.PASSWORD' | translate }}</label>
-        <div class="input-with-icon">
-          <i class="fa fa-lock"></i>
-          <input type="password" formControlName="password" [placeholder]="'REG.FIELD_PASSWORD' | translate">
+        <div class="inest-field-group">
+          <i class="fa fa-lock inest-field-icon-left"></i>
+          <input [type]="showPassword ? 'text' : 'password'" 
+                 formControlName="password" 
+                 class="inest-field-input"
+                 [placeholder]="'REG.FIELD_PASSWORD' | translate">
+
+          <button type="button" class="inest-action-btn inest-field-action" (click)="togglePassword()">
+            <i class="fas" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+          </button>
+        </div>
+
+        <div class="password-checklist" *ngIf="registerForm.get('password')?.value">
+          <div [class.valid]="!registerForm.get('password')?.hasError('minlength')" class="check-item">
+            <i class="fa" [ngClass]="registerForm.get('password')?.hasError('minlength') ? 'fa-circle' : 'fa-check-circle'"></i>
+            {{ 'ERRORS.PWD_MIN_LENGTH' | translate }}
+          </div>
+          <div [class.valid]="registerForm.get('password')?.value?.match('[A-Z]')" class="check-item">
+            <i class="fa" [ngClass]="registerForm.get('password')?.value?.match('[A-Z]') ? 'fa-check-circle' : 'fa-circle'"></i>
+            {{ 'ERRORS.PWD_UPPER' | translate }}
+          </div>
+          <div [class.valid]="registerForm.get('password')?.value?.match('[0-9]')" class="check-item">
+            <i class="fa" [ngClass]="registerForm.get('password')?.value?.match('[0-9]') ? 'fa-check-circle' : 'fa-circle'"></i>
+            {{ 'ERRORS.PWD_DIGIT' | translate }}
+          </div>
+          <div [class.valid]="registerForm.get('password')?.value?.match('[^a-zA-Z0-9]')" class="check-item">
+            <i class="fa" [ngClass]="registerForm.get('password')?.value?.match('[^a-zA-Z0-9]') ? 'fa-check-circle' : 'fa-circle'"></i>
+            {{ 'ERRORS.PWD_SPEC' | translate }}
+          </div>
         </div>
       </div>
 
       <div class="form-group">
         <label>{{ 'REG.CONFIRM_PASSWORD' | translate }}</label>
-        <div class="input-with-icon">
-          <i class="fa fa-shield-alt"></i>
-          <input type="password" formControlName="confirmPassword" [placeholder]="'REG.CONFIRM_FIELD_PASSWORD' | translate">
+        <div class="inest-field-group">
+          <i class="fa fa-shield-alt inest-field-icon-left"></i>
+          <input [type]="showPassword ? 'text' : 'password'" 
+                 formControlName="confirmPassword" 
+                 class="inest-field-input"
+                 [placeholder]="'REG.CONFIRM_FIELD_PASSWORD' | translate">
+
+          <button type="button" class="inest-action-btn inest-field-action" (click)="togglePassword()">
+            <i class="fas" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+          </button>
         </div>
       </div>
 
@@ -52,7 +97,7 @@
       </div>
 
       <div class="status-box success" *ngIf="message">
-        {{ message | translate }}
+        <i class="fa fa-check"></i> {{ message | translate }}
       </div>
 
       <button type="submit" class="auth-submit-btn" [disabled]="registerForm.invalid">
