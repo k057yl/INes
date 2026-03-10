@@ -51,8 +51,10 @@
                  class="inest-field-input"
                  [placeholder]="'REG.FIELD_PASSWORD' | translate">
 
-          <button type="button" class="inest-action-btn inest-field-action" (click)="togglePassword()">
-            <i class="fas" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+          <button type="button" 
+                  class="inest-action-btn inest-field-action" 
+                  (click)="showPassword = !showPassword">
+            {{ showPassword ? '🙈' : '👁️' }}
           </button>
         </div>
 
@@ -85,8 +87,10 @@
                  class="inest-field-input"
                  [placeholder]="'REG.CONFIRM_FIELD_PASSWORD' | translate">
 
-          <button type="button" class="inest-action-btn inest-field-action" (click)="togglePassword()">
-            <i class="fas" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+          <button type="button" 
+                  class="inest-action-btn inest-field-action" 
+                  (click)="showPassword = !showPassword">
+            {{ showPassword ? '🙈' : '👁️' }}
           </button>
         </div>
       </div>

@@ -7,7 +7,7 @@
 }
 
 .auth-card {
-  background: var(--navy-blue);
+  background: var(--bg-card);
   width: 100%;
   max-width: 450px;
   padding: 2.5rem;
@@ -39,7 +39,7 @@
 }
 
 .auth-header h2 { 
-  color: #fff; 
+  color: var(--text-main);
   font-size: 1.6rem; 
   font-weight: 700; 
   margin-bottom: 0.5rem; 

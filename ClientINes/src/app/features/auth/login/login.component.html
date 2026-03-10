@@ -34,8 +34,8 @@
           
           <button type="button" 
                   class="inest-action-btn inest-field-action" 
-                  (click)="togglePassword()">
-            <i class="fa" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                  (click)="showPassword = !showPassword">
+            {{ showPassword ? '🙈' : '👁️' }}
           </button>
         </div>
       </div>
