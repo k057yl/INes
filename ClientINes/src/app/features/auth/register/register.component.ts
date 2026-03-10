@@ -15,7 +15,7 @@ declare var google: any;
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterModule, TranslateModule],
   templateUrl: './register.component.html',
-  styleUrl: './register.component.css'
+  styleUrl: './register.component.scss'
 })
 export class RegisterComponent implements OnInit, AfterViewInit {
   private http = inject(HttpClient);

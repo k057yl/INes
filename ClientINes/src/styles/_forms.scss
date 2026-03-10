@@ -1,0 +1,221 @@
+/* Общий контейнер для страниц с формами (центрирование) */
+.inest-form-page {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: calc(100vh - 70px);
+  padding: 80px 20px 40px;
+}
+
+/* Сама карточка формы */
+.inest-form-card {
+  background: var(--bg-card);
+  width: 100%;
+  max-width: 450px;
+  padding: 2.5rem;
+  border-radius: 24px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(0, 245, 214, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Шапка формы (Лого + Заголовки) */
+.inest-form-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+
+  .logo-circle {
+    width: 60px;
+    height: 60px;
+    background: var(--dark-blue);
+    border: 2px solid var(--accent-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    color: var(--accent-color);
+    font-size: 1.5rem;
+  }
+
+  h2 {
+    color: var(--text-main);
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+}
+
+/* Группа поля (Label + Input) */
+.inest-form-group {
+  margin-bottom: 1.2rem;
+
+  label {
+    display: block;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+  }
+}
+
+/* Стилизация инпутов (совмещено из обоих вариантов) */
+.inest-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  transition: all 0.25s ease;
+  overflow: hidden;
+
+  &:focus-within {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 4px rgba(0, 245, 214, 0.1);
+  }
+
+  input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-main);
+    padding: 14px 16px;
+    font-size: 1rem;
+    font-family: inherit;
+
+    &::placeholder {
+      color: var(--text-muted);
+      opacity: 0.5;
+    }
+  }
+
+  /* Если есть иконка справа (глаз) */
+  .input-action {
+    background: transparent;
+    border-radius: 12px;
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+    cursor: pointer;
+    &:hover { color: var(--accent-color); }
+  }
+}
+
+/* Кнопки внутри форм */
+.inest-btn-primary {
+  width: 100%;
+  background: var(--accent-color);
+  color: var(--dark-blue);
+  border: none;
+  padding: 16px;
+  border-radius: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 1rem;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+    box-shadow: 0 5px 15px rgba(0, 245, 214, 0.3);
+  }
+
+  &:disabled {
+    background: #2a3a4f !important;
+    color: #5d708d !important;
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+.inest-btn-outline {
+  width: 100%;
+  background: var(--bg-botton);
+  color: var(--text-main);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  padding: 14px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  transition: 0.3s;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+
+  &:hover {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+    background: rgba(0, 245, 214, 0.05);
+  }
+}
+
+/* Разделитель "ИЛИ" */
+.inest-form-divider {
+  text-align: center;
+  margin: 1.5rem 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  &::before, &::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  span {
+    padding: 0 10px;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+  }
+}
+
+/* Футер формы (ссылка на регистрацию/логин) */
+.inest-form-footer {
+  text-align: center;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  color: var(--text-muted);
+  font-size: 0.9rem;
+
+  a {
+    color: var(--accent-color);
+    font-weight: 600;
+    text-decoration: none;
+    &:hover { text-decoration: underline; }
+  }
+}
+
+/* Сообщения об ошибках */
+.inest-status-box {
+  padding: 12px;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+
+  &.error {
+    background: rgba(255, 77, 77, 0.1);
+    color: var(--error-red);
+    border: 1px solid rgba(255, 77, 77, 0.2);
+  }
+}

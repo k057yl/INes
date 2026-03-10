@@ -1,44 +1,45 @@
-<div class="auth-container">
-  <div class="auth-card">
-    <header class="auth-header">
+<div class="inest-form-page">
+  <div class="inest-form-card">
+    <header class="inest-form-header">
       <div class="logo-circle">
         <i class="fa fa-envelope-open-text"></i>
       </div>
       <h2>{{ 'REG.CONFIRM_TITLE' | translate }}</h2>
       <p>{{ 'REG.CONFIRM_SUBTITLE' | translate }}</p>
-      <small class="target-email" *ngIf="email">{{ email }}</small>
+      <small class="target-email" style="color: var(--accent-color); font-weight: 600;" *ngIf="email">{{ email }}</small>
     </header>
 
     <form (ngSubmit)="confirm()" #confirmForm="ngForm">
-      <div class="form-group">
+      <div class="inest-form-group">
         <label>{{ 'REG.CONFIRM_CODE' | translate }}</label>
-        <div class="input-with-icon">
-          <i class="fa fa-key"></i>
+        <div class="inest-input-wrapper">
+          <i class="fa fa-key inest-field-icon-left"></i>
           <input type="text" 
                  [(ngModel)]="code" 
                  name="code" 
                  required 
                  maxlength="6"
+                 style="text-align: center; letter-spacing: 5px; font-size: 1.5rem;"
                  [placeholder]="'REG.FIELD_CONFIRM_CODE' | translate"
                  autocomplete="one-time-code">
         </div>
       </div>
 
-      <div class="status-box error" *ngIf="error">
+      <div class="inest-status-box error" *ngIf="error">
         <i class="fa fa-exclamation-circle"></i> {{ error | translate }}
       </div>
 
-      <div class="status-box success" *ngIf="message">
+      <div class="inest-status-box success" *ngIf="message">
         <i class="fa fa-check-double"></i> {{ message | translate }}
       </div>
 
-      <button type="submit" class="auth-submit-btn" [disabled]="!confirmForm.valid">
+      <button type="submit" class="inest-btn-primary" [disabled]="!confirmForm.valid">
         {{ 'REG.BUTTON_CONFIRM_SUBMIT' | translate }}
-        <i class="fa fa-check"></i>
+        <i class="fa fa-check" style="margin-left: 8px;"></i>
       </button>
     </form>
 
-    <footer class="auth-footer">
+    <footer class="inest-form-footer">
       <span>{{ 'REG.CONFIRM_DIDNT_GET_CODE' | translate }}</span>
       <a href="javascript:void(0)" (click)="resendCode()">{{ 'REG.CONFIRM_RESEND' | translate }}</a>
     </footer>

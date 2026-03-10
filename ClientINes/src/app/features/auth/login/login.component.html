@@ -1,69 +1,74 @@
-<div class="login-container">
-  <div class="auth-card">
-    <header class="auth-header">
-      <div class="logo-circle"><i class="fa fa-sign-in-alt"></i></div>
+<div class="inest-form-page">
+  <div class="inest-form-card">
+    
+    <header class="inest-form-header">
+      <div class="logo-circle">
+        <i class="fa fa-sign-in-alt"></i>
+      </div>
       <h2>{{ 'LOGIN.TITLE' | translate }}</h2>
       <p>{{ 'LOGIN.SUBTITLE' | translate }}</p>
     </header>
 
     <form (ngSubmit)="login()" #loginForm="ngForm">
-      <div class="form-group">
+      
+      <div class="inest-form-group">
         <label>{{ 'LOGIN.USERNAME' | translate }}</label>
-        <div class="inest-field-group">
+        <div class="inest-input-wrapper">
           <i class="fa fa-user inest-field-icon-left"></i>
           <input [(ngModel)]="email" 
-                name="email" 
-                required 
-                class="inest-field-input"
-                autocomplete="username"
-                [placeholder]="'LOGIN.FIELD_USERNAME' | translate">
+                 name="email" 
+                 required 
+                 autocomplete="username"
+                 [placeholder]="'LOGIN.FIELD_USERNAME' | translate">
         </div>
       </div>
 
-      <div class="form-group">
+      <div class="inest-form-group">
         <label>{{ 'LOGIN.PASSWORD' | translate }}</label>
-        <div class="inest-field-group">
+        <div class="inest-input-wrapper">
           <i class="fa fa-lock inest-field-icon-left"></i>
           <input [type]="showPassword ? 'text' : 'password'" 
-                [(ngModel)]="password" 
-                name="password" 
-                required 
-                class="inest-field-input"
-                autocomplete="current-password"
-                [placeholder]="'LOGIN.FIELD_PASSWORD' | translate">
+                 [(ngModel)]="password" 
+                 name="password" 
+                 required 
+                 autocomplete="current-password"
+                 [placeholder]="'LOGIN.FIELD_PASSWORD' | translate">
           
           <button type="button" 
-                  class="inest-action-btn inest-field-action" 
+                  class="input-action inest-action-btn" 
                   (click)="showPassword = !showPassword">
             {{ showPassword ? '🙈' : '👁️' }}
           </button>
         </div>
       </div>
 
-      <div class="status-box error" *ngIf="error">
+      <div class="inest-status-box error" *ngIf="error">
         <i class="fa fa-exclamation-triangle"></i> 
         {{ error | translate }}
       </div>
 
-      <button type="submit" class="auth-submit-btn" [disabled]="!loginForm.valid">
+      <button type="submit" 
+              class="inest-btn-primary" 
+              [disabled]="!loginForm.valid">
         {{ 'LOGIN.BUTTON_START' | translate }}
       </button>
     </form>
 
-    <div class="divider">
+    <div class="inest-form-divider">
       <span>{{ 'LOGIN.OR' | translate }}</span>
     </div>
 
-    <button type="button" class="google-toggle-btn" (click)="toggleGoogle()">
+    <button type="button" class="inest-btn-outline" (click)="toggleGoogle()">
       <i class="fab fa-google"></i>
       {{ (showGoogle ? 'LOGIN.BUTTON_HIDE_GOOGLE' : 'LOGIN.BUTTON_SHOW_GOOGLE') | translate }}
     </button>
 
     <div id="googleBtn" *ngIf="showGoogle" class="google-btn-container"></div>
 
-    <footer class="auth-footer">
+    <footer class="inest-form-footer">
       <span>{{ 'LOGIN.NO_ACC_YET' | translate }}</span>
       <a routerLink="/register">{{ 'LOGIN.GO_TO_REGISTER' | translate }}</a>
     </footer>
+
   </div>
 </div>

@@ -1,11 +1,13 @@
 :root {
-  --bg-main: #cacaca;
+  --bg-main: #f5f7fa;
   --bg-card: #ffffff;
-  --bg-input: #b7b7b8;
+  --bg-input: #edf2f7;
+  --bg-botton: #d8d8d8;
 
   --text-main: #1e293b;
   --text-muted: #64748b;
   --text-on-accent: #ffffff;
+  --text-access: #0040ff;
 
   --border-color: #cbd5e1;
   --accent-color: #00b894;
@@ -21,10 +23,12 @@ body.dark-theme {
   --bg-main: #0b132b;
   --bg-card: #1c2541;
   --bg-input: #0b132b;
+  --bg-botton: #141924;
 
   --text-main: #f8fafc;
   --text-muted: #94a3b8;
   --text-on-accent: #0b132b;
+  --text-access: #00b894;
 
   --border-color: #3a506b;
   --accent-color: #00f5d4;
