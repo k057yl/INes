@@ -90,7 +90,8 @@
     "ADD_PHOTO": "Добавить фото",
     "CLICK_TO_UPLOAD": "Нажмите, чтобы выбрать фото",
     "BUTTON_START": "Создать",
-    "BUTTON_CANCEL": "Отмена"
+    "BUTTON_CANCEL": "Отмена",
+    "CREATE_CATEGORY": "Создать категорию"
   },
   "MAIN":{
     "BUTTON_CREATE_LOCATION": "Создать локацию",

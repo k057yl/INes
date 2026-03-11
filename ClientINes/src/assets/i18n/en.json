@@ -90,7 +90,8 @@
     "ADD_PHOTO": "Add photo",
     "CLICK_TO_UPLOAD": "Click to select a photo",
     "BUTTON_START": "Create",
-    "BUTTON_CANCEL": "Cancel"
+    "BUTTON_CANCEL": "Cancel",
+    "CREATE_CATEGORY": "Create category"
   },
   "MAIN": {
     "BUTTON_CREATE_LOCATION": "Create location",
