@@ -1,0 +1,151 @@
+:host {
+  display: block;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.header {
+  background: var(--bg-card); 
+  border-bottom: 1px solid var(--border-color);
+  padding: 0.5rem 1.5rem;
+  transition: background 0.3s ease;
+}
+
+.header-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* 1. Убираем чёрточку: скрываем бургер на десктопе */
+.menu-toggle {
+  display: none;
+}
+
+.logo {
+  color: var(--accent-color);
+  cursor: pointer;
+  margin: 0;
+  font-weight: 800;
+  font-size: 1.4rem;
+  letter-spacing: 0.5px;
+  text-decoration: none;
+}
+
+/* --- НАВИГАЦИЯ --- */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  a {
+    color: var(--text-main);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    /* 2. Убираем "точку": обнуляем возможные псевдоэлементы */
+    &::after, &::before { content: none !important; }
+
+    i { color: var(--text-muted); font-size: 1rem; }
+
+    &:hover, &.active {
+      color: var(--accent-color);
+      background: rgba(0, 184, 148, 0.1); 
+      i { color: var(--accent-color); }
+    }
+  }
+}
+
+/* --- КНОПКИ (Тема и Язык) --- */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Расстояние между луной и выбором языка */
+}
+
+.theme-toggle, .lang-trigger {
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+  height: 34px; /* Единая высота */
+  box-sizing: border-box;
+
+  &:hover {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+  }
+}
+
+.theme-toggle {
+  width: 34px; /* Делаем квадратной */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  font-size: 1rem;
+}
+
+.lang-trigger {
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  min-width: 60px; /* Чтобы кнопки не "прыгали" при смене языка */
+  
+  .fa-chevron-down { font-size: 0.6rem; transition: 0.3s; }
+  .fa-chevron-down.rotate { transform: rotate(180deg); }
+}
+
+/* --- МЕНЮ ЯЗЫКОВ --- */
+.lang-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 5px;
+  min-width: 140px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+
+  button {
+    width: 100%;
+    padding: 8px 12px;
+    background: transparent;
+    border: none;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    border-radius: 6px;
+
+    &:hover { background: var(--bg-input); color: var(--accent-color); }
+    &.selected { color: var(--accent-color); font-weight: 700; }
+  }
+}
+
+/* Мобильная адаптация */
+@media (max-width: 850px) {
+  .menu-toggle { display: flex; flex-direction: column; gap: 4px; }
+  .nav-links {
+    background: var(--bg-card);
+    border-right: 1px solid var(--border-color);
+    &.mobile-open { box-shadow: 10px 0 20px rgba(0,0,0,0.2); }
+  }
+}
