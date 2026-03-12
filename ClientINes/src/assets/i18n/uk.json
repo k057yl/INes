@@ -97,7 +97,8 @@
     "BUTTON_CREATE_LOCATION": "Створити локацію",
     "BUTTON_CREATE_ITEM": "Створити предмет",
     "LOADING": "Завантаження...",
-    "PAGE": " Сторінка "
+    "PAGE": " Сторінка ",
+    "ADD": "Додати +"
   },
   "LOCATION_RIB": {
     "GLOBAL_PAGE": "Сторінка: "

@@ -1,8 +1,9 @@
 :root {
   --bg-main: #f5f7fa;
   --bg-card: #ffffff;
-  --bg-input: #edf2f7;
+  --bg-input: #e2e6eb;
   --bg-botton: #d8d8d8;
+  --bg-err-botton: #e2e6eb;//same --bg-input
 
   --text-main: #1e293b;
   --text-muted: #64748b;
@@ -24,6 +25,7 @@ body.dark-theme {
   --bg-card: #1c2541;
   --bg-input: #0b132b;
   --bg-botton: #141924;
+  --bg-err-botton: #0b132b;//same --bg-input
 
   --text-main: #f8fafc;
   --text-muted: #94a3b8;

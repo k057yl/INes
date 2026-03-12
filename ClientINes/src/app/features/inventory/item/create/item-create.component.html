@@ -23,31 +23,29 @@
         </div>
       </div>
 
-      <div class="inest-form-row">
-        <div class="inest-form-group">
-          <label class="label-with-action">
-            <span>{{ 'CREATE_ITEM.CATEGORY' | translate }}</span>
-            <button type="button" class="inline-add-btn" (click)="addCategory()">
-              <i class="fa fa-plus"></i> {{ 'CREATE_ITEM.CREATE_CATEGORY' | translate }}
-            </button>
-          </label>
-          <div class="inest-input-wrapper">
-            <i class="fa fa-folder inest-field-icon-left"></i>
-            <select formControlName="categoryId">
-              <option value="">{{ 'CREATE_ITEM.FIELD_CATEGORY' | translate }}</option>
-              <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</option>
-            </select>
-          </div>
+      <div class="inest-form-group">
+        <label class="label-with-action">
+          <span>{{ 'CREATE_ITEM.CATEGORY' | translate }}</span>
+          <button type="button" class="inline-add-btn" (click)="addCategory()">
+            <i class="fa fa-plus"></i> {{ 'CREATE_ITEM.CREATE_CATEGORY' | translate }}
+          </button>
+        </label>
+        <div class="inest-input-wrapper">
+          <i class="fa fa-folder inest-field-icon-left"></i>
+          <select formControlName="categoryId">
+            <option value="">{{ 'CREATE_ITEM.FIELD_CATEGORY' | translate }}</option>
+            <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</option>
+          </select>
         </div>
+      </div>
 
-        <div class="inest-form-group">
-          <label>{{ 'CREATE_ITEM.STATUS' | translate }}</label>
-          <div class="inest-input-wrapper">
-            <i class="fa fa-info-circle inest-field-icon-left"></i>
-            <select formControlName="status">
-              <option *ngFor="let s of statuses" [value]="s.value">{{ s.label | translate }}</option>
-            </select>
-          </div>
+      <div class="inest-form-group">
+        <label>{{ 'CREATE_ITEM.STATUS' | translate }}</label>
+        <div class="inest-input-wrapper">
+          <i class="fa fa-info-circle inest-field-icon-left"></i>
+          <select formControlName="status">
+            <option *ngFor="let s of statuses" [value]="s.value">{{ s.label | translate }}</option>
+          </select>
         </div>
       </div>
 
@@ -68,25 +66,13 @@
           <i class="fa fa-calendar-alt inest-field-icon-left"></i>
           <input type="date" formControlName="purchaseDate" [max]="todayMax">
         </div>
-        <small class="inest-status-box error" style="margin-top: 5px; padding: 8px;" *ngIf="form.get('purchaseDate')?.errors?.['futureDate']">
-          {{ 'ERROR.FUTURE_DATE' | translate }}
-        </small>
       </div>
 
-      <div class="inest-form-row">
-        <div class="inest-form-group">
-          <label>{{ 'CREATE_ITEM.PRICE' | translate }}</label>
-          <div class="inest-input-wrapper">
-            <i class="fa fa-wallet inest-field-icon-left"></i>
-            <input formControlName="purchasePrice" type="number" placeholder="0.00">
-          </div>
-        </div>
-        <div class="inest-form-group">
-          <label>{{ 'CREATE_ITEM.ESTIMATED' | translate }}</label>
-          <div class="inest-input-wrapper">
-            <i class="fa fa-chart-line inest-field-icon-left"></i>
-            <input formControlName="estimatedValue" type="number" placeholder="0.00">
-          </div>
+      <div class="inest-form-group">
+        <label>{{ 'CREATE_ITEM.PRICE' | translate }}</label>
+        <div class="inest-input-wrapper">
+          <i class="fa fa-wallet inest-field-icon-left"></i>
+          <input formControlName="purchasePrice" type="number" placeholder="0.00">
         </div>
       </div>
 
@@ -95,7 +81,24 @@
           <input type="checkbox" formControlName="addPhoto">
           <span>{{ 'CREATE_ITEM.ADD_PHOTO' | translate }}</span>
         </label>
+
+        <div *ngIf="form.get('addPhoto')?.value" class="upload-container">
+          <div class="file-upload-zone" *ngIf="selectedPhotos.length < 5">
+            <i class="fa fa-cloud-upload-alt"></i>
+            <input type="file" accept="image/*" multiple (change)="onFileSelected($event)">
+            <p>{{ 'CREATE_ITEM.CLICK_TO_UPLOAD' | translate }}</p>
+          </div>
+
+          <div class="photo-preview-grid" *ngIf="selectedPhotos.length > 0">
+            <div class="preview-item" *ngFor="let p of selectedPhotos; let i = index">
+              <img [src]="p.preview" alt="Preview">
+              <button type="button" class="remove-photo" (click)="removePhoto(i)">
+                <i class="fa fa-times"></i>
+              </button>
+            </div>
+          </div>
         </div>
+      </div>
 
       <div style="display: flex; gap: 15px; margin-top: 2rem;">
         <button type="button" class="inest-btn-cancel" (click)="cancel()">

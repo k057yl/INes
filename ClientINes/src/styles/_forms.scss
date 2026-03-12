@@ -1,4 +1,4 @@
-/* --- Глобальные настройки (Браузерные фиксы) --- */
+/* Глобальные формы */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; appearance: none; }
 input[type=number] { -moz-appearance: textfield; appearance: textfield; }
@@ -8,7 +8,6 @@ input[type=number] { -moz-appearance: textfield; appearance: textfield; }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Общий контейнер для страниц с формами */
 .inest-form-page {
   display: flex;
   justify-content: center;
@@ -17,7 +16,6 @@ input[type=number] { -moz-appearance: textfield; appearance: textfield; }
   padding: 80px 20px 40px;
 }
 
-/* Сама карточка формы */
 .inest-form-card {
   background: var(--bg-card);
   width: 100%;
@@ -33,11 +31,9 @@ input[type=number] { -moz-appearance: textfield; appearance: textfield; }
   &.item-card-wide { max-width: 550px; }
 }
 
-/* Шапка формы */
 .inest-form-header {
   text-align: center;
   margin-bottom: 1.5rem;
-
   .logo-circle {
     width: 60px; height: 60px;
     background: var(--dark-blue);
@@ -48,30 +44,26 @@ input[type=number] { -moz-appearance: textfield; appearance: textfield; }
     color: var(--accent-color);
     font-size: 1.5rem;
   }
-
   h2 { color: var(--text-main); font-size: 1.6rem; font-weight: 700; margin-bottom: 0.5rem; }
   p { color: var(--text-muted); font-size: 0.9rem; }
 }
 
-/* Группировка */
 .inest-form-group {
   margin-bottom: 1.2rem;
-
   label {
     display: block; color: var(--text-muted);
     font-size: 0.75rem; margin-bottom: 0.5rem;
     text-transform: uppercase; letter-spacing: 1px; font-weight: 600;
   }
-
   .label-with-action { display: flex; justify-content: space-between; align-items: center; }
 }
 
 .inest-form-row {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
-  @media (max-width: 480px) { grid-template-columns: 1fr; gap: 0; }
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
-/* Стилизация полей (Input, Select, Textarea) */
 .inest-input-wrapper {
   position: relative;
   display: flex;
@@ -92,24 +84,17 @@ input[type=number] { -moz-appearance: textfield; appearance: textfield; }
     background: var(--bg-input);
     border: none !important;
     outline: none !important;
-    color: var(--text-muted) !important;
-    padding: 14px 26px 14px 26px;
+    color: var(--text-main) !important;
+    padding: 14px 26px 14px 45px;
     font-size: 1rem;
     font-family: inherit;
     appearance: none;
-
     &::placeholder { color: var(--text-muted); }
   }
 
   textarea { resize: none; min-height: 80px; padding-top: 14px; }
+  .inest-field-icon-left { position: absolute; left: 15px; color: var(--text-muted); pointer-events: none; font-size: 1.1rem; }
 
-  /* Иконка слева */
-  .inest-field-icon-left {
-    position: absolute; left: 15px;
-    color: var(--text-muted); pointer-events: none; font-size: 1.1rem;
-  }
-
-  /* Селекты (кастомная стрелка) */
   select {
     cursor: pointer;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
@@ -117,97 +102,29 @@ input[type=number] { -moz-appearance: textfield; appearance: textfield; }
     padding-right: 40px;
   }
 
-  /* Датапикер */
   input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.5); cursor: pointer; }
 }
 
-/* Кнопки */
-.inest-btn-primary {
-  width: 100%; background: var(--accent-color); color: var(--dark-blue);
-  border: none; padding: 16px; border-radius: 12px; font-weight: 800;
-  cursor: pointer; transition: all 0.3s ease; text-transform: uppercase;
-  letter-spacing: 1px; margin-top: 1rem;
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-
-  &:hover:not(:disabled) {
-    transform: translateY(-2px); filter: brightness(1.1);
-    box-shadow: 0 5px 15px rgba(0, 245, 214, 0.3);
-  }
-
-  &:disabled { background: #2a3a4f !important; color: #5d708d !important; cursor: not-allowed; opacity: 0.6; }
+/* Иконка глаза / Экшен */
+.input-action {
+  background: transparent;
+  border: none;
+  width: 22px; height: 22px;
+  margin-right: 8px;
+  cursor: pointer;
+  color: var(--text-muted);
+  &:hover { color: var(--accent-color); }
 }
 
-.inest-btn-cancel {
-  flex: 1; background: rgba(255, 255, 255, 0.05); color: var(--text-muted);
-  border: 1px solid rgba(255,255,255,0.1); padding: 16px; border-radius: 12px;
-  font-weight: 600; cursor: pointer; transition: 0.3s;
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-
-  &:hover { background: rgba(255, 77, 77, 0.1); color: #ff4d4d; border-color: #ff4d4d; }
+.inest-form-footer {
+  text-align: center; margin-top: 2rem; padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  color: var(--text-muted); font-size: 0.9rem;
+  a { color: var(--accent-color); font-weight: 600; text-decoration: none; margin-left: 5px; &:hover { text-decoration: underline; } }
 }
 
-/* Прочее (Разделители, Статусы) */
 .inest-form-divider {
   text-align: center; margin: 1.5rem 0; position: relative; display: flex; align-items: center;
   &::before, &::after { content: ""; flex: 1; height: 1px; background: rgba(255, 255, 255, 0.1); }
   span { padding: 0 10px; color: var(--text-muted); font-size: 0.8rem; }
-}
-
-.inest-status-box {
-  padding: 12px; border-radius: 10px; margin-bottom: 1rem; display: flex; align-items: center; gap: 10px; font-size: 0.85rem;
-  &.error { background: rgba(255, 77, 77, 0.1); color: var(--error-red); border: 1px solid rgba(255, 77, 77, 0.2); }
-}
-
-/* Контейнер для самой кнопки Google (iframe) */
-.google-btn-container {
-  display: flex;
-  justify-content: center;
-  margin-top: 1rem;
-  min-height: 44px;
-}
-
-/* Кнопка Google / Outline */
-.inest-btn-outline, .google-toggle-btn {
-  width: 100%;
-  background: transparent;
-  color: var(--text-main);
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  padding: 14px; border-radius: 12px;
-  font-weight: 600; cursor: pointer;
-  display: flex; align-items: center; justify-content: center; gap: 12px;
-  transition: 0.3s; text-transform: uppercase; font-size: 0.85rem;
-
-  &:hover {
-    border-color: var(--accent-color);
-    color: var(--accent-color);
-    background: rgba(0, 245, 214, 0.05);
-  }
-}
-
-.inest-form-footer {
-  text-align: center;
-  margin-top: 2rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-  color: var(--text-muted);
-  font-size: 0.9rem;
-
-  a {
-    color: var(--accent-color);
-    font-weight: 600;
-    text-decoration: none;
-    margin-left: 5px;
-    &:hover { text-decoration: underline; }
-  }
-}
-
-.input-action {
-    background: transparent;
-    border-radius: 20px;
-    width: 22px;
-    height: 22px;
-    margin-right: 8px;
-    cursor: pointer;
-    &:hover { color: var(--accent-color); 
-  }
 }

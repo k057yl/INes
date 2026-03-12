@@ -97,7 +97,8 @@
     "BUTTON_CREATE_LOCATION": "Create location",
     "BUTTON_CREATE_ITEM": "Create item",
     "LOADING": "Loading...",
-    "PAGE": " Page "
+    "PAGE": " Page ",
+    "ADD": "Add +"
   },
   "LOCATION_RIB": {
     "GLOBAL_PAGE": "Page: "

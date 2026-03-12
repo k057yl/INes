@@ -1,46 +1,117 @@
+/* Основная кнопка действия (Создать, Сохранить) */
+.inest-btn-primary {
+  width: 100%;
+  background: var(--accent-color);
+  color: var(--dark-blue);
+  border: none;
+  padding: 16px;
+  border-radius: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+    box-shadow: 0 5px 15px rgba(0, 245, 214, 0.3);
+    
+    .dark-theme & { box-shadow: 0 0 12px rgba(0, 245, 212, 0.4); }
+  }
+
+  &:disabled {
+    background: #2a3a4f !important;
+    color: #5d708d !important;
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+/* Кнопка отмены / Вторичная TODO-Add implement theme*/
+.inest-btn-cancel {
+  flex: 1;
+  background: var(--bg-err-botton);
+  color: var(--text-muted);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 16px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  &:hover {
+    background: rgba(255, 77, 77, 0.1);
+    color: var(--error-red);
+    border-color: var(--error-red);
+  }
+}
+
+/* Маленькие кнопки-иконки в списках */
 .inest-action-btn {
   background: var(--bg-card);
   border: 1px solid var(--accent-color);
   color: var(--text-main);
   width: 34px;
   height: 34px;
-  border-radius: 8px;
+  border-radius: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  padding: 0;
+  padding: 0px 0px 1px 1px;
 
-  i {
-    color: var(--text-muted);
-    font-size: 0.9rem;
-    transition: color 0.2s;
-  }
+  i { color: var(--text-muted); font-size: 0.9rem; transition: color 0.2s; }
 
   &:hover {
     background: var(--accent-color);
     color: var(--bg-card);
-    
     i { color: var(--bg-card); }
-    
-    .dark-theme & {
-      box-shadow: 0 0 12px rgba(0, 245, 212, 0.4);
-    }
+    .dark-theme & { box-shadow: 0 0 12px rgba(0, 245, 212, 0.4); }
   }
 
   &.is-danger {
     border-color: var(--error-red);
     i { color: var(--error-red); }
-
     &:hover {
       background: var(--error-red);
       color: #000;
       i { color: #000; }
-
-      .dark-theme & {
-        box-shadow: 0 0 12px rgba(255, 77, 77, 0.4);
-      }
+      .dark-theme & { box-shadow: 0 0 12px rgba(255, 77, 77, 0.4); }
     }
+  }
+}
+
+/* Кнопка Google / Outline */
+.inest-btn-outline, .google-toggle-btn {
+  width: 100%;
+  background: transparent;
+  color: var(--text-main);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  padding: 14px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  transition: 0.3s;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+
+  &:hover {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+    background: rgba(0, 245, 214, 0.05);
   }
 }

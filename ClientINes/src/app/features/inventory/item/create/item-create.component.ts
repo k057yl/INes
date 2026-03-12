@@ -116,8 +116,11 @@ export class ItemCreateComponent implements OnInit {
 
     if (val.storageLocationId) formData.append('storageLocationId', val.storageLocationId);
     if (val.purchaseDate) formData.append('purchaseDate', new Date(val.purchaseDate).toISOString());
-    if (val.purchasePrice != null) formData.append('purchasePrice', String(val.purchasePrice));
-    if (val.estimatedValue != null) formData.append('estimatedValue', String(val.estimatedValue));
+    if (val.purchasePrice != null) {
+      const priceValue = String(val.purchasePrice);
+      formData.append('purchasePrice', priceValue);
+      formData.append('estimatedValue', priceValue);
+    }
 
     if (val.addPhoto && this.selectedPhotos.length > 0) {
       this.selectedPhotos.forEach(photo => {
@@ -130,6 +133,9 @@ export class ItemCreateComponent implements OnInit {
         const path = val.storageLocationId ? ['/location', val.storageLocationId] : ['/home'];
         this.router.navigate(path);
       },
+      error: (err) => {
+        console.error('Ошибка при создании объекта:', err);
+      }
     });
   }
 
