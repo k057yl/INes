@@ -31,5 +31,20 @@
         <span class="loc-name">{{ loc.name }}</span>
       </div>
     </div>
+
+    <div class="add-chip-container">
+      <button class="add-root-chip" (click)="toggleCreateMenu($event)">
+        <i class="fa fa-plus-circle"></i> {{ 'MAIN.ADD' | translate }}
+      </button>
+
+      <div class="ribbon-dropdown-menu" *ngIf="isCreateMenuOpen" (click)="$event.stopPropagation()">
+        <button routerLink="/location-create" class="dropdown-item" (click)="closeMenu()">
+          <i class="fa fa-map-marker-alt"></i> {{'MAIN.BUTTON_CREATE_LOCATION' | translate }}
+        </button>
+        <button routerLink="/create-item" class="dropdown-item" (click)="closeMenu()">
+          <i class="fa fa-box"></i> {{'MAIN.BUTTON_CREATE_ITEM' | translate }}
+        </button>
+      </div>
+    </div>
   </div>
 </div>

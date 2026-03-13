@@ -9,24 +9,6 @@
     (jumpTo)="jumpToLocation($event)">
   </app-location-ribbon>
 
-  <div class="board-header-zone">
-  
-    <div class="create-dropdown-container">
-      <button class="btn-action dropdown-trigger create-dropdown-trigger" (click)="toggleCreateMenu($event)">
-        <i class="fa fa-plus-circle"></i> {{ 'MAIN.ADD' | translate }}
-      </button>
-
-      <div class="create-dropdown-menu" *ngIf="isCreateMenuOpen">
-        <button routerLink="/location-create" class="dropdown-item" (click)="isCreateMenuOpen = false">
-          <i class="fa fa-map-marker-alt"></i> {{'MAIN.BUTTON_CREATE_LOCATION' | translate }}
-        </button>
-        <button routerLink="/create-item" class="dropdown-item" (click)="isCreateMenuOpen = false">
-          <i class="fa fa-box"></i> {{'MAIN.BUTTON_CREATE_ITEM' | translate }}
-        </button>
-      </div>
-    </div>
-  </div>
-
   <div class="board-grid-3">
     <div class="loader-overlay" *ngIf="isLoading">{{'MAIN.LOADING' | translate }}</div>
     

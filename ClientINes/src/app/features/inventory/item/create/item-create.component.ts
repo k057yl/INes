@@ -15,7 +15,7 @@ import { CategoryService } from '../../../../shared/services/category.service';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, TranslateModule, RouterModule],
   templateUrl: './item-create.component.html',
-  styleUrl: './item-create.component.css'
+  styleUrl: './item-create.component.scss'
 })
 export class ItemCreateComponent implements OnInit {
   private route = inject(ActivatedRoute);

@@ -1,17 +1,19 @@
 :root {
-  --bg-main: #f5f7fa;
-  --bg-card: #ffffff;
-  --bg-input: #e2e6eb;
-  --bg-botton: #d8d8d8;
-  --bg-err-botton: #e2e6eb;//same --bg-input
+  --bg-main: #e2e8f0; 
+  --bg-card: #f8fafc; 
+  --bg-input: #cbd5e1; 
+  --bg-botton: #94a3b8; 
+  --bg-cancel-botton: #cbd5e1; 
+  --bg-google-botton: #b1bccd;
+  --bg-ribbon: #64748b;
 
   --text-main: #1e293b;
   --text-muted: #64748b;
   --text-on-accent: #ffffff;
-  --text-access: #0040ff;
+  --text-access: #2563eb;
 
-  --border-color: #cbd5e1;
-  --accent-color: #00b894;
+  --border-color: #94a3b8;
+  --accent-color: #059669;
   
   /* Константы */
   --dark-blue: #0b132b;
@@ -25,7 +27,9 @@ body.dark-theme {
   --bg-card: #1c2541;
   --bg-input: #0b132b;
   --bg-botton: #141924;
-  --bg-err-botton: #0b132b;//same --bg-input
+  --bg-cancel-botton: #0b132b;//same --bg-input
+  --bg-google-botton: #101b3d;
+  --bg-ribbon: #1c2541;
 
   --text-main: #f8fafc;
   --text-muted: #94a3b8;

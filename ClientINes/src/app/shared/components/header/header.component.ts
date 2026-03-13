@@ -55,4 +55,10 @@ export class HeaderComponent {
   toggleTheme() { this.themeService.toggleTheme(); }
   toggleMenu() { this.isMenuOpen.set(!this.isMenuOpen()); }
   closeMenu() { this.isMenuOpen.set(false); }
+
+  languages = [
+  { code: 'en', label: 'English', flag: '🇺🇸' },
+  { code: 'ru', label: 'Русский', flag: '🇷🇺' },
+  { code: 'uk', label: 'Українська', flag: '🇺🇦' }
+];
 }

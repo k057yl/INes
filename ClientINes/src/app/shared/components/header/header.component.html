@@ -58,14 +58,14 @@
         </button>
 
         <div class="lang-menu" *ngIf="isLangMenuOpen()" (click)="$event.stopPropagation()">
-          <button (click)="changeLang('en')" [class.selected]="currentLang === 'en'">
-            <span class="flag">🇺🇸</span> English
-          </button>
-          <button (click)="changeLang('ru')" [class.selected]="currentLang === 'ru'">
-            <span class="flag">🇷🇺</span> Русский
-          </button>
-          <button (click)="changeLang('uk')" [class.selected]="currentLang === 'uk'">
-            <span class="flag">🇺🇦</span> Українська
+          <button
+            *ngFor="let lang of languages"
+            (click)="changeLang(lang.code)"
+            [class.selected]="currentLang === lang.code">
+
+            <span class="flag">{{ lang.flag }}</span>
+            {{ lang.label }}
+
           </button>
         </div>
       </div>

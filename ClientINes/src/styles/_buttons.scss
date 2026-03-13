@@ -32,10 +32,10 @@
   }
 }
 
-/* Кнопка отмены / Вторичная TODO-Add implement theme*/
+/* Кнопка отмены / Вторичная*/
 .inest-btn-cancel {
   flex: 1;
-  background: var(--bg-err-botton);
+  background: var(--bg-cancel-botton);
   color: var(--text-muted);
   border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 16px;
@@ -94,9 +94,9 @@
 /* Кнопка Google / Outline */
 .inest-btn-outline, .google-toggle-btn {
   width: 100%;
-  background: transparent;
+  background: var(--bg-google-botton);
   color: var(--text-main);
-  border: 2px solid rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
   padding: 14px;
   border-radius: 12px;
   font-weight: 600;

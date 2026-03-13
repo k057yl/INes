@@ -31,7 +31,6 @@ export class MainPageComponent implements OnInit, OnDestroy {
   connectedLists: string[] = [];
   isLoading = true;
   itemToSell: Item | null = null;
-  isCreateMenuOpen = false;
 
   currentPageBoard = 0;
   readonly pageSizeBoard = 3;
@@ -210,19 +209,6 @@ export class MainPageComponent implements OnInit, OnDestroy {
 
   private onDocumentClick(event: MouseEvent) {
     this.locations.forEach(loc => this.closeMenuRecursive(loc, event));
-
-    const target = event.target as HTMLElement;
-    const isTrigger = target.closest('.create-dropdown-trigger');
-    const isMenu = target.closest('.create-dropdown-menu');
-
-    if (!isTrigger && !isMenu) {
-      this.isCreateMenuOpen = false;
-    }
-  }
-
-  toggleCreateMenu(event: MouseEvent) {
-    event.stopPropagation();
-    this.isCreateMenuOpen = !this.isCreateMenuOpen;
   }
 
   private closeMenuRecursive(loc: StorageLocation, event: MouseEvent) {
