@@ -8,10 +8,6 @@
     </div>
 
     <nav class="nav-links" [class.mobile-open]="isMenuOpen()">
-      <div class="mobile-user-info" *ngIf="user$ | async as user">
-        {{ 'COMMON.WELCOME' | translate }}, <br><strong>{{ user.email }}</strong>
-      </div>
-      
       <a routerLink="/main" routerLinkActive="active" (click)="closeMenu()">
         <i class="fa fa-th-large"></i> {{ 'HEADER.HOME' | translate }}
       </a>
@@ -47,6 +43,9 @@
     </nav>
 
     <div class="actions">
+      <div class="user-box" *ngIf="user$ | async as user" [title]="user.email">
+        <strong>{{ user.email }}</strong>
+      </div>
       <button class="theme-toggle" (click)="toggleTheme()">
         {{ themeService.isDarkTheme() ? '🌙' : '☀️' }}
       </button>
