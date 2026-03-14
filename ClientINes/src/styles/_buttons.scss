@@ -62,7 +62,7 @@
   color: var(--text-main);
   width: 34px;
   height: 34px;
-  border-radius: 20px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -113,5 +113,35 @@
     border-color: var(--accent-color);
     color: var(--accent-color);
     background: rgba(0, 245, 214, 0.05);
+  }
+}
+
+/* Кнопка добавления в Риббоне (плавающая) */
+.inest-btn-ribbon-add {
+  width: auto;
+  min-width: 140px;
+  height: 38px;
+  background: var(--accent-color);
+  color: var(--text-on-accent);
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.8rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.35);
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 }

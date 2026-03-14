@@ -1,4 +1,4 @@
-import { ItemStatus } from './item-status.enum';
+import { ItemStatus } from '../enums/item-status.enum';
 
 export const ITEM_STATUS_LABELS: Record<ItemStatus, string> = {
   [ItemStatus.Active]: 'STATUS.ACTIVE',

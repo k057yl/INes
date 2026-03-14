@@ -30,17 +30,15 @@
   </div>
 
   <div class="item-actions">
-    <div class="item-actions">
       <button *ngIf="!isMobile && featureService.isSalesModeEnabled() && item.status !== 4" 
-              class="action-btn sell-inline" 
+              class="inest-action-btn" 
               (click)="onSell($event)"
               [title]="'ITEM_CARD.SELL' | translate">
         <i class="fa fa-dollar-sign"></i>
         <span class="currency-symbol">$</span>
       </button>
 
-      <button class="menu-btn" (click)="toggleMenu($event)" [class.active]="showMenu">
-        <i class="fa fa-ellipsis-v"></i>...
+      <button class="inest-action-btn" (click)="toggleMenu($event)" [class.active]="showMenu">...
       </button>
 
     <div class="menu-dropdown item-menu" *ngIf="showMenu" (click)="$event.stopPropagation()">

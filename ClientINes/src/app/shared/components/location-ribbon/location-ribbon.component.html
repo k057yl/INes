@@ -32,8 +32,8 @@
       </div>
     </div>
 
-    <div class="add-chip-container">
-      <button class="add-root-chip" (click)="toggleCreateMenu($event)">
+    <div class="add-chip-container" #createMenuContainer>
+      <button class="inest-btn-ribbon-add" (click)="toggleCreateMenu($event)">
         <i class="fa fa-plus-circle"></i> {{ 'MAIN.ADD' | translate }}
       </button>
 

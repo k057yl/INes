@@ -12,19 +12,15 @@ export class PlatformService {
     return this.http.get<any[]>(this.apiUrl);
   }
 
-  create(name: string): Observable<any> {
-    return this.http.post<any>(this.apiUrl, JSON.stringify(name), {
-      headers: { 'Content-Type': 'application/json' }
-    });
+  create(dto: { name: string }): Observable<any> {
+    return this.http.post<any>(this.apiUrl, dto);
   }
 
   delete(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
-  update(id: string, name: string): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/${id}`, JSON.stringify(name), {
-      headers: { 'Content-Type': 'application/json' }
-    });
+  update(id: string, dto: { name: string }): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${id}`, dto);
   }
 }

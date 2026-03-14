@@ -1,7 +1,11 @@
 :root {
-  --bg-main: #e2e8f0; 
-  --bg-card: #f8fafc; 
+  --bg-main: #e2e8f0;
+  --bg-card: #f8fafc;
+  --bg-main-card: #dbe1e7; 
   --bg-input: #cbd5e1;
+
+  /*main button*/
+  --border-main-button: #d7ffe4;
 
   /*button*/
   --bg-cancel-button: #cbd5e1; 
@@ -9,12 +13,10 @@
 
   /*ribbon*/
   --bg-ribbon: #e2e8f0;
-
   /*no selected*/
   --bg-ribbon-card-no-selected: #f8fafc;
   --border-ribbon-card-no-selected: #94a3b8;
   --text-ribbon-card-no-selected: #334155;
-
   /*selected*/
   --bg-ribbon-card-selected: #ffffff;
   --border-ribbon-card-selected: var(--accent-color);
@@ -39,10 +41,16 @@
 body.dark-theme {
   --bg-main: #0b132b;
   --bg-card: #1c2541;
+  --bg-main-card: #19213a; 
   --bg-input: #0b132b;
+
+  /*main button*/
+  --border-main-button: #00b894;
+
   /*button*/
-  --bg-cancel-button: #0b132b;//same --bg-input
+  --bg-cancel-button: #0b132b;
   --bg-google-button: #101b3d;
+
   /*ribbon*/
   --bg-ribbon: #1c2541;
   /*no selected*/

@@ -14,7 +14,7 @@
       </div>
     </div>
     
-    <button class="menu-btn" (click)="location.showMenu = !location.showMenu">
+    <button class="inest-action-btn" (click)="$event.stopPropagation(); location.showMenu = !location.showMenu">...
       <i class="fa fa-ellipsis-v"></i>
     </button>
 
@@ -37,14 +37,14 @@
       <div class="divider"></div>
       
       <div class="menu-actions">
-        <button [routerLink]="['/location', location.id]" (click)="location.showMenu = false">
+        <button class="menu-item-btn" [routerLink]="['/location', location.id]" (click)="location.showMenu = false">
           <i class="fa fa-expand-alt"></i> {{'LOCATION_CARD.DETAILS' | translate}}
         </button>
-        <button (click)="rename.emit(location)">
+        <button class="menu-item-btn" (click)="rename.emit(location)">
           <i class="fa fa-pen"></i> {{'LOCATION_CARD.RENAME' | translate}}
         </button>
         <div class="divider"></div>
-        <button (click)="delete.emit(location)" class="delete-loc-btn">
+        <button (click)="delete.emit(location)" class="menu-item-btn delete-loc-btn">
           <i class="fa fa-trash-alt"></i> {{'LOCATION_CARD.DELETE' | translate}}
         </button>
       </div>

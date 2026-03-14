@@ -12,7 +12,7 @@ import { TranslateModule } from '@ngx-translate/core';
   standalone: true,
   imports: [CommonModule, RouterModule, DragDropModule, TranslateModule],
   templateUrl: './item-card.component.html',
-  styleUrl: './item-card.component.css'
+  styleUrl: './item-card.component.scss'
 })
 export class ItemCardComponent {
   private el = inject(ElementRef);

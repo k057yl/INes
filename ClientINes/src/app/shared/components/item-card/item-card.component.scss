@@ -1,0 +1,199 @@
+/* --- ОСНОВНАЯ КАРТОЧКА --- */
+.item-card {
+  display: flex;
+  align-items: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 10px;
+  margin-bottom: 8px;
+  position: relative;
+  overflow: visible;
+  cursor: grab;
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover:not(.cdk-drag-placeholder):not(.cdk-drag-dragging) {
+    border-color: var(--accent-color);
+    background: var(--bg-input);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  /* ЖЕСТКИЙ ФИКС: Убираем любые переходы, когда карточку реально тащат */
+  &.cdk-drag-dragging {
+    transition: none !important;
+    cursor: grabbing;
+    opacity: 0.9;
+    z-index: 3000 !important;
+  }
+
+  &.menu-open {
+    z-index: 1000 !important;
+    border-color: var(--accent-color);
+  }
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1) !important;
+}
+
+/* --- КОНТЕНТ --- */
+.item-thumb {
+  width: 54px;
+  height: 54px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--bg-main);
+  flex-shrink: 0;
+  cursor: pointer;
+  border: 1px solid var(--border-color);
+  
+  img { width: 100%; height: 100%; object-fit: cover; }
+}
+
+.item-content {
+  flex: 1;
+  margin: 0 15px;
+  overflow: hidden;
+  
+  .item-name {
+    display: block;
+    color: var(--text-main);
+    font-weight: 600;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+}
+
+/* --- ЭКШЕНЫ --- */
+.item-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+/* ВЫПАДАЮЩЕЕ МЕНЮ */
+.menu-dropdown.item-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 5px);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  z-index: 2000;
+  width: 220px;
+  border-radius: 12px;
+  padding: 6px;
+  animation: cardFadeIn 0.15s ease-out;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    right: 15px;
+    border: 6px solid transparent;
+    border-bottom-color: var(--bg-card);
+  }
+}
+
+@keyframes cardFadeIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.menu-dropdown button {
+  width: 100%;
+  padding: 10px 14px;
+  background: transparent;
+  border: none;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: 0.2s;
+
+  i { width: 18px; color: var(--accent-color); text-align: center; font-size: 1rem; }
+
+  &:hover { 
+    background: var(--bg-input); 
+    color: var(--accent-color); // Текст становится акцентным при наведении
+  }
+
+  &.delete-btn {
+    color: var(--error-red);
+    i { color: var(--error-red); }
+    &:hover { background: rgba(255, 77, 77, 0.1); }
+  }
+}
+
+.divider { 
+  height: 1px; 
+  background: var(--border-color); 
+  margin: 6px 0; 
+  opacity: 0.5;
+}
+
+/* СЕКЦИЯ ПЕРЕМЕЩЕНИЯ ВНУТРИ МЕНЮ */
+.menu-section {
+  label {
+    display: block;
+    padding: 6px 12px 4px;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    font-weight: 700;
+  }
+}
+
+.select-wrapper { 
+  padding: 4px 8px 8px; 
+  
+  select {
+    width: 100%;
+    background: var(--bg-main);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    padding: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    outline: none;
+
+    &:focus { border-color: var(--accent-color); }
+  }
+}
+
+/* DRAG & DROP STATES */
+.item-drag-placeholder {
+  background: var(--bg-input);
+  border: 2px dashed var(--accent-color);
+  border-radius: 12px;
+  min-height: 80px;
+  margin-bottom: 8px;
+  opacity: 0.5;
+}
+
+/* АДАПТИВНОСТЬ */
+@media (max-width: 768px) {
+  .item-card { 
+    touch-action: auto !important; 
+    cursor: default; 
+    &:hover { transform: none; }
+  }
+  
+  .menu-dropdown.item-menu {
+    position: fixed;
+    top: auto;
+    bottom: 20px;
+    left: 10px;
+    right: 10px;
+    width: calc(100% - 20px);
+    &::after { display: none; }
+  }
+}

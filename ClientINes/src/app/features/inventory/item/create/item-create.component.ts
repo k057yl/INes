@@ -5,7 +5,7 @@ import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { ItemService } from '../../../../shared/services/item.service';
 import { LocationService } from '../../../../shared/services/location.service';
 import { TranslateModule } from '@ngx-translate/core';
-import { ITEM_STATUS_LABELS } from '../../../../models/enums/status-mappings';
+import { ITEM_STATUS_LABELS } from '../../../../models/constants/item-status.constants';
 import { CategoryService } from '../../../../shared/services/category.service';
 
 @Component({

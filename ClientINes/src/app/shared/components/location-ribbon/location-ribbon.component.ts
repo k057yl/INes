@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, HostListener, ElementRef, inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter, HostListener, ElementRef, inject, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DragDropModule, CdkDragDrop } from '@angular/cdk/drag-drop';
 import { TranslateModule } from '@ngx-translate/core';
@@ -14,6 +14,9 @@ import { RouterModule } from '@angular/router';
 })
 export class LocationRibbonComponent {
   private elementRef = inject(ElementRef);
+
+  @ViewChild('createMenuContainer') createMenuContainer!: ElementRef;
+
   @Input() locations: StorageLocation[] = [];
   @Input() currentPage = 0;
   @Input() activeBoardIds: string[] = []; 
@@ -26,7 +29,9 @@ export class LocationRibbonComponent {
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
-    if (this.isCreateMenuOpen && !this.elementRef.nativeElement.contains(event.target)) {
+    if (this.isCreateMenuOpen && 
+        this.createMenuContainer && 
+        !this.createMenuContainer.nativeElement.contains(event.target)) {
       this.isCreateMenuOpen = false;
     }
   }

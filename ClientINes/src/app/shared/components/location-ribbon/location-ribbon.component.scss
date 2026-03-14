@@ -73,40 +73,19 @@
   }
 }
 
-/* --- КНОПКА ДОБАВИТЬ (стилизована под чип) --- */
+/* Позиционирование контейнера кнопки */
 .add-chip-container {
   position: absolute;
   bottom: -19px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 1001;
+  z-index: 2;
 }
 
-.add-root-chip {
-  width: auto;
-  min-width: 140px;
-  height: 38px;
-  background: var(--accent-color);
-  border: 2px solid var(--bg-main);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  color: var(--text-on-accent);
-  font-weight: bold;
-  font-size: 0.8rem;
-  cursor: pointer;
-  transition: 0.2s;
-
-  &:hover { filter: brightness(1.1); }
-}
-
-/* --- ВЫПАДАЮЩЕЕ МЕНЮ --- */
+/* ВЫПАДАЮЩЕЕ МЕНЮ */
 .ribbon-dropdown-menu {
   position: absolute;
-  bottom: calc(100% + 10px); /* Позиция над кнопкой */
+  bottom: calc(100% + 10px);
   left: 50%;
   transform: translateX(-50%);
   background: var(--bg-card);
@@ -117,7 +96,6 @@
   min-width: 210px;
   padding: 6px;
 
-  /* Эффект "стрелочки" вниз */
   &::after {
     content: '';
     position: absolute;
@@ -143,7 +121,11 @@
     transition: 0.2s;
 
     i { color: var(--accent-color); width: 16px; font-size: 1rem; }
-    &:hover { background: var(--bg-input); }
+
+    &:hover { 
+      background: var(--bg-input); 
+      color: var(--accent-color);
+    }
   }
 }
 
@@ -167,6 +149,6 @@
     grid-template-rows: repeat(3, 38px);
     gap: 6px;
   }
-  .root-chip, .add-root-chip { padding: 0 6px; }
+  .root-chip { padding: 0 6px; }
   .loc-name { font-size: 0.7rem; }
 }

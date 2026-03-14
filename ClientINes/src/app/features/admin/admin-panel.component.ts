@@ -64,16 +64,16 @@ export class AdminPanelComponent implements OnInit {
 
   // --- Платформы ---
   addPlatform() {
-    const name = prompt('Название платформы:');
-    if (name?.trim()) {
-      this.platformService.create(name.trim()).subscribe(() => this.loadAllData());
+      const name = prompt('Название платформы:');
+      if (name?.trim()) {
+      this.platformService.create({ name: name.trim() }).subscribe(() => this.loadAllData());
     }
   }
 
   renamePlatform(p: SimpleEntity) {
-    const newName = prompt('Новое название:', p.name);
-    if (newName?.trim() && newName !== p.name) {
-      this.platformService.update(p.id, newName.trim()).subscribe(() => this.loadAllData());
+      const newName = prompt('Новое название:', p.name);
+      if (newName?.trim() && newName !== p.name) {
+      this.platformService.update(p.id, { name: newName.trim() }).subscribe(() => this.loadAllData());
     }
   }
 

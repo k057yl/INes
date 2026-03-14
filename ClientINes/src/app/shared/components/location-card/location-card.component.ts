@@ -36,7 +36,7 @@ export class LocationCardComponent {
     if (!this.location.showMenu) return;
 
     const target = event.target as HTMLElement;
-    const clickedInside = target.closest('.menu-dropdown') || target.closest('.menu-btn');
+    const clickedInside = target.closest('.menu-dropdown') || target.closest('.inest-action-btn');
 
     if (!clickedInside) {
       this.location.showMenu = false;
