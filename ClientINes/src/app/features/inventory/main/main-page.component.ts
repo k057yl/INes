@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { RouterModule, Router } from '@angular/router';
 import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { TranslateModule } from '@ngx-translate/core';
@@ -11,8 +11,10 @@ import { Item } from '../../../models/entities/item.entity';
 import { LocationCardComponent } from '../../../shared/components/location-card/location-card.component';
 import { LocationRibbonComponent } from '../../../shared/components/location-ribbon/location-ribbon.component';
 import { SalesService } from '../../../shared/services/sales.service';
+import { LocationService } from '../../../shared/services/location.service';
 import { SellModalComponent } from '../../../shared/components/sell-modal/sell-modal.component';
 import { SellItemRequestDto } from '../../../models/dtos/sale.dto';
+import { ItemStatus } from '../../../models/enums/item-status.enum';
 
 @Component({
   selector: 'app-main-page',
@@ -24,6 +26,7 @@ import { SellItemRequestDto } from '../../../models/dtos/sale.dto';
 export class MainPageComponent implements OnInit, OnDestroy {
   private http = inject(HttpClient);
   private salesService = inject(SalesService);
+  private locationService = inject(LocationService);
   private router = inject(Router);
 
   locations: StorageLocation[] = [];
@@ -36,7 +39,7 @@ export class MainPageComponent implements OnInit, OnDestroy {
   readonly pageSizeBoard = 3;
   currentPageRibbon = 0;
   readonly pageSizeRibbon = 15;
-
+  
   private documentClickHandler = (e: MouseEvent) => this.onDocumentClick(e);
 
   get pagedBoardLocations(): StorageLocation[] {
@@ -88,15 +91,24 @@ export class MainPageComponent implements OnInit, OnDestroy {
 
   // --- УПРАВЛЕНИЕ ЛОКАЦИЯМИ ---
   onRibbonReorder(event: CdkDragDrop<StorageLocation[]>) {
-    const offset = this.currentPageRibbon * this.pageSizeRibbon;
+    const pageSize = window.innerWidth <= 768 ? 9 : 15;
+    const offset = this.currentPageRibbon * pageSize;
+    
     const globalPrev = event.previousIndex + offset;
     const globalCurr = event.currentIndex + offset;
 
     moveItemInArray(this.locations, globalPrev, globalCurr);
-    this.http.patch(`${environment.apiBaseUrl}/locations/reorder`, {
+
+    const payload = {
       parentId: null,
       orderedIds: this.locations.map(l => l.id)
-    }).subscribe();
+    };
+
+    this.locationService.reorder(payload).subscribe({
+      error: (err) => {
+        alert('Не удалось сохранить порядок локаций');
+      }
+    });
   }
 
   jumpToLocation(locId: string) {
@@ -137,10 +149,9 @@ export class MainPageComponent implements OnInit, OnDestroy {
 
   onDelete(loc: StorageLocation) {
     if (confirm(`Удалить локацию "${loc.name}" и всё её содержимое?`)) {
-        this.http.delete(`${environment.apiBaseUrl}/locations/${loc.id}`).subscribe({
+        this.locationService.delete(loc.id).subscribe({
         next: () => {
             this.removeLocationFromTree(this.locations, loc.id);
-
             this.locations = [...this.locations];
             this.refreshState();
 
@@ -148,28 +159,25 @@ export class MainPageComponent implements OnInit, OnDestroy {
             this.currentPageBoard--;
             }
         },
-        error: (err) => console.error('Ошибка при удалении локации:', err)
+        error: (err: HttpErrorResponse) => console.error('Ошибка при удалении локации:', err)
         });
     }
     loc.showMenu = false;
     }
 
-    /**
-     * Рекурсивный помощник для удаления локации из дерева
-     */
-    private removeLocationFromTree(tree: StorageLocation[], id: string): boolean {
+  private removeLocationFromTree(tree: StorageLocation[], id: string): boolean {
     for (let i = 0; i < tree.length; i++) {
         if (tree[i].id === id) {
-        tree.splice(i, 1);
-        return true;
+          tree.splice(i, 1);
+          return true;
         }
         if (tree[i].children && tree[i].children!.length > 0) {
-        const deleted = this.removeLocationFromTree(tree[i].children!, id);
-        if (deleted) return true;
+          const deleted = this.removeLocationFromTree(tree[i].children!, id);
+          if (deleted) return true;
         }
     }
     return false;
-    }
+  }
 
   // --- УПРАВЛЕНИЕ ПРЕДМЕТАМИ ---
   onItemDropped(data: {event: CdkDragDrop<Item[]>, loc: StorageLocation}) {
@@ -179,7 +187,9 @@ export class MainPageComponent implements OnInit, OnDestroy {
       return;
     }
     const item = event.previousContainer.data[event.previousIndex];
-    item.status = loc.isSalesLocation ? 6 : loc.isLendingLocation ? 1 : 0;
+    
+    // Используем Enum для статусов
+    item.status = loc.isSalesLocation ? ItemStatus.Listed : loc.isLendingLocation ? ItemStatus.Lent : ItemStatus.Active;
 
     transferArrayItem(event.previousContainer.data, event.container.data, event.previousIndex, event.currentIndex);
     this.http.patch(`${environment.apiBaseUrl}/items/${item.id}/move`, { targetLocationId: loc.id }).subscribe();
@@ -193,7 +203,6 @@ export class MainPageComponent implements OnInit, OnDestroy {
     });
   }
 
-  // --- ВСПОМОГАТЕЛЬНЫЕ МЕТОДЫ ---
   isChildOf(targetId: string, sourceLoc: StorageLocation): boolean {
     return sourceLoc.children?.some(c => c.id === targetId || this.isChildOf(targetId, c)) || false;
   }
@@ -213,15 +222,17 @@ export class MainPageComponent implements OnInit, OnDestroy {
 
   private closeMenuRecursive(loc: StorageLocation, event: MouseEvent) {
     if (loc.showMenu) {
-      const btn = document.getElementById('btn-' + loc.id);
-      if (btn && !btn.contains(event.target as Node)) loc.showMenu = false;
+      // ФИКС КЛАССА: Теперь ищем по универсальному классу кнопок
+      const target = event.target as HTMLElement;
+      const isInside = target.closest('.menu-dropdown') || target.closest('.inest-action-btn');
+      if (!isInside) loc.showMenu = false;
     }
     loc.children?.forEach(c => this.closeMenuRecursive(c, event));
   }
 
   onItemMoveManual(data: {item: Item, targetLocationId: string}) {
     const { item, targetLocationId } = data;
-    const targetLoc = this.flatLocations.find(l => l.id === targetLocationId);
+    const targetLoc = this.flatLocations.find((l: StorageLocation) => l.id === targetLocationId);
     
     if (!targetLoc) return;
 
@@ -229,13 +240,13 @@ export class MainPageComponent implements OnInit, OnDestroy {
       targetLocationId: targetLoc.id 
     }).subscribe({
       next: () => {
-        const oldLoc = this.flatLocations.find(l => l.id === item.storageLocationId);
+        const oldLoc = this.flatLocations.find((l: StorageLocation) => l.id === item.storageLocationId);
         if (oldLoc?.items) {
-          oldLoc.items = oldLoc.items.filter(i => i.id !== item.id);
+          oldLoc.items = oldLoc.items.filter((i: Item) => i.id !== item.id);
         }
         
         item.storageLocationId = targetLoc.id;
-        item.status = targetLoc.isSalesLocation ? 6 : targetLoc.isLendingLocation ? 1 : 0;
+        item.status = targetLoc.isSalesLocation ? ItemStatus.Listed : targetLoc.isLendingLocation ? ItemStatus.Lent : ItemStatus.Active;
 
         (targetLoc.items ??= []).push(item);
         
@@ -255,17 +266,17 @@ export class MainPageComponent implements OnInit, OnDestroy {
     if (confirm(`Вы уверены, что хотите удалить "${item.name}"?`)) {
         this.http.delete(`${environment.apiBaseUrl}/items/${item.id}`).subscribe({
         next: () => {
-            const location = this.flatLocations.find(l => l.id === item.storageLocationId);
+            const location = this.flatLocations.find((l: StorageLocation) => l.id === item.storageLocationId);
             
             if (location && location.items) {
-            location.items = location.items.filter(i => i.id !== item.id);           
-            this.locations = [...this.locations]; 
+              location.items = location.items.filter((i: Item) => i.id !== item.id);           
+              this.locations = [...this.locations]; 
             }
         },
-        error: (err) => console.error('Ошибка при удалении:', err)
+        error: (err: HttpErrorResponse) => console.error('Ошибка при удалении:', err)
         });
     }
-    }
+  }
 
   trackById = (index: number, item: any) => item.id;
 }

@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { SellItemRequestDto, SaleResponseDto } from '../../models/dtos/sale.dto';
 import { PlatformDto } from '../../models/dtos/platform.dto';
+import { Platform } from '../../models/entities/platform.entity';
 import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
@@ -29,12 +30,11 @@ export class SalesService {
     });
   }
 
-  getPlatforms(): Observable<any[]> {
-    return this.http.get<any[]>(this.platformsUrl);
+  getPlatforms(): Observable<Platform[]> {
+    return this.http.get<Platform[]>(this.platformsUrl);
   }
 
-  addPlatform(name: string): Observable<any> {
-    const dto: PlatformDto = { name };
-    return this.http.post<any>(this.platformsUrl, dto);
+  addPlatform(dto: PlatformDto): Observable<Platform> {
+    return this.http.post<Platform>(this.platformsUrl, dto);
   }
 }

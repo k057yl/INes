@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Item } from '../../../models/entities/item.entity';
 import { SellItemRequestDto } from '../../../models/dtos/sale.dto';
-import { PlatformDto } from '../../../models/dtos/platform.dto';
+import { Platform } from '../../../models/entities/platform.entity';
 import { SalesService } from '../../services/sales.service';
 
 @Component({
@@ -11,14 +11,14 @@ import { SalesService } from '../../services/sales.service';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './sell-modal.component.html',
-  styleUrls: ['./sell-modal.component.css']
+  styleUrls: ['./sell-modal.component.scss']
 })
 export class SellModalComponent implements OnInit {
   private fb = inject(FormBuilder);
   private salesService = inject(SalesService);
 
   @Input() item!: Item;
-  platforms: PlatformDto[] = []; 
+  platforms: Platform[] = [];
   
   @Output() close = new EventEmitter<void>();
   @Output() confirm = new EventEmitter<SellItemRequestDto>();
@@ -44,8 +44,8 @@ export class SellModalComponent implements OnInit {
   addPlatform() {
     const name = prompt('Введите название платформы (например: Avito, eBay):');
     if (name && name.trim()) {
-      this.salesService.addPlatform(name.trim()).subscribe({
-        next: (newPlatform) => {
+      this.salesService.addPlatform({ name: name.trim() }).subscribe({
+        next: (newPlatform: Platform) => {
           this.platforms.push(newPlatform);
           this.sellForm.patchValue({ platformId: newPlatform.id });
         },
@@ -56,7 +56,7 @@ export class SellModalComponent implements OnInit {
 
   onSubmit() {
     if (this.sellForm.valid) {
-      const formValue = this.sellForm.value;
+      const formValue = this.sellForm.getRawValue();
       const dto: SellItemRequestDto = {
         itemId: this.item.id,
         salePrice: Number(formValue.salePrice),

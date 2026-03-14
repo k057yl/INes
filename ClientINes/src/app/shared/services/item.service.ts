@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { CreateItemDto } from '../../models/dtos/create-item.dto';
+import { CreateItemDto } from '../../models/dtos/item.dto';
 import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })

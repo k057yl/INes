@@ -3,7 +3,7 @@ import { LoginComponent } from './features/auth/login/login.component';
 import { RegisterComponent } from './features/auth/register/register.component';
 import { ConfirmRegisterComponent } from './features/auth/register/confirm.register.component';
 import { MainPageComponent } from './features/inventory/main/main-page.component';
-import { LocationCreateComponent } from './features/inventory/location/location-create.component';
+import { LocationCreateComponent } from './features/inventory/location/create/location-create.component';
 import { ItemCreateComponent } from './features/inventory/item/create/item-create.component';
 import { LocationDetailComponent } from './features/inventory/location/location-detail.component';
 import { SalesListComponent } from './features/sales/sales-list.component';

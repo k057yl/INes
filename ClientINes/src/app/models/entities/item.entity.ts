@@ -1,12 +1,7 @@
-import { CreateItemDto } from '../dtos/create-item.dto';
+import { Category } from './category.entity';
+import { StorageLocation } from './storage-location.entity';
+import { ItemStatus } from '../enums/item-status.enum';
 
-export interface Category {
-  id: string;
-  name: string;
-  color: string;
-}
-
-// Добавляем недостающие интерфейсы для коллекций
 export interface ItemPhoto {
   id: string;
   url: string;
@@ -21,25 +16,29 @@ export interface ItemHistory {
   description: string;
 }
 
-// Интерфейсы-заглушки (наполни их полями из своих Sale/Lending сущностей в C#)
 export interface Sale { price: number; }
 export interface Lending { borrowerName: string; }
 export interface Reminder { id: string; title: string; date: string; }
 
-export interface Item extends CreateItemDto {
+export interface Item {
   id: string;
+  name: string;
+  description?: string;
+  status: ItemStatus;
+  purchaseDate?: string;
+  purchasePrice?: number;
+  estimatedValue?: number;
   createdAt: string;
   photoUrl?: string;
-  publicId?: string;
   
   // Связи
-  photos: ItemPhoto[];
+  categoryId: string;
   category?: Category;
-  storageLocation?: any;
+  storageLocationId?: string;
+  storageLocation?: StorageLocation;
+  photos: ItemPhoto[];
   history: ItemHistory[];
   reminders: Reminder[];
   sale?: Sale;
   lending?: Lending;
-  locationId?: string;     
-  locationName?: string;
 }

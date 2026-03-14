@@ -1,0 +1,47 @@
+<div class="container-overlay">
+  <div class="create-card">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <h2><i class="fa fa-map-marker-alt"></i> Создать локацию</h2>
+      
+      <div class="form-group">
+        <label>Название</label>
+        <input type="text" formControlName="name" placeholder="Например: Витрина Avito или Гараж">
+      </div>
+
+      <div class="form-group">
+        <label>Цвет метки</label>
+        <div class="color-picker-wrapper">
+          <input formControlName="color" type="color">
+          <span class="color-hex">{{ form.controls.color.value }}</span>
+        </div>
+      </div>
+
+      <div class="smart-options" *ngIf="featureService.isSalesModeEnabled() || featureService.isLendingModeEnabled()">
+        <p class="section-label">Автоматизация</p>
+        
+        <div class="checkbox-group" *ngIf="featureService.isSalesModeEnabled()">
+          <label class="checkbox-wrapper">
+            <input type="checkbox" formControlName="isSalesLocation">
+            <div class="custom-check"></div>
+            <span class="label-text"><i class="fa fa-shopping-cart"></i> Торговая точка</span>
+          </label>
+          <small>Предметы здесь автоматически станут <b>Listed</b></small>
+        </div>
+
+        <div class="checkbox-group" *ngIf="featureService.isLendingModeEnabled()">
+          <label class="checkbox-wrapper">
+            <input type="checkbox" formControlName="isLendingLocation">
+            <div class="custom-check"></div>
+            <span class="label-text"><i class="fa fa-handshake"></i> Зона одалживания</span>
+          </label>
+          <small>Предметы здесь автоматически станут <b>Lent</b></small>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="inest-btn-cancel" (click)="cancel()">Отмена</button>
+        <button type="submit" class="inest-btn-primary" [disabled]="form.invalid">Сохранить</button>
+      </div>
+    </form>
+  </div>
+</div>

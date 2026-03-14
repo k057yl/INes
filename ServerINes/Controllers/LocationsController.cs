@@ -49,5 +49,12 @@ namespace INest.Controllers
             var loc = await _locationService.GetLocationByIdAsync(GetUserId(), id);
             return loc == null ? NotFound() : Ok(loc);
         }
+
+        [HttpPatch("reorder")]
+        public async Task<IActionResult> Reorder([FromBody] ReorderLocationsDto dto)
+        {
+            await _locationService.ReorderLocationsAsync(GetUserId(), dto.ParentId, dto.OrderedIds);
+            return Ok();
+        }
     }
 }

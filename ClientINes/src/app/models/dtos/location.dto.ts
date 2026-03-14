@@ -6,8 +6,3 @@ export interface CreateLocationDto {
   color?: string;
   sortOrder: number;
 }
-
-export interface StorageLocation extends CreateLocationDto {
-  id: string;
-  createdAt: Date;
-}
