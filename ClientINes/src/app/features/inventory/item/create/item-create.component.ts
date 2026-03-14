@@ -6,8 +6,6 @@ import { ItemService } from '../../../../shared/services/item.service';
 import { LocationService } from '../../../../shared/services/location.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { ITEM_STATUS_LABELS } from '../../../../models/enums/status-mappings';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../../../environments/environment';
 import { CategoryService } from '../../../../shared/services/category.service';
 
 @Component({

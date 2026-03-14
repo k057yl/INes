@@ -35,7 +35,7 @@
 /* Кнопка отмены / Вторичная*/
 .inest-btn-cancel {
   flex: 1;
-  background: var(--bg-cancel-botton);
+  background: var(--bg-cancel-button);
   color: var(--text-muted);
   border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 16px;
@@ -94,7 +94,7 @@
 /* Кнопка Google / Outline */
 .inest-btn-outline, .google-toggle-btn {
   width: 100%;
-  background: var(--bg-google-botton);
+  background: var(--bg-google-button);
   color: var(--text-main);
   border: 2px solid rgba(255, 255, 255, 0.2);
   padding: 14px;

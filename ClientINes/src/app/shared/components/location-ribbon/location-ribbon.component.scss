@@ -42,8 +42,8 @@
 }
 
 .root-chip {
-  background: var(--bg-main);
-  border: 1px solid var(--border-color);
+  background: var(--bg-ribbon-card-no-selected);
+  border: 1px solid var(--border-ribbon-card-no-selected);
   border-radius: 8px;
   height: 38px;
   display: flex;
@@ -56,14 +56,21 @@
 
   &.active-on-board {
     opacity: 1;
-    background: rgba(0, 245, 212, 0.15);//---------------------------------------
-    border-color: var(--accent-color);
-    box-shadow: 0 0 10px rgba(0, 245, 212, 0.2);
+    background: var(--bg-ribbon-card-selected);
+    color: var(--text-ribbon-card-selected);
+    border-color: var(--border-ribbon-card-selected);
+    box-shadow: 0 0 10px rgba(68, 68, 68, 0.2);
     
-    .loc-name { color: var(--accent-color); font-weight: bold; }
+    .loc-name { 
+      color: var(--text-ribbon-card-selected);
+      font-weight: 800; 
+    }
   }
 
-  &:hover { opacity: 1; border-color: var(--accent-color); }
+  &:hover {
+    opacity: 1;
+    border-color: var(--border-ribbon-card-selected);
+  }
 }
 
 /* --- КНОПКА ДОБАВИТЬ (стилизована под чип) --- */

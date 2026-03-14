@@ -13,7 +13,7 @@ import { TranslateModule } from '@ngx-translate/core';
   standalone: true,
   imports: [CommonModule, DragDropModule, RouterModule, ItemCardComponent, TranslateModule],
   templateUrl: './location-card.component.html',
-  styleUrl: './location-card.component.css'
+  styleUrl: './location-card.component.scss'
 })
 export class LocationCardComponent {
   public featureService = inject(FeatureService);

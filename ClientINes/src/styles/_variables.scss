@@ -1,11 +1,24 @@
 :root {
   --bg-main: #e2e8f0; 
   --bg-card: #f8fafc; 
-  --bg-input: #cbd5e1; 
-  --bg-botton: #94a3b8; 
-  --bg-cancel-botton: #cbd5e1; 
-  --bg-google-botton: #b1bccd;
-  --bg-ribbon: #64748b;
+  --bg-input: #cbd5e1;
+
+  /*button*/
+  --bg-cancel-button: #cbd5e1; 
+  --bg-google-button: #b1bccd;
+
+  /*ribbon*/
+  --bg-ribbon: #e2e8f0;
+
+  /*no selected*/
+  --bg-ribbon-card-no-selected: #f8fafc;
+  --border-ribbon-card-no-selected: #94a3b8;
+  --text-ribbon-card-no-selected: #334155;
+
+  /*selected*/
+  --bg-ribbon-card-selected: #ffffff;
+  --border-ribbon-card-selected: var(--accent-color);
+  --text-ribbon-card-selected: #0e7490;
 
   --text-main: #1e293b;
   --text-muted: #64748b;
@@ -13,23 +26,33 @@
   --text-access: #2563eb;
 
   --border-color: #94a3b8;
-  --accent-color: #059669;
+  --accent-color: #06b6d4;
   
   /* Константы */
   --dark-blue: #0b132b;
   --navy-blue: #1c2541;
   --turquoise: #00f5d4;
   --error-red: #ff4d4d;
+  --hover-blue: #11038f;
 }
 
 body.dark-theme {
   --bg-main: #0b132b;
   --bg-card: #1c2541;
   --bg-input: #0b132b;
-  --bg-botton: #141924;
-  --bg-cancel-botton: #0b132b;//same --bg-input
-  --bg-google-botton: #101b3d;
+  /*button*/
+  --bg-cancel-button: #0b132b;//same --bg-input
+  --bg-google-button: #101b3d;
+  /*ribbon*/
   --bg-ribbon: #1c2541;
+  /*no selected*/
+  --bg-ribbon-card-no-selected: #0b132b;
+  --border-ribbon-card-no-selected: #177764;
+  --text-ribbon-card-no-selected: #00f5d4;
+  /*selected*/
+  --bg-ribbon-card-selected: #0b132b;
+  --border-ribbon-card-selected: #00b894;
+  --text-ribbon-card-selected: #00f5d4;
 
   --text-main: #f8fafc;
   --text-muted: #94a3b8;
