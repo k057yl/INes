@@ -1,41 +1,48 @@
 <div class="modal-backdrop" (click)="onCancel()">
   <div class="modal-content" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h2>Selling: {{ item.name }}</h2>
+      <h2>{{ 'ITEM_CARD.SELL' | translate }}: {{ item.name }}</h2>
       <button class="close-btn" (click)="onCancel()">&times;</button>
     </div>
 
     <form [formGroup]="sellForm" (ngSubmit)="onSubmit()">
       <div class="form-group">
-        <label>Price ($)</label>
+        <label>{{ 'SALES.COL_PRICE' | translate }} ($)</label>
         <input type="number" formControlName="salePrice" step="0.01">
       </div>
 
       <div class="form-group">
-        <label>Date</label>
+        <label>{{ 'SALES.COL_DATE' | translate }}</label>
         <input type="date" formControlName="soldDate">
       </div>
 
       <div class="form-group">
         <label style="display: flex; justify-content: space-between;">
-          Platform
-          <button type="button" class="add-btn" (click)="addPlatform()">+ Add</button>
+          {{ 'MANAGEMENT.TITLE_PLATFORM' | translate }}
+          <button type="button" class="add-btn" (click)="addPlatform()">+ {{ 'SHARED.TOOLTIP_ADD' | translate }}</button>
         </label>
         <select formControlName="platformId">
-          <option [value]="null">-- None --</option>
+          <option [value]="null">-- {{ 'ITEM_CARD.M_SELECT_LOCATION' | translate }} --</option>
           <option *ngFor="let p of platforms" [value]="p.id">{{ p.name }}</option>
         </select>
       </div>
 
       <div class="form-group">
-        <label>Comment</label>
+        <label>{{ 'CREATE_ITEM.DESCRIPTION' | translate }} ({{ 'ITEM_CARD.INFO' | translate }})</label>
         <textarea formControlName="comment" rows="3"></textarea>
       </div>
 
       <div class="modal-actions">
-        <button type="button" class="btn-cancel" (click)="onCancel()">Cancel</button>
-        <button type="submit" class="btn-confirm" [disabled]="sellForm.invalid">Confirm</button>
+        <button type="button" class="btn-cancel" (click)="onCancel()">{{ 'CREATE_ITEM.BUTTON_CANCEL' | translate }}</button>
+        <button type="submit" class="btn-confirm" [disabled]="sellForm.invalid">{{ 'ITEM_CARD.SELL' | translate }}</button>
       </div>
     </form>
   </div>
 </div>
+
+<app-entity-modal 
+  *ngIf="showPlatformModal"
+  [title]="'MANAGEMENT.TITLE_PLATFORM'"
+  (confirmed)="onPlatformConfirmed($event)"
+  (cancelled)="showPlatformModal = false">
+</app-entity-modal>

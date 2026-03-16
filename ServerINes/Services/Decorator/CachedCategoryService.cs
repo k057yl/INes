@@ -20,7 +20,7 @@ namespace INest.Services.Decorator
 
         public async Task<IEnumerable<Category>> GetAllAsync(Guid userId)
         {
-            var key = CacheConstants.GetCategoriesKey(userId);
+            var key = CacheConstants.GET_CATEGORIES_KEY(userId);
             return await _cache.GetOrCreateAsync(key, async entry =>
             {
                 entry.AbsoluteExpirationRelativeToNow = _cacheDuration;
@@ -35,24 +35,23 @@ namespace INest.Services.Decorator
             return result;
         }
 
-        public async Task<Category?> UpdateAsync(Guid userId, Guid categoryId, CreateCategoryDto dto)
+        public async Task<Category> UpdateAsync(Guid userId, Guid categoryId, CreateCategoryDto dto)
         {
             var result = await _inner.UpdateAsync(userId, categoryId, dto);
-            if (result != null) InvalidateCache(userId);
+            InvalidateCache(userId);
             return result;
         }
 
-        public async Task<bool> DeleteAsync(Guid userId, Guid categoryId, Guid? targetCategoryId = null)
+        public async Task DeleteAsync(Guid userId, Guid categoryId, Guid? targetCategoryId = null)
         {
-            var result = await _inner.DeleteAsync(userId, categoryId, targetCategoryId);
-            if (result) InvalidateCache(userId);
-            return result;
+            await _inner.DeleteAsync(userId, categoryId, targetCategoryId);
+            InvalidateCache(userId);
         }
 
         private void InvalidateCache(Guid userId)
         {
-            _cache.Remove(CacheConstants.GetCategoriesKey(userId));
-            _cache.Remove(CacheConstants.GetLocationsTreeKey(userId));
+            _cache.Remove(CacheConstants.GET_CATEGORIES_KEY(userId));
+            _cache.Remove(CacheConstants.GET_LOCATIONS_TREE_KEY(userId));
         }
     }
 }

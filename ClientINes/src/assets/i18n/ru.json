@@ -1,4 +1,7 @@
 {
+  "SYSTEM": {
+    "DEFAULT_ERROR": "Произошла непредвиденная ошибка"
+  },
   "ERRORS": {
     "DEFAULT": "Неверные данные",
     "UNCONFIRMED_PASSWORD": "Пароль не верный",
@@ -9,7 +12,9 @@
     "PWD_MIN_LENGTH": "Минимум 6 символов",
     "PWD_UPPER": "Заглавная буква (A-Z)",
     "PWD_DIGIT": "Хотя бы одна цифра (0-9)",
-    "PWD_SPEC": "Спецсимвол (!@#$%...)"
+    "PWD_SPEC": "Спецсимвол (!@#$%...)",
+    "INVALID_COLOR_HEX": "Некорректный формат цвета",
+    "REQUIRED_FIELD": "Поле обязательно для заполнения"
   },
   "SHARED": {
     "TOOLTIP_INFO": "Информация",
@@ -21,9 +26,11 @@
     "TITLE_CATEGORY": "Управление категориями",
     "TITLE_PLATFORM": "Управление платформами"
   },
-  "REG": {
-    "TITLE": "О, Привет!",
-    "SUBTITLE": "Зарегистрируйтесь в системе",
+  "AUTH": {
+    "TITLE_REG": "О, Привет!",
+    "SUBTITLE_REG": "Зарегистрируйтесь в системе",
+    "TITLE_LOGIN": "С возвращением!",
+    "SUBTITLE_LOGIN": "Войдите в свою систему хранения",
     "USERNAME": "Имя",
     "FIELD_USERNAME": "Введите имя",
     "EMAIL": "Email",
@@ -32,37 +39,31 @@
     "FIELD_PASSWORD": "Введите пароль",
     "CONFIRM_PASSWORD": "Проверка пароля",
     "CONFIRM_FIELD_PASSWORD": "Введите пароль еще раз",
-    "PASSWORD_MISMATCH": "Пароли не совпадают",
-    "BUTTON_START": "Зарегистрироваться",
-    "ALREADY_HAVE_ACC": "Уже есть аккаунт? ",
-    "GO_TO_LOGIN": " Перейти к логину",
-    "CHECKING_MAIL": "Проверяем, занята ли почта...",
-    "WARNING_MAIL_ALREADY_EXISTS": "Пользователь с такой почтой уже зарегистрирован",
-    "CONFIRM_TITLE": "Подтвердите почту",
-    "CONFIRM_SUBTITLE": "Введите одноразовый код, который мы вам отправили на почту",
-    "CONFIRM_CODE": "Код",
-    "FIELD_CONFIRM_CODE": "Код",
-    "BUTTON_CONFIRM_SUBMIT": "Продолжить",
-    "CONFIRM_DIDNT_GET_CODE": "Не пришел код?",
-    "CONFIRM_RESEND": "Повторно отправить",
+    "BUTTON_LOGIN": "Войти",
+    "BUTTON_REGISTER": "Зарегистрироваться",
+    "NO_ACC_YET": "Ещё нет аккаунта?",
+    "ALREADY_HAVE_ACC": "Уже есть аккаунт?",
+    "GO_TO_REGISTER": "Перейти к регистрации",
+    "GO_TO_LOGIN": "Перейти к логину",
     "OR": "Или",
     "BUTTON_HIDE_GOOGLE": "Скрыть кнопку",
-    "BUTTON_SHOW_GOOGLE": "Зарегистрироваться с гугл"
-  },
-  "LOGIN": {
-    "TITLE": "С возвращением!",
-    "SUBTITLE": "Войдите в свою систему хранения",
-    "USERNAME": "Имя",
-    "FIELD_USERNAME": "Введите имя",
-    "PASSWORD": "Пароль",
-    "FIELD_PASSWORD": "Введите пароль",
-    "PASSWORD_MISMATCH": "Пароль не верный",
-    "BUTTON_START": "Войти",
-    "NO_ACC_YET": "Ещё нет аккаунта? ",
-    "GO_TO_REGISTER": " Перейти к регистрации",
-    "OR": "Или",
-    "BUTTON_HIDE_GOOGLE": "Скрыть кнопку",
-    "BUTTON_SHOW_GOOGLE": "Войти с гугл"
+    "BUTTON_SHOW_GOOGLE_LOGIN": "Войти с Google",
+    "BUTTON_SHOW_GOOGLE_REG": "Зарегистрироваться с Google",
+    
+    "ERRORS": {
+      "EMAIL_ALREADY_EXISTS": "Пользователь с такой почтой уже зарегистрирован",
+      "INVALID_CREDENTIALS": "Неверный логин или пароль",
+      "EMAIL_UNCONFIRMED": "Почта не подтверждена. Пожалуйста, введите код.",
+      "INVALID_OR_EXPIRED_CODE": "Код неверный или его срок истек",
+      "GOOGLE_AUTH_FAILED": "Ошибка авторизации через Google",
+      "USER_NOT_FOUND": "Пользователь не найден"
+    },
+    
+    "SUCCESS": {
+      "OTP_SENT": "Код подтверждения отправлен на почту",
+      "PASSWORD_CHANGED": "Пароль успешно изменен",
+      "RESET_EMAIL_SENT": "Инструкции по сбросу отправлены на почту"
+    }
   },
   "HEADER":{
     "HOME": "Главная",
@@ -142,5 +143,16 @@
     "COL_PRICE": "Цена продажи",
     "COL_PROFIT": "Прибыль",
     "NO_SALES": "Продаж пока нет"
+  },
+  "CATEGORIES": {
+    "ERRORS": {
+      "NOT_FOUND": "Категория не найдена",
+      "CANNOT_DELETE_DEFAULT": "Нельзя удалить категорию по умолчанию"
+    }
+  },
+  "PLATFORMS": {
+    "ERRORS": {
+      "NOT_FOUND": "Платформа не найдена"
+    }
   }
 }

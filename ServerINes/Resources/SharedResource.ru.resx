@@ -117,37 +117,16 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="EMAIL_REQUIRED" xml:space="preserve">
-    <value>Email обязателен для заполнения</value>
+  <data name="CONFIRM_BODY" xml:space="preserve">
+    <value>&lt;h3&gt;Добро пожаловать!&lt;/h3&gt;&lt;p&gt;Ваш код: &lt;b&gt;{0}&lt;/b&gt;&lt;/p&gt;</value>
   </data>
-  <data name="INVALID_EMAIL_FORMAT" xml:space="preserve">
-    <value>Некорректный формат почты</value>
+  <data name="CONFIRM_SUBJECT" xml:space="preserve">
+    <value>Добро пожаловать в INest! Подтвердите регистрацию</value>
   </data>
-  <data name="PASSWORD_REQUIRED" xml:space="preserve">
-    <value>Придумайте пароль</value>
+  <data name="RESET_BODY" xml:space="preserve">
+    <value>&lt;p&gt;Нажмите &lt;a href='{0}'&gt;здесь&lt;/a&gt;, чтобы сбросить пароль.&lt;/p&gt;</value>
   </data>
-  <data name="PASSWORD_REQUIRES_DIGIT" xml:space="preserve">
-    <value>Нужна хотя бы одна цифра</value>
-  </data>
-  <data name="PASSWORD_REQUIRES_LOWERCASE" xml:space="preserve">
-    <value>Нужна строчная буква</value>
-  </data>
-  <data name="PASSWORD_REQUIRES_NONALPHANUMERIC" xml:space="preserve">
-    <value>Нужен спецсимвол (!@#)</value>
-  </data>
-  <data name="PASSWORD_REQUIRES_UPPERCASE" xml:space="preserve">
-    <value>Нужна заглавная буква</value>
-  </data>
-  <data name="PASSWORD_TOO_SHORT" xml:space="preserve">
-    <value>Пароль должен быть не короче 6 символов</value>
-  </data>
-  <data name="USERNAME_INVALID_CHARACTERS" xml:space="preserve">
-    <value>Только латинские буквы и цифры</value>
-  </data>
-  <data name="USERNAME_REQUIRED" xml:space="preserve">
-    <value>Имя пользователя обязательно</value>
-  </data>
-  <data name="USERNAME_TOO_SHORT" xml:space="preserve">
-    <value>Минимум 3 символа для имени</value>
+  <data name="RESET_SUBJECT" xml:space="preserve">
+    <value>Сброс пароля</value>
   </data>
 </root>

@@ -2,9 +2,6 @@
 {
     public class AuthResponseDto
     {
-        public string? Token { get; set; }
-        public bool IsEmailConfirmed { get; set; } = true;
-        public string? Message { get; set; }
-        public bool Success { get; set; } = true;
+        public string Token { get; set; } = string.Empty;
     }
 }

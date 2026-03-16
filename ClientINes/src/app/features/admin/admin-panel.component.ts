@@ -4,6 +4,8 @@ import { TranslateModule } from '@ngx-translate/core';
 import { CategoryService } from '../../shared/services/category.service';
 import { PlatformService } from '../../shared/services/platform.service';
 import { Category } from '../../models/entities/category.entity';
+import { TranslateService } from '@ngx-translate/core';
+import { EntityModalComponent } from '../../shared/components/entity-modal/entity-modal.component';
 
 interface SimpleEntity {
   id: string;
@@ -13,16 +15,24 @@ interface SimpleEntity {
 @Component({
   selector: 'app-admin-panel',
   standalone: true,
-  imports: [CommonModule, TranslateModule],
+  imports: [CommonModule, TranslateModule, EntityModalComponent],
   templateUrl: './admin-panel.component.html',
   styleUrl: './admin-panel.component.scss'
 })
 export class AdminPanelComponent implements OnInit {
   private categoryService = inject(CategoryService);
   private platformService = inject(PlatformService);
+  private translate = inject(TranslateService);
 
   platforms: SimpleEntity[] = [];
   categories: Category[] = [];
+
+  showModal = false;
+  modalTitle = '';
+  modalValue = '';
+  modalMode: 'category' | 'platform' = 'category';
+  modalAction: 'add' | 'rename' = 'add';
+  selectedId: string | null = null;
 
   ngOnInit() {
     this.loadAllData();
@@ -33,47 +43,52 @@ export class AdminPanelComponent implements OnInit {
     this.platformService.getAll().subscribe(res => this.platforms = res);
   }
 
-  // --- Категории ---
-  addCategory() {
-    const name = prompt('Название новой категории:');
-    if (name?.trim()) {
-      this.categoryService.create({ name: name.trim() }).subscribe(() => this.loadAllData());
-    }
+  addCategory() { this.openModal('category', 'add', 'MANAGEMENT.TITLE_CATEGORY'); }
+  addPlatform() { this.openModal('platform', 'add', 'MANAGEMENT.TITLE_PLATFORM'); }
+  
+  renameCategory(cat: any) { this.openModal('category', 'rename', 'SHARED.TOOLTIP_RENAME', cat); }
+  renamePlatform(p: any) { this.openModal('platform', 'rename', 'SHARED.TOOLTIP_RENAME', p); }
+
+  private openModal(mode: 'category' | 'platform', action: 'add' | 'rename', title: string, entity?: any) {
+    this.modalMode = mode;
+    this.modalAction = action;
+    this.modalTitle = title;
+    this.modalValue = entity ? entity.name : '';
+    this.selectedId = entity ? entity.id : null;
+    this.showModal = true;
   }
 
-  renameCategory(cat: SimpleEntity) {
-    const newName = prompt('Переименовать категорию:', cat.name);
-    if (newName?.trim() && newName !== cat.name) {
-      this.categoryService.update(cat.id, { name: newName.trim() }).subscribe(() => this.loadAllData());
-    }
+  closeModal() {
+    this.showModal = false;
+    this.selectedId = null;
+    this.modalValue = '';
+  }
+
+  onModalConfirmed(name: string) {
+    const service = this.modalMode === 'category' ? this.categoryService : this.platformService;
+    
+    const request$ = this.modalAction === 'add' 
+      ? service.create({ name }) 
+      : service.update(this.selectedId!, { name });
+
+    request$.subscribe({
+      next: () => {
+        this.loadAllData();
+        this.closeModal();
+      },
+      error: (err) => {
+        alert(this.translate.instant(err.error?.error || 'SYSTEM.DEFAULT_ERROR'));
+        this.closeModal();
+      }
+    });
   }
 
   deleteCategory(cat: Category) {
-    if (cat.name === 'Other') {
-      alert('Эту категорию нельзя удалить, она системная.');
-      return;
-    }
-
-    if (confirm(`Удалить категорию "${cat.name}"? Предметы будут перенесены в "Разное".`)) {
+    if (confirm(`Удалить категорию "${cat.name}"?`)) {
       this.categoryService.delete(cat.id).subscribe({
         next: () => this.loadAllData(),
-        error: () => alert('Ошибка удаления')
+        error: (err) => alert(this.translate.instant(err.error?.error || 'SYSTEM.DEFAULT_ERROR'))
       });
-    }
-  }
-
-  // --- Платформы ---
-  addPlatform() {
-      const name = prompt('Название платформы:');
-      if (name?.trim()) {
-      this.platformService.create({ name: name.trim() }).subscribe(() => this.loadAllData());
-    }
-  }
-
-  renamePlatform(p: SimpleEntity) {
-      const newName = prompt('Новое название:', p.name);
-      if (newName?.trim() && newName !== p.name) {
-      this.platformService.update(p.id, { name: newName.trim() }).subscribe(() => this.loadAllData());
     }
   }
 

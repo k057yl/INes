@@ -1,27 +1,118 @@
 .modal-backdrop {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.5); z-index: 1000;
-    display: flex; justify-content: center; align-items: center;
-  }
-  .modal-content {
-    background: #1c2541; /* Твой темный фон */
-    color: white;
-    padding: 20px; border-radius: 8px;
-    width: 400px; max-width: 90%;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-  }
-  .modal-header { display: flex; justify-content: space-between; margin-bottom: 20px; }
-  .close-btn { background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer;}
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  z-index: 1100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: var(--bg-card);
+  color: var(--text-main);
+  padding: 30px;
+  border-radius: 16px;
+  width: 450px;
+  max-width: 95%;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
   
-  .form-group { margin-bottom: 15px; }
-  .form-group label { display: block; margin-bottom: 5px; color: #94a3b8; }
-  .form-group input, .form-group select, .form-group textarea {
-    width: 100%; padding: 8px; 
-    background: #0b132b; border: 1px solid #3a506b; color: white;
-    border-radius: 4px;
+  h2 { margin: 0; font-size: 1.4rem; color: var(--text-main); }
+  .close-btn { 
+    background: none; border: none; 
+    color: var(--text-muted); font-size: 1.8rem; cursor: pointer;
+    &:hover { color: var(--error-red); }
   }
+}
+
+.form-group {
+  margin-bottom: 20px;
   
-  .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
-  .btn-confirm { background: #00f5d4; color: #0b132b; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold;}
-  .btn-confirm:disabled { background: #ccc; cursor: not-allowed; }
-  .btn-cancel { background: transparent; border: 1px solid #94a3b8; color: #94a3b8; padding: 10px 20px; border-radius: 4px; cursor: pointer; }
+  label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+  }
+
+  input, select, textarea {
+    width: 100%;
+    padding: 10px 14px;
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+
+    &:focus { border-color: var(--accent-color); }
+  }
+}
+
+.add-btn {
+  background: transparent;
+  color: var(--text-access);
+  border: 1px solid var(--text-access);
+  padding: 1px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  
+  &:hover { 
+    background: var(--text-access); 
+    color: var(--text-on-accent); 
+  }
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 30px;
+
+  button {
+    flex: 1;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+  }
+}
+
+.btn-confirm {
+  background: var(--accent-color);
+  color: var(--text-on-accent);
+  
+  &:disabled { 
+    background: var(--bg-cancel-button); 
+    color: var(--text-muted); 
+
+    cursor: not-allowed !important; 
+    opacity: 0.6;
+    
+    &:hover {
+      transform: none;
+      opacity: 0.6;
+    }
+  }
+}
+
+.btn-cancel {
+  background: var(--bg-cancel-button);
+  color: var(--text-main);
+  border: 1px solid var(--border-color) !important;
+}

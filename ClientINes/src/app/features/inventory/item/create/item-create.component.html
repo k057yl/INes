@@ -111,3 +111,10 @@
     </form>
   </div>
 </div>
+
+<app-entity-modal 
+  *ngIf="showCategoryModal"
+  [title]="'CREATE_ITEM.CREATE_CATEGORY'"
+  (confirmed)="onCategoryConfirmed($event)"
+  (cancelled)="showCategoryModal = false">
+</app-entity-modal>

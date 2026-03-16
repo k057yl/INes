@@ -121,22 +121,21 @@ export class RegisterComponent implements OnInit, AfterViewInit {
       username, email, password
     }).subscribe({
       next: () => {
-        this.message = 'AUTH.REGISTER.SUCCESS_MSG';
+        this.message = 'AUTH.SUCCESS.OTP_SENT'; 
         setTimeout(() => {
           this.router.navigate(['/confirm-register'], { state: { email, password } });
         }, 1500);
       },
-      error: (err: HttpErrorResponse) => {
+      error: (err) => {
+        const serverKey = err.error?.error;
+
         if (err.status === 400 && err.error?.errors) {
-          const allErrors = Object.values(err.error.errors).flat() as string[];
-          this.error = allErrors.join(' • ');
-        } 
-        else if (err.error?.error) {
-          this.error = err.error.error;
-        } 
-        else {
-          this.error = 'AUTH.ERRORS.REGISTER_FAILED';
+          this.error = 'SYSTEM.VALIDATION_FAILED';
+        } else {
+          this.error = serverKey || 'SYSTEM.DEFAULT_ERROR';
         }
+        
+        console.error('Registration error', err);
       }
     });
   }

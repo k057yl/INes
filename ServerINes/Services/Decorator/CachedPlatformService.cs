@@ -20,7 +20,7 @@ namespace INest.Services.Decorator
 
         public async Task<IEnumerable<Platform>> GetAllAsync(Guid userId)
         {
-            var key = CacheConstants.GetPlatformsKey(userId);
+            var key = CacheConstants.GET_PLATFORMS_KEY(userId);
             return await _cache.GetOrCreateAsync(key, async entry =>
             {
                 entry.AbsoluteExpirationRelativeToNow = _cacheDuration;
@@ -31,21 +31,21 @@ namespace INest.Services.Decorator
         public async Task<Platform> CreateAsync(Guid userId, PlatformDto dto)
         {
             var result = await _inner.CreateAsync(userId, dto);
-            _cache.Remove(CacheConstants.GetPlatformsKey(userId));
+            _cache.Remove(CacheConstants.GET_PLATFORMS_KEY(userId));
             return result;
         }
 
         public async Task<Platform?> UpdateAsync(Guid userId, Guid id, PlatformDto dto)
         {
             var result = await _inner.UpdateAsync(userId, id, dto);
-            if (result != null) _cache.Remove(CacheConstants.GetPlatformsKey(userId));
+            if (result != null) _cache.Remove(CacheConstants.GET_PLATFORMS_KEY(userId));
             return result;
         }
 
         public async Task<bool> DeleteAsync(Guid userId, Guid id)
         {
             var result = await _inner.DeleteAsync(userId, id);
-            if (result) _cache.Remove(CacheConstants.GetPlatformsKey(userId));
+            if (result) _cache.Remove(CacheConstants.GET_PLATFORMS_KEY(userId));
             return result;
         }
     }

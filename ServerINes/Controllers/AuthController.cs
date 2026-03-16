@@ -1,4 +1,5 @@
-﻿using INest.Models.DTOs.Auth;
+﻿using INest.Constants;
+using INest.Models.DTOs.Auth;
 using INest.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,7 +22,7 @@ namespace INest.Controllers
             try
             {
                 await _authService.SendConfirmationCodeAsync(dto);
-                return Ok(new { message = "OTP_SENT" });
+                return Ok(new { message = LocalizationConstants.AUTH.OTP_SENT });
             }
             catch (Exception ex)
             {
@@ -33,7 +34,6 @@ namespace INest.Controllers
         public async Task<IActionResult> ConfirmRegister([FromBody] ConfirmRegisterDto dto)
         {
             var result = await _authService.ConfirmRegistrationAsync(dto);
-            if (result == null) return BadRequest(new { error = "INVALID_OR_EXPIRED_CODE" });
             return Ok(result);
         }
 
@@ -42,11 +42,6 @@ namespace INest.Controllers
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
             var result = await _authService.LoginAsync(dto);
-            if (!result.Success)
-            {
-                if (!result.IsEmailConfirmed) return Unauthorized(new { error = "EMAIL_UNCONFIRMED" });
-                return Unauthorized(new { error = result.Message });
-            }
             return Ok(result);
         }
 
@@ -54,17 +49,17 @@ namespace INest.Controllers
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto dto)
         {
             await _authService.ForgotPasswordAsync(dto);
-            return Ok(new { message = "RESET_EMAIL_SENT" });
+            return Ok(new { message = LocalizationConstants.AUTH.RESET_EMAIL_SENT });
         }
 
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
         {
             var result = await _authService.ResetPasswordAsync(dto);
-            if (result == null) return NotFound(new { error = "USER_NOT_FOUND" });
+            if (result == null) return NotFound(new { error = LocalizationConstants.AUTH.USER_NOT_FOUND });
             if (!result.Succeeded) return BadRequest(new { errors = result.Errors });
 
-            return Ok(new { message = "PASSWORD_CHANGED" });
+            return Ok(new { message = LocalizationConstants.AUTH.PASSWORD_CHANGED });
         }
 
         [Authorize]
@@ -91,7 +86,7 @@ namespace INest.Controllers
         public async Task<IActionResult> GoogleLogin([FromBody] ExternalAuthDto dto)
         {
             var result = await _authService.GoogleLoginAsync(dto.IdToken);
-            return result != null ? Ok(result) : Unauthorized(new { error = "GOOGLE_AUTH_FAILED" });
+            return result != null ? Ok(result) : Unauthorized(new { error = LocalizationConstants.AUTH.GOOGLE_AUTH_FAILED });
         }
 
         [Authorize]

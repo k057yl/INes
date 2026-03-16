@@ -81,8 +81,7 @@ export class LoginComponent implements OnInit {
       this.authService.googleLogin(response.credential).subscribe({
         next: () => this.router.navigate(['/main']),
         error: (err) => {
-          this.error = "ERRORS.GOOGLE_FAILED";
-          console.error('Google Auth Error:', err);
+          this.error = err.error?.error || "AUTH.ERRORS.GOOGLE_AUTH_FAILED";
         }
       });
     });
@@ -90,9 +89,23 @@ export class LoginComponent implements OnInit {
 
   login() {
     this.error = undefined;
+    
     this.authService.login(this.email, this.password).subscribe({
-      next: () => this.router.navigate(["/main"]),
-      error: (err) => this.error = err.error?.error || "ERRORS.DEFAULT"
+      next: (res) => {
+        this.router.navigate(["/main"]);
+      },
+      error: (err) => {
+        const errorKey = err.error?.error;
+        
+        if (errorKey === 'AUTH.ERRORS.EMAIL_UNCONFIRMED') {
+          this.router.navigate(['/confirm-email'], { queryParams: { email: this.email } });
+          return;
+        }
+
+        this.error = errorKey || "SYSTEM.DEFAULT_ERROR";
+        
+        console.error('Login Error:', err);
+      }
     });
   }
 }

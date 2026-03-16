@@ -2,18 +2,17 @@
   <div class="inest-form-card">
     <header class="inest-form-header">
       <div class="logo-circle"><i class="fa fa-user-plus"></i></div>
-      <h2>{{ 'REG.TITLE' | translate }}</h2>
-      <p>{{ 'REG.SUBTITLE' | translate }}</p>
+      <h2>{{ 'AUTH.TITLE_REG' | translate }}</h2>
+      <p>{{ 'AUTH.SUBTITLE_REG' | translate }}</p>
     </header>
 
     <form [formGroup]="registerForm" (ngSubmit)="register()">
       
       <div class="inest-form-group">
-        <label>{{ 'REG.USERNAME' | translate }}</label>
+        <label>{{ 'AUTH.USERNAME' | translate }}</label>
         <div class="inest-input-wrapper">
           <i class="fa fa-user inest-field-icon-left"></i>
-          <input formControlName="username" 
-                 [placeholder]="'REG.FIELD_USERNAME' | translate">
+          <input formControlName="username" [placeholder]="'AUTH.FIELD_USERNAME' | translate">
         </div>
         <small class="status-text error" *ngIf="registerForm.get('username')?.touched && registerForm.get('username')?.hasError('pattern')">
           <i class="fa fa-info-circle"></i> {{ 'ERRORS.USERNAME_LATIN_ONLY' | translate }}
@@ -21,34 +20,29 @@
       </div>
 
       <div class="inest-form-group">
-        <label>{{ 'REG.EMAIL' | translate }}</label>
+        <label>{{ 'AUTH.EMAIL' | translate }}</label>
         <div class="inest-input-wrapper">
           <i class="fa fa-envelope inest-field-icon-left"></i>
-          <input type="email" 
-                 formControlName="email" 
-                 [placeholder]="'REG.FIELD_EMAIL' | translate">
+          <input type="email" formControlName="email" [placeholder]="'AUTH.FIELD_EMAIL' | translate">
         </div>
         
         <small class="status-text info" *ngIf="registerForm.get('email')?.pending">
-          <i class="fa fa-spinner fa-spin"></i> {{ 'REG.CHECKING_MAIL' | translate }}
+          <i class="fa fa-spinner fa-spin"></i> {{ 'AUTH.CHECKING_MAIL' | translate }}
         </small>
         <small class="status-text error" *ngIf="registerForm.get('email')?.touched && registerForm.get('email')?.hasError('pattern')">
           {{ 'ERRORS.INVALID_EMAIL_FORMAT' | translate }}
         </small>
         <small class="status-text error" *ngIf="registerForm.get('email')?.hasError('emailExists')">
-          {{ 'REG.WARNING_MAIL_ALREADY_EXISTS' | translate }}
+          {{ 'AUTH.ERRORS.EMAIL_ALREADY_EXISTS' | translate }}
         </small>
       </div>
 
       <div class="inest-form-group">
-        <label>{{ 'REG.PASSWORD' | translate }}</label>
+        <label>{{ 'AUTH.PASSWORD' | translate }}</label>
         <div class="inest-input-wrapper">
           <i class="fa fa-lock inest-field-icon-left"></i>
-          <input [type]="showPassword ? 'text' : 'password'" 
-                 formControlName="password" 
-                 [placeholder]="'REG.FIELD_PASSWORD' | translate">
-
-          <button type="button" class="input-action inest-action-btn" (click)="showPassword = !showPassword">
+          <input [type]="showPassword ? 'text' : 'password'" formControlName="password" [placeholder]="'AUTH.FIELD_PASSWORD' | translate">
+          <button type="button" class="input-action inest-action-btn" (click)="togglePassword()">
             {{ showPassword ? '🙈' : '👁️' }}
           </button>
         </div>
@@ -58,38 +52,20 @@
             <i class="fa" [ngClass]="registerForm.get('password')?.hasError('minlength') ? 'fa-circle' : 'fa-check-circle'"></i>
             {{ 'ERRORS.PWD_MIN_LENGTH' | translate }}
           </div>
-          <div [class.valid]="registerForm.get('password')?.value?.match('[A-Z]')" class="check-item">
-            <i class="fa" [ngClass]="registerForm.get('password')?.value?.match('[A-Z]') ? 'fa-check-circle' : 'fa-circle'"></i>
-            {{ 'ERRORS.PWD_UPPER' | translate }}
           </div>
-          <div [class.valid]="registerForm.get('password')?.value?.match('[0-9]')" class="check-item">
-            <i class="fa" [ngClass]="registerForm.get('password')?.value?.match('[0-9]') ? 'fa-check-circle' : 'fa-circle'"></i>
-            {{ 'ERRORS.PWD_DIGIT' | translate }}
-          </div>
-          <div [class.valid]="registerForm.get('password')?.value?.match('[^a-zA-Z0-9]')" class="check-item">
-            <i class="fa" [ngClass]="registerForm.get('password')?.value?.match('[^a-zA-Z0-9]') ? 'fa-check-circle' : 'fa-circle'"></i>
-            {{ 'ERRORS.PWD_SPEC' | translate }}
-          </div>
-        </div>
       </div>
 
       <div class="inest-form-group">
-        <label>{{ 'REG.CONFIRM_PASSWORD' | translate }}</label>
+        <label>{{ 'AUTH.CONFIRM_PASSWORD' | translate }}</label>
         <div class="inest-input-wrapper">
           <i class="fa fa-shield-alt inest-field-icon-left"></i>
-          <input [type]="showPassword ? 'text' : 'password'" 
-                 formControlName="confirmPassword" 
-                 [placeholder]="'REG.CONFIRM_FIELD_PASSWORD' | translate">
-
-          <button type="button" class="input-action inest-action-btn" (click)="showPassword = !showPassword">
-            {{ showPassword ? '🙈' : '👁️' }}
-          </button>
+          <input [type]="showPassword ? 'text' : 'password'" formControlName="confirmPassword" [placeholder]="'AUTH.CONFIRM_FIELD_PASSWORD' | translate">
         </div>
       </div>
 
       <div class="inest-status-box error" *ngIf="error || (registerForm.errors?.['mismatch'] && registerForm.get('confirmPassword')?.touched)">
         <i class="fa fa-exclamation-triangle"></i> 
-        {{ (registerForm.errors?.['mismatch'] ? 'REG.PASSWORD_MISMATCH' : error) | translate }}
+        {{ (registerForm.errors?.['mismatch'] ? 'AUTH.PASSWORD_MISMATCH' : error) | translate }}
       </div>
 
       <div class="inest-status-box success" *ngIf="message">
@@ -97,24 +73,23 @@
       </div>
 
       <button type="submit" class="inest-btn-primary" [disabled]="registerForm.invalid">
-        {{ 'REG.BUTTON_START' | translate }}
+        {{ 'AUTH.BUTTON_REGISTER' | translate }}
       </button>
     </form>
 
     <div class="inest-form-divider">
-      <span>{{ 'REG.OR' | translate }}</span>
+      <span>{{ 'AUTH.OR' | translate }}</span>
     </div>
 
     <button type="button" class="inest-btn-outline" (click)="toggleGoogle()">
       <i class="fab fa-google"></i>
-      {{ (showGoogle ? 'REG.BUTTON_HIDE_GOOGLE' : 'REG.BUTTON_SHOW_GOOGLE') | translate }}
+      {{ (showGoogle ? 'AUTH.BUTTON_HIDE_GOOGLE' : 'AUTH.BUTTON_SHOW_GOOGLE_REG') | translate }}
     </button>
-
     <div id="googleBtn" *ngIf="showGoogle" class="google-btn-container"></div>
 
     <footer class="inest-form-footer">
-      <span>{{ 'REG.ALREADY_HAVE_ACC' | translate }}</span>  
-      <a routerLink="/login">{{ 'REG.GO_TO_LOGIN' | translate }}</a>
+      <span>{{ 'AUTH.ALREADY_HAVE_ACC' | translate }}</span>  
+      <a routerLink="/login">{{ 'AUTH.GO_TO_LOGIN' | translate }}</a>
     </footer>
   </div>
 </div>

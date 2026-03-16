@@ -1,3 +1,4 @@
+using INest.Middleware;
 using INest.Models.Entities;
 using INest.Seeders;
 using INest.Services;
@@ -15,6 +16,8 @@ builder.Services.AddBusinessServices();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 // ---------- Миграции + сидирование ----------
 using (var scope = app.Services.CreateScope())

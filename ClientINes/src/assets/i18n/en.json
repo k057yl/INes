@@ -1,4 +1,7 @@
 {
+  "SYSTEM": {
+    "DEFAULT_ERROR": "An unexpected error occurred"
+  },
   "ERRORS": {
     "DEFAULT": "Invalid credentials",
     "UNCONFIRMED_PASSWORD": "Incorrect password",
@@ -21,48 +24,44 @@
     "TITLE_CATEGORY": "Category Management",
     "TITLE_PLATFORM": "Platform Management"
   },
-  "REG": {
-    "TITLE": "Oh, hello!",
-    "SUBTITLE": "Register in the system",
-    "USERNAME": "Username",
-    "FIELD_USERNAME": "Enter your username",
+  "AUTH": {
+    "TITLE_REG": "Oh, hello!",
+    "SUBTITLE_REG": "Register in the system",
+    "TITLE_LOGIN": "Welcome back!",
+    "SUBTITLE_LOGIN": "Log in to your storage system",
+    "USERNAME": "Name",
+    "FIELD_USERNAME": "Enter your name",
     "EMAIL": "Email",
     "FIELD_EMAIL": "Enter your email",
     "PASSWORD": "Password",
     "FIELD_PASSWORD": "Enter your password",
-    "CONFIRM_PASSWORD": "Confirm Password",
+    "CONFIRM_PASSWORD": "Confirm password",
     "CONFIRM_FIELD_PASSWORD": "Enter your password again",
-    "PASSWORD_MISMATCH": "Passwords do not match",
-    "BUTTON_START": "Register",
-    "ALREADY_HAVE_ACC": "Already have an account? ",
-    "GO_TO_LOGIN": " Go to login",
-    "CHECKING_MAIL": "Checking if email is already in use...",
-    "WARNING_MAIL_ALREADY_EXISTS": "A user with this email is already registered",
-    "CONFIRM_TITLE": "Confirm your email",
-    "CONFIRM_SUBTITLE": "Enter the one-time code we sent to your email",
-    "CONFIRM_CODE": "Code",
-    "FIELD_CONFIRM_CODE": "Code",
-    "BUTTON_CONFIRM_SUBMIT": "Continue",
-    "CONFIRM_DIDNT_GET_CODE": "Didn't receive the code?",
-    "CONFIRM_RESEND": "Resend",
+    "BUTTON_LOGIN": "Login",
+    "BUTTON_REGISTER": "Register",
+    "NO_ACC_YET": "Don't have an account yet?",
+    "ALREADY_HAVE_ACC": "Already have an account?",
+    "GO_TO_REGISTER": "Go to registration",
+    "GO_TO_LOGIN": "Go to login",
     "OR": "Or",
     "BUTTON_HIDE_GOOGLE": "Hide button",
-    "BUTTON_SHOW_GOOGLE": "Sign up with Google"
-  },
-  "LOGIN": {
-    "TITLE": "Welcome back!",
-    "SUBTITLE": "Sign in to your storage system",
-    "USERNAME": "Username",
-    "FIELD_USERNAME": "Enter your username",
-    "PASSWORD": "Password",
-    "FIELD_PASSWORD": "Enter your password",
-    "PASSWORD_MISMATCH": "Password is incorrect",
-    "BUTTON_START": "Sign In",
-    "NO_ACC_YET": "Don't have an account yet? ",
-    "GO_TO_REGISTER": " Go to registration",
-    "OR": "Or",
-    "BUTTON_HIDE_GOOGLE": "Hide button",
-    "BUTTON_SHOW_GOOGLE": "Sign in with Google"
+    "BUTTON_SHOW_GOOGLE_LOGIN": "Sign in with Google",
+    "BUTTON_SHOW_GOOGLE_REG": "Register with Google",
+
+    "ERRORS": {
+      "EMAIL_ALREADY_EXISTS": "A user with this email already exists",
+      "INVALID_CREDENTIALS": "Invalid username or password",
+      "EMAIL_UNCONFIRMED": "Email is not confirmed. Please enter the code.",
+      "INVALID_OR_EXPIRED_CODE": "The code is invalid or has expired",
+      "GOOGLE_AUTH_FAILED": "Google authentication failed",
+      "USER_NOT_FOUND": "User not found"
+    },
+
+    "SUCCESS": {
+      "OTP_SENT": "Verification code has been sent to your email",
+      "PASSWORD_CHANGED": "Password changed successfully",
+      "RESET_EMAIL_SENT": "Password reset instructions have been sent to your email"
+    }
   },
   "HEADER":{
     "HOME": "Home",

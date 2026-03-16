@@ -10,7 +10,6 @@ namespace INest.Services.Decorator
     {
         private readonly ILocationService _inner;
         private readonly IMemoryCache _cache;
-        private const string CacheKeyPrefix = "locations_tree_";
 
         public CachedLocationService(ILocationService inner, IMemoryCache cache)
         {
@@ -18,11 +17,10 @@ namespace INest.Services.Decorator
             _cache = cache;
         }
 
-        private string GetKey(Guid userId) => $"{CacheKeyPrefix}{userId}";
-
         public async Task<List<StorageLocation>> GetTreeAsync(Guid userId)
         {
-            return await _cache.GetOrCreateAsync(GetKey(userId), async entry =>
+            var key = CacheConstants.GET_LOCATIONS_TREE_KEY(userId);
+            return await _cache.GetOrCreateAsync(key, async entry =>
             {
                 entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
                 return await _inner.GetTreeAsync(userId);
@@ -31,7 +29,7 @@ namespace INest.Services.Decorator
 
         public async Task<IEnumerable<object>> GetUserLocationsAsync(Guid userId)
         {
-            string key = $"user_locations_list_{userId}";
+            var key = CacheConstants.GET_USER_LOCATIONS_LIST_KEY(userId);
             return await _cache.GetOrCreateAsync(key, async entry =>
             {
                 entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
@@ -84,8 +82,8 @@ namespace INest.Services.Decorator
 
         private void InvalidateCache(Guid userId)
         {
-            _cache.Remove(CacheConstants.GetLocationsTreeKey(userId));
-            _cache.Remove(CacheConstants.GetUserLocationsListKey(userId));
+            _cache.Remove(CacheConstants.GET_LOCATIONS_TREE_KEY(userId));
+            _cache.Remove(CacheConstants.GET_USER_LOCATIONS_LIST_KEY(userId));
         }
     }
 }

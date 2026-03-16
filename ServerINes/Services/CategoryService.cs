@@ -1,8 +1,9 @@
-﻿using INest.Models.DTOs.Category;
+﻿using INest.Constants;
+using INest.Exceptions;
+using INest.Models.DTOs.Category;
 using INest.Models.Entities;
-using Microsoft.EntityFrameworkCore;
 using INest.Services.Interfaces;
-using INest.Constants;
+using Microsoft.EntityFrameworkCore;
 
 namespace INest.Services
 {
@@ -38,12 +39,13 @@ namespace INest.Services
                 .ToListAsync();
         }
 
-        public async Task<Category?> UpdateAsync(Guid userId, Guid categoryId, CreateCategoryDto dto)
+        public async Task<Category> UpdateAsync(Guid userId, Guid categoryId, CreateCategoryDto dto)
         {
             var category = await _context.Categories
                 .FirstOrDefaultAsync(c => c.Id == categoryId && c.UserId == userId);
 
-            if (category == null) return null;
+            if (category == null)
+                throw new AppException(LocalizationConstants.CATEGORIES.NOT_FOUND, 404);
 
             category.Name = dto.Name;
             if (dto.Color != null) category.Color = dto.Color;
@@ -53,16 +55,17 @@ namespace INest.Services
             return category;
         }
 
-        public async Task<bool> DeleteAsync(Guid userId, Guid categoryId, Guid? targetCategoryId = null)
+        public async Task DeleteAsync(Guid userId, Guid categoryId, Guid? targetCategoryId = null)
         {
             var category = await _context.Categories
                 .Include(c => c.Items)
                 .FirstOrDefaultAsync(c => c.Id == categoryId && c.UserId == userId);
 
-            if (category == null) return false;
+            if (category == null)
+                throw new AppException(LocalizationConstants.CATEGORIES.NOT_FOUND, 404);
 
             if (category.Name == SharedConstants.CATEGORY_OTHER)
-                throw new InvalidOperationException("CannotDeleteDefaultCategory");
+                throw new AppException(LocalizationConstants.CATEGORIES.CANNOT_DELETE_DEFAULT, 400);
 
             if (category.Items.Any())
             {
@@ -94,7 +97,6 @@ namespace INest.Services
 
             _context.Categories.Remove(category);
             await _context.SaveChangesAsync();
-            return true;
         }
     }
 }

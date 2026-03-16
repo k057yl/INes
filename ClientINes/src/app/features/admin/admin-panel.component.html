@@ -32,6 +32,13 @@
         </div>
       </div>
     </div>
-
   </div>
 </div>
+
+<app-entity-modal 
+  *ngIf="showModal"
+  [title]="modalTitle"
+  [name]="modalValue"
+  (confirmed)="onModalConfirmed($event)"
+  (cancelled)="closeModal()">
+</app-entity-modal>

@@ -5,26 +5,26 @@
       <div class="logo-circle">
         <i class="fa fa-sign-in-alt"></i>
       </div>
-      <h2>{{ 'LOGIN.TITLE' | translate }}</h2>
-      <p>{{ 'LOGIN.SUBTITLE' | translate }}</p>
+      <h2>{{ 'AUTH.TITLE_LOGIN' | translate }}</h2>
+      <p>{{ 'AUTH.SUBTITLE_LOGIN' | translate }}</p>
     </header>
 
     <form (ngSubmit)="login()" #loginForm="ngForm">
       
       <div class="inest-form-group">
-        <label>{{ 'LOGIN.USERNAME' | translate }}</label>
+        <label>{{ 'AUTH.USERNAME' | translate }}</label>
         <div class="inest-input-wrapper">
           <i class="fa fa-user inest-field-icon-left"></i>
           <input [(ngModel)]="email" 
                  name="email" 
                  required 
                  autocomplete="username"
-                 [placeholder]="'LOGIN.FIELD_USERNAME' | translate">
+                 [placeholder]="'AUTH.FIELD_USERNAME' | translate">
         </div>
       </div>
 
       <div class="inest-form-group">
-        <label>{{ 'LOGIN.PASSWORD' | translate }}</label>
+        <label>{{ 'AUTH.PASSWORD' | translate }}</label>
         <div class="inest-input-wrapper">
           <i class="fa fa-lock inest-field-icon-left"></i>
           <input [type]="showPassword ? 'text' : 'password'" 
@@ -32,7 +32,7 @@
                  name="password" 
                  required 
                  autocomplete="current-password"
-                 [placeholder]="'LOGIN.FIELD_PASSWORD' | translate">
+                 [placeholder]="'AUTH.FIELD_PASSWORD' | translate">
           
           <button type="button" 
                   class="input-action inest-action-btn" 
@@ -50,24 +50,24 @@
       <button type="submit" 
               class="inest-btn-primary" 
               [disabled]="!loginForm.valid">
-        {{ 'LOGIN.BUTTON_START' | translate }}
+        {{ 'AUTH.BUTTON_LOGIN' | translate }}
       </button>
     </form>
 
     <div class="inest-form-divider">
-      <span>{{ 'LOGIN.OR' | translate }}</span>
+      <span>{{ 'AUTH.OR' | translate }}</span>
     </div>
 
     <button type="button" class="inest-btn-outline" (click)="toggleGoogle()">
       <i class="fab fa-google"></i>
-      {{ (showGoogle ? 'LOGIN.BUTTON_HIDE_GOOGLE' : 'LOGIN.BUTTON_SHOW_GOOGLE') | translate }}
+      {{ (showGoogle ? 'AUTH.BUTTON_HIDE_GOOGLE' : 'AUTH.BUTTON_SHOW_GOOGLE_LOGIN') | translate }}
     </button>
 
     <div id="googleBtn" *ngIf="showGoogle" class="google-btn-container"></div>
 
     <footer class="inest-form-footer">
-      <span>{{ 'LOGIN.NO_ACC_YET' | translate }}</span>
-      <a routerLink="/register">{{ 'LOGIN.GO_TO_REGISTER' | translate }}</a>
+      <span>{{ 'AUTH.NO_ACC_YET' | translate }}</span>
+      <a routerLink="/register">{{ 'AUTH.GO_TO_REGISTER' | translate }}</a>
     </footer>
 
   </div>

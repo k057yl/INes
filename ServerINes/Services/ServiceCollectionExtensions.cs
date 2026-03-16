@@ -109,7 +109,7 @@ namespace INest.Services
             services.AddScoped<IPhotoService, PhotoService>();
             services.AddScoped<IAuthService, AuthService>();
 
-            // Регистрация декораторов (вынесено в хелпер для читаемости)
+            // Регистрация декораторов
             services.AddDecoratedService<ICategoryService, CategoryService, CachedCategoryService>();
             services.AddDecoratedService<ILocationService, LocationService, CachedLocationService>();
             services.AddDecoratedService<IPlatformService, PlatformService, CachedPlatformService>();
@@ -119,7 +119,7 @@ namespace INest.Services
             return services;
         }
 
-        // Хелпер для регистрации декораторов, чтобы не дублировать код
+        // Хелпер для регистрации декораторов
         private static void AddDecoratedService<TInterface, TService, TDecorator>(this IServiceCollection services)
             where TInterface : class
             where TService : class, TInterface

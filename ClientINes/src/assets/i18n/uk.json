@@ -1,4 +1,7 @@
 {
+  "SYSTEM": {
+    "DEFAULT_ERROR": "Сталася непередбачена помилка"
+  },
   "ERRORS": {
     "DEFAULT": "Невірні дані",
     "UNCONFIRMED_PASSWORD": "Невірний пароль",
@@ -21,48 +24,44 @@
     "TITLE_CATEGORY": "Керування категоріями",
     "TITLE_PLATFORM": "Керування платформами"
   },
-  "REG": {
-    "TITLE": "О, привіт!",
-    "SUBTITLE": "Зареєструйтеся в системі",
-    "USERNAME": "Ім'я користувача",
-    "FIELD_USERNAME": "Введіть ім'я користувача",
-    "EMAIL": "Електронна пошта",
-    "FIELD_EMAIL": "Введіть електронну пошту",
+  "AUTH": {
+    "TITLE_REG": "О, привіт!",
+    "SUBTITLE_REG": "Зареєструйтеся в системі",
+    "TITLE_LOGIN": "З поверненням!",
+    "SUBTITLE_LOGIN": "Увійдіть у свою систему зберігання",
+    "USERNAME": "Ім'я",
+    "FIELD_USERNAME": "Введіть ім'я",
+    "EMAIL": "Email",
+    "FIELD_EMAIL": "Введіть email",
     "PASSWORD": "Пароль",
     "FIELD_PASSWORD": "Введіть пароль",
     "CONFIRM_PASSWORD": "Підтвердження пароля",
     "CONFIRM_FIELD_PASSWORD": "Введіть пароль ще раз",
-    "PASSWORD_MISMATCH": "Паролі не збігаються",
-    "BUTTON_START": "Зареєструватися",
-    "ALREADY_HAVE_ACC": "Вже маєте акаунт? ",
-    "GO_TO_LOGIN": " Перейти до входу",
-    "CHECKING_MAIL": "Перевіряємо, чи зайнята пошта...",
-    "WARNING_MAIL_ALREADY_EXISTS": "Користувач з такою поштою вже зареєстрований",
-    "CONFIRM_TITLE": "Підтвердіть електронну пошту",
-    "CONFIRM_SUBTITLE": "Введіть одноразовий код, який ми надіслали вам на електронну пошту",
-    "CONFIRM_CODE": "Код",
-    "FIELD_CONFIRM_CODE": "Код",
-    "BUTTON_CONFIRM_SUBMIT": "Продовжити",
-    "CONFIRM_DIDNT_GET_CODE": "Не отримали код?",
-    "CONFIRM_RESEND": "Надіслати повторно",
+    "BUTTON_LOGIN": "Увійти",
+    "BUTTON_REGISTER": "Зареєструватися",
+    "NO_ACC_YET": "Ще немає акаунта?",
+    "ALREADY_HAVE_ACC": "Вже є акаунт?",
+    "GO_TO_REGISTER": "Перейти до реєстрації",
+    "GO_TO_LOGIN": "Перейти до входу",
     "OR": "Або",
     "BUTTON_HIDE_GOOGLE": "Приховати кнопку",
-    "BUTTON_SHOW_GOOGLE": "Зареєструватися через Google"
-  },
-  "LOGIN": {
-    "TITLE": "З поверненням!",
-    "SUBTITLE": "Увійдіть до своєї системи зберігання",
-    "USERNAME": "Ім'я користувача",
-    "FIELD_USERNAME": "Введіть ім'я користувача",
-    "PASSWORD": "Пароль",
-    "FIELD_PASSWORD": "Введіть пароль",
-    "PASSWORD_MISMATCH": "Пароль не вірний",
-    "BUTTON_START": "Увійти",
-    "NO_ACC_YET": "Ще немає акаунта? ",
-    "GO_TO_REGISTER": " Перейти до реєстрації",
-    "OR": "Або",
-    "BUTTON_HIDE_GOOGLE": "Приховати кнопку",
-    "BUTTON_SHOW_GOOGLE": "Увійти через Google"
+    "BUTTON_SHOW_GOOGLE_LOGIN": "Увійти через Google",
+    "BUTTON_SHOW_GOOGLE_REG": "Зареєструватися через Google",
+
+    "ERRORS": {
+      "EMAIL_ALREADY_EXISTS": "Користувач з такою поштою вже зареєстрований",
+      "INVALID_CREDENTIALS": "Невірний логін або пароль",
+      "EMAIL_UNCONFIRMED": "Пошта не підтверджена. Будь ласка, введіть код.",
+      "INVALID_OR_EXPIRED_CODE": "Код неправильний або його термін дії минув",
+      "GOOGLE_AUTH_FAILED": "Помилка авторизації через Google",
+      "USER_NOT_FOUND": "Користувача не знайдено"
+    },
+
+    "SUCCESS": {
+      "OTP_SENT": "Код підтвердження надіслано на пошту",
+      "PASSWORD_CHANGED": "Пароль успішно змінено",
+      "RESET_EMAIL_SENT": "Інструкції для скидання надіслано на пошту"
+    }
   },
   "HEADER":{
     "HOME": "Головна",

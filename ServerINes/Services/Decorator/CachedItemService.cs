@@ -20,7 +20,7 @@ namespace INest.Services.Decorator
 
         public async Task<IEnumerable<Item>> GetUserItemsAsync(Guid userId)
         {
-            var key = $"items_user_{userId}";
+            var key = CacheConstants.GET_ITEMS_KEY(userId);
             return await _cache.GetOrCreateAsync(key, async entry =>
             {
                 entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(15);
@@ -78,9 +78,9 @@ namespace INest.Services.Decorator
 
         private void InvalidateCache(Guid userId)
         {
-            _cache.Remove($"items_user_{userId}");
-            _cache.Remove(CacheConstants.GetLocationsTreeKey(userId));
-            _cache.Remove(CacheConstants.GetUserLocationsListKey(userId));
+            _cache.Remove(CacheConstants.GET_ITEMS_KEY(userId));
+            _cache.Remove(CacheConstants.GET_LOCATIONS_TREE_KEY(userId));
+            _cache.Remove(CacheConstants.GET_USER_LOCATIONS_LIST_KEY(userId));
         }
     }
 }

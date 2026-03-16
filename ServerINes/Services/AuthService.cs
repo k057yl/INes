@@ -1,9 +1,12 @@
-﻿using INest.Models.DTOs.Auth;
+﻿using Google.Apis.Auth;
+using INest.Constants;
+using INest.Exceptions;
+using INest.Models.DTOs.Auth;
 using INest.Models.Entities;
 using INest.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Localization;
 using System.Collections.Concurrent;
-using Google.Apis.Auth;
 
 namespace INest.Services
 {
@@ -13,6 +16,7 @@ namespace INest.Services
         private readonly ITokenService _tokenService;
         private readonly IEmailService _emailService;
         private readonly IConfiguration _config;
+        private readonly IStringLocalizer<SharedResource> _emailT;
 
         private static readonly ConcurrentDictionary<string, (string Code, DateTime Expire)> _otpStore = new();
 
@@ -20,12 +24,14 @@ namespace INest.Services
             UserManager<AppUser> userManager,
             ITokenService tokenService,
             IEmailService emailService,
-            IConfiguration config)
+            IConfiguration config,
+            IStringLocalizer<SharedResource> emailT)
         {
             _userManager = userManager;
             _tokenService = tokenService;
             _emailService = emailService;
             _config = config;
+            _emailT = emailT;
         }
 
         public async Task SendConfirmationCodeAsync(RegisterDto dto)
@@ -34,7 +40,7 @@ namespace INest.Services
             var user = await _userManager.FindByEmailAsync(normalizedEmail);
 
             if (user != null && user.EmailConfirmed)
-                throw new InvalidOperationException("EMAIL_ALREADY_EXISTS");
+                throw new InvalidOperationException(LocalizationConstants.AUTH.EMAIL_ALREADY_EXISTS);
 
             if (user == null)
             {
@@ -46,26 +52,28 @@ namespace INest.Services
             var code = new Random().Next(100000, 999999).ToString();
             _otpStore[normalizedEmail] = (code, DateTime.UtcNow.AddMinutes(10));
 
-            Console.WriteLine($"[DEBUG] OTP for {normalizedEmail}: {code}");
+            var subject = _emailT[LocalizationConstants.EMAILS.CONFIRM_SUBJECT];
+            var body = string.Format(_emailT[LocalizationConstants.EMAILS.CONFIRM_BODY], code);
 
-            var html = $"<h3>Welcome to INest!</h3><p>Your confirmation code: <b>{code}</b></p>";
-            await _emailService.SendEmailAsync(normalizedEmail, "Confirm your registration", html);
+            await _emailService.SendEmailAsync(normalizedEmail, subject, body);
         }
 
-        public async Task<AuthResponseDto?> ConfirmRegistrationAsync(ConfirmRegisterDto dto)
+        public async Task<AuthResponseDto> ConfirmRegistrationAsync(ConfirmRegisterDto dto)
         {
             var email = dto.Email.ToLowerInvariant();
+
             if (!_otpStore.TryGetValue(email, out var entry) || entry.Code != dto.Code || entry.Expire < DateTime.UtcNow)
-                return null;
+                throw new AppException(LocalizationConstants.AUTH.INVALID_OR_EXPIRED_CODE, 400);
 
             var user = await _userManager.FindByEmailAsync(email);
-            if (user == null) return null;
+            if (user == null)
+                throw new AppException(LocalizationConstants.AUTH.USER_NOT_FOUND, 404);
 
             user.EmailConfirmed = true;
             await _userManager.UpdateAsync(user);
 
-            if (!await _userManager.IsInRoleAsync(user, "inest_app_user"))
-                await _userManager.AddToRoleAsync(user, "inest_app_user");
+            if (!await _userManager.IsInRoleAsync(user, SharedConstants.DEFAULT_ROLE))
+                await _userManager.AddToRoleAsync(user, SharedConstants.DEFAULT_ROLE);
 
             _otpStore.TryRemove(email, out _);
 
@@ -75,11 +83,12 @@ namespace INest.Services
         public async Task<AuthResponseDto> LoginAsync(LoginDto dto)
         {
             var user = await _userManager.FindByEmailAsync(dto.Email);
+
             if (user == null || !await _userManager.CheckPasswordAsync(user, dto.Password))
-                return new AuthResponseDto { Success = false, Message = "INVALID_CREDENTIALS" };
+                throw new AppException(LocalizationConstants.AUTH.INVALID_CREDENTIALS, 401);
 
             if (!user.EmailConfirmed)
-                return new AuthResponseDto { Success = false, IsEmailConfirmed = false, Message = "EMAIL_UNCONFIRMED" };
+                throw new AppException(LocalizationConstants.AUTH.EMAIL_UNCONFIRMED, 401);
 
             return await GenerateAuthResponse(user);
         }
@@ -92,8 +101,10 @@ namespace INest.Services
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             var callbackUrl = $"{_config["Frontend:Url"]}/reset-password?email={dto.Email}&token={Uri.EscapeDataString(token)}";
 
-            var html = $"<p>Click <a href='{callbackUrl}'>here</a> to reset your password.</p>";
-            await _emailService.SendEmailAsync(dto.Email, "Reset Password", html);
+            var subject = _emailT[LocalizationConstants.EMAILS.RESET_SUBJECT];
+            var body = string.Format(_emailT[LocalizationConstants.EMAILS.RESET_BODY], callbackUrl);
+
+            await _emailService.SendEmailAsync(dto.Email, subject, body);
         }
 
         public async Task<IdentityResult?> ResetPasswordAsync(ResetPasswordDto dto)
@@ -121,7 +132,7 @@ namespace INest.Services
                 {
                     user = new AppUser { Email = payload.Email, UserName = payload.Email, EmailConfirmed = true };
                     await _userManager.CreateAsync(user);
-                    await _userManager.AddToRoleAsync(user, "inest_app_user");
+                    await _userManager.AddToRoleAsync(user, SharedConstants.DEFAULT_ROLE);
                 }
 
                 return await GenerateAuthResponse(user);
@@ -135,7 +146,7 @@ namespace INest.Services
         {
             var roles = await _userManager.GetRolesAsync(user);
             var token = _tokenService.GenerateJwtToken(user, roles);
-            return new AuthResponseDto { Token = token, Success = true };
+            return new AuthResponseDto { Token = token };
         }
     }
 }

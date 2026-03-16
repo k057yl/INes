@@ -6,7 +6,7 @@ namespace INest.Services.Interfaces
     public interface IAuthService
     {
         Task SendConfirmationCodeAsync(RegisterDto dto);
-        Task<AuthResponseDto?> ConfirmRegistrationAsync(ConfirmRegisterDto dto);
+        Task<AuthResponseDto> ConfirmRegistrationAsync(ConfirmRegisterDto dto);
         Task<AuthResponseDto> LoginAsync(LoginDto dto);
         Task ForgotPasswordAsync(ForgotPasswordDto dto);
         Task<IdentityResult?> ResetPasswordAsync(ResetPasswordDto dto);

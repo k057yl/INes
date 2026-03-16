@@ -117,37 +117,16 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="EMAIL_REQUIRED" xml:space="preserve">
-    <value>Email is required</value>
+  <data name="CONFIRM_BODY" xml:space="preserve">
+    <value>&lt;h3&gt;Welcome!&lt;/h3&gt;&lt;p&gt;Your code: &lt;b&gt;{0}&lt;/b&gt;&lt;/p&gt;</value>
   </data>
-  <data name="INVALID_EMAIL_FORMAT" xml:space="preserve">
-    <value>Please enter a valid email address</value>
+  <data name="CONFIRM_SUBJECT" xml:space="preserve">
+    <value>Welcome to INest! Confirm your registration</value>
   </data>
-  <data name="PASSWORD_REQUIRED" xml:space="preserve">
-    <value>Password cannot be empty</value>
+  <data name="RESET_BODY" xml:space="preserve">
+    <value>&lt;p&gt;Click &lt;a href='{0}'&gt;here&lt;/a&gt; to reset your password.&lt;/p&gt;</value>
   </data>
-  <data name="PASSWORD_REQUIRES_DIGIT" xml:space="preserve">
-    <value>At least one digit required</value>
-  </data>
-  <data name="PASSWORD_REQUIRES_LOWERCASE" xml:space="preserve">
-    <value>One lowercase letter required</value>
-  </data>
-  <data name="PASSWORD_REQUIRES_NONALPHANUMERIC" xml:space="preserve">
-    <value>Special character required</value>
-  </data>
-  <data name="PASSWORD_REQUIRES_UPPERCASE" xml:space="preserve">
-    <value>One uppercase letter required</value>
-  </data>
-  <data name="PASSWORD_TOO_SHORT" xml:space="preserve">
-    <value>Password must be at least 6 characters</value>
-  </data>
-  <data name="USERNAME_INVALID_CHARACTERS" xml:space="preserve">
-    <value>Only Latin letters and digits allowed</value>
-  </data>
-  <data name="USERNAME_REQUIRED" xml:space="preserve">
-    <value>Username is required</value>
-  </data>
-  <data name="USERNAME_TOO_SHORT" xml:space="preserve">
-    <value>Username must be at least 3 characters</value>
+  <data name="RESET_SUBJECT" xml:space="preserve">
+    <value>Reset Password</value>
   </data>
 </root>

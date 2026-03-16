@@ -7,11 +7,13 @@ import { LocationService } from '../../../../shared/services/location.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { ITEM_STATUS_LABELS } from '../../../../models/constants/item-status.constants';
 import { CategoryService } from '../../../../shared/services/category.service';
+import { TranslateService } from '@ngx-translate/core';
+import { EntityModalComponent } from '../../../../shared/components/entity-modal/entity-modal.component';
 
 @Component({
   selector: 'app-item-create',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslateModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule, RouterModule, EntityModalComponent],
   templateUrl: './item-create.component.html',
   styleUrl: './item-create.component.scss'
 })
@@ -19,6 +21,7 @@ export class ItemCreateComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private fb = inject(FormBuilder);
   private router = inject(Router);
+  private translate = inject(TranslateService);
   
   // Сервисы из Shared
   private itemService = inject(ItemService);
@@ -28,6 +31,7 @@ export class ItemCreateComponent implements OnInit {
   locations: any[] = [];
   categories: any[] = [];
   selectedPhotos: { file: File, preview: string }[] = [];
+  showCategoryModal = false;
   
   readonly MAX_PHOTOS = 5;
   todayMax = new Date().toISOString().split('T')[0];
@@ -86,19 +90,24 @@ export class ItemCreateComponent implements OnInit {
     });
   }
 
-  // Логика создания категории теперь через сервис
   addCategory() {
-    const name = prompt('Введите название новой категории:');
-    if (name && name.trim()) {
-      this.categoryService.create({ name: name.trim() }).subscribe({
-        next: (newCat) => {
-          this.categories.push(newCat);
-          this.categories.sort((a, b) => a.name.localeCompare(b.name));
-          this.form.patchValue({ categoryId: newCat.id });
-        },
-        error: (err) => alert('Не удалось создать категорию')
-      });
-    }
+    this.showCategoryModal = true;
+  }
+
+  onCategoryConfirmed(name: string) {
+    this.categoryService.create({ name }).subscribe({
+      next: (newCat) => {
+        this.categories.push(newCat);
+        this.categories.sort((a, b) => a.name.localeCompare(b.name));
+        this.form.patchValue({ categoryId: newCat.id });
+        this.showCategoryModal = false;
+      },
+      error: (err) => {
+        this.showCategoryModal = false;
+        const msg = err.error?.error || 'SYSTEM.DEFAULT_ERROR';
+        alert(this.translate.instant(msg));
+      }
+    });
   }
 
   onSubmit() {
