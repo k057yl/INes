@@ -1,4 +1,5 @@
-﻿using INest.Models.DTOs.Platform;
+﻿using INest.Constants;
+using INest.Models.DTOs.Platform;
 using INest.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,14 +31,14 @@ namespace INest.Controllers
         public async Task<IActionResult> Update(Guid id, [FromBody] PlatformDto dto)
         {
             var updated = await _service.UpdateAsync(GetUserId(), id, dto);
-            return updated == null ? NotFound() : Ok(updated);
+            return Ok(updated);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var success = await _service.DeleteAsync(GetUserId(), id);
-            return success ? NoContent() : NotFound();
+            await _service.DeleteAsync(GetUserId(), id);
+            return NoContent();
         }
     }
 }

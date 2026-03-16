@@ -1,31 +1,31 @@
 {
   "SYSTEM": {
-    "DEFAULT_ERROR": "Сталася непередбачена помилка"
+    "DEFAULT_ERROR": "Сталася непередбачена помилка",
+    "VALIDATION_FAILED": "Помилка валідації даних",
+    "EMAIL_SEND_FAILED": "Не вдалося відправити лист",
+    "CONFIG_ERROR": "Помилка конфігурації сервера"
   },
+
   "ERRORS": {
-    "DEFAULT": "Невірні дані",
-    "UNCONFIRMED_PASSWORD": "Невірний пароль",
-    "UNCONFIRMED_USERNAME": "Невірне ім'я користувача",
-    "FUTURE_DATE": "Дата не може бути у майбутньому",
-    "USERNAME_LATIN_ONLY": "Тільки латиниця та цифри",
+    "DEFAULT": "Некоректні дані",
+    "REQUIRED_FIELD": "Поле обов'язкове для заповнення",
     "INVALID_EMAIL_FORMAT": "Некоректний формат пошти",
+    "INVALID_COLOR_HEX": "Некоректний формат кольору",
+    "MAX_LENGTH_50": "Максимум 50 символів",
     "PWD_MIN_LENGTH": "Мінімум 6 символів",
+    "PWD_LATIN": "Тільки латиниця та символи",
     "PWD_UPPER": "Велика літера (A-Z)",
     "PWD_DIGIT": "Хоча б одна цифра (0-9)",
-    "PWD_SPEC": "Спецсимвол (!@#$%...)"
+    "PWD_SPEC": "Спецсимвол (!@#$%...)",
+    "USERNAME_LATIN_ONLY": "Тільки латиниця та цифри",
+    "NEGATIVE_NUMBER": "Значення має бути більше нуля",
+    "FUTURE_DATE": "Дата не може бути у майбутньому",
+    "FILE_TOO_LARGE": "Файл занадто великий для обробки",
+    "IMAGE_PROCESSING_FAILED": "Помилка при обробці зображення"
   },
-  "SHARED": {
-    "TOOLTIP_INFO": "Інформація",
-    "TOOLTIP_RENAME": "Перейменувати",
-    "TOOLTIP_DELETE": "Видалити",
-    "TOOLTIP_ADD": "Додати"
-  },
-  "MANAGEMENT": {
-    "TITLE_CATEGORY": "Керування категоріями",
-    "TITLE_PLATFORM": "Керування платформами"
-  },
+
   "AUTH": {
-    "TITLE_REG": "О, привіт!",
+    "TITLE_REG": "О, Привіт!",
     "SUBTITLE_REG": "Зареєструйтеся в системі",
     "TITLE_LOGIN": "З поверненням!",
     "SUBTITLE_LOGIN": "Увійдіть у свою систему зберігання",
@@ -35,45 +35,99 @@
     "FIELD_EMAIL": "Введіть email",
     "PASSWORD": "Пароль",
     "FIELD_PASSWORD": "Введіть пароль",
-    "CONFIRM_PASSWORD": "Підтвердження пароля",
+    "CONFIRM_PASSWORD": "Перевірка пароля",
     "CONFIRM_FIELD_PASSWORD": "Введіть пароль ще раз",
     "BUTTON_LOGIN": "Увійти",
     "BUTTON_REGISTER": "Зареєструватися",
     "NO_ACC_YET": "Ще немає акаунта?",
     "ALREADY_HAVE_ACC": "Вже є акаунт?",
     "GO_TO_REGISTER": "Перейти до реєстрації",
-    "GO_TO_LOGIN": "Перейти до входу",
+    "GO_TO_LOGIN": "Перейти до логіну",
     "OR": "Або",
     "BUTTON_HIDE_GOOGLE": "Приховати кнопку",
-    "BUTTON_SHOW_GOOGLE_LOGIN": "Увійти через Google",
-    "BUTTON_SHOW_GOOGLE_REG": "Зареєструватися через Google",
-
+    "BUTTON_SHOW_GOOGLE_LOGIN": "Увійти з Google",
+    "BUTTON_SHOW_GOOGLE_REG": "Зареєструватися з Google",
     "ERRORS": {
       "EMAIL_ALREADY_EXISTS": "Користувач з такою поштою вже зареєстрований",
       "INVALID_CREDENTIALS": "Невірний логін або пароль",
       "EMAIL_UNCONFIRMED": "Пошта не підтверджена. Будь ласка, введіть код.",
-      "INVALID_OR_EXPIRED_CODE": "Код неправильний або його термін дії минув",
+      "INVALID_OR_EXPIRED_CODE": "Код невірний або його термін дії закінчився",
+      "USER_NOT_FOUND": "Користувача не знайдено",
       "GOOGLE_AUTH_FAILED": "Помилка авторизації через Google",
-      "USER_NOT_FOUND": "Користувача не знайдено"
+      "TOKEN_MISSING": "Токен авторизації відсутній або недійсний"
     },
-
     "SUCCESS": {
-      "OTP_SENT": "Код підтвердження надіслано на пошту",
+      "OTP_SENT": "Код підтвердження відправлено на пошту",
       "PASSWORD_CHANGED": "Пароль успішно змінено",
-      "RESET_EMAIL_SENT": "Інструкції для скидання надіслано на пошту"
+      "RESET_EMAIL_SENT": "Інструкції зі скидання відправлені на пошту"
     }
   },
-  "HEADER":{
+
+  "ITEMS": {
+    "ERRORS": {
+      "NOT_FOUND": "Предмет не знайдено"
+    },
+    "SUCCESS": {
+      "DELETE": "Предмет успішно видалено"
+    }
+  },
+
+  "LOCATIONS": {
+    "ERRORS": {
+      "NOT_FOUND": "Локацію не знайдено",
+      "SELF_NESTING": "Не можна вкласти локацію в саму себе",
+      "CIRCULAR_DEPENDENCY": "Не можна вкласти батьківську локацію в дочірню (циклічна залежність)"
+    }
+  },
+
+  "CATEGORIES": {
+    "ERRORS": {
+      "NOT_FOUND": "Категорію не знайдено",
+      "CANNOT_DELETE_DEFAULT": "Не можна видалити категорію за замовчуванням"
+    }
+  },
+
+  "PLATFORMS": {
+    "ERRORS": {
+      "NOT_FOUND": "Платформу не знайдено"
+    }
+  },
+
+  "SALES": {
+    "TITLE": "Історія продажів",
+    "TOTAL_REVENUE": "Оборот",
+    "TOTAL_PROFIT": "Чистий прибуток",
+    "COL_ITEM": "Предмет",
+    "COL_DATE": "Дата продажу",
+    "COL_PRICE": "Ціна продажу",
+    "COL_PROFIT": "Прибуток",
+    "NO_SALES": "Продажів поки немає",
+    "ERRORS": {
+      "ITEM_NOT_FOUND": "Предмет не знайдено в системі продажів",
+      "ALREADY_SOLD": "Предмет вже позначений як проданий",
+      "NOT_FOUND": "Запис про продаж не знайдено"
+    }
+  },
+
+  "HEADER": {
     "HOME": "Головна",
     "LOGIN": "Увійти",
     "LOGOUT": "Вийти",
     "REGISTER": "Реєстрація",
     "SETTINGS": "Налаштування",
     "SALES": "Продажі",
-    "MANAGEMENT": "Конфігурація"
+    "MANAGEMENT": "Управління"
   },
+
+  "SHARED": {
+    "TOOLTIP_INFO": "Інформація",
+    "TOOLTIP_RENAME": "Перейменувати",
+    "TOOLTIP_DELETE": "Видалити",
+    "TOOLTIP_ADD": "Додати"
+  },
+
   "CREATE_ITEM": {
-    "TITLE": "Створити предмет",
+    "TITLE": "Створіть предмет",
     "NAME": "Назва",
     "FIELD_NAME": "Введіть назву предмета",
     "DESCRIPTION": "Опис",
@@ -92,54 +146,14 @@
     "BUTTON_CANCEL": "Скасувати",
     "CREATE_CATEGORY": "Створити категорію"
   },
-  "MAIN": {
-    "BUTTON_CREATE_LOCATION": "Створити локацію",
-    "BUTTON_CREATE_ITEM": "Створити предмет",
-    "LOADING": "Завантаження...",
-    "PAGE": " Сторінка ",
-    "ADD": "Додати +"
-  },
-  "LOCATION_RIB": {
-    "GLOBAL_PAGE": "Сторінка: "
-  },
-  "LOCATION_CARD": {
-    "MOVE": "Перемістити до:",
-    "HIGHER_LEVEL": "На верхній рівень",
-    "DETAILS": "Деталі",
-    "RENAME": "Перейменувати",
-    "DELETE": "Видалити"
-  },
-  "ITEM_CARD": {
-    "SELL": "Продати",
-    "INFO": "Інфо",
-    "DELETE": "Видалити",
-    "M_MOVE": "Перемістити до:",
-    "M_SELECT_LOCATION": "Оберіть локацію"
-  },
-  "ITEM_DETAILS": {
-    "BUTTON_BACK": "Назад",
-    "BUTTON_EDIT": "Редагувати",
-    "NO_IMAGE": "Немає зображення",
-    "ESTIMATE_VALUE": "Оцінна вартість",
-    "ADD_DATE": "Дата додавання"
-  },
+
   "STATUS": {
     "ACTIVE": "Активний",
-    "LENT": "Позичений",
-    "LOST": "Втрачений",
-    "BROKEN": "Зламаний",
-    "SOLD": "Проданий",
-    "GIFTED": "Подарований",
-    "LISTED": "Виставлений"
-  },
-  "SALES": {
-    "TITLE": "Історія продажів",
-    "TOTAL_REVENUE": "Загальний оборот",
-    "TOTAL_PROFIT": "Чистий прибуток",
-    "COL_ITEM": "Предмет",
-    "COL_DATE": "Дата продажу",
-    "COL_PRICE": "Ціна продажу",
-    "COL_PROFIT": "Прибуток",
-    "NO_SALES": "Продажів поки немає"
+    "LENT": "Позичено",
+    "LOST": "Втрачено",
+    "BROKEN": "Зламано",
+    "SOLD": "Продано",
+    "GIFTED": "Подаровано",
+    "LISTED": "Виставлено"
   }
 }

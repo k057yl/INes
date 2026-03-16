@@ -47,12 +47,32 @@
           </button>
         </div>
 
-        <div class="password-checklist" *ngIf="registerForm.get('password')?.value">
-          <div [class.valid]="!registerForm.get('password')?.hasError('minlength')" class="check-item">
-            <i class="fa" [ngClass]="registerForm.get('password')?.hasError('minlength') ? 'fa-circle' : 'fa-check-circle'"></i>
+        <div class="password-checklist" *ngIf="registerForm.get('password')?.value && !hasForbiddenChars()">
+          <div class="check-item" [class.valid]="!registerForm.get('password')?.hasError('minlength')">
+            <i class="fa" [ngClass]="registerForm.get('password')?.hasError('minlength') ? 'fa-circle-notch' : 'fa-check-circle'"></i>
             {{ 'ERRORS.PWD_MIN_LENGTH' | translate }}
           </div>
+
+          <div class="check-item" [class.valid]="checkPasswordRequirement('[A-Z]')">
+            <i class="fa" [ngClass]="checkPasswordRequirement('[A-Z]') ? 'fa-check-circle' : 'fa-circle-notch'"></i>
+            {{ 'ERRORS.PWD_UPPER' | translate }}
           </div>
+
+          <div class="check-item" [class.valid]="checkPasswordRequirement('[0-9]')">
+            <i class="fa" [ngClass]="checkPasswordRequirement('[0-9]') ? 'fa-check-circle' : 'fa-circle-notch'"></i>
+            {{ 'ERRORS.PWD_DIGIT' | translate }}
+          </div>
+
+          <div class="check-item" [class.valid]="checkPasswordRequirement('[^a-zA-Z0-9]')">
+            <i class="fa" [ngClass]="checkPasswordRequirement('[^a-zA-Z0-9]') ? 'fa-check-circle' : 'fa-circle-notch'"></i>
+            {{ 'ERRORS.PWD_SPEC' | translate }}
+          </div>
+        </div>
+
+        <small class="status-text error" *ngIf="hasForbiddenChars()">
+          <i class="fa fa-exclamation-circle"></i> 
+          {{ 'ERRORS.PWD_LATIN' | translate }}
+        </small>
       </div>
 
       <div class="inest-form-group">

@@ -3,6 +3,7 @@ using INest.Models.Entities;
 using INest.Models.Enums;
 using INest.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using INest.Constants;
 
 namespace INest.Services
 {
@@ -78,7 +79,6 @@ namespace INest.Services
                 });
 
                 await _context.SaveChangesAsync();
-
                 await transaction.CommitAsync();
 
                 return item;
@@ -102,18 +102,25 @@ namespace INest.Services
 
         public async Task<Item?> GetItemAsync(Guid userId, Guid itemId)
         {
-            return await _context.Items
+            var item = await _context.Items
                 .Where(i => i.UserId == userId && i.Id == itemId)
                 .Include(i => i.Photos)
                 .Include(i => i.Category)
                 .Include(i => i.StorageLocation)
                 .FirstOrDefaultAsync();
+
+            if (item == null)
+                throw new KeyNotFoundException(LocalizationConstants.ITEMS.NOT_FOUND);
+
+            return item;
         }
 
         public async Task<bool> UpdateItemAsync(Guid userId, Guid itemId, UpdateItemDto dto)
         {
             var item = await _context.Items.FirstOrDefaultAsync(i => i.Id == itemId && i.UserId == userId);
-            if (item == null) return false;
+
+            if (item == null)
+                throw new KeyNotFoundException(LocalizationConstants.ITEMS.NOT_FOUND);
 
             void AddHistory(ItemHistoryType type, string? oldVal, string? newVal)
             {
@@ -164,7 +171,9 @@ namespace INest.Services
         public async Task<bool> MoveItemAsync(Guid userId, Guid itemId, Guid? targetLocationId)
         {
             var item = await _context.Items.FirstOrDefaultAsync(i => i.Id == itemId && i.UserId == userId);
-            if (item == null) return false;
+
+            if (item == null)
+                throw new KeyNotFoundException(LocalizationConstants.ITEMS.NOT_FOUND);
 
             if (item.StorageLocationId != targetLocationId)
             {
@@ -221,7 +230,9 @@ namespace INest.Services
         public async Task<bool> ChangeStatusAsync(Guid userId, Guid itemId, ItemStatus newStatus)
         {
             var item = await _context.Items.FirstOrDefaultAsync(i => i.Id == itemId && i.UserId == userId);
-            if (item == null) return false;
+
+            if (item == null)
+                throw new KeyNotFoundException(LocalizationConstants.ITEMS.NOT_FOUND);
 
             if (item.Status != newStatus)
             {
@@ -245,7 +256,9 @@ namespace INest.Services
         public async Task<IEnumerable<ItemHistory>> GetItemHistoryAsync(Guid userId, Guid itemId)
         {
             var exists = await _context.Items.AnyAsync(i => i.Id == itemId && i.UserId == userId);
-            if (!exists) return Enumerable.Empty<ItemHistory>();
+
+            if (!exists)
+                throw new KeyNotFoundException(LocalizationConstants.ITEMS.NOT_FOUND);
 
             return await _context.ItemHistories
                 .Where(h => h.ItemId == itemId)
@@ -259,7 +272,8 @@ namespace INest.Services
                 .Include(i => i.Sale)
                 .FirstOrDefaultAsync(i => i.Id == itemId && i.UserId == userId);
 
-            if (item == null || item.Sale == null) return false;
+            if (item == null || item.Sale == null)
+                throw new KeyNotFoundException(LocalizationConstants.SALES.NOT_FOUND);
 
             _context.Sales.Remove(item.Sale);
             item.Status = ItemStatus.Active;
@@ -284,7 +298,8 @@ namespace INest.Services
                 .Include(i => i.Photos)
                 .FirstOrDefaultAsync(i => i.Id == itemId && i.UserId == userId);
 
-            if (item == null) return false;
+            if (item == null)
+                throw new KeyNotFoundException(LocalizationConstants.ITEMS.NOT_FOUND);
 
             foreach (var photo in item.Photos)
             {

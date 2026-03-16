@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using INest.Models.DTOs.Sale;
+using INest.Constants;
 
 namespace INest.Models.Validators
 {
@@ -7,9 +8,17 @@ namespace INest.Models.Validators
     {
         public SalesRules()
         {
-            RuleFor(x => x.ItemId).NotEmpty();
-            RuleFor(x => x.SalePrice).GreaterThan(0).WithMessage("Цена должна быть больше нуля");
-            RuleFor(x => x.SoldDate).LessThanOrEqualTo(DateTime.UtcNow).WithMessage("Дата не может быть в будущем");
+            RuleFor(x => x.ItemId)
+                .NotEmpty()
+                .WithMessage(LocalizationConstants.ERRORS.REQUIRED_FIELD);
+
+            RuleFor(x => x.SalePrice)
+                .GreaterThan(0)
+                .WithMessage(LocalizationConstants.ERRORS.NEGATIVE_NUMBER);
+
+            RuleFor(x => x.SoldDate)
+                .LessThanOrEqualTo(DateTime.UtcNow)
+                .WithMessage(LocalizationConstants.ERRORS.FUTURE_DATE);
         }
     }
 }

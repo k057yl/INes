@@ -1,31 +1,29 @@
 {
   "SYSTEM": {
-    "DEFAULT_ERROR": "Произошла непредвиденная ошибка"
+    "DEFAULT_ERROR": "Произошла непредвиденная ошибка",
+    "VALIDATION_FAILED": "Ошибка валидации данных",
+    "EMAIL_SEND_FAILED": "Не удалось отправить письмо",
+    "CONFIG_ERROR": "Ошибка конфигурации сервера"
   },
+
   "ERRORS": {
     "DEFAULT": "Неверные данные",
-    "UNCONFIRMED_PASSWORD": "Пароль не верный",
-    "UNCONFIRMED_USERNAME": "Имя не верное",
-    "FUTURE_DATE": "Дата не может быть в будующем",
-    "USERNAME_LATIN_ONLY": "Только латиница и цифры",
+    "REQUIRED_FIELD": "Поле обязательно для заполнения",
     "INVALID_EMAIL_FORMAT": "Некорректный формат почты",
+    "INVALID_COLOR_HEX": "Некорректный формат цвета",
+    "MAX_LENGTH_50": "Максимум 50 символов",
     "PWD_MIN_LENGTH": "Минимум 6 символов",
+    "PWD_LATIN": "Только латиница и символы",
     "PWD_UPPER": "Заглавная буква (A-Z)",
     "PWD_DIGIT": "Хотя бы одна цифра (0-9)",
     "PWD_SPEC": "Спецсимвол (!@#$%...)",
-    "INVALID_COLOR_HEX": "Некорректный формат цвета",
-    "REQUIRED_FIELD": "Поле обязательно для заполнения"
+    "USERNAME_LATIN_ONLY": "Только латиница и цифры",
+    "NEGATIVE_NUMBER": "Значение должно быть больше нуля",
+    "FUTURE_DATE": "Дата не может быть в будущем",
+    "FILE_TOO_LARGE": "Файл слишком велик для обработки",
+    "IMAGE_PROCESSING_FAILED": "Ошибка при обработке изображения"
   },
-  "SHARED": {
-    "TOOLTIP_INFO": "Информация",
-    "TOOLTIP_RENAME": "Переименовать",
-    "TOOLTIP_DELETE": "Удалить",
-    "TOOLTIP_ADD": "Добавить"
-  },
-  "MANAGEMENT": {
-    "TITLE_CATEGORY": "Управление категориями",
-    "TITLE_PLATFORM": "Управление платформами"
-  },
+
   "AUTH": {
     "TITLE_REG": "О, Привет!",
     "SUBTITLE_REG": "Зарегистрируйтесь в системе",
@@ -37,6 +35,8 @@
     "FIELD_EMAIL": "Введите email",
     "PASSWORD": "Пароль",
     "FIELD_PASSWORD": "Введите пароль",
+    "CHECKING_MAIL": "Проверка почты...",
+    "PASSWORD_MISMATCH": "Пароли не совпадают",
     "CONFIRM_PASSWORD": "Проверка пароля",
     "CONFIRM_FIELD_PASSWORD": "Введите пароль еще раз",
     "BUTTON_LOGIN": "Войти",
@@ -50,22 +50,71 @@
     "BUTTON_SHOW_GOOGLE_LOGIN": "Войти с Google",
     "BUTTON_SHOW_GOOGLE_REG": "Зарегистрироваться с Google",
     
+    "CONFIRM": {
+      "TITLE": "Подтверждение почты",
+      "SUBTITLE": "Мы отправили код на вашу почту",
+      "CODE_LABEL": "Код подтверждения",
+      "CODE_PLACEHOLDER": "123456",
+      "SUBMIT_BTN": "Подтвердить",
+      "RESEND_TEXT": "Не получили код?",
+      "RESEND_LINK": "Отправить повторно"
+    },
+
     "ERRORS": {
       "EMAIL_ALREADY_EXISTS": "Пользователь с такой почтой уже зарегистрирован",
       "INVALID_CREDENTIALS": "Неверный логин или пароль",
       "EMAIL_UNCONFIRMED": "Почта не подтверждена. Пожалуйста, введите код.",
       "INVALID_OR_EXPIRED_CODE": "Код неверный или его срок истек",
+      "USER_NOT_FOUND": "Пользователь не найден",
       "GOOGLE_AUTH_FAILED": "Ошибка авторизации через Google",
-      "USER_NOT_FOUND": "Пользователь не найден"
+      "TOKEN_MISSING": "Токен авторизации отсутствует или недействителен"
     },
-    
     "SUCCESS": {
       "OTP_SENT": "Код подтверждения отправлен на почту",
-      "PASSWORD_CHANGED": "Пароль успешно изменен",
+      "PASSWORD_CHANGED": "Регистрация успешно завершена!",
       "RESET_EMAIL_SENT": "Инструкции по сбросу отправлены на почту"
     }
   },
-  "HEADER":{
+
+  "ITEMS": {
+    "ERRORS": {
+      "NOT_FOUND": "Предмет не найден"
+    },
+    "SUCCESS": {
+      "DELETE": "Предмет успешно удален"
+    }
+  },
+
+  "CATEGORIES": {
+    "ERRORS": {
+      "NOT_FOUND": "Категория не найдена",
+      "CANNOT_DELETE_DEFAULT": "Нельзя удалить категорию по умолчанию"
+    }
+  },
+
+  "PLATFORMS": {
+    "ERRORS": {
+      "NOT_FOUND": "Платформа не найдена"
+    }
+  },
+
+  "SALES": {
+    "TITLE": "История продаж",
+    "TOTAL_REVENUE": "Оборот",
+    "TOTAL_PROFIT": "Чистая прибыль",
+    "COL_ITEM": "Предмет",
+    "COL_DATE": "Дата продажи",
+    "COL_PRICE": "Цена продажи",
+    "COL_PROFIT": "Прибыль",
+    "NO_SALES": "Продаж пока нет",
+    "ERRORS": {
+      "ITEM_NOT_FOUND": "Предмет не найден в системе продаж",
+      "ALREADY_SOLD": "Предмет уже помечен как проданный",
+      "NOT_FOUND": "Запись о продаже не найдена"
+    }
+  },
+
+  "HEADER": {
     "HOME": "Главная",
     "LOGIN": "Войти",
     "LOGOUT": "Выйти",
@@ -74,7 +123,15 @@
     "SALES": "Продажи",
     "MANAGEMENT": "Управление"
   },
-  "CREATE_ITEM":{
+
+  "SHARED": {
+    "TOOLTIP_INFO": "Информация",
+    "TOOLTIP_RENAME": "Переименовать",
+    "TOOLTIP_DELETE": "Удалить",
+    "TOOLTIP_ADD": "Добавить"
+  },
+
+  "CREATE_ITEM": {
     "TITLE": "Создайте предмет",
     "NAME": "Название",
     "FIELD_NAME": "Введите название предмета",
@@ -94,37 +151,7 @@
     "BUTTON_CANCEL": "Отмена",
     "CREATE_CATEGORY": "Создать категорию"
   },
-  "MAIN":{
-    "BUTTON_CREATE_LOCATION": "Создать локацию",
-    "BUTTON_CREATE_ITEM": "Создать предмет",
-    "LOADING": "Загрузка...",
-    "PAGE": " Страница ",
-    "ADD": "Добавить +"
-  },
-  "LOCATION_RIB":{
-    "GLOBAL_PAGE": "Страница : "
-  },
-  "LOCATION_CARD":{
-    "MOVE": "Переместить в : ",
-    "HIGHER_LEVEL": "На верхний уровень",
-    "DETAILS": "Детали",
-    "RENAME": "Переименовать",
-    "DELETE": "Удалить"
-  },
-  "ITEM_CARD":{
-    "SELL": "Продать",
-    "INFO": "Инфо",
-    "DELETE": "Удалить",
-    "M_MOVE": "Переместить в : ",
-    "M_SELECT_LOCATION":"Выберите локацию"
-  },
-  "ITEM_DETAILS":{
-    "BUTTON_BACK": "Назад",
-    "BUTTON_EDIT": "Редактировать",
-    "NO_IMAGE": "Нет изображения",
-    "ESTIMATE_VALUE": "Оценочная стоимость",
-    "ADD_DATE": "Дата добавления"
-  },
+
   "STATUS": {
     "ACTIVE": "Активен",
     "LENT": "Одолжен",
@@ -134,25 +161,36 @@
     "GIFTED": "Подарен",
     "LISTED": "Выставлен"
   },
-  "SALES": {
-    "TITLE": "История продаж",
-    "TOTAL_REVENUE": "Оборот",
-    "TOTAL_PROFIT": "Чистая прибыль",
-    "COL_ITEM": "Предмет",
-    "COL_DATE": "Дата продажи",
-    "COL_PRICE": "Цена продажи",
-    "COL_PROFIT": "Прибыль",
-    "NO_SALES": "Продаж пока нет"
+
+  "MANAGEMENT": {
+    "TITLE_CATEGORY": "Управление категориями",
+    "TITLE_PLATFORM": "Управление платформами"
   },
-  "CATEGORIES": {
-    "ERRORS": {
-      "NOT_FOUND": "Категория не найдена",
-      "CANNOT_DELETE_DEFAULT": "Нельзя удалить категорию по умолчанию"
-    }
+
+  "ITEM_DETAILS": {
+    "BUTTON_BACK": "Назад",
+    "BUTTON_EDIT": "Редактировать",
+    "NO_IMAGE": "Нет изображения",
+    "NO_DESCRIPTION": "Описание отсутствует",
+    "PURCHASE_PRICE": "Куплено за",
+    "ESTIMATE_VALUE": "Текущая оценка",
+    "HISTORY_TITLE": "История",
+    "HISTORY_EMPTY": "История изменений пока пуста"
   },
-  "PLATFORMS": {
+
+  "LOCATIONS": {
     "ERRORS": {
-      "NOT_FOUND": "Платформа не найдена"
+      "NOT_FOUND": "Локация не найдена",
+      "SELF_NESTING": "Нельзя вложить локацию в саму себя",
+      "CIRCULAR_DEPENDENCY": "Нельзя вложить родителя в потомка (циклическая зависимость)"
+    },
+    "UI": {
+      "NAME_PLACEHOLDER": "Например: Витрина или Гараж",
+      "AUTOMATION": "Автоматизация",
+      "SALES_ZONE": "Торговая точка",
+      "LENDING_ZONE": "Зона одалживания",
+      "SALES_HINT": "Предметы здесь автоматически станут Listed",
+      "LENDING_HINT": "Предметы здесь автоматически станут Lent"
     }
   }
 }

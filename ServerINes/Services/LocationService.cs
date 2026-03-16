@@ -1,8 +1,10 @@
-﻿using INest.Models.DTOs.Location;
+﻿using INest.Constants;
+using INest.Exceptions;
+using INest.Models.DTOs.Location;
 using INest.Models.Entities;
+using INest.Models.Enums;
 using INest.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using INest.Models.Enums;
 
 namespace INest.Services
 {
@@ -20,7 +22,7 @@ namespace INest.Services
                     .AnyAsync(l => l.Id == dto.ParentLocationId && l.UserId == userId);
 
                 if (!parentExists)
-                    throw new InvalidOperationException("Error.LocationNotFound");
+                    throw new AppException(LocalizationConstants.LOCATIONS.NOT_FOUND, 404);
             }
 
             var location = new StorageLocation
@@ -40,6 +42,7 @@ namespace INest.Services
 
             _context.StorageLocations.Add(location);
             await _context.SaveChangesAsync();
+
             return location;
         }
 
@@ -82,25 +85,27 @@ namespace INest.Services
                 .FirstOrDefaultAsync(l => l.Id == locationId && l.UserId == userId);
 
             if (location == null)
-                throw new Exception("Location not found");
+                throw new AppException(LocalizationConstants.LOCATIONS.NOT_FOUND, 404);
 
             if (locationId == newParentId)
-                throw new Exception("Нельзя вложить локацию в саму себя");
+                throw new AppException(LocalizationConstants.LOCATIONS.SELF_NESTING, 400);
 
-            var parent = await _context.StorageLocations
-                .FirstOrDefaultAsync(l => l.Id == newParentId && l.UserId == userId);
-
-            while (parent != null)
+            if (newParentId.HasValue)
             {
-                if (parent.Id == locationId)
-                    throw new Exception("Нельзя вложить родителя внутрь потомка");
+                var parent = await _context.StorageLocations
+                    .FirstOrDefaultAsync(l => l.Id == newParentId && l.UserId == userId);
 
-                parent = await _context.StorageLocations
-                    .FirstOrDefaultAsync(l => l.Id == parent.ParentLocationId && l.UserId == userId);
+                while (parent != null)
+                {
+                    if (parent.Id == locationId)
+                        throw new AppException(LocalizationConstants.LOCATIONS.CIRCULAR_DEPENDENCY, 400);
+
+                    parent = await _context.StorageLocations
+                        .FirstOrDefaultAsync(l => l.Id == parent.ParentLocationId && l.UserId == userId);
+                }
             }
 
             location.ParentLocationId = newParentId;
-
             await _context.SaveChangesAsync();
         }
 
@@ -161,7 +166,7 @@ namespace INest.Services
                 .FirstOrDefaultAsync(l => l.Id == locationId && l.UserId == userId);
 
             if (location == null)
-                throw new KeyNotFoundException("Error.LocationNotFound");
+                throw new AppException(LocalizationConstants.LOCATIONS.NOT_FOUND, 404);
 
             location.Name = newName;
             await _context.SaveChangesAsync();
@@ -170,11 +175,10 @@ namespace INest.Services
         public async Task DeleteLocationAsync(Guid userId, Guid locationId)
         {
             var location = await _context.StorageLocations
-                .Include(l => l.Children)
                 .FirstOrDefaultAsync(l => l.Id == locationId && l.UserId == userId);
 
             if (location == null)
-                throw new KeyNotFoundException("Error.LocationNotFound");
+                throw new AppException(LocalizationConstants.LOCATIONS.NOT_FOUND, 404);
 
             _context.StorageLocations.Remove(location);
             await _context.SaveChangesAsync();

@@ -1,14 +1,17 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { tap, finalize, catchError } from 'rxjs/operators';
+import { tap, finalize, catchError, map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
-import { map } from 'rxjs/operators';
 
 export interface AppUser {
   id: string;
   email: string;
   roles: string[];
+}
+
+export interface AuthResponse {
+  token: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -27,33 +30,42 @@ export class AuthService {
     this.restoreSession();
   }
 
-  // ================= LOGIN / LOGOUT =================
+  // ================= AUTH METHODS =================
 
-  login(email: string, password: string): Observable<any> {
+  login(email: string, password: string): Observable<AuthResponse> {
     return this.http
-      .post<{ token: string | "unconfirmed" }>(`${this.apiUrl}/login`, { email, password })
+      .post<AuthResponse>(`${this.apiUrl}/login`, { email, password })
       .pipe(
-        tap(res => {
-          if (res.token === 'unconfirmed') throw { error: 'unconfirmed' };
-          this.setSession(res.token);
-        })
+        tap(res => this.setSession(res.token))
       );
   }
 
-  googleLogin(idToken: string): Observable<any> {
+  register(dto: any): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/register`, dto);
+  }
+
+  confirmRegistration(email: string, code: string): Observable<AuthResponse> {
     return this.http
-      .post<{ token: string }>(`${this.apiUrl}/google-login`, { idToken })
+      .post<AuthResponse>(`${this.apiUrl}/confirm-register`, { email, code })
       .pipe(
-        tap(res => {
-          this.setSession(res.token);
-        })
+        tap(res => this.setSession(res.token))
+      );
+  }
+
+  googleLogin(idToken: string): Observable<AuthResponse> {
+    return this.http
+      .post<AuthResponse>(`${this.apiUrl}/google-login`, { idToken })
+      .pipe(
+        tap(res => this.setSession(res.token))
       );
   }
 
   logout(): Observable<any> {
     return this.http.post(`${this.apiUrl}/logout`, {}).pipe(
-      finalize(() => {
+      finalize(() => this.clearLocalSession()),
+      catchError(() => {
         this.clearLocalSession();
+        return of(null);
       })
     );
   }
@@ -61,6 +73,7 @@ export class AuthService {
   // ================= SESSION MANAGEMENT =================
 
   public setSession(token: string) {
+    if (!token) return;
     localStorage.setItem(this.TOKEN_KEY, token);
     this.tokenSubject.next(token);
     this.userSubject.next(this.parseUser(token));
@@ -89,8 +102,8 @@ export class AuthService {
       const payload = JSON.parse(atob(token.split('.')[1]));
       return {
         id: payload.sub || payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] || '',
-        email: payload.email || payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'] || payload.sub || 'User',
-        roles: payload.roles || []
+        email: payload.email || payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'] || '',
+        roles: payload.roles || payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || []
       };
     } catch {
       return { id: '', email: '', roles: [] };
@@ -111,10 +124,9 @@ export class AuthService {
   }
 
   checkEmailUnique(email: string): Observable<boolean> {
-    return this.http.get<{ isUnique: boolean }>(`${this.apiUrl}/check-email`, {
+    return this.http.get<boolean>(`${this.apiUrl}/check-email`, {
       params: { email }
     }).pipe(
-      map(res => res.isUnique),
       catchError(() => of(true))
     );
   }

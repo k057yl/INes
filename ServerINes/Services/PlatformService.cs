@@ -1,4 +1,5 @@
-﻿using INest.Models.DTOs.Platform;
+﻿using INest.Constants;
+using INest.Models.DTOs.Platform;
 using INest.Models.Entities;
 using INest.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -36,12 +37,13 @@ namespace INest.Services
             return platform;
         }
 
-        public async Task<Platform?> UpdateAsync(Guid userId, Guid id, PlatformDto dto)
+        public async Task<Platform> UpdateAsync(Guid userId, Guid id, PlatformDto dto)
         {
             var platform = await _context.Platforms
                 .FirstOrDefaultAsync(p => p.Id == id && p.UserId == userId);
 
-            if (platform == null) return null;
+            if (platform == null)
+                throw new KeyNotFoundException(LocalizationConstants.PLATFORMS.NOT_FOUND);
 
             platform.Name = dto.Name;
             await _context.SaveChangesAsync();
@@ -53,7 +55,8 @@ namespace INest.Services
             var platform = await _context.Platforms
                 .FirstOrDefaultAsync(p => p.Id == id && p.UserId == userId);
 
-            if (platform == null) return false;
+            if (platform == null)
+                throw new KeyNotFoundException(LocalizationConstants.PLATFORMS.NOT_FOUND);
 
             _context.Platforms.Remove(platform);
             await _context.SaveChangesAsync();

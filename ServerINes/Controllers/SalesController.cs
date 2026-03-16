@@ -20,11 +20,8 @@ namespace INest.Controllers
         [HttpPost]
         public async Task<IActionResult> SellItem([FromBody] SellItemRequestDto request)
         {
-            try
-            {
-                return Ok(await _salesService.SellItemAsync(GetUserId(), request));
-            }
-            catch (Exception ex) { return BadRequest(ex.Message); }
+            var result = await _salesService.SellItemAsync(GetUserId(), request);
+            return Ok(result);
         }
 
         [HttpGet]
@@ -41,17 +38,12 @@ namespace INest.Controllers
         public async Task<IActionResult> SmartDelete(Guid saleId, [FromQuery] bool keepHistory = true)
         {
             var userId = GetUserId();
-
             if (keepHistory)
-            {
-                var result = await _salesService.SmartDeleteAsync(userId, saleId);
-                return result ? NoContent() : NotFound();
-            }
+                await _salesService.SmartDeleteAsync(userId, saleId);
             else
-            {
-                var result = await _salesService.DeleteSaleRecordAsync(userId, saleId);
-                return result ? NoContent() : NotFound();
-            }
+                await _salesService.DeleteSaleRecordAsync(userId, saleId);
+
+            return NoContent();
         }
     }
 }

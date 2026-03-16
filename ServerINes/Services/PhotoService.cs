@@ -1,5 +1,6 @@
 ﻿using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
+using INest.Constants;
 using INest.Models.Entities;
 using INest.Services.Interfaces;
 using Microsoft.Extensions.Options;
@@ -12,28 +13,27 @@ namespace INest.Services
     public class PhotoService : IPhotoService
     {
         private readonly Cloudinary _cloudinary;
+        private readonly ILogger<PhotoService> _logger;
         private const int TargetWidth = 320;
         private const long MaxFileSizeBytes = 512 * 1024;
 
-        public PhotoService(IOptions<CloudinarySettings> config)
+        public PhotoService(IOptions<CloudinarySettings> config, ILogger<PhotoService> logger)
         {
             var acc = new Account(config.Value.CloudName, config.Value.ApiKey, config.Value.ApiSecret);
             _cloudinary = new Cloudinary(acc);
+            _logger = logger;
         }
 
         public async Task<ImageUploadResult> AddPhotoAsync(IFormFile file)
         {
-            var uploadResult = new ImageUploadResult();
-
-            if (file == null || file.Length == 0) return uploadResult;
+            if (file == null || file.Length == 0) return new ImageUploadResult();
 
             if (file.Length > MaxFileSizeBytes * 20)
             {
-                return new ImageUploadResult { Error = new Error { Message = "Файл слишком велик для обработки" } };
+                return new ImageUploadResult { Error = new Error { Message = LocalizationConstants.ERRORS.FILE_TOO_LARGE } };
             }
 
             using var outStream = new MemoryStream();
-
             try
             {
                 using (var image = await Image.LoadAsync(file.OpenReadStream()))
@@ -44,34 +44,28 @@ namespace INest.Services
                         Mode = ResizeMode.Max
                     }));
 
-                    await image.SaveAsJpegAsync(outStream, new SixLabors.ImageSharp.Formats.Jpeg.JpegEncoder
-                    {
-                        Quality = 75
-                    });
+                    await image.SaveAsJpegAsync(outStream, new SixLabors.ImageSharp.Formats.Jpeg.JpegEncoder { Quality = 75 });
                 }
 
                 outStream.Position = 0;
-
                 var uploadParams = new ImageUploadParams
                 {
                     File = new FileDescription(file.FileName, outStream),
                     Transformation = new Transformation().Quality("auto").FetchFormat("auto")
                 };
 
-                uploadResult = await _cloudinary.UploadAsync(uploadParams);
+                return await _cloudinary.UploadAsync(uploadParams);
             }
             catch (Exception ex)
             {
-                return new ImageUploadResult { Error = new Error { Message = $"Ошибка обработки: {ex.Message}" } };
+                _logger.LogError(ex, "Photo processing failed");
+                return new ImageUploadResult { Error = new Error { Message = LocalizationConstants.ERRORS.IMAGE_PROCESSING_FAILED } };
             }
-
-            return uploadResult;
         }
 
         public async Task<DeletionResult> DeletePhotoAsync(string publicId)
         {
-            var deleteParams = new DeletionParams(publicId);
-            return await _cloudinary.DestroyAsync(deleteParams);
+            return await _cloudinary.DestroyAsync(new DeletionParams(publicId));
         }
     }
 }

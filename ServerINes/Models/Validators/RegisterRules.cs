@@ -1,30 +1,28 @@
 ﻿using FluentValidation;
+using INest.Constants;
 using INest.Models.DTOs.Auth;
-using Microsoft.Extensions.Localization;
 
 namespace INest.Models.Validators
 {
     public class RegisterRules : AbstractValidator<RegisterDto>
     {
-        private readonly string _emailRegex = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
-        public RegisterRules(IStringLocalizer<SharedResource> T)
+        public RegisterRules()
         {
             RuleFor(x => x.Email)
-                .NotEmpty().WithMessage(x => T["EMAIL_REQUIRED"])
-                .Matches(_emailRegex).WithMessage(x => T["INVALID_EMAIL_FORMAT"]);
+                .NotEmpty().WithMessage(LocalizationConstants.ERRORS.REQUIRED_FIELD)
+                .EmailAddress().WithMessage(LocalizationConstants.ERRORS.INVALID_EMAIL_FORMAT);
 
             RuleFor(x => x.Password)
-                .NotEmpty().WithMessage(x => T["PASSWORD_REQUIRED"])
-                .MinimumLength(6).WithMessage(x => T["PASSWORD_TOO_SHORT"])
-                .Matches(@"[A-Z]").WithMessage(x => T["PASSWORD_REQUIRES_UPPERCASE"])
-                .Matches(@"[a-z]").WithMessage(x => T["PASSWORD_REQUIRES_LOWERCASE"])
-                .Matches(@"[0-9]").WithMessage(x => T["PASSWORD_REQUIRES_DIGIT"])
-                .Matches(@"[^a-zA-Z0-9]").WithMessage(x => T["PASSWORD_REQUIRES_NONALPHANUMERIC"]);
+                .NotEmpty().WithMessage(LocalizationConstants.ERRORS.REQUIRED_FIELD)
+                .MinimumLength(6).WithMessage(LocalizationConstants.ERRORS.PWD_MIN_LENGTH)
+                .Matches(@"^[\u0000-\u007F]+$").WithMessage(LocalizationConstants.ERRORS.PWD_LATIN)
+                .Matches(@"[A-Z]").WithMessage(LocalizationConstants.ERRORS.PWD_UPPER)
+                .Matches(@"[0-9]").WithMessage(LocalizationConstants.ERRORS.PWD_DIGIT)
+                .Matches(@"[^a-zA-Z0-9]").WithMessage(LocalizationConstants.ERRORS.PWD_SPEC);
 
             RuleFor(x => x.Username)
-                .NotEmpty().WithMessage(x => T["USERNAME_REQUIRED"])
-                .MinimumLength(3).WithMessage(x => T["USERNAME_TOO_SHORT"])
-                .Matches(@"^[a-zA-Z0-9]*$").WithMessage(x => T["USERNAME_INVALID_CHARACTERS"]);
+                .NotEmpty().WithMessage(LocalizationConstants.ERRORS.REQUIRED_FIELD)
+                .Matches(@"^[a-zA-Z0-9]*$").WithMessage(LocalizationConstants.ERRORS.USERNAME_LATIN_ONLY);
         }
     }
 }

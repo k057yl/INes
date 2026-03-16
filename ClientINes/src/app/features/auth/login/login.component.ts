@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { AuthService } from '../../../core/services/auth.service';
 import { ThemeService } from '../../../core/services/theme.service';
+import { environment } from '../../../../environments/environment';
 
 declare var google: any;
 
@@ -49,7 +50,7 @@ export class LoginComponent implements OnInit {
   }
 
   private initGoogleButton() {
-    const clientId = '477633498097-9ovq0psecdt4iu5lhh631dfjofgdlt2e.apps.googleusercontent.com';
+    const clientId = environment.googleClientId;
 
     const renderAction = () => {
       if (typeof google !== 'undefined' && google.accounts) {

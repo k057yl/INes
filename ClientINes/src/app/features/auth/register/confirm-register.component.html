@@ -1,47 +1,47 @@
 <div class="inest-form-page">
   <div class="inest-form-card">
     <header class="inest-form-header">
-      <div class="logo-circle">
-        <i class="fa fa-envelope-open-text"></i>
-      </div>
-      <h2>{{ 'REG.CONFIRM_TITLE' | translate }}</h2>
-      <p>{{ 'REG.CONFIRM_SUBTITLE' | translate }}</p>
-      <small class="target-email" style="color: var(--accent-color); font-weight: 600;" *ngIf="email">{{ email }}</small>
+      <div class="logo-circle"><i class="fa fa-envelope-open-text"></i></div>
+      <h2>{{ 'AUTH.CONFIRM.TITLE' | translate }}</h2>
+      <p>{{ 'AUTH.CONFIRM.SUBTITLE' | translate }}</p>
+      <small class="target-email" style="color: var(--accent-color); font-weight: 600;" *ngIf="email">
+        {{ email }}
+      </small>
     </header>
 
-    <form (ngSubmit)="confirm()" #confirmForm="ngForm">
-      <div class="inest-form-group">
-        <label>{{ 'REG.CONFIRM_CODE' | translate }}</label>
-        <div class="inest-input-wrapper">
-          <i class="fa fa-key inest-field-icon-left"></i>
-          <input type="text" 
-                 [(ngModel)]="code" 
-                 name="code" 
-                 required 
-                 maxlength="6"
-                 style="text-align: center; letter-spacing: 5px; font-size: 1.5rem;"
-                 [placeholder]="'REG.FIELD_CONFIRM_CODE' | translate"
-                 autocomplete="one-time-code">
-        </div>
+    <div class="otp-wrapper">
+      <div class="otp-container">
+        <input 
+          *ngFor="let digit of codeArray; let i = index"
+          type="text"
+          inputmode="numeric"
+          maxlength="1"
+          class="otp-input"
+          [(ngModel)]="codeArray[i]"
+          (input)="onInput($event, i)"
+          (keydown)="onKeyDown($event, i)"
+          (paste)="onPaste($event)"
+          [class.filled]="codeArray[i]"
+        >
       </div>
+    </div>
 
-      <div class="inest-status-box error" *ngIf="error">
-        <i class="fa fa-exclamation-circle"></i> {{ error | translate }}
-      </div>
+    <div class="inest-status-box error" *ngIf="error">
+      <i class="fa fa-exclamation-circle"></i> {{ error | translate }}
+    </div>
 
-      <div class="inest-status-box success" *ngIf="message">
-        <i class="fa fa-check-double"></i> {{ message | translate }}
-      </div>
+    <div class="inest-status-box success" *ngIf="message">
+      <i class="fa fa-check-double"></i> {{ message | translate }}
+    </div>
 
-      <button type="submit" class="inest-btn-primary" [disabled]="!confirmForm.valid">
-        {{ 'REG.BUTTON_CONFIRM_SUBMIT' | translate }}
-        <i class="fa fa-check" style="margin-left: 8px;"></i>
-      </button>
-    </form>
+    <button class="inest-btn-primary" (click)="confirm()" [disabled]="codeArray.join('').length < 6">
+      {{ 'AUTH.CONFIRM.SUBMIT_BTN' | translate }}
+      <i class="fa fa-check" style="margin-left: 8px;"></i>
+    </button>
 
     <footer class="inest-form-footer">
-      <span>{{ 'REG.CONFIRM_DIDNT_GET_CODE' | translate }}</span>
-      <a href="javascript:void(0)" (click)="resendCode()">{{ 'REG.CONFIRM_RESEND' | translate }}</a>
+      <span>{{ 'AUTH.CONFIRM.RESEND_TEXT' | translate }}</span>
+      <a href="javascript:void(0)" (click)="resendCode()">{{ 'AUTH.CONFIRM.RESEND_LINK' | translate }}</a>
     </footer>
   </div>
 </div>

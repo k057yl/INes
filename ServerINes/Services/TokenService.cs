@@ -1,4 +1,5 @@
-﻿using INest.Models.Entities;
+﻿using INest.Constants;
+using INest.Models.Entities;
 using INest.Services.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -33,7 +34,7 @@ namespace INest.Services
             var audience = _config["Jwt:Audience"]?.Trim();
 
             if (string.IsNullOrEmpty(secretKey))
-                throw new InvalidOperationException("JWT Key is not configured.");
+                throw new InvalidOperationException(LocalizationConstants.SYSTEM.CONFIG_ERROR);
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

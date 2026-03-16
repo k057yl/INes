@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using INest.Models.DTOs.Platform;
+using INest.Constants;
 
 namespace INest.Models.Validators
 {
@@ -7,7 +8,11 @@ namespace INest.Models.Validators
     {
         public PlatformRules()
         {
-            RuleFor(x => x.Name).NotEmpty().MaximumLength(50);
+            RuleFor(x => x.Name)
+                .NotEmpty()
+                .WithMessage(LocalizationConstants.ERRORS.REQUIRED_FIELD)
+                .MaximumLength(50)
+                .WithMessage(LocalizationConstants.ERRORS.MAX_LENGTH_50);
         }
     }
 }

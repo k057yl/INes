@@ -7,12 +7,14 @@ namespace INest.Services
 {
     public class EmailService : IEmailService
     {
+        private readonly ILogger<EmailService> _logger;
         private readonly string _apiKey;
         private readonly string _fromEmail;
         private readonly string _fromName;
 
-        public EmailService(IConfiguration config)
+        public EmailService(IConfiguration config, ILogger<EmailService> logger)
         {
+            _logger = logger;
             _apiKey = config["Brevo:ApiKey"] ?? throw new ArgumentNullException(nameof(_apiKey));
             _fromEmail = config["Brevo:FromEmail"] ?? throw new ArgumentNullException(nameof(_fromEmail));
             _fromName = config["Brevo:FromName"] ?? throw new ArgumentNullException(nameof(_fromName));
@@ -24,7 +26,6 @@ namespace INest.Services
         public async Task<bool> SendEmailAsync(string toEmail, string subject, string htmlContent)
         {
             var api = new TransactionalEmailsApi();
-
             var email = new SendSmtpEmail(
                 sender: new SendSmtpEmailSender(_fromName, _fromEmail),
                 to: new List<SendSmtpEmailTo> { new(toEmail) },
@@ -35,12 +36,12 @@ namespace INest.Services
             try
             {
                 var result = await api.SendTransacEmailAsync(email);
-                Console.WriteLine($"Email sent to {toEmail}, messageId: {result.MessageId}");
+                _logger.LogInformation("Email sent to {Email}, messageId: {Id}", toEmail, result.MessageId);
                 return true;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Email send error: {ex.Message}");
+                _logger.LogError(ex, "Failed to send email to {Email}", toEmail);
                 return false;
             }
         }

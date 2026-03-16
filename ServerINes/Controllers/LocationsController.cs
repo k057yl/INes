@@ -1,4 +1,6 @@
-﻿using INest.Models.DTOs.Location;
+﻿using INest.Constants;
+using INest.Exceptions;
+using INest.Models.DTOs.Location;
 using INest.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,13 +16,22 @@ namespace INest.Controllers
         private readonly ILocationService _locationService;
         public LocationsController(ILocationService locationService) => _locationService = locationService;
 
-        private Guid GetUserId() => Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        private Guid GetUserId() =>
+            Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new AppException("UNAUTHORIZED", 401));
 
         [HttpGet]
         public async Task<IActionResult> GetAll() => Ok(await _locationService.GetUserLocationsAsync(GetUserId()));
 
         [HttpGet("tree")]
         public async Task<IActionResult> GetTree() => Ok(await _locationService.GetTreeAsync(GetUserId()));
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(Guid id)
+        {
+            var loc = await _locationService.GetLocationByIdAsync(GetUserId(), id);
+            if (loc == null) throw new AppException(LocalizationConstants.LOCATIONS.NOT_FOUND, 404);
+            return Ok(loc);
+        }
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateLocationDto dto)
@@ -41,20 +52,6 @@ namespace INest.Controllers
         {
             await _locationService.DeleteLocationAsync(GetUserId(), id);
             return NoContent();
-        }
-
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(Guid id)
-        {
-            var loc = await _locationService.GetLocationByIdAsync(GetUserId(), id);
-            return loc == null ? NotFound() : Ok(loc);
-        }
-
-        [HttpPatch("reorder")]
-        public async Task<IActionResult> Reorder([FromBody] ReorderLocationsDto dto)
-        {
-            await _locationService.ReorderLocationsAsync(GetUserId(), dto.ParentId, dto.OrderedIds);
-            return Ok();
         }
     }
 }

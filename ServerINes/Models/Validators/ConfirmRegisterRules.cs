@@ -1,18 +1,20 @@
 ﻿using FluentValidation;
+using INest.Constants;
 using INest.Models.DTOs.Auth;
-using Microsoft.Extensions.Localization;
 
 namespace INest.Models.Validators
 {
     public class ConfirmRegisterRules : AbstractValidator<ConfirmRegisterDto>
     {
-        public ConfirmRegisterRules(IStringLocalizer<ConfirmRegisterRules> T)
+        public ConfirmRegisterRules()
         {
-            RuleFor(x => x.Email).NotEmpty().EmailAddress();
+            RuleFor(x => x.Email)
+                .NotEmpty().WithMessage(LocalizationConstants.ERRORS.REQUIRED_FIELD)
+                .EmailAddress().WithMessage(LocalizationConstants.ERRORS.INVALID_EMAIL_FORMAT);
 
             RuleFor(x => x.Code)
-                .NotEmpty().WithMessage(x => T["CodeRequired"])
-                .Length(6).WithMessage(x => T["CodeInvalidLength"]);
+                .NotEmpty().WithMessage(LocalizationConstants.ERRORS.REQUIRED_FIELD)
+                .Length(6).WithMessage(LocalizationConstants.AUTH.INVALID_OR_EXPIRED_CODE);
         }
     }
 }

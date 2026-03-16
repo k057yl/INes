@@ -12,14 +12,14 @@
     <form (ngSubmit)="login()" #loginForm="ngForm">
       
       <div class="inest-form-group">
-        <label>{{ 'AUTH.USERNAME' | translate }}</label>
+        <label>{{ 'AUTH.EMAIL' | translate }}</label>
         <div class="inest-input-wrapper">
-          <i class="fa fa-user inest-field-icon-left"></i>
+          <i class="fa fa-envelope inest-field-icon-left"></i>
           <input [(ngModel)]="email" 
                  name="email" 
                  required 
-                 autocomplete="username"
-                 [placeholder]="'AUTH.FIELD_USERNAME' | translate">
+                 autocomplete="email"
+                 [placeholder]="'AUTH.FIELD_EMAIL' | translate">
         </div>
       </div>
 
@@ -36,8 +36,7 @@
           
           <button type="button" 
                   class="input-action inest-action-btn" 
-                  (click)="showPassword = !showPassword">
-            {{ showPassword ? '🙈' : '👁️' }}
+                  (click)="togglePassword()"> {{ showPassword ? '🙈' : '👁️' }}
           </button>
         </div>
       </div>

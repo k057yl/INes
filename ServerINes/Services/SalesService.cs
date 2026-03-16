@@ -1,4 +1,5 @@
-﻿using INest.Models.DTOs.Sale;
+﻿using INest.Constants;
+using INest.Models.DTOs.Sale;
 using INest.Models.Entities;
 using INest.Models.Enums;
 using INest.Services.Interfaces;
@@ -21,8 +22,9 @@ namespace INest.Services
                 .Include(i => i.Category)
                 .FirstOrDefaultAsync(i => i.Id == request.ItemId && i.UserId == userId);
 
-            if (item == null) throw new KeyNotFoundException("Item not found");
-            if (item.Status == ItemStatus.Sold) throw new InvalidOperationException("Item already sold");
+            if (item == null) throw new KeyNotFoundException(LocalizationConstants.ITEMS.NOT_FOUND);
+
+            if (item.Status == ItemStatus.Sold) throw new InvalidOperationException(LocalizationConstants.SALES.ALREADY_SOLD);
 
             decimal purchasePrice = item.PurchasePrice ?? 0;
             decimal profit = request.SalePrice - purchasePrice;
@@ -105,7 +107,8 @@ namespace INest.Services
             var item = await _context.Items.Include(i => i.Sale)
                 .FirstOrDefaultAsync(i => i.Id == itemId && i.UserId == userId);
 
-            if (item == null || item.Sale == null) return false;
+            if (item == null || item.Sale == null)
+                throw new KeyNotFoundException(LocalizationConstants.SALES.NOT_FOUND);
 
             var oldStatus = item.Status;
             _context.Sales.Remove(item.Sale);
@@ -131,7 +134,8 @@ namespace INest.Services
             var sale = await _context.Sales.Include(s => s.Item)
                 .FirstOrDefaultAsync(s => s.Id == saleId && (s.Item == null || s.Item.UserId == userId));
 
-            if (sale == null) return false;
+            if (sale == null)
+                throw new KeyNotFoundException(LocalizationConstants.SALES.NOT_FOUND);
 
             _context.Sales.Remove(sale);
             await _context.SaveChangesAsync();

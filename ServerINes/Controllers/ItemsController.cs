@@ -20,7 +20,6 @@ namespace INest.Controllers
         public async Task<IActionResult> Create([FromForm] CreateItemDto dto, List<IFormFile> photos)
         {
             var item = await _itemService.CreateItemAsync(GetUserId(), dto, photos);
-
             return CreatedAtAction(nameof(GetById), new { id = item.Id }, item);
         }
 
@@ -30,29 +29,28 @@ namespace INest.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            var item = await _itemService.GetItemAsync(GetUserId(), id);
-            return item == null ? NotFound() : Ok(item);
+            return Ok(await _itemService.GetItemAsync(GetUserId(), id));
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, [FromBody] UpdateItemDto dto)
         {
-            var success = await _itemService.UpdateItemAsync(GetUserId(), id, dto);
-            return success ? Ok() : NotFound();
+            await _itemService.UpdateItemAsync(GetUserId(), id, dto);
+            return Ok();
         }
 
         [HttpPatch("{id}/move")]
         public async Task<IActionResult> Move(Guid id, [FromBody] MoveItemDto dto)
         {
-            var success = await _itemService.MoveItemAsync(GetUserId(), id, dto.TargetLocationId);
-            return success ? Ok() : NotFound();
+            await _itemService.MoveItemAsync(GetUserId(), id, dto.TargetLocationId);
+            return Ok();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var success = await _itemService.DeleteAsync(GetUserId(), id);
-            return success ? NoContent() : NotFound();
+            await _itemService.DeleteAsync(GetUserId(), id);
+            return NoContent();
         }
     }
 }
