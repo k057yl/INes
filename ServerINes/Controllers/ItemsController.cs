@@ -33,9 +33,9 @@ namespace INest.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, [FromBody] UpdateItemDto dto)
+        public async Task<IActionResult> Update(Guid id, [FromForm] UpdateItemDto dto, List<IFormFile>? photos)
         {
-            await _itemService.UpdateItemAsync(GetUserId(), id, dto);
+            await _itemService.UpdateItemAsync(GetUserId(), id, dto, photos);
             return Ok();
         }
 

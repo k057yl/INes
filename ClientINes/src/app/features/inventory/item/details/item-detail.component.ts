@@ -11,7 +11,7 @@ import { TranslateModule } from '@ngx-translate/core';
   standalone: true,
   imports: [CommonModule, RouterModule, TranslateModule],
   templateUrl: './item-detail.component.html',
-  styleUrls: ['./item-detail.component.css']
+  styleUrls: ['./item-detail.component.scss']
 })
 export class ItemDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
@@ -23,17 +23,42 @@ export class ItemDetailComponent implements OnInit {
   activePhotoUrl: string | null = null;
   readonly baseUrl = environment.apiBaseUrl.replace('/api', '');
 
-  getPhotoUrl(path: string | undefined): string {
-    if (!path) return '';
-    if (path.startsWith('http')) return path;
-    return `${this.baseUrl}/${path}`;
-  }
+  private readonly googleColors = [
+    'var(--g-blue)', 
+    'var(--g-red)', 
+    'var(--g-yellow)', 
+    'var(--g-green)'
+  ];
+
+  historyIcons: { [key: number]: string } = {
+    0: 'fa-plus-circle',      // Created
+    1: 'fa-exchange-alt',     // Moved
+    2: 'fa-info-circle',      // StatusChanged
+    3: 'fa-tools',            // Repaired
+    4: 'fa-hand-holding',     // Lent
+    5: 'fa-undo',             // Returned
+    6: 'fa-chart-line'        // ValueUpdated
+  };
+
+  statusKeys: { [key: number]: string } = {
+    0: 'STATUS.ACTIVE',
+    1: 'STATUS.LENT',
+    2: 'STATUS.LOST',
+    3: 'STATUS.BROKEN',
+    4: 'STATUS.SOLD',
+    5: 'STATUS.GIFTED',
+    6: 'STATUS.LISTED'
+  };
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.loadItem(id);
-    }
+    if (id) this.loadItem(id);
+  }
+
+  getAccentColor(): string {
+    if (!this.item) return this.googleColors[0];
+    const sum = this.item.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    return this.googleColors[sum % this.googleColors.length];
   }
 
   loadItem(id: string) {
@@ -41,13 +66,7 @@ export class ItemDetailComponent implements OnInit {
     this.http.get<Item>(`${environment.apiBaseUrl}/items/${id}`).subscribe({
       next: (data) => {
         this.item = data;
-
-        if (data.photoUrl) {
-          this.activePhotoUrl = data.photoUrl;
-        } else if (data.photos && data.photos.length > 0) {
-          this.activePhotoUrl = data.photos[0].filePath;
-        }
-
+        this.activePhotoUrl = data.photoUrl || (data.photos?.length ? data.photos[0].filePath : null);
         this.isLoading = false;
       },
       error: (err) => {
@@ -57,11 +76,17 @@ export class ItemDetailComponent implements OnInit {
     });
   }
 
-  setMainPhoto(url: string) {
-    this.activePhotoUrl = url;
+  getPhotoUrl(path: string | null | undefined): string {
+    if (!path) return 'assets/images/no-image.png';
+    if (path.startsWith('http')) return path;
+    return `${this.baseUrl}/${path}`;
+  }
+
+  setMainPhoto(path: string) {
+    this.activePhotoUrl = path;
   }
 
   goBack() {
-    this.router.navigate(['/main']);
+    window.history.length > 1 ? window.history.back() : this.router.navigate(['/main']);
   }
 }

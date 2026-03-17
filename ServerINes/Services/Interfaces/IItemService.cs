@@ -9,7 +9,7 @@ namespace INest.Services.Interfaces
         Task<Item> CreateItemAsync(Guid userId, CreateItemDto dto, List<IFormFile> photos);
         Task<IEnumerable<Item>> GetUserItemsAsync(Guid userId);
         Task<Item?> GetItemAsync(Guid userId, Guid itemId);
-        Task<bool> UpdateItemAsync(Guid userId, Guid itemId, UpdateItemDto dto);
+        Task<bool> UpdateItemAsync(Guid userId, Guid itemId, UpdateItemDto dto, List<IFormFile>? photos);
         Task<bool> DeleteAsync(Guid userId, Guid itemId);
 
         Task<bool> MoveItemAsync(Guid userId, Guid itemId, Guid? targetLocationId);

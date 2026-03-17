@@ -6,6 +6,7 @@ import { Item } from '../../../models/entities/item.entity';
 import { FeatureService } from '../../../core/services/feature.service';
 import { StorageLocation } from '../../../models/entities/storage-location.entity';
 import { TranslateModule } from '@ngx-translate/core';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-item-card',
@@ -17,6 +18,7 @@ import { TranslateModule } from '@ngx-translate/core';
 export class ItemCardComponent {
   private el = inject(ElementRef);
   public featureService = inject(FeatureService);
+  private readonly baseUrl = environment.apiBaseUrl.replace('/api', '');
 
   @Input({ required: true }) item!: Item;
   @Input() flatLocations: StorageLocation[] = [];
@@ -25,26 +27,32 @@ export class ItemCardComponent {
   @Output() delete = new EventEmitter<Item>();
   @Output() move = new EventEmitter<{item: Item, targetLocationId: string}>();
 
+  showMenu = false;
+  isMobile = window.innerWidth <= 768;
+
+  private readonly googleColors = ['var(--g-blue)', 'var(--g-red)', 'var(--g-yellow)', 'var(--g-green)'];
+
+  getAccentColor(): string {
+    const sum = this.item.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    return this.googleColors[sum % this.googleColors.length];
+  }
+
+  getPhotoUrl(path: string | null | undefined): string {
+    if (!path) return '';
+    return path.startsWith('http') ? path : `${this.baseUrl}/${path}`;
+  }
+
   get availableLocations(): StorageLocation[] {
     return this.flatLocations.filter(loc => loc.id !== this.item.storageLocationId);
   }
 
-  showMenu = false;
-  isMobile = window.innerWidth <= 768;
-
   @HostListener('window:resize')
-  onResize() {
-    this.isMobile = window.innerWidth <= 768;
-  }
+  onResize() { this.isMobile = window.innerWidth <= 768; }
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
     if (!this.showMenu) return;
-
-    const target = event.target as HTMLElement;
-    if (!this.el.nativeElement.contains(target)) {
-      this.showMenu = false;
-    }
+    if (!this.el.nativeElement.contains(event.target)) this.showMenu = false;
   }
 
   toggleMenu(event: MouseEvent) {
@@ -60,13 +68,5 @@ export class ItemCardComponent {
     }
   }
 
-  onSell(event: MouseEvent) {
-    event.stopPropagation();
-    this.sell.emit(this.item);
-  }
-
-  onDelete(event: MouseEvent) {
-    event.stopPropagation();
-    this.delete.emit(this.item);
-  }
+  stopProp(event: MouseEvent) { event.stopPropagation(); }
 }

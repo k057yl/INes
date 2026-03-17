@@ -1,37 +1,39 @@
 <div class="detail-container" *ngIf="item; else loader">
+  
   <header class="detail-header">
     <button class="nav-btn" (click)="goBack()">
-      <i class="fa fa-chevron-left"></i> Назад
+      <i class="fa fa-chevron-left"></i> {{ 'COMMON.BACK' | translate }}
     </button>
     <div class="header-actions">
-      <button class="nav-btn edit-btn">
-        <i class="fa fa-pen"></i> Редактировать
+      <button class="nav-btn edit-btn" [routerLink]="['/item/edit', item.id]">
+        <i class="fa fa-pen"></i> {{ 'COMMON.EDIT' | translate }}
       </button>
     </div>
   </header>
 
   <div class="content-layout">
+    
     <div class="visual-column">
-      <div class="main-image-wrapper">
-        <img *ngIf="activePhotoUrl" 
-            [src]="getPhotoUrl(activePhotoUrl)" 
-            class="main-img">
+      <div class="main-image-wrapper" [style.border-bottom-color]="getAccentColor()">
+        <img [src]="getPhotoUrl(activePhotoUrl)" class="main-img">
       </div>
 
       <div class="thumbs-gallery" *ngIf="item.photos.length">
         <div class="thumb-item" 
-            *ngFor="let p of item.photos" 
-            [class.active]="activePhotoUrl === p.filePath"
-            (click)="setMainPhoto(p.filePath)">
-          
-          <img [src]="getPhotoUrl(p.filePath)" alt="мини">
+             *ngFor="let p of item.photos" 
+             [class.active]="activePhotoUrl === p.filePath"
+             [style.border-color]="activePhotoUrl === p.filePath ? getAccentColor() : 'transparent'"
+             (click)="setMainPhoto(p.filePath)">
+          <img [src]="getPhotoUrl(p.filePath)">
         </div>
       </div>
 
       <div class="location-badge" *ngIf="item.storageLocation" [routerLink]="['/location', item.storageLocationId]">
-        <div class="loc-icon"><i class="fa fa-map-marker-alt"></i></div>
+        <div class="loc-icon" [style.color]="getAccentColor()">
+          <i class="fa fa-map-marker-alt"></i>
+        </div>
         <div class="loc-info">
-          <span>Место хранения</span>
+          <span>{{ 'ITEM_DETAIL.STORAGE_PLACE' | translate }}</span>
           <strong>{{ item.storageLocation.name }}</strong>
         </div>
         <i class="fa fa-chevron-right arrow"></i>
@@ -40,39 +42,52 @@
 
     <div class="info-column">
       <div class="title-section">
+        <div class="accent-line" [style.background-color]="getAccentColor()"></div>
+        
         <div class="tags-row">
           <span class="badge category" *ngIf="item.category" 
                 [style.background-color]="item.category.color + '20'" 
                 [style.color]="item.category.color">
             {{ item.category.name }}
           </span>
-          <span class="badge status">Статус: {{ item.status }}</span>
+          <span class="badge status">
+            {{ statusKeys[item.status] | translate }}
+          </span>
         </div>
+
         <h1 class="item-name">{{ item.name }}</h1>
-        <p class="item-description">{{ item.description || 'Описание отсутствует' }}</p>
+        <p class="item-description">{{ item.description || ('ITEM_DETAIL.NO_DESCRIPTION' | translate) }}</p>
       </div>
 
       <div class="finance-grid">
-        <div class="finance-card">
-          <label>Куплено за</label>
+        <div class="finance-card purchase">
+          <label>{{ 'ITEM_DETAIL.PURCHASE_PRICE' | translate }}</label>
           <div class="price-val">{{ item.purchasePrice ? item.purchasePrice + ' $' : '—' }}</div>
-          <span class="date">{{ item.createdAt | date:'dd.MM.yyyy' }}</span>
+          <span class="date">{{ item.purchaseDate | date:'dd.MM.yyyy' }}</span>
         </div>
-        <div class="finance-card highlight">
-          <label>Текущая оценка</label>
+        <div class="finance-card estimated">
+          <label>{{ 'ITEM_DETAIL.ESTIMATED_VALUE' | translate }}</label>
           <div class="price-val">{{ item.estimatedValue || 0 }} $</div>
         </div>
       </div>
 
       <div class="history-section">
-        <h3>История</h3>
+        <h3>{{ 'ITEM_DETAIL.HISTORY_TITLE' | translate }}</h3>
         <div class="history-placeholder" *ngIf="!item.history.length">
           <i class="fa fa-history"></i>
-          <p>История изменений пока пуста</p>
+          <p>{{ 'ITEM_DETAIL.HISTORY_EMPTY' | translate }}</p>
         </div>
+        
         <div class="history-list" *ngIf="item.history.length">
-          <div class="history-item" *ngFor="let h of item.history">
-             </div>
+          <div class="history-record" *ngFor="let h of item.history">
+            <div class="history-icon" [style.color]="getAccentColor()">
+              <i class="fa" [ngClass]="historyIcons[h.type]"></i>
+            </div>
+            <div class="history-content">
+              <span class="history-action">{{ 'HISTORY.TYPE_' + h.type | translate }}</span>
+              <small class="history-date">{{ h.createdAt | date:'dd.MM.yyyy HH:mm' }}</small>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -80,4 +95,5 @@
 </div>
 
 <ng-template #loader>
-  </ng-template>
+  <div class="loader-overlay"><i class="fa fa-spinner fa-spin"></i></div>
+</ng-template>

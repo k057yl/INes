@@ -12,8 +12,11 @@ export interface ItemPhoto {
 
 export interface ItemHistory {
   id: string;
-  changeDate: string;
-  description: string;
+  itemId: string;
+  type: number;
+  oldValue?: string;
+  newValue?: string;
+  createdAt: string;
 }
 
 export interface Sale { price: number; }

@@ -115,9 +115,11 @@ namespace INest.Services
             return item;
         }
 
-        public async Task<bool> UpdateItemAsync(Guid userId, Guid itemId, UpdateItemDto dto)
+        public async Task<bool> UpdateItemAsync(Guid userId, Guid itemId, UpdateItemDto dto, List<IFormFile>? photos)
         {
-            var item = await _context.Items.FirstOrDefaultAsync(i => i.Id == itemId && i.UserId == userId);
+            var item = await _context.Items
+                .Include(i => i.Photos)
+                .FirstOrDefaultAsync(i => i.Id == itemId && i.UserId == userId);
 
             if (item == null)
                 throw new KeyNotFoundException(LocalizationConstants.ITEMS.NOT_FOUND);
@@ -136,33 +138,68 @@ namespace INest.Services
             }
 
             if (dto.Name != null && dto.Name != item.Name)
+            {
                 AddHistory(ItemHistoryType.ValueUpdated, item.Name, dto.Name);
+                item.Name = dto.Name;
+            }
 
             if (dto.Description != item.Description)
+            {
                 AddHistory(ItemHistoryType.ValueUpdated, item.Description, dto.Description);
+                item.Description = dto.Description;
+            }
 
             if (dto.CategoryId.HasValue && dto.CategoryId.Value != item.CategoryId)
+            {
                 AddHistory(ItemHistoryType.ValueUpdated, item.CategoryId.ToString(), dto.CategoryId.Value.ToString());
+                item.CategoryId = dto.CategoryId.Value;
+            }
 
             if (dto.StorageLocationId != item.StorageLocationId)
+            {
                 AddHistory(ItemHistoryType.Moved, item.StorageLocationId?.ToString(), dto.StorageLocationId?.ToString());
+                item.StorageLocationId = dto.StorageLocationId;
+            }
 
             if (dto.PurchasePrice != item.PurchasePrice)
+            {
                 AddHistory(ItemHistoryType.ValueUpdated, item.PurchasePrice?.ToString(), dto.PurchasePrice?.ToString());
+                item.PurchasePrice = dto.PurchasePrice;
+            }
 
             if (dto.EstimatedValue != item.EstimatedValue)
+            {
                 AddHistory(ItemHistoryType.ValueUpdated, item.EstimatedValue?.ToString(), dto.EstimatedValue?.ToString());
+                item.EstimatedValue = dto.EstimatedValue;
+            }
 
-            if (dto.PurchaseDate != item.PurchaseDate)
-                AddHistory(ItemHistoryType.ValueUpdated, item.PurchaseDate?.ToString(), dto.PurchaseDate?.ToString());
+            if (photos != null && photos.Count > 0)
+            {
+                foreach (var photoFile in photos)
+                {
+                    var result = await _photoService.AddPhotoAsync(photoFile);
+                    if (result.Error == null)
+                    {
+                        var itemPhoto = new ItemPhoto
+                        {
+                            Id = Guid.NewGuid(),
+                            ItemId = item.Id,
+                            FilePath = result.SecureUrl.ToString(),
+                            PublicId = result.PublicId
+                        };
 
-            if (dto.Name != null) item.Name = dto.Name;
-            item.Description = dto.Description;
-            if (dto.CategoryId.HasValue) item.CategoryId = dto.CategoryId.Value;
-            item.StorageLocationId = dto.StorageLocationId;
-            item.PurchasePrice = dto.PurchasePrice;
-            item.EstimatedValue = dto.EstimatedValue;
-            item.PurchaseDate = dto.PurchaseDate;
+                        if (string.IsNullOrEmpty(item.PhotoUrl))
+                        {
+                            item.PhotoUrl = itemPhoto.FilePath;
+                            item.PublicId = itemPhoto.PublicId;
+                        }
+
+                        item.Photos.Add(itemPhoto);
+                    }
+                }
+
+                AddHistory(ItemHistoryType.ValueUpdated, "Photos updated", $"{photos.Count} new photos added");
+            }
 
             await _context.SaveChangesAsync();
             return true;

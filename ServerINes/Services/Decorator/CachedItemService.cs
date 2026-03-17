@@ -35,9 +35,9 @@ namespace INest.Services.Decorator
             return item;
         }
 
-        public async Task<bool> UpdateItemAsync(Guid userId, Guid itemId, UpdateItemDto dto)
+        public async Task<bool> UpdateItemAsync(Guid userId, Guid itemId, UpdateItemDto dto, List<IFormFile>? photos)
         {
-            var result = await _inner.UpdateItemAsync(userId, itemId, dto);
+            var result = await _inner.UpdateItemAsync(userId, itemId, dto, photos);
             if (result) InvalidateCache(userId);
             return result;
         }

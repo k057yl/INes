@@ -152,6 +152,19 @@
     "CREATE_CATEGORY": "Создать категорию"
   },
 
+  "EDIT_ITEM": {
+    "TITLE": "Редактирование предмета",
+    "ADD_NEW_PHOTOS": "Добавить новые фото"
+  },
+
+  "ITEM_CARD": {
+    "SELL": "Продать",
+    "INFO": "Детали",
+    "DELETE": "Удалить",
+    "M_MOVE": "Переместить",
+    "M_SELECT_LOCATION": "Выберите место"
+  },
+
   "STATUS": {
     "ACTIVE": "Активен",
     "LENT": "Одолжен",
@@ -160,6 +173,13 @@
     "SOLD": "Продан",
     "GIFTED": "Подарен",
     "LISTED": "Выставлен"
+  },
+
+  "COMMON": {
+    "BACK": "Назад",
+    "EDIT": "Редактировать",
+    "SAVE": "Сохранить",
+    "CANCEL": "Отмена"
   },
 
   "HISTORY": {
@@ -182,15 +202,13 @@
     "TITLE_PLATFORM": "Управление платформами"
   },
 
-  "ITEM_DETAILS": {
-    "BUTTON_BACK": "Назад",
-    "BUTTON_EDIT": "Редактировать",
-    "NO_IMAGE": "Нет изображения",
-    "NO_DESCRIPTION": "Описание отсутствует",
+  "ITEM_DETAIL": {
+    "STORAGE_PLACE": "Место хранения",
     "PURCHASE_PRICE": "Куплено за",
-    "ESTIMATE_VALUE": "Текущая оценка",
-    "HISTORY_TITLE": "История",
-    "HISTORY_EMPTY": "История изменений пока пуста"
+    "ESTIMATED_VALUE": "Текущая оценка",
+    "HISTORY_TITLE": "История изменений",
+    "HISTORY_EMPTY": "История пока пуста",
+    "NO_DESCRIPTION": "Описание отсутствует"
   },
 
   "LOCATIONS": {
@@ -205,7 +223,10 @@
       "SALES_ZONE": "Торговая точка",
       "LENDING_ZONE": "Зона одалживания",
       "SALES_HINT": "Предметы здесь автоматически станут Listed",
-      "LENDING_HINT": "Предметы здесь автоматически станут Lent"
+      "LENDING_HINT": "Предметы здесь автоматически станут Lent",
+      "TITLE": "Создать локацию",
+      "COLOR_LABEL": "Цвет метки",
+      "COLOR_HINT_RANDOM": "Если не выберете — назначим случайный цвет"
     }
   }
 }

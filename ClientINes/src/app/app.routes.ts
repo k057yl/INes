@@ -11,6 +11,7 @@ import { SettingsComponent } from './features/setting/settings.component';
 import { ItemDetailComponent } from './features/inventory/item/details/item-detail.component';
 import { authGuard } from './core/guards/auth.guard';
 import { AdminPanelComponent } from './features/admin/admin-panel.component';
+import { ItemEditComponent } from './features/inventory/item/edit/Item-edit.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -27,4 +28,5 @@ export const routes: Routes = [
   { path: 'settings', component: SettingsComponent, canActivate: [authGuard] },
   { path: 'item/:id', component: ItemDetailComponent, canActivate: [authGuard] },
   { path: 'admin', component: AdminPanelComponent, canActivate: [authGuard] },
+  { path: 'item/edit/:id', component: ItemEditComponent, canActivate: [authGuard] }
 ];
