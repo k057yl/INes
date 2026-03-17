@@ -25,6 +25,12 @@
   }
 }
 
+.photo-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
 .photo-section { margin: 1.5rem 0;}
 .photo-flag {
   position: relative;

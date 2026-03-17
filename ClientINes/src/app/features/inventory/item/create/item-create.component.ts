@@ -4,10 +4,8 @@ import { FormBuilder, ReactiveFormsModule, Validators, AbstractControl, Validati
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { ItemService } from '../../../../shared/services/item.service';
 import { LocationService } from '../../../../shared/services/location.service';
-import { TranslateModule } from '@ngx-translate/core';
-import { ITEM_STATUS_LABELS } from '../../../../models/constants/item-status.constants';
 import { CategoryService } from '../../../../shared/services/category.service';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { EntityModalComponent } from '../../../../shared/components/entity-modal/entity-modal.component';
 
 @Component({
@@ -21,9 +19,7 @@ export class ItemCreateComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private fb = inject(FormBuilder);
   private router = inject(Router);
-  private translate = inject(TranslateService);
   
-  // Сервисы из Shared
   private itemService = inject(ItemService);
   private locationService = inject(LocationService);
   private categoryService = inject(CategoryService);
@@ -36,38 +32,34 @@ export class ItemCreateComponent implements OnInit {
   readonly MAX_PHOTOS = 5;
   todayMax = new Date().toISOString().split('T')[0];
   
-  statuses = Object.entries(ITEM_STATUS_LABELS).map(([value, label]) => ({
-    value: Number(value),
-    label: label
-  }));
-
-  private dateNotInFuture = (control: AbstractControl): ValidationErrors | null => {
-    if (!control.value) return null;
-    
-    const selectedDate = control.value;
-    return selectedDate > this.todayMax ? { futureDate: true } : null;
-  }
+  statuses = [
+    { value: 0, label: 'STATUS.ACTIVE' },
+    { value: 1, label: 'STATUS.LENT' },
+    { value: 2, label: 'STATUS.LOST' },
+    { value: 3, label: 'STATUS.BROKEN' },
+    { value: 4, label: 'STATUS.SOLD' },
+    { value: 5, label: 'STATUS.GIFTED' },
+    { value: 6, label: 'STATUS.LISTED' }
+  ];
 
   form = this.fb.group({
-    name: ['', Validators.required],
+    name: ['', [Validators.required, Validators.minLength(2)]],
     description: [''],
     categoryId: ['', Validators.required],
     storageLocationId: ['', Validators.required],
     status: [0, Validators.required],
-    purchaseDate: [this.todayMax, [this.dateNotInFuture]],
-    purchasePrice: [null as number | null],
-    estimatedValue: [null as number | null],
+    purchaseDate: [this.todayMax, [this.dateNotInFutureValidator]],
+    purchasePrice: [null as number | null, [Validators.min(0)]],
+    estimatedValue: [null as number | null, [Validators.min(0)]],
     addPhoto: [false]
   });
 
   ngOnInit() {
-    this.loadLocations();
-    this.loadCategories();
+    this.loadData();
 
     this.route.queryParams.subscribe(params => {
-      const locationIdFromUrl = params['locationId'];
-      if (locationIdFromUrl) {
-        this.form.patchValue({ storageLocationId: locationIdFromUrl });
+      if (params['locationId']) {
+        this.form.patchValue({ storageLocationId: params['locationId'] });
       }
     });
 
@@ -76,22 +68,17 @@ export class ItemCreateComponent implements OnInit {
     });
   }
 
-  loadLocations() {
-    this.locationService.getAll().subscribe({
-      next: res => this.locations = res,
-      error: err => console.error('Ошибка загрузки локаций', err)
-    });
+  private dateNotInFutureValidator(control: AbstractControl): ValidationErrors | null {
+    if (!control.value) return null;
+    const today = new Date().toISOString().split('T')[0];
+    return control.value > today ? { futureDate: true } : null;
   }
 
-  loadCategories() {
-    this.categoryService.getAll().subscribe({
-      next: res => this.categories = res,
-      error: err => console.error('Ошибка загрузки категорий', err)
+  loadData() {
+    this.locationService.getAll().subscribe(res => this.locations = res);
+    this.categoryService.getAll().subscribe(res => {
+      this.categories = res.sort((a: any, b: any) => a.name.localeCompare(b.name));
     });
-  }
-
-  addCategory() {
-    this.showCategoryModal = true;
   }
 
   onCategoryConfirmed(name: string) {
@@ -102,46 +89,41 @@ export class ItemCreateComponent implements OnInit {
         this.form.patchValue({ categoryId: newCat.id });
         this.showCategoryModal = false;
       },
-      error: (err) => {
-        this.showCategoryModal = false;
-        const msg = err.error?.error || 'SYSTEM.DEFAULT_ERROR';
-        alert(this.translate.instant(msg));
-      }
+      error: () => this.showCategoryModal = false 
     });
   }
 
   onSubmit() {
-    if (this.form.invalid) return;
-
-    const val = this.form.value;
-    const formData = new FormData();
-
-    formData.append('name', val.name || '');
-    formData.append('description', val.description || '');
-    formData.append('categoryId', val.categoryId || '');
-    formData.append('status', String(val.status ?? 0));
-
-    if (val.storageLocationId) formData.append('storageLocationId', val.storageLocationId);
-    if (val.purchaseDate) formData.append('purchaseDate', new Date(val.purchaseDate).toISOString());
-    if (val.purchasePrice != null) {
-      const priceValue = String(val.purchasePrice);
-      formData.append('purchasePrice', priceValue);
-      formData.append('estimatedValue', priceValue);
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
     }
 
-    if (val.addPhoto && this.selectedPhotos.length > 0) {
-      this.selectedPhotos.forEach(photo => {
-        formData.append('photos', photo.file);
-      });
+    const val = this.form.getRawValue();
+    const formData = new FormData();
+
+    formData.append('name', val.name!);
+    formData.append('description', val.description || '');
+    formData.append('categoryId', val.categoryId!);
+    formData.append('storageLocationId', val.storageLocationId!);
+    formData.append('status', val.status!.toString());
+
+    if (val.purchaseDate) {
+      formData.append('purchaseDate', new Date(val.purchaseDate).toISOString());
+    }
+
+    if (val.purchasePrice != null) {
+      formData.append('purchasePrice', val.purchasePrice.toString());
+      formData.append('estimatedValue', (val.estimatedValue ?? val.purchasePrice).toString());
+    }
+
+    if (val.addPhoto) {
+      this.selectedPhotos.forEach(p => formData.append('photos', p.file));
     }
 
     this.itemService.createWithPhoto(formData).subscribe({
       next: () => {
-        const path = val.storageLocationId ? ['/location', val.storageLocationId] : ['/home'];
-        this.router.navigate(path);
-      },
-      error: (err) => {
-        console.error('Ошибка при создании объекта:', err);
+        this.router.navigate(['/location', val.storageLocationId]);
       }
     });
   }
@@ -156,18 +138,16 @@ export class ItemCreateComponent implements OnInit {
     files.slice(0, availableSlots).forEach(file => {
       const reader = new FileReader();
       reader.onload = (e: any) => {
-        this.selectedPhotos.push({ file: file, preview: e.target.result });
+        this.selectedPhotos.push({ file, preview: e.target.result });
       };
       reader.readAsDataURL(file);
     });
-    input.value = '';
+    input.value = ''; 
   }
 
   removePhoto(index: number) {
     this.selectedPhotos.splice(index, 1);
   }
 
-  cancel() {
-    window.history.back(); 
-  }
+  cancel() { window.history.back(); }
 }

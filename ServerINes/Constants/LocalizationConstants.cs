@@ -80,5 +80,36 @@
             public const string ALREADY_SOLD = "SALES.ERRORS.ALREADY_SOLD";
             public const string NOT_FOUND = "SALES.ERRORS.NOT_FOUND";
         }
+
+        //Enums
+        public static class STATUS
+        {
+            public const string ACTIVE = "STATUS.ACTIVE";
+            public const string LENT = "STATUS.LENT";
+            public const string LOST = "STATUS.LOST";
+            public const string BROKEN = "STATUS.BROKEN";
+            public const string SOLD = "STATUS.SOLD";
+            public const string GIFTED = "STATUS.GIFTED";
+            public const string LISTED = "STATUS.LISTED";
+        }
+
+        public static class HISTORY
+        {
+            public const string CREATED = "HISTORY.CREATED";
+            public const string MOVED = "HISTORY.MOVED";
+            public const string STATUS_CHANGED = "HISTORY.STATUS_CHANGED";
+            public const string REPAIRED = "HISTORY.REPAIRED";
+            public const string LENT = "HISTORY.LENT";
+            public const string RETURNED = "HISTORY.RETURNED";
+            public const string VALUE_UPDATED = "HISTORY.VALUE_UPDATED";
+        }
+
+        public static class REMINDERS
+        {
+            public const string WARRANTY = "REMINDERS.WARRANTY";
+            public const string MAINTENANCE = "REMINDERS.MAINTENANCE";
+            public const string RETURN_ITEM = "REMINDERS.RETURN_ITEM";
+            public const string CUSTOM = "REMINDERS.CUSTOM";
+        }
     }
 }
