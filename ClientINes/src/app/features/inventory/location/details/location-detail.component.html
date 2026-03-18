@@ -70,7 +70,7 @@
               <i *ngIf="!item.photoUrl" class="fa fa-archive"></i>
               
               <div class="status-overlay" [ngClass]="getStatusClass(item.status)">
-                 {{ getStatusKey(item.status) | translate }}
+                  {{ getStatusKey(item.status) | translate }}
               </div>
             </div>
             
@@ -81,12 +81,12 @@
               <div class="tile-actions">
                 <button class="inest-action-btn edit" 
                         [routerLink]="['/item/edit', item.id]"
-                        [title]="'COMMON.EDIT' | translate">📝
+                        [title]="'COMMON.EDIT' | translate">
                   <i class="fa fa-pencil"></i>
                 </button>
                 <button class="inest-action-btn is-danger" 
-                        (click)="deleteItem(item)"
-                        [title]="'ITEM_CARD.DELETE' | translate">❌
+                        (click)="openDeleteModal(item)"
+                        [title]="'ITEM_CARD.DELETE' | translate">
                   <i class="fa fa-trash"></i>
                 </button>
               </div>
@@ -96,6 +96,14 @@
       </main>
     </div>
   </div>
+
+  <app-confirm-modal
+    *ngIf="showDeleteModal"
+    [title]="'ITEM_CARD.DELETE' | translate"
+    [message]="'ITEM_CARD.M_YOU_SURE' | translate"
+    (confirmed)="confirmDeleteItem()"
+    (cancelled)="closeModals()">
+  </app-confirm-modal>
 </div>
 
 <ng-template #emptyState>

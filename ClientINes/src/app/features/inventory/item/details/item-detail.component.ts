@@ -52,7 +52,11 @@ export class ItemDetailComponent implements OnInit {
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
-    if (id) this.loadItem(id);
+    if (id) {
+      this.loadItem(id);
+    } else {
+      this.router.navigate(['/main']);
+    }
   }
 
   getAccentColor(): string {
@@ -72,6 +76,10 @@ export class ItemDetailComponent implements OnInit {
       error: (err) => {
         console.error('Ошибка загрузки предмета:', err);
         this.isLoading = false;
+
+        if (err.status === 404) {
+          this.router.navigate(['/main'], { replaceUrl: true });
+        }
       }
     });
   }
@@ -87,6 +95,10 @@ export class ItemDetailComponent implements OnInit {
   }
 
   goBack() {
-    window.history.length > 1 ? window.history.back() : this.router.navigate(['/main']);
+    if (window.history.length > 1) {
+      window.history.back();
+    } else {
+      this.router.navigate(['/main']);
+    }
   }
 }

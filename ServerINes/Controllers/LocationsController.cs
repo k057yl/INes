@@ -47,6 +47,20 @@ namespace INest.Controllers
             return Ok();
         }
 
+        [HttpPut("reorder")]
+        public async Task<IActionResult> Reorder([FromBody] ReorderLocationsDto dto)
+        {
+            await _locationService.ReorderLocationsAsync(GetUserId(), dto.ParentId, dto.OrderedIds);
+            return Ok();
+        }
+
+        [HttpPatch("{id}/rename")]
+        public async Task<IActionResult> Rename(Guid id, [FromBody] RenameLocationDto dto)
+        {
+            await _locationService.RenameLocationAsync(GetUserId(), id, dto.Name);
+            return Ok();
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {

@@ -2,16 +2,24 @@ import { Component, Input, Output, EventEmitter, inject, HostListener, ElementRe
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { TranslateModule } from '@ngx-translate/core';
+
 import { Item } from '../../../models/entities/item.entity';
 import { FeatureService } from '../../../core/services/feature.service';
 import { StorageLocation } from '../../../models/entities/storage-location.entity';
-import { TranslateModule } from '@ngx-translate/core';
 import { environment } from '../../../../environments/environment';
+import { ConfirmModalComponent } from '../../../shared/components/entity-modal/confirm-modal.component';
 
 @Component({
   selector: 'app-item-card',
   standalone: true,
-  imports: [CommonModule, RouterModule, DragDropModule, TranslateModule],
+  imports: [
+    CommonModule, 
+    RouterModule, 
+    DragDropModule, 
+    TranslateModule, 
+    ConfirmModalComponent
+  ],
   templateUrl: './item-card.component.html',
   styleUrl: './item-card.component.scss'
 })
@@ -28,6 +36,7 @@ export class ItemCardComponent {
   @Output() move = new EventEmitter<{item: Item, targetLocationId: string}>();
 
   showMenu = false;
+  showDeleteConfirm = false;
   isMobile = window.innerWidth <= 768;
 
   private readonly googleColors = ['var(--g-blue)', 'var(--g-red)', 'var(--g-yellow)', 'var(--g-green)'];
@@ -66,6 +75,22 @@ export class ItemCardComponent {
       this.move.emit({ item: this.item, targetLocationId: targetId });
       this.showMenu = false;
     }
+  }
+
+  // --- ЛОГИКА УДАЛЕНИЯ ---
+
+  requestDelete() {
+    this.showMenu = false;
+    this.showDeleteConfirm = true;
+  }
+
+  confirmDelete() {
+    this.delete.emit(this.item);
+    this.showDeleteConfirm = false;
+  }
+
+  cancelDelete() {
+    this.showDeleteConfirm = false;
   }
 
   stopProp(event: MouseEvent) { event.stopPropagation(); }

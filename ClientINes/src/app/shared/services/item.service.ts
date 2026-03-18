@@ -34,7 +34,7 @@ export class ItemService {
     return this.http.patch<void>(`${this.apiUrl}/${id}/move`, { targetLocationId });
   }
 
-  deleteItem(id: string): Observable<void> {
+  delete(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 

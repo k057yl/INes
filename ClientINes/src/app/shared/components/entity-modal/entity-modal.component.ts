@@ -59,7 +59,7 @@ import { TranslateModule } from '@ngx-translate/core';
 
     .inest-input-styled:focus {
       border-color: var(--accent-color);
-      box-shadow: 0 0 0 2px var(--bg-main); /* Эффект свечения через подложку */
+      box-shadow: 0 0 0 2px var(--bg-main);
     }
 
     .modal-actions { display: flex; gap: 12px; margin-top: 24px; }

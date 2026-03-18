@@ -23,4 +23,8 @@ export class PlatformService {
   update(id: string, dto: { name: string }): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/${id}`, dto);
   }
+
+  rename(id: string, name: string): Observable<void> {
+    return this.update(id, { name });
+  }
 }

@@ -18,8 +18,24 @@ export class LocationService {
     return this.http.get<StorageLocation[]>(this.apiUrl);
   }
 
+  getTree(): Observable<StorageLocation[]> {
+    return this.http.get<StorageLocation[]>(`${this.apiUrl}/tree`);
+  }
+
+  getById(id: string): Observable<StorageLocation> {
+    return this.http.get<StorageLocation>(`${this.apiUrl}/${id}`);
+  }
+
+  move(id: string, newParentId: string | null) {
+    return this.http.patch(`${environment.apiBaseUrl}/locations/${id}/move`, { newParentId });
+  }
+
+  rename(id: string, name: string) {
+    return this.http.patch(`${environment.apiBaseUrl}/locations/${id}/rename`, { name });
+  }
+
   reorder(payload: { parentId: string | null, orderedIds: string[] }): Observable<void> {
-    return this.http.patch<void>(`${this.apiUrl}/reorder`, payload);
+    return this.http.put<void>(`${this.apiUrl}/reorder`, payload);
   }
 
   delete(id: string): Observable<void> {

@@ -24,6 +24,10 @@ export class CategoryService {
     return this.http.put<void>(`${this.apiUrl}/${id}`, dto);
   }
 
+  rename(id: string, name: string): Observable<void> {
+    return this.update(id, { name });
+  }
+
   delete(id: string, targetCategoryId?: string | null): Observable<void> {
     let params = new HttpParams();
     

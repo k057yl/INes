@@ -3,7 +3,9 @@
      [cdkDragData]="item" 
      [cdkDragDisabled]="isMobile"
      [class.menu-open]="showMenu"
-     [style.border-left-color]="getAccentColor()"> <div class="item-thumb" [routerLink]="['/item', item.id]">
+     [style.border-left-color]="getAccentColor()"> 
+
+  <div class="item-thumb" [routerLink]="['/item', item.id]">
     <img *ngIf="item.photoUrl" [src]="getPhotoUrl(item.photoUrl)" alt="item">
     <div *ngIf="!item.photoUrl" class="no-image">
       <i class="fa fa-box-open"></i>
@@ -30,11 +32,11 @@
               class="inest-action-btn" 
               (click)="sell.emit(item); $event.stopPropagation()"
               [title]="'ITEM_CARD.SELL' | translate">
-        <i class="fa fa-dollar-sign"></i>💸
+        <i class="fa fa-dollar-sign"></i>
       </button>
 
       <button class="inest-action-btn" (click)="toggleMenu($event)" [class.active]="showMenu" [title]="'ITEM_CARD.INFO' | translate">
-        <i class="fa fa-ellipsis-v"></i>📄
+        <i class="fa fa-ellipsis-v"></i>
       </button>
 
     <div class="menu-dropdown item-menu" *ngIf="showMenu" (click)="$event.stopPropagation()">
@@ -63,7 +65,7 @@
         <i class="fa fa-dollar-sign"></i> {{'ITEM_CARD.SELL' | translate}}
       </button>
 
-      <button (click)="delete.emit(item); showMenu = false" class="delete-btn">
+      <button (click)="requestDelete()" class="delete-btn">
         <i class="fa fa-trash-alt"></i> {{'ITEM_CARD.DELETE' | translate}}
       </button>
     </div>
@@ -71,3 +73,11 @@
 
   <div class="item-drag-placeholder" *cdkDragPlaceholder></div>
 </div>
+
+<app-confirm-modal
+  *ngIf="showDeleteConfirm"
+  [title]="'ITEM_CARD.DELETE' | translate"
+  [message]="'ITEM_CARD.M_YOU_SURE' | translate"
+  (confirmed)="confirmDelete()"
+  (cancelled)="cancelDelete()">
+</app-confirm-modal>

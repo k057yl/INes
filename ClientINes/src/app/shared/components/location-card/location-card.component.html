@@ -3,6 +3,7 @@
     <div class="title-group">
       <div class="icon-wrapper" [style.background-color]="location.color + '20'">
         <i [className]="'fa ' + (location.icon || 'fa-folder')" [style.color]="location.color"></i>
+        <span class="item-count"> - {{ (location.items.length || 0) }}</span>
       </div>
       <div class="name-stack">
         <h3>
@@ -10,11 +11,11 @@
           <i *ngIf="location.isSalesLocation" class="fa fa-shopping-cart status-icon sales" title="Sales Location"></i>
           <i *ngIf="location.isLendingLocation" class="fa fa-handshake status-icon lending" title="Lending Location"></i>
         </h3>
-        <span class="item-count">{{ (location.items.length || 0) }} 📦</span>
+        
       </div>
     </div>
     
-    <button class="inest-action-btn" (click)="$event.stopPropagation(); location.showMenu = !location.showMenu">...
+    <button class="inest-action-btn" (click)="$event.stopPropagation(); location.showMenu = !location.showMenu">
       <i class="fa fa-ellipsis-v"></i>
     </button>
 

@@ -2,8 +2,10 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { SalesService } from '../../shared/services/sales.service';
+import { ItemService } from '../../shared/services/item.service';
 import { SaleResponseDto } from '../../models/dtos/sale.dto';
 import { SaleCardComponent } from '../../shared/components/sale-card/sale-card.component';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-sales-list',
@@ -14,14 +16,19 @@ import { SaleCardComponent } from '../../shared/components/sale-card/sale-card.c
 })
 export class SalesListComponent implements OnInit {
   private salesService = inject(SalesService);
+  private itemService = inject(ItemService);
+
   sales: SaleResponseDto[] = [];
+  isLoading = true;
+
+  readonly EMPTY_GUID = '00000000-0000-0000-0000-000000000000';
 
   get totalRevenue(): number {
-    return this.sales.reduce((acc, curr) => acc + curr.salePrice, 0);
+    return this.sales.reduce((acc, curr) => acc + (curr.salePrice || 0), 0);
   }
 
   get totalProfit(): number {
-    return this.sales.reduce((acc, curr) => acc + curr.profit, 0);
+    return this.sales.reduce((acc, curr) => acc + (curr.profit || 0), 0);
   }
 
   ngOnInit() {
@@ -29,37 +36,53 @@ export class SalesListComponent implements OnInit {
   }
 
   loadHistory() {
-    this.salesService.getHistory().subscribe({
-      next: (data: SaleResponseDto[]) => this.sales = data,
-      error: (err) => console.error('Error fetching sales', err)
-    });
+    this.isLoading = true;
+    this.salesService.getHistory()
+      .pipe(finalize(() => this.isLoading = false))
+      .subscribe({
+        next: (data: SaleResponseDto[]) => {
+          this.sales = data;
+        },
+        error: (err) => {
+          console.error('Error fetching sales', err);
+        }
+      });
   }
 
   handleUndo(sale: SaleResponseDto) {
     if (confirm(`Вернуть "${sale.itemName}" в инвентарь?`)) {
-      this.salesService.cancelSale(sale.itemId).subscribe({
-        next: () => {
-          this.sales = this.sales.filter(s => s.saleId !== sale.saleId);
-        },
-        error: (err: any) => console.error('Undo failed', err)
-      });
+      this.isLoading = true;
+      this.itemService.cancelSale(sale.itemId)
+        .pipe(finalize(() => this.isLoading = false))
+        .subscribe({
+          next: () => {
+            this.sales = this.sales.filter(s => s.saleId !== sale.saleId);
+          },
+          error: (err) => console.error('Undo failed', err)
+        });
     }
   }
 
   handleDelete(event: { sale: SaleResponseDto, keepHistory: boolean }) {
-    this.salesService.smartDelete(event.sale.saleId, event.keepHistory).subscribe({
-      next: () => {
-        if (event.keepHistory) {
-          event.sale.itemId = '00000000-0000-0000-0000-000000000000';
-          
-        } else {
-          this.sales = this.sales.filter(s => s.saleId !== event.sale.saleId);
+    const { sale, keepHistory } = event;
+    
+    this.isLoading = true;
+    this.salesService.smartDelete(sale.saleId, keepHistory)
+      .pipe(finalize(() => this.isLoading = false))
+      .subscribe({
+        next: () => {
+          if (keepHistory) {
+            const index = this.sales.findIndex(s => s.saleId === sale.saleId);
+            if (index !== -1) {
+              this.sales[index] = { ...sale, itemId: this.EMPTY_GUID };
+            }
+          } else {
+            this.sales = this.sales.filter(s => s.saleId !== sale.saleId);
+          }
+        },
+        error: (err) => {
+          console.error('Delete failed', err);
         }
-      },
-      error: (err: any) => {
-        console.error('Delete failed', err);
-        alert('Ошибка при удалении');
-      }
-    });
+      });
   }
 }

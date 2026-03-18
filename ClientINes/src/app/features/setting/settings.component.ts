@@ -1,10 +1,14 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
 import { TranslateModule } from '@ngx-translate/core';
-import { FeatureService } from '../../core/services/feature.service';
 import { RouterModule } from '@angular/router';
+import { finalize } from 'rxjs';
+
+import { FeatureService } from '../../core/services/feature.service';
+import { CategoryService } from '../../shared/services/category.service';
+import { PlatformService } from '../../shared/services/platform.service';
+import { EntityModalComponent } from '../../shared/components/entity-modal/entity-modal.component';
+import { ConfirmModalComponent } from '../../shared/components/entity-modal/confirm-modal.component';
 
 interface SimpleEntity {
   id: string;
@@ -12,45 +16,116 @@ interface SimpleEntity {
   color?: string;
 }
 
+type SettingsTab = 'general' | 'categories' | 'platforms';
+
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [CommonModule, TranslateModule, RouterModule],
+  imports: [CommonModule, TranslateModule, RouterModule, EntityModalComponent, ConfirmModalComponent],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.scss'
 })
 export class SettingsComponent implements OnInit {
-  private http = inject(HttpClient);
-
   public featureService = inject(FeatureService);
-  
-  platforms: SimpleEntity[] = [];
+  private categoryService = inject(CategoryService);
+  private platformService = inject(PlatformService);
+
   categories: SimpleEntity[] = [];
+  platforms: SimpleEntity[] = [];
+  activeTab: SettingsTab = 'general';
+  isLoading = false;
+
+  // СОСТОЯНИЕ МОДАЛОК
+  modalType: 'category' | 'platform' | null = null;
+  modalMode: 'create' | 'edit' = 'create';
+  selectedEntity: SimpleEntity | null = null;
+  showEntityModal = false;
+  showDeleteModal = false;
 
   ngOnInit() {
-    this.loadData();
+    this.loadAllData();
   }
 
-  loadData() {
-    this.http.get<SimpleEntity[]>(`${environment.apiBaseUrl}/platforms`).subscribe(res => this.platforms = res);
-    this.http.get<SimpleEntity[]>(`${environment.apiBaseUrl}/categories`).subscribe(res => this.categories = res);
+  loadAllData() {
+    this.isLoading = true;
+    this.categoryService.getAll().subscribe(res => this.categories = res);
+    this.platformService.getAll().pipe(
+      finalize(() => this.isLoading = false)
+    ).subscribe(res => this.platforms = res);
   }
 
-  deletePlatform(id: string) {
-    if (confirm('Удалить эту платформу? Это не удалит историю продаж, но связь может пропасть.')) {
-      this.http.delete(`${environment.apiBaseUrl}/platforms/${id}`).subscribe({
-        next: () => this.platforms = this.platforms.filter(p => p.id !== id),
-        error: (err: any) => alert('Ошибка удаления: ' + (err.error?.message || 'Сервер отклонил запрос'))
-      });
+  // --- ОБЩАЯ ЛОГИКА ОТКРЫТИЯ ---
+
+  private openEntityModal(type: 'category' | 'platform', mode: 'create' | 'edit', entity?: SimpleEntity) {
+    this.modalType = type;
+    this.modalMode = mode;
+    this.selectedEntity = entity || null;
+    this.showEntityModal = true;
+  }
+
+  private openDeleteModal(type: 'category' | 'platform', entity: SimpleEntity) {
+    this.modalType = type;
+    this.selectedEntity = entity;
+    this.showDeleteModal = true;
+  }
+
+  // --- ОБРАБОТЧИКИ КНОПОК (вызываются из HTML) ---
+
+  addCategory() { this.openEntityModal('category', 'create'); }
+  
+  renameCategory(cat: SimpleEntity) { this.openEntityModal('category', 'edit', cat); }
+  
+  deleteCategory(cat: SimpleEntity) { this.openDeleteModal('category', cat); }
+
+  addPlatform() { this.openEntityModal('platform', 'create'); }
+  
+  renamePlatform(plat: SimpleEntity) { this.openEntityModal('platform', 'edit', plat); }
+  
+  deletePlatform(plat: SimpleEntity) { this.openDeleteModal('platform', plat); }
+
+  // --- ЛОГИКА ПОДТВЕРЖДЕНИЯ (вызывается из модалок) ---
+
+  handleEntityConfirm(name: string) {
+    if (this.modalType === 'category') {
+      if (this.modalMode === 'create') {
+        this.categoryService.create({ name }).subscribe(res => this.categories.push(res));
+      } else if (this.selectedEntity) {
+        this.categoryService.rename(this.selectedEntity.id, name).subscribe(() => this.selectedEntity!.name = name);
+      }
+    } else if (this.modalType === 'platform') {
+      if (this.modalMode === 'create') {
+        this.platformService.create({ name }).subscribe(res => this.platforms.push(res));
+      } else if (this.selectedEntity) {
+        this.platformService.rename(this.selectedEntity.id, name).subscribe(() => this.selectedEntity!.name = name);
+      }
     }
+    this.closeModals();
   }
 
-  deleteCategory(id: string) {
-    if (confirm('Удалить категорию? Убедитесь, что в ней нет активных предметов.')) {
-      this.http.delete(`${environment.apiBaseUrl}/categories/${id}`).subscribe({
-        next: () => this.categories = this.categories.filter(c => c.id !== id),
-        error: (err: any) => alert(err.error || 'Ошибка удаления. Возможно, категория не пуста.')
-      });
-    }
+  handleDeleteConfirm() {
+    if (!this.selectedEntity) return;
+    const service = this.modalType === 'category' ? this.categoryService : this.platformService;
+    
+    service.delete(this.selectedEntity.id).subscribe({
+      next: () => {
+        if (this.modalType === 'category') {
+          this.categories = this.categories.filter(c => c.id !== this.selectedEntity!.id);
+        } else {
+          this.platforms = this.platforms.filter(p => p.id !== this.selectedEntity!.id);
+        }
+      }
+    });
+    this.closeModals();
+  }
+
+  closeModals() {
+    this.showEntityModal = false;
+    this.showDeleteModal = false;
+    this.selectedEntity = null;
+    this.modalType = null;
+  }
+
+  switchTab(tab: SettingsTab) {
+    this.activeTab = tab;
   }
 }
