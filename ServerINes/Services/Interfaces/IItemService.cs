@@ -11,7 +11,6 @@ namespace INest.Services.Interfaces
         Task<Item?> GetItemAsync(Guid userId, Guid itemId);
         Task<bool> UpdateItemAsync(Guid userId, Guid itemId, UpdateItemDto dto, List<IFormFile>? photos);
         Task<bool> DeleteAsync(Guid userId, Guid itemId);
-
         Task<bool> MoveItemAsync(Guid userId, Guid itemId, Guid? targetLocationId);
         Task<bool> ChangeStatusAsync(Guid userId, Guid itemId, ItemStatus newStatus);
         Task<IEnumerable<ItemHistory>> GetItemHistoryAsync(Guid userId, Guid itemId);

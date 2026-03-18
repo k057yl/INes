@@ -5,7 +5,7 @@ import { ConfirmRegisterComponent } from './features/auth/register/confirm.regis
 import { MainPageComponent } from './features/inventory/main/main-page.component';
 import { LocationCreateComponent } from './features/inventory/location/create/location-create.component';
 import { ItemCreateComponent } from './features/inventory/item/create/item-create.component';
-import { LocationDetailComponent } from './features/inventory/location/location-detail.component';
+import { LocationDetailComponent } from './features/inventory/location/details/location-detail.component';
 import { SalesListComponent } from './features/sales/sales-list.component';
 import { SettingsComponent } from './features/setting/settings.component';
 import { ItemDetailComponent } from './features/inventory/item/details/item-detail.component';
