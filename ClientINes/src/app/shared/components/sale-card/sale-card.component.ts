@@ -17,14 +17,14 @@ export class SaleCardComponent {
   @Output() delete = new EventEmitter<{sale: SaleResponseDto, keepHistory: boolean}>();
 
   showDeleteModal = false;
+  private readonly EMPTY_GUID = '00000000-0000-0000-0000-000000000000';
+
+  get isItemExists(): boolean {
+    return !!this.sale.itemId && this.sale.itemId !== this.EMPTY_GUID;
+  }
 
   onUndo() {
     this.undo.emit(this.sale);
-  }
-
-  get isItemExists(): boolean {
-    const zeroGuid = '00000000-0000-0000-0000-000000000000';
-    return !!this.sale.itemId && this.sale.itemId !== zeroGuid;
   }
 
   onDelete() {

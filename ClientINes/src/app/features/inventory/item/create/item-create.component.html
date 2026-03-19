@@ -125,9 +125,11 @@
   </div>
 </div>
 
-<app-entity-modal 
+<app-inest-modal 
   *ngIf="showCategoryModal"
+  mode="input"
   [title]="'CREATE_ITEM.CREATE_CATEGORY'"
+  [confirmText]="'MAIN.ADD'"
   (confirmed)="onCategoryConfirmed($event)"
   (cancelled)="showCategoryModal = false">
-</app-entity-modal>
+</app-inest-modal>

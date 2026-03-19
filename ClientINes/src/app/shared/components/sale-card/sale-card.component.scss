@@ -2,109 +2,119 @@
   display: grid;
   grid-template-columns: 2fr 1fr 1fr;
   align-items: center;
-  background: var(--bg-card); // Берем цвет карты из темы
+  background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 12px;
-  padding: 15px 20px;
-  margin-bottom: 12px;
-  transition: transform 0.2s, border-color 0.2s;
+  padding: 12px 20px;
+  margin-bottom: 10px;
+  transition: all 0.2s ease;
 
   &:hover {
-    transform: translateX(5px);
+    transform: translateX(4px);
     border-color: var(--accent-color);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
 
   &.archived { 
-    opacity: 0.7; 
-    border-style: dashed; 
+    opacity: 0.6; 
+    border-style: dashed;
+    background: var(--bg-main-card);
   }
   
   .name { font-weight: 700; color: var(--text-main); display: block; }
-  .platform { font-size: 0.8rem; color: var(--accent-color); }
-  .date { font-size: 0.85rem; color: var(--text-muted); }
+  .platform { font-size: 0.75rem; color: var(--accent-color); font-weight: 600; }
+  .date { font-size: 0.8rem; color: var(--text-muted); }
   
   .sale-finance {
     .price { color: var(--text-main); font-weight: 600; }
     .profit { font-weight: 800; }
-    .red { color: var(--error-red); }
-    .turquoise { color: var(--accent-color); }
+    .text-danger { color: var(--error-red); }
+    .text-accent { color: var(--accent-color); }
   }
 
   .sale-actions {
     display: flex;
     justify-content: flex-end;
-    gap: 12px;
-    align-items: center;
+    gap: 10px;
+    
+    .archived-label {
+        color: var(--text-muted);
+        font-size: 1.1rem;
+        padding-right: 8px;
+    }
   }
 }
 
-// Стили модалки (тоже привязываем к теме)
-.modal-overlay {
+/* Стилизация внутренней модалки под общий стиль InestModal */
+.modal-backdrop {
   position: fixed;
   top: 0; left: 0;
   width: 100vw; height: 100vh;
-  background: rgba(var(--bg-main), 0.8); // Используем основной фон с прозрачностью
-  backdrop-filter: blur(8px);
+  background: rgba(11, 19, 43, 0.85); 
+  backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 9999;
 }
 
-.custom-modal {
+.modal-card {
   background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 16px;
   padding: 30px;
-  width: 95%;
-  max-width: 450px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  border-radius: 20px;
+  width: 90%;
+  max-width: 420px;
+  text-align: center;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
 
-  h3 { color: var(--accent-color); margin-bottom: 10px; }
-  p { color: var(--text-muted); margin-bottom: 25px; b { color: var(--text-main); } }
+  .modal-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    &.is-warning { color: var(--g-yellow); }
+  }
+
+  h3 { color: var(--text-main); margin-bottom: 8px; font-weight: 800; }
+  .message { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 25px; }
 
   .modal-options {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 12px;
 
     .opt-btn {
       display: flex;
       align-items: center;
       gap: 15px;
-      padding: 15px;
+      padding: 14px;
       background: var(--bg-input);
       border: 1px solid var(--border-color);
       border-radius: 12px;
       color: var(--text-main);
       cursor: pointer;
       transition: 0.2s;
+      text-align: left;
 
-      .opt-icon { font-size: 1.8rem; }
+      .opt-icon { font-size: 1.4rem; color: var(--text-muted); width: 30px; text-align: center; }
       .text {
-        .title { display: block; font-weight: 700; }
-        .desc { font-size: 0.8rem; color: var(--text-muted); }
+        .title { display: block; font-weight: 700; font-size: 0.95rem; }
+        .desc { font-size: 0.75rem; color: var(--text-muted); }
+      }
+
+      &:hover {
+        transform: translateY(-2px);
+        background: rgba(255,255,255,0.05);
       }
 
       &.smart:hover { 
         border-color: var(--accent-color); 
-        background: rgba(0, 245, 212, 0.05); 
+        .opt-icon { color: var(--accent-color); }
       }
 
       &.hard:hover { 
         border-color: var(--error-red); 
-        background: rgba(255, 77, 77, 0.05); 
+        .opt-icon { color: var(--error-red); }
       }
     }
-  }
-
-  .btn-cancel {
-    margin-top: 15px;
-    width: 100%;
-    background: transparent;
-    border: none;
-    color: var(--text-muted);
-    cursor: pointer;
-    &:hover { color: var(--text-main); text-decoration: underline; }
   }
 }

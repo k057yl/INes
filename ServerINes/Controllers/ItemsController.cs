@@ -1,4 +1,5 @@
-﻿using INest.Models.DTOs.Item;
+﻿using INest.Constants;
+using INest.Models.DTOs.Item;
 using INest.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -24,7 +25,11 @@ namespace INest.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll() => Ok(await _itemService.GetUserItemsAsync(GetUserId()));
+        public async Task<IActionResult> GetAll([FromQuery] ItemFilterDto filters)
+        {
+            var items = await _itemService.GetUserItemsAsync(GetUserId(), filters);
+            return Ok(items);
+        }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
@@ -33,10 +38,25 @@ namespace INest.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, [FromForm] UpdateItemDto dto, List<IFormFile>? photos)
+        public async Task<IActionResult> UpdateFull(Guid id, [FromForm] UpdateItemFullDto dto, List<IFormFile>? photos)
         {
-            await _itemService.UpdateItemAsync(GetUserId(), id, dto, photos);
-            return Ok();
+            try
+            {
+                var result = await _itemService.UpdateFullAsync(GetUserId(), id, dto, photos);
+                return result ? Ok() : BadRequest();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message + " | " + ex.StackTrace);
+            }
+        }
+
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> UpdatePartial( Guid id,[FromForm] UpdateItemPartialDto dto,List<IFormFile>? photos)
+        {
+            var result = await _itemService.UpdatePartialAsync(GetUserId(), id, dto, photos);
+
+            return result ? Ok() : BadRequest();
         }
 
         [HttpPatch("{id}/move")]

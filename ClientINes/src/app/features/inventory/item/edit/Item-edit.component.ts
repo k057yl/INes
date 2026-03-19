@@ -6,15 +6,15 @@ import { ItemService } from '../../../../shared/services/item.service';
 import { LocationService } from '../../../../shared/services/location.service';
 import { CategoryService } from '../../../../shared/services/category.service';
 import { TranslateModule } from '@ngx-translate/core';
-import { EntityModalComponent } from '../../../../shared/components/entity-modal/entity-modal.component';
+import { InestModalComponent } from '../../../../shared/components/modal/inest-modal.component';
 import { Item } from '../../../../models/entities/item.entity';
 
 @Component({
   selector: 'app-item-edit',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslateModule, RouterModule, EntityModalComponent],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule, RouterModule, InestModalComponent],
   templateUrl: './item-edit.component.html',
-  styleUrl: '../create/item-create.component.scss' // Юзаем стили от создания, чтобы не дублировать
+  styleUrl: '../create/item-create.component.scss'
 })
 export class ItemEditComponent implements OnInit {
   private route = inject(ActivatedRoute);
@@ -47,8 +47,8 @@ export class ItemEditComponent implements OnInit {
   form = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(2)]],
     description: [''],
-    categoryId: ['', Validators.required],
-    storageLocationId: ['', Validators.required],
+    categoryId: [null as string | null, Validators.required],
+    storageLocationId: [null as string | null, Validators.required],
     status: [0, Validators.required],
     purchaseDate: ['', [this.dateNotInFutureValidator]],
     purchasePrice: [null as number | null, [Validators.min(0)]],
@@ -134,20 +134,22 @@ export class ItemEditComponent implements OnInit {
 
     formData.append('name', val.name!);
     formData.append('description', val.description || '');
-    formData.append('categoryId', val.categoryId!);
-    formData.append('storageLocationId', val.storageLocationId!);
+    
+    if (val.categoryId) formData.append('categoryId', val.categoryId);
+    if (val.storageLocationId) formData.append('storageLocationId', val.storageLocationId);
+    
     formData.append('status', val.status!.toString());
 
     if (val.purchaseDate) formData.append('purchaseDate', new Date(val.purchaseDate).toISOString());
     if (val.purchasePrice != null) formData.append('purchasePrice', val.purchasePrice.toString());
     if (val.estimatedValue != null) formData.append('estimatedValue', val.estimatedValue.toString());
-
-    if (val.addPhoto) {
+    if (val.addPhoto && this.selectedPhotos.length > 0) {
       this.selectedPhotos.forEach(p => formData.append('photos', p.file));
     }
 
     this.itemService.update(this.itemId, formData).subscribe({
-      next: () => this.router.navigate(['/inventory/item', this.itemId])
+      next: () => this.router.navigate(['/item', this.itemId]),
+      error: (err) => console.error('Update failed', err)
     });
   }
 

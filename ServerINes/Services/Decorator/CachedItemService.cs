@@ -18,14 +18,33 @@ namespace INest.Services.Decorator
             _cache = cache;
         }
 
-        public async Task<IEnumerable<Item>> GetUserItemsAsync(Guid userId)
+        public async Task<IEnumerable<Item>> GetUserItemsAsync(Guid userId, ItemFilterDto filters)
         {
             var key = CacheConstants.GET_ITEMS_KEY(userId);
-            return await _cache.GetOrCreateAsync(key, async entry =>
+
+            var allItems = await _cache.GetOrCreateAsync(key, async entry =>
             {
-                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(15);
-                return await _inner.GetUserItemsAsync(userId);
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10);
+                return await _inner.GetUserItemsAsync(userId, new ItemFilterDto());
             }) ?? Enumerable.Empty<Item>();
+
+            var query = allItems.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(filters.SearchQuery))
+            {
+                var search = filters.SearchQuery.ToLower();
+                query = query.Where(i =>
+                    i.Name.ToLower().Contains(search) ||
+                    (i.Description != null && i.Description.ToLower().Contains(search)));
+            }
+
+            if (filters.CategoryId.HasValue)
+                query = query.Where(i => i.CategoryId == filters.CategoryId.Value);
+
+            if (filters.Status.HasValue)
+                query = query.Where(i => i.Status == filters.Status.Value);
+
+            return query.ToList();
         }
 
         public async Task<Item> CreateItemAsync(Guid userId, CreateItemDto dto, List<IFormFile> photos)
@@ -35,10 +54,23 @@ namespace INest.Services.Decorator
             return item;
         }
 
-        public async Task<bool> UpdateItemAsync(Guid userId, Guid itemId, UpdateItemDto dto, List<IFormFile>? photos)
+        public async Task<bool> UpdateFullAsync(Guid userId, Guid itemId, UpdateItemFullDto dto, List<IFormFile>? photos)
         {
-            var result = await _inner.UpdateItemAsync(userId, itemId, dto, photos);
-            if (result) InvalidateCache(userId);
+            var result = await _inner.UpdateFullAsync(userId, itemId, dto, photos);
+
+            if (result)
+                InvalidateCache(userId);
+
+            return result;
+        }
+
+        public async Task<bool> UpdatePartialAsync(Guid userId, Guid itemId, UpdateItemPartialDto dto, List<IFormFile>? photos)
+        {
+            var result = await _inner.UpdatePartialAsync(userId, itemId, dto, photos);
+
+            if (result)
+                InvalidateCache(userId);
+
             return result;
         }
 

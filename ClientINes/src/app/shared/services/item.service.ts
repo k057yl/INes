@@ -10,8 +10,21 @@ export class ItemService {
   private http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiBaseUrl}/items`;
 
-  getAll(): Observable<Item[]> {
-    return this.http.get<Item[]>(this.apiUrl);
+  getAll(filters?: any): Observable<Item[]> {
+    const params = this.cleanParams(filters);
+    return this.http.get<Item[]>(this.apiUrl, { params });
+  }
+
+  private cleanParams(obj: any) {
+    const params: any = {};
+    if (!obj) return params;
+    
+    Object.keys(obj).forEach(key => {
+      if (obj[key] !== null && obj[key] !== undefined && obj[key] !== '') {
+        params[key] = obj[key];
+      }
+    });
+    return params;
   }
 
   getById(id: string): Observable<Item> {
@@ -36,9 +49,5 @@ export class ItemService {
 
   delete(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
-  }
-
-  cancelSale(id: string): Observable<void> {
-    return this.http.post<void>(`${this.apiUrl}/${id}/cancel-sale`, {});
   }
 }

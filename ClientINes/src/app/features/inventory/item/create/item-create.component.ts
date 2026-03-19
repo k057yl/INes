@@ -6,12 +6,12 @@ import { ItemService } from '../../../../shared/services/item.service';
 import { LocationService } from '../../../../shared/services/location.service';
 import { CategoryService } from '../../../../shared/services/category.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { EntityModalComponent } from '../../../../shared/components/entity-modal/entity-modal.component';
+import { InestModalComponent } from '../../../../shared/components/modal/inest-modal.component';
 
 @Component({
   selector: 'app-item-create',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslateModule, RouterModule, EntityModalComponent],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule, RouterModule, InestModalComponent],
   templateUrl: './item-create.component.html',
   styleUrl: './item-create.component.scss'
 })

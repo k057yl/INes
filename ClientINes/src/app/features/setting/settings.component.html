@@ -124,18 +124,21 @@
   </div>
 </div>
 
-<app-entity-modal
+<app-inest-modal
   *ngIf="showEntityModal"
+  mode="input"
   [title]="(modalMode === 'create' ? 'SHARED.TOOLTIP_ADD' : 'COMMON.EDIT')"
   [name]="selectedEntity?.name || ''"
   (confirmed)="handleEntityConfirm($event)"
   (cancelled)="closeModals()">
-</app-entity-modal>
+</app-inest-modal>
 
-<app-confirm-modal
+<app-inest-modal
   *ngIf="showDeleteModal"
+  mode="delete"
   [title]="'SHARED.TOOLTIP_DELETE'"
   [message]="(modalType === 'category' ? 'SETTINGS.DELETE_CATEGORY_CONFIRM' : 'SETTINGS.DELETE_PLATFORM_CONFIRM')"
+  [confirmText]="'ITEM_CARD.DELETE'"
   (confirmed)="handleDeleteConfirm()" 
   (cancelled)="closeModals()">
-</app-confirm-modal>
+</app-inest-modal>

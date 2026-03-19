@@ -7,8 +7,7 @@ import { finalize } from 'rxjs';
 import { FeatureService } from '../../core/services/feature.service';
 import { CategoryService } from '../../shared/services/category.service';
 import { PlatformService } from '../../shared/services/platform.service';
-import { EntityModalComponent } from '../../shared/components/entity-modal/entity-modal.component';
-import { ConfirmModalComponent } from '../../shared/components/entity-modal/confirm-modal.component';
+import { InestModalComponent } from '../../shared/components/modal/inest-modal.component';
 
 interface SimpleEntity {
   id: string;
@@ -21,7 +20,7 @@ type SettingsTab = 'general' | 'categories' | 'platforms';
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [CommonModule, TranslateModule, RouterModule, EntityModalComponent, ConfirmModalComponent],
+  imports: [CommonModule, TranslateModule, RouterModule, InestModalComponent],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.scss'
 })
@@ -86,37 +85,56 @@ export class SettingsComponent implements OnInit {
   // --- ЛОГИКА ПОДТВЕРЖДЕНИЯ (вызывается из модалок) ---
 
   handleEntityConfirm(name: string) {
-    if (this.modalType === 'category') {
-      if (this.modalMode === 'create') {
-        this.categoryService.create({ name }).subscribe(res => this.categories.push(res));
-      } else if (this.selectedEntity) {
-        this.categoryService.rename(this.selectedEntity.id, name).subscribe(() => this.selectedEntity!.name = name);
-      }
-    } else if (this.modalType === 'platform') {
-      if (this.modalMode === 'create') {
-        this.platformService.create({ name }).subscribe(res => this.platforms.push(res));
-      } else if (this.selectedEntity) {
-        this.platformService.rename(this.selectedEntity.id, name).subscribe(() => this.selectedEntity!.name = name);
-      }
-    }
-    this.closeModals();
-  }
+  if (!this.modalType) return;
 
-  handleDeleteConfirm() {
-    if (!this.selectedEntity) return;
-    const service = this.modalType === 'category' ? this.categoryService : this.platformService;
-    
-    service.delete(this.selectedEntity.id).subscribe({
-      next: () => {
+  const service = this.modalType === 'category' ? this.categoryService : this.platformService;
+
+  if (this.modalMode === 'create') {
+    service.create({ name }).subscribe({
+      next: (res) => {
         if (this.modalType === 'category') {
-          this.categories = this.categories.filter(c => c.id !== this.selectedEntity!.id);
+          this.categories.push(res);
+          this.categories.sort((a, b) => a.name.localeCompare(b.name));
         } else {
-          this.platforms = this.platforms.filter(p => p.id !== this.selectedEntity!.id);
+          this.platforms.push(res);
         }
+        this.closeModals();
       }
     });
-    this.closeModals();
+  } else if (this.selectedEntity) {
+    const entity = this.selectedEntity; 
+    service.rename(entity.id, name).subscribe({
+      next: () => {
+        entity.name = name;
+        this.closeModals();
+      },
+      error: (err) => console.error('Ошибка переименования:', err)
+    });
   }
+}
+
+handleDeleteConfirm() {
+  if (!this.selectedEntity || !this.modalType) return;
+
+  const idToDelete = this.selectedEntity.id;
+  const currentModalType = this.modalType;
+  const service = currentModalType === 'category' ? this.categoryService : this.platformService;
+
+  service.delete(idToDelete).subscribe({
+    next: () => {
+      if (currentModalType === 'category') {
+        this.categories = this.categories.filter(c => c.id !== idToDelete);
+      } else {
+        this.platforms = this.platforms.filter(p => p.id !== idToDelete);
+      }
+      this.closeModals();
+    },
+    error: (err) => {
+      console.error('Ошибка удаления:', err);
+      this.closeModals();
+    }
+  });
+}
 
   closeModals() {
     this.showEntityModal = false;

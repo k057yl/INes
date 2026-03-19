@@ -17,12 +17,12 @@
       <span class="item-name" [title]="item.name">{{ item.name }}</span>
     </div>
     <div class="item-details">
-       <span class="price-tag" *ngIf="featureService.isSalesModeEnabled() && item.estimatedValue">
-        {{ item.estimatedValue | number:'1.0-0' }} 💰
+      <span class="price-tag" *ngIf="featureService.isSalesModeEnabled() && item.estimatedValue">
+        {{ item.estimatedValue | number:'1.0-0' }} <i class="fa fa-coins" style="font-size: 0.7rem; margin-left: 2px;"></i>
       </span>
       <span class="status-badges" style="margin-left: 10px;">
-        <i *ngIf="item.status === 6" class="fa fa-shopping-cart" style="color: var(--g-blue); font-size: 0.8rem;" title="Listed"></i>
-        <i *ngIf="item.status === 1" class="fa fa-handshake" style="color: var(--g-yellow); font-size: 0.8rem;" title="Lent"></i>
+        <i *ngIf="item.status === 6" class="fa fa-shopping-cart" style="color: var(--g-blue); font-size: 0.8rem;" [title]="'STATUS.LISTED' | translate"></i>
+        <i *ngIf="item.status === 1" class="fa fa-handshake" style="color: var(--g-yellow); font-size: 0.8rem;" [title]="'STATUS.LENT' | translate"></i>
       </span>
     </div>
   </div>
@@ -65,7 +65,7 @@
         <i class="fa fa-dollar-sign"></i> {{'ITEM_CARD.SELL' | translate}}
       </button>
 
-      <button (click)="requestDelete()" class="delete-btn">
+      <button (click)="requestDelete($event)" class="delete-btn">
         <i class="fa fa-trash-alt"></i> {{'ITEM_CARD.DELETE' | translate}}
       </button>
     </div>
@@ -74,10 +74,13 @@
   <div class="item-drag-placeholder" *cdkDragPlaceholder></div>
 </div>
 
-<app-confirm-modal
-  *ngIf="showDeleteConfirm"
-  [title]="'ITEM_CARD.DELETE' | translate"
-  [message]="'ITEM_CARD.M_YOU_SURE' | translate"
+<app-inest-modal 
+  *ngIf="showDelete"
+  mode="delete"
+  [title]="'ITEM_CARD.DELETE'"
+  [message]="'ITEM_CARD.M_YOU_SURE'"
+  [confirmText]="'ITEM_CARD.DELETE'"
+  [cancelText]="'COMMON.CANCEL'"
   (confirmed)="confirmDelete()"
   (cancelled)="cancelDelete()">
-</app-confirm-modal>
+</app-inest-modal>

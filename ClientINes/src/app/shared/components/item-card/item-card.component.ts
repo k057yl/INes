@@ -8,7 +8,7 @@ import { Item } from '../../../models/entities/item.entity';
 import { FeatureService } from '../../../core/services/feature.service';
 import { StorageLocation } from '../../../models/entities/storage-location.entity';
 import { environment } from '../../../../environments/environment';
-import { ConfirmModalComponent } from '../../../shared/components/entity-modal/confirm-modal.component';
+import { InestModalComponent } from '../modal/inest-modal.component';
 
 @Component({
   selector: 'app-item-card',
@@ -18,7 +18,7 @@ import { ConfirmModalComponent } from '../../../shared/components/entity-modal/c
     RouterModule, 
     DragDropModule, 
     TranslateModule, 
-    ConfirmModalComponent
+    InestModalComponent
   ],
   templateUrl: './item-card.component.html',
   styleUrl: './item-card.component.scss'
@@ -36,7 +36,7 @@ export class ItemCardComponent {
   @Output() move = new EventEmitter<{item: Item, targetLocationId: string}>();
 
   showMenu = false;
-  showDeleteConfirm = false;
+  showDelete = false;
   isMobile = window.innerWidth <= 768;
 
   private readonly googleColors = ['var(--g-blue)', 'var(--g-red)', 'var(--g-yellow)', 'var(--g-green)'];
@@ -79,19 +79,18 @@ export class ItemCardComponent {
 
   // --- ЛОГИКА УДАЛЕНИЯ ---
 
-  requestDelete() {
+  requestDelete(event: MouseEvent) {
+    event.stopPropagation();
     this.showMenu = false;
-    this.showDeleteConfirm = true;
+    this.showDelete = true;
   }
 
   confirmDelete() {
     this.delete.emit(this.item);
-    this.showDeleteConfirm = false;
+    this.showDelete = false;
   }
 
   cancelDelete() {
-    this.showDeleteConfirm = false;
+    this.showDelete = false;
   }
-
-  stopProp(event: MouseEvent) { event.stopPropagation(); }
 }

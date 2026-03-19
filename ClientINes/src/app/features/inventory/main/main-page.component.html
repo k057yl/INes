@@ -17,7 +17,7 @@
       [location]="loc"
       [flatLocations]="flatLocations"
       [connectedLists]="connectedLists"
-      [isChildOf]="isChildOf.bind(this)"
+      [isChildOf]="isChildOf"
       (itemDropped)="onItemDropped($event)"
       (sellItem)="onSellRequest($event)" 
       (move)="onLocationMove($event)"
@@ -31,11 +31,9 @@
 
 <div class="board-pager-row" *ngIf="totalBoardPages > 1">
   <div class="board-pager-nav">
-    <button (click)="currentPageBoard = currentPageBoard - 1" [disabled]="currentPageBoard === 0">❮  
-    </button>
+    <button (click)="currentPageBoard = currentPageBoard - 1" [disabled]="currentPageBoard === 0">❮</button>
     <span class="page-info">{{'MAIN.PAGE' | translate }}{{ currentPageBoard + 1 }} / {{ totalBoardPages }}</span>
-    <button (click)="currentPageBoard = currentPageBoard + 1" [disabled]="currentPageBoard === totalBoardPages - 1">❯
-    </button>
+    <button (click)="currentPageBoard = currentPageBoard + 1" [disabled]="currentPageBoard === totalBoardPages - 1">❯</button>
   </div>
 </div>
 
@@ -45,3 +43,42 @@
   (close)="itemToSell = null"
   (confirm)="onSellConfirmed($event)">
 </app-sell-modal>
+
+<app-inest-modal
+  *ngIf="showDeleteItemModal"
+  mode="delete"
+  [title]="'ITEM_CARD.DELETE' | translate"
+  [message]="'ITEM_CARD.M_YOU_SURE' | translate"
+  (confirmed)="confirmDeleteItem()"
+  (cancelled)="closeModals()">
+</app-inest-modal>
+
+<app-inest-modal
+  *ngIf="showDeleteLocationModal"
+  mode="delete"
+  [title]="'SHARED.TOOLTIP_DELETE' | translate"
+  [message]="'SETTINGS.DELETE_CATEGORY_CONFIRM' | translate"
+  (confirmed)="confirmDeleteLocation()"
+  (cancelled)="closeModals()">
+</app-inest-modal>
+
+<app-inest-modal
+  *ngIf="showRenameModal"
+  mode="input"
+  [title]="'SHARED.TOOLTIP_RENAME' | translate"
+  [name]="locationToRename?.name || ''"
+  (confirmed)="confirmRename($event)"
+  (cancelled)="closeModals()">
+</app-inest-modal>
+
+<app-inest-modal
+  *ngIf="showMoveConfirm"
+  mode="input"
+  [name]="'skip'" 
+  [title]="'ITEM_CARD.M_MOVE' | translate"
+  [message]="'HISTORY.MOVED' | translate"
+  [confirmText]="'COMMON.EDIT' | translate"
+  [cancelText]="'COMMON.CANCEL' | translate"
+  (confirmed)="confirmNavigation()"
+  (cancelled)="closeModals()">
+</app-inest-modal>

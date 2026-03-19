@@ -40,9 +40,11 @@
   </div>
 </div>
 
-<app-entity-modal 
+<app-inest-modal 
   *ngIf="showPlatformModal"
+  mode="input"
   [title]="'MANAGEMENT.TITLE_PLATFORM'"
+  [confirmText]="'MAIN.ADD'"
   (confirmed)="onPlatformConfirmed($event)"
   (cancelled)="showPlatformModal = false">
-</app-entity-modal>
+</app-inest-modal>

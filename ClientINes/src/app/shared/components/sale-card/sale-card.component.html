@@ -11,54 +11,61 @@
 
   <div class="sale-finance">
     <div class="price">{{ sale.salePrice | number:'1.2-2' }} $</div>
-    <div class="profit" [ngClass]="sale.profit >= 0 ? 'turquoise' : 'red'">
+    <div class="profit" [ngClass]="sale.profit >= 0 ? 'text-accent' : 'text-danger'">
       {{ sale.profit > 0 ? '+' : '' }}{{ sale.profit | number:'1.2-2' }} $
     </div>
   </div>
 
   <div class="sale-actions">
     <button class="inest-action-btn" 
-        *ngIf="isItemExists" 
-        (click)="onUndo()"
-        [title]="'SHARED.TOOLTIP_UNDO' | translate">
-        ↩️
+            *ngIf="isItemExists" 
+            (click)="onUndo()"
+            [title]="'SHARED.TOOLTIP_RENAME' | translate"> <i class="fa fa-undo-alt"></i>
     </button>
 
-    <span class="archived-label" *ngIf="!isItemExists" title="Предмет удален из инвентаря">
-        📦💨
+    <span class="archived-label" *ngIf="!isItemExists" [title]="'ITEMS.ERRORS.NOT_FOUND' | translate">
+      <i class="fa fa-archive"></i>
     </span>
 
     <button class="inest-action-btn is-danger" 
             (click)="onDelete()" 
             [title]="'SHARED.TOOLTIP_DELETE' | translate">
-        ❌
+      <i class="fa fa-trash-alt"></i>
     </button>
   </div>
 </div>
 
-<div class="modal-overlay" *ngIf="showDeleteModal" (click)="closeModal()">
-  <div class="custom-modal" (click)="$event.stopPropagation()">
-    <h3>Удалить запись?</h3>
-    <p>Выберите способ удаления для <b>{{ sale.itemName }}</b>:</p>
+<div class="modal-backdrop" *ngIf="showDeleteModal" (click)="closeModal()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-icon is-warning">
+      <i class="fa fa-layer-group"></i>
+    </div>
+
+    <h3>{{ 'ITEM_CARD.DELETE' | translate }}?</h3>
+    <p class="message">{{ 'SETTINGS.DELETE_PLATFORM_CONFIRM' | translate }}</p>
     
     <div class="modal-options">
       <button *ngIf="isItemExists" class="opt-btn smart" (click)="confirmDelete(true)">
-        <span class="opt-icon">📥</span>
+        <div class="opt-icon"><i class="fa fa-broom"></i></div>
         <div class="text">
           <span class="title">Smart Delete</span>
-          <span class="desc">Удалить фото и айтем, но оставить прибыль в истории.</span>
+          <span class="desc">Удалить предмет, сохранив прибыль в истории</span>
         </div>
       </button>
 
       <button class="opt-btn hard" (click)="confirmDelete(false)">
-        <span class="opt-icon">🔥</span>
+        <div class="opt-icon"><i class="fa fa-fire-alt"></i></div>
         <div class="text">
           <span class="title">Hard Delete</span>
-          <span class="desc">Стереть всё полностью (включая запись о прибыли).</span>
+          <span class="desc">Стереть всё (включая запись о прибыли)</span>
         </div>
       </button>
     </div>
 
-    <button class="btn-cancel" (click)="closeModal()">Отмена</button>
+    <div class="modal-actions" style="margin-top: 20px;">
+        <button class="inest-btn-cancel" (click)="closeModal()">
+            {{ 'COMMON.CANCEL' | translate }}
+        </button>
+    </div>
   </div>
 </div>

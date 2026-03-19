@@ -90,14 +90,23 @@ namespace INest.Services
             }
         }
 
-        public async Task<IEnumerable<Item>> GetUserItemsAsync(Guid userId)
+        public async Task<IEnumerable<Item>> GetUserItemsAsync(Guid userId, ItemFilterDto filters)
         {
-            return await _context.Items
+            var query = _context.Items
                 .Where(i => i.UserId == userId)
                 .Include(i => i.Photos)
-                .Include(i => i.Category)
-                .Include(i => i.StorageLocation)
-                .ToListAsync();
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(filters.SearchQuery))
+                query = query.Where(i => i.Name.Contains(filters.SearchQuery) || i.Description.Contains(filters.SearchQuery));
+
+            if (filters.CategoryId.HasValue)
+                query = query.Where(i => i.CategoryId == filters.CategoryId.Value);
+
+            if (filters.Status.HasValue)
+                query = query.Where(i => i.Status == filters.Status.Value);
+
+            return await query.ToListAsync();
         }
 
         public async Task<Item?> GetItemAsync(Guid userId, Guid itemId)
@@ -115,94 +124,154 @@ namespace INest.Services
             return item;
         }
 
-        public async Task<bool> UpdateItemAsync(Guid userId, Guid itemId, UpdateItemDto dto, List<IFormFile>? photos)
+        public async Task<bool> UpdateFullAsync(Guid userId, Guid itemId, UpdateItemFullDto dto, List<IFormFile>? photos)
         {
             var item = await _context.Items
                 .Include(i => i.Photos)
                 .FirstOrDefaultAsync(i => i.Id == itemId && i.UserId == userId);
 
             if (item == null)
-                throw new KeyNotFoundException(LocalizationConstants.ITEMS.NOT_FOUND);
+                throw new KeyNotFoundException();
 
-            void AddHistory(ItemHistoryType type, string? oldVal, string? newVal)
-            {
-                _context.ItemHistories.Add(new ItemHistory
-                {
-                    Id = Guid.NewGuid(),
-                    ItemId = item.Id,
-                    Type = type,
-                    OldValue = oldVal,
-                    NewValue = newVal,
-                    CreatedAt = DateTime.UtcNow
-                });
-            }
+            item.Name = dto.Name;
+            item.Description = dto.Description;
+            item.CategoryId = dto.CategoryId;
+            item.StorageLocationId = dto.StorageLocationId;
+            item.Status = dto.Status;
+            item.PurchaseDate = dto.PurchaseDate;
+            item.PurchasePrice = dto.PurchasePrice;
+            item.EstimatedValue = dto.EstimatedValue;
 
-            if (dto.Name != null && dto.Name != item.Name)
-            {
-                AddHistory(ItemHistoryType.ValueUpdated, item.Name, dto.Name);
-                item.Name = dto.Name;
-            }
-
-            if (dto.Description != item.Description)
-            {
-                AddHistory(ItemHistoryType.ValueUpdated, item.Description, dto.Description);
-                item.Description = dto.Description;
-            }
-
-            if (dto.CategoryId.HasValue && dto.CategoryId.Value != item.CategoryId)
-            {
-                AddHistory(ItemHistoryType.ValueUpdated, item.CategoryId.ToString(), dto.CategoryId.Value.ToString());
-                item.CategoryId = dto.CategoryId.Value;
-            }
-
-            if (dto.StorageLocationId != item.StorageLocationId)
-            {
-                AddHistory(ItemHistoryType.Moved, item.StorageLocationId?.ToString(), dto.StorageLocationId?.ToString());
-                item.StorageLocationId = dto.StorageLocationId;
-            }
-
-            if (dto.PurchasePrice != item.PurchasePrice)
-            {
-                AddHistory(ItemHistoryType.ValueUpdated, item.PurchasePrice?.ToString(), dto.PurchasePrice?.ToString());
-                item.PurchasePrice = dto.PurchasePrice;
-            }
-
-            if (dto.EstimatedValue != item.EstimatedValue)
-            {
-                AddHistory(ItemHistoryType.ValueUpdated, item.EstimatedValue?.ToString(), dto.EstimatedValue?.ToString());
-                item.EstimatedValue = dto.EstimatedValue;
-            }
-
-            if (photos != null && photos.Count > 0)
-            {
-                foreach (var photoFile in photos)
-                {
-                    var result = await _photoService.AddPhotoAsync(photoFile);
-                    if (result.Error == null)
-                    {
-                        var itemPhoto = new ItemPhoto
-                        {
-                            Id = Guid.NewGuid(),
-                            ItemId = item.Id,
-                            FilePath = result.SecureUrl.ToString(),
-                            PublicId = result.PublicId
-                        };
-
-                        if (string.IsNullOrEmpty(item.PhotoUrl))
-                        {
-                            item.PhotoUrl = itemPhoto.FilePath;
-                            item.PublicId = itemPhoto.PublicId;
-                        }
-
-                        item.Photos.Add(itemPhoto);
-                    }
-                }
-
-                AddHistory(ItemHistoryType.ValueUpdated, "Photos updated", $"{photos.Count} new photos added");
-            }
+            await HandlePhotos(item, photos);
 
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<bool> UpdatePartialAsync(Guid userId, Guid itemId, UpdateItemPartialDto dto, List<IFormFile>? photos)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                var item = await _context.Items
+                    .Include(i => i.Photos)
+                    .FirstOrDefaultAsync(i => i.Id == itemId && i.UserId == userId);
+
+                if (item == null)
+                    throw new KeyNotFoundException(LocalizationConstants.ITEMS.NOT_FOUND);
+
+                void LogChange(ItemHistoryType type, string? oldValue, string? newValue)
+                {
+                    if (oldValue == newValue) return;
+                    _context.ItemHistories.Add(new ItemHistory
+                    {
+                        Id = Guid.NewGuid(),
+                        ItemId = item.Id,
+                        Type = type,
+                        OldValue = oldValue ?? string.Empty,
+                        NewValue = newValue ?? string.Empty,
+                        CreatedAt = DateTime.UtcNow
+                    });
+                }
+
+                if (dto.Name != null && dto.Name != item.Name)
+                {
+                    LogChange(ItemHistoryType.ValueUpdated, item.Name, dto.Name);
+                    item.Name = dto.Name;
+                }
+
+                if (dto.Description != null && dto.Description != item.Description)
+                {
+                    LogChange(ItemHistoryType.ValueUpdated, item.Description, dto.Description);
+                    item.Description = dto.Description;
+                }
+
+                if (dto.CategoryId.HasValue && dto.CategoryId.Value != item.CategoryId)
+                {
+                    LogChange(ItemHistoryType.ValueUpdated, item.CategoryId.ToString(), dto.CategoryId.Value.ToString());
+                    item.CategoryId = dto.CategoryId.Value;
+                }
+
+                if (dto.StorageLocationId.HasValue && dto.StorageLocationId.Value != item.StorageLocationId)
+                {
+                    LogChange(ItemHistoryType.Moved, item.StorageLocationId?.ToString(), dto.StorageLocationId.Value.ToString());
+                    item.StorageLocationId = dto.StorageLocationId.Value;
+                }
+
+                if (dto.Status.HasValue && dto.Status.Value != item.Status)
+                {
+                    LogChange(ItemHistoryType.StatusChanged, item.Status.ToString(), dto.Status.Value.ToString());
+                    item.Status = dto.Status.Value;
+                }
+
+                if (dto.PurchaseDate.HasValue && dto.PurchaseDate != item.PurchaseDate)
+                {
+                    item.PurchaseDate = dto.PurchaseDate;
+                }
+
+                if (dto.PurchasePrice.HasValue && dto.PurchasePrice != item.PurchasePrice)
+                {
+                    LogChange(ItemHistoryType.ValueUpdated, item.PurchasePrice?.ToString(), dto.PurchasePrice.Value.ToString());
+                    item.PurchasePrice = dto.PurchasePrice;
+                }
+
+                if (dto.EstimatedValue.HasValue && dto.EstimatedValue != item.EstimatedValue)
+                {
+                    LogChange(ItemHistoryType.ValueUpdated, item.EstimatedValue?.ToString(), dto.EstimatedValue.Value.ToString());
+                    item.EstimatedValue = dto.EstimatedValue;
+                }
+
+                if (photos != null && photos.Count > 0)
+                {
+                    await HandlePhotos(item, photos);
+                    LogChange(ItemHistoryType.ValueUpdated, "Photos update", $"{photos.Count} new photos added");
+                }
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return true;
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
+
+        private async Task HandlePhotos(Item item, List<IFormFile>? photos)
+        {
+            if (photos == null || photos.Count == 0) return;
+
+            item.Photos ??= new List<ItemPhoto>();
+
+            foreach (var photoFile in photos)
+            {
+                var result = await _photoService.AddPhotoAsync(photoFile);
+
+                if (result.Error != null)
+                    throw new Exception(result.Error.Message);
+
+                var itemPhoto = new ItemPhoto
+                {
+                    Id = Guid.NewGuid(),
+                    ItemId = item.Id,
+                    FilePath = result.SecureUrl.ToString(),
+                    PublicId = result.PublicId,
+                    UploadedAt = DateTime.UtcNow
+                };
+
+                await _context.ItemPhotos.AddAsync(itemPhoto);
+
+                if (string.IsNullOrEmpty(item.PhotoUrl))
+                {
+                    item.PhotoUrl = itemPhoto.FilePath;
+                    item.PublicId = itemPhoto.PublicId;
+                }
+
+                item.Photos.Add(itemPhoto);
+            }
         }
 
         public async Task<bool> MoveItemAsync(Guid userId, Guid itemId, Guid? targetLocationId)

@@ -14,7 +14,7 @@
           </div>
           <div class="stat-info">
             <span class="label">{{ 'SALES.TOTAL_REVENUE' | translate }}</span>
-            <span class="value">{{ totalRevenue | number:'1.2-2' }} $</span>
+            <span class="value">{{ totalRevenue | number:'1.2-2' }} </span>
           </div>
           <div class="stat-progress" [style.background]="'var(--g-blue)'"></div>
         </div>
@@ -26,7 +26,7 @@
           <div class="stat-info">
             <span class="label">{{ 'SALES.TOTAL_PROFIT' | translate }}</span>
             <span class="value" [class.negative]="totalProfit < 0">
-              {{ totalProfit | number:'1.2-2' }} $
+              {{ totalProfit | number:'1.2-2' }}
             </span>
           </div>
           <div class="stat-progress" 
@@ -67,3 +67,14 @@
     <span>{{ 'AUTH.CHECKING_MAIL' | translate }}</span>
   </div>
 </ng-template>
+
+<app-inest-modal 
+  *ngIf="showUndoModal"
+  mode="confirm"
+  [title]="'SALES.TITLE'" 
+  [message]="'ITEM_CARD.M_RETURN_ITEM'"
+  [confirmText]="'AUTH.CONFIRM.SUBMIT_BTN'"
+  [cancelText]="'COMMON.CANCEL'"
+  (confirmed)="onConfirmUndo()"
+  (cancelled)="showUndoModal = false; saleToUndo = null">
+</app-inest-modal>

@@ -6,12 +6,12 @@ import { Item } from '../../../models/entities/item.entity';
 import { SellItemRequestDto } from '../../../models/dtos/sale.dto';
 import { Platform } from '../../../models/entities/platform.entity';
 import { SalesService } from '../../services/sales.service';
-import { EntityModalComponent } from '../../../shared/components/entity-modal/entity-modal.component';
+import { InestModalComponent } from '../modal/inest-modal.component';
 
 @Component({
   selector: 'app-sell-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslateModule, EntityModalComponent],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule, InestModalComponent],
   templateUrl: './sell-modal.component.html',
   styleUrls: ['./sell-modal.component.scss']
 })

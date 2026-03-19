@@ -5,12 +5,18 @@ import { SalesService } from '../../shared/services/sales.service';
 import { ItemService } from '../../shared/services/item.service';
 import { SaleResponseDto } from '../../models/dtos/sale.dto';
 import { SaleCardComponent } from '../../shared/components/sale-card/sale-card.component';
+import { InestModalComponent } from '../../shared/components/modal/inest-modal.component';
 import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-sales-list',
   standalone: true,
-  imports: [CommonModule, TranslateModule, SaleCardComponent], 
+  imports: [
+    CommonModule, 
+    TranslateModule, 
+    SaleCardComponent, 
+    InestModalComponent
+  ], 
   templateUrl: './sales-list.component.html',
   styleUrl: './sales-list.component.scss'
 })
@@ -20,6 +26,9 @@ export class SalesListComponent implements OnInit {
 
   sales: SaleResponseDto[] = [];
   isLoading = true;
+
+  showUndoModal = false;
+  saleToUndo: SaleResponseDto | null = null;
 
   readonly EMPTY_GUID = '00000000-0000-0000-0000-000000000000';
 
@@ -40,32 +49,37 @@ export class SalesListComponent implements OnInit {
     this.salesService.getHistory()
       .pipe(finalize(() => this.isLoading = false))
       .subscribe({
-        next: (data: SaleResponseDto[]) => {
-          this.sales = data;
-        },
-        error: (err) => {
-          console.error('Error fetching sales', err);
-        }
+        next: (data: SaleResponseDto[]) => this.sales = data,
+        error: (err) => console.error('Error fetching sales', err)
       });
   }
 
   handleUndo(sale: SaleResponseDto) {
-    if (confirm(`Вернуть "${sale.itemName}" в инвентарь?`)) {
-      this.isLoading = true;
-      this.itemService.cancelSale(sale.itemId)
-        .pipe(finalize(() => this.isLoading = false))
-        .subscribe({
-          next: () => {
-            this.sales = this.sales.filter(s => s.saleId !== sale.saleId);
-          },
-          error: (err) => console.error('Undo failed', err)
-        });
-    }
+    this.saleToUndo = sale;
+    this.showUndoModal = true;
+  }
+
+  onConfirmUndo() {
+    if (!this.saleToUndo) return;
+
+    const sale = this.saleToUndo;
+    this.showUndoModal = false;
+    this.isLoading = true;
+    this.salesService.cancelSale(sale.itemId)
+      .pipe(finalize(() => {
+        this.isLoading = false;
+        this.saleToUndo = null;
+      }))
+      .subscribe({
+        next: () => {
+          this.sales = this.sales.filter(s => s.saleId !== sale.saleId);
+        },
+        error: (err) => console.error('Undo failed', err)
+      });
   }
 
   handleDelete(event: { sale: SaleResponseDto, keepHistory: boolean }) {
     const { sale, keepHistory } = event;
-    
     this.isLoading = true;
     this.salesService.smartDelete(sale.saleId, keepHistory)
       .pipe(finalize(() => this.isLoading = false))
@@ -73,16 +87,12 @@ export class SalesListComponent implements OnInit {
         next: () => {
           if (keepHistory) {
             const index = this.sales.findIndex(s => s.saleId === sale.saleId);
-            if (index !== -1) {
-              this.sales[index] = { ...sale, itemId: this.EMPTY_GUID };
-            }
+            if (index !== -1) this.sales[index] = { ...sale, itemId: this.EMPTY_GUID };
           } else {
             this.sales = this.sales.filter(s => s.saleId !== sale.saleId);
           }
         },
-        error: (err) => {
-          console.error('Delete failed', err);
-        }
+        error: (err) => console.error('Delete failed', err)
       });
   }
 }

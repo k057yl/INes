@@ -1,0 +1,37 @@
+<div class="modal-backdrop" (click)="close()">
+  <div class="modal-card" 
+       [class.is-danger]="mode === 'delete'"
+       [class.is-confirm]="mode === 'confirm'" 
+       (click)="$event.stopPropagation()">
+    
+    <div class="modal-top-line"></div>
+
+    <div class="modal-icon">
+      <i class="fa" [ngClass]="getIcon()"></i>
+    </div>
+
+    <h3>{{ title | translate }}</h3>
+    
+    <p class="message" *ngIf="message">{{ message | translate }}</p>
+
+    <div class="inest-form-group" *ngIf="mode === 'input'">
+      <input [(ngModel)]="name" 
+             #inputElement
+             class="inest-input-styled"
+             [placeholder]="placeholder | translate" 
+             (keyup.enter)="submit()">
+    </div>
+
+    <div class="modal-actions">
+      <button class="inest-btn-cancel" (click)="close()">
+        {{ cancelText | translate }}
+      </button>
+      
+      <button [ngClass]="getButtonClass()" 
+              (click)="submit()" 
+              [disabled]="mode === 'input' && !name.trim()">
+        {{ confirmText | translate }}
+      </button>
+    </div>
+  </div>
+</div>

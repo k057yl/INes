@@ -1,0 +1,46 @@
+<div class="filter-wrapper">
+  <div class="filter-actions">
+    <button class="inest-filter-btn" 
+            [class.active]="showPanel" 
+            (click)="toggle()"
+            [title]="'MAIN.FILTERS' | translate">
+      <i class="fa fa-filter"></i>
+    </button>
+  </div>
+
+  <div class="filter-panel" *ngIf="showPanel">
+    <form [formGroup]="filterForm" class="filter-grid">
+      
+      <div class="inest-field">
+        <div class="input-icon-wrapper">
+          <i class="fa fa-search"></i>
+          <input type="text" 
+                 formControlName="searchQuery" 
+                 [placeholder]="'CREATE_ITEM.FIELD_NAME' | translate">
+        </div>
+      </div>
+
+      <div class="inest-field">
+        <select formControlName="categoryId">
+          <option [ngValue]="null">{{ 'CREATE_ITEM.FIELD_CATEGORY' | translate }}</option>
+          <option *ngFor="let cat of categories$ | async" [value]="cat.id">
+            {{ cat.name }}
+          </option>
+        </select>
+      </div>
+
+      <div class="inest-field">
+        <select formControlName="status">
+          <option [ngValue]="null">{{ 'CREATE_ITEM.STATUS' | translate }}</option>
+          <option [value]="0">Active</option>
+          <option [value]="6">Listed</option>
+          <option [value]="1">Lent</option>
+        </select>
+      </div>
+
+      <button class="reset-btn" (click)="reset()" [title]="'COMMON.CANCEL' | translate">
+        <i class="fa fa-times"></i>
+      </button>
+    </form>
+  </div>
+</div>

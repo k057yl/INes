@@ -97,13 +97,15 @@
     </div>
   </div>
 
-  <app-confirm-modal
+  <app-inest-modal
     *ngIf="showDeleteModal"
+    mode="delete"
     [title]="'ITEM_CARD.DELETE' | translate"
     [message]="'ITEM_CARD.M_YOU_SURE' | translate"
+    [confirmText]="'ITEM_CARD.DELETE'"
     (confirmed)="confirmDeleteItem()"
     (cancelled)="closeModals()">
-  </app-confirm-modal>
+  </app-inest-modal>
 </div>
 
 <ng-template #emptyState>
