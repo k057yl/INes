@@ -7,6 +7,7 @@ import { LocationService } from '../../../../shared/services/location.service';
 import { CategoryService } from '../../../../shared/services/category.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { InestModalComponent } from '../../../../shared/components/modal/inest-modal.component';
+import { ITEM_STATUS_OPTIONS } from '../../../../models/constants/item-status.constants';
 
 @Component({
   selector: 'app-item-create',
@@ -31,16 +32,8 @@ export class ItemCreateComponent implements OnInit {
   
   readonly MAX_PHOTOS = 5;
   todayMax = new Date().toISOString().split('T')[0];
-  
-  statuses = [
-    { value: 0, label: 'STATUS.ACTIVE' },
-    { value: 1, label: 'STATUS.LENT' },
-    { value: 2, label: 'STATUS.LOST' },
-    { value: 3, label: 'STATUS.BROKEN' },
-    { value: 4, label: 'STATUS.SOLD' },
-    { value: 5, label: 'STATUS.GIFTED' },
-    { value: 6, label: 'STATUS.LISTED' }
-  ];
+
+  readonly statusOptions = ITEM_STATUS_OPTIONS;
 
   form = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(2)]],

@@ -5,11 +5,12 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
 import { Item } from '../../../../models/entities/item.entity';
 import { TranslateModule } from '@ngx-translate/core';
+import { StatusNamePipe } from '../../../../shared/components/pipe/status-name.pipe';
 
 @Component({
   selector: 'app-item-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, TranslateModule],
+  imports: [CommonModule, RouterModule, TranslateModule, StatusNamePipe],
   templateUrl: './item-detail.component.html',
   styleUrls: ['./item-detail.component.scss']
 })
@@ -38,16 +39,6 @@ export class ItemDetailComponent implements OnInit {
     4: 'fa-hand-holding',     // Lent
     5: 'fa-undo',             // Returned
     6: 'fa-chart-line'        // ValueUpdated
-  };
-
-  statusKeys: { [key: number]: string } = {
-    0: 'STATUS.ACTIVE',
-    1: 'STATUS.LENT',
-    2: 'STATUS.LOST',
-    3: 'STATUS.BROKEN',
-    4: 'STATUS.SOLD',
-    5: 'STATUS.GIFTED',
-    6: 'STATUS.LISTED'
   };
 
   ngOnInit() {

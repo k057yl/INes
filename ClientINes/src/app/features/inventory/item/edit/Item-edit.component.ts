@@ -8,11 +8,14 @@ import { CategoryService } from '../../../../shared/services/category.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { InestModalComponent } from '../../../../shared/components/modal/inest-modal.component';
 import { Item } from '../../../../models/entities/item.entity';
+import { ITEM_STATUS_OPTIONS } from '../../../../models/constants/item-status.constants';
+import { StatusNamePipe } from '../../../../shared/components/pipe/status-name.pipe';
+import { ReminderNamePipe } from '../../../../shared/components/pipe/reminder-name.pipe';
 
 @Component({
   selector: 'app-item-edit',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslateModule, RouterModule, InestModalComponent],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule, RouterModule, InestModalComponent, StatusNamePipe, ReminderNamePipe],
   templateUrl: './item-edit.component.html',
   styleUrl: '../create/item-create.component.scss'
 })
@@ -26,6 +29,7 @@ export class ItemEditComponent implements OnInit {
   private categoryService = inject(CategoryService);
 
   itemId!: string;
+  item?: Item;
   locations: any[] = [];
   categories: any[] = [];
   selectedPhotos: { file: File, preview: string }[] = [];
@@ -33,23 +37,15 @@ export class ItemEditComponent implements OnInit {
   
   readonly MAX_PHOTOS = 5;
   todayMax = new Date().toISOString().split('T')[0];
-  
-  statuses = [
-    { value: 0, label: 'STATUS.ACTIVE' },
-    { value: 1, label: 'STATUS.LENT' },
-    { value: 2, label: 'STATUS.LOST' },
-    { value: 3, label: 'STATUS.BROKEN' },
-    { value: 4, label: 'STATUS.SOLD' },
-    { value: 5, label: 'STATUS.GIFTED' },
-    { value: 6, label: 'STATUS.LISTED' }
-  ];
+
+  readonly statusOptions = ITEM_STATUS_OPTIONS;
 
   form = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(2)]],
     description: [''],
     categoryId: [null as string | null, Validators.required],
     storageLocationId: [null as string | null, Validators.required],
-    status: [0, Validators.required],
+    status: [{ value: 0, disabled: true }, Validators.required],
     purchaseDate: ['', [this.dateNotInFutureValidator]],
     purchasePrice: [null as number | null, [Validators.min(0)]],
     estimatedValue: [null as number | null, [Validators.min(0)]],
@@ -71,6 +67,8 @@ export class ItemEditComponent implements OnInit {
 
   private loadItem() {
     this.itemService.getById(this.itemId).subscribe((item: Item) => {
+      this.item = item;
+      
       this.form.patchValue({
         name: item.name,
         description: item.description,
@@ -81,6 +79,12 @@ export class ItemEditComponent implements OnInit {
         purchasePrice: item.purchasePrice,
         estimatedValue: item.estimatedValue
       });
+
+      if (item.status !== 0) {
+        this.form.disable();
+      } else {
+        this.form.get('status')?.disable();
+      }
     });
   }
 
@@ -88,6 +92,15 @@ export class ItemEditComponent implements OnInit {
     if (!control.value) return null;
     const today = new Date().toISOString().split('T')[0];
     return control.value > today ? { futureDate: true } : null;
+  }
+
+  // --- ЛОГИКА ОДАЛЖИВАНИЯ ---
+  get activeLending() {
+    return this.item?.lending && !this.item.lending.returnedDate ? this.item.lending : null;
+  }
+
+  get activeReminders() {
+    return this.item?.reminders?.filter(r => !r.isCompleted) || [];
   }
 
   onCategoryConfirmed(name: string) {
@@ -124,6 +137,10 @@ export class ItemEditComponent implements OnInit {
   }
 
   onSubmit() {
+    if (this.item && this.item.status !== 0) {
+      return; 
+    }
+
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
@@ -151,6 +168,11 @@ export class ItemEditComponent implements OnInit {
       next: () => this.router.navigate(['/item', this.itemId]),
       error: (err) => console.error('Update failed', err)
     });
+  }
+
+  returnItem() {
+    console.log('Логика возврата предмета будет здесь');
+    // В будущем тут будет вызов: this.itemService.returnItem(this.itemId).subscribe(...)
   }
 
   cancel() { window.history.back(); }

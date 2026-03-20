@@ -32,5 +32,7 @@ namespace INest.Models.Entities
         public string? PhotoUrl { get; set; }
         public string? PublicId { get; set; }
         public Sale? Sale { get; set; }
+
+        public bool HasActiveReminders => Reminders.Any(r => !r.IsCompleted && r.TriggerAt <= DateTime.UtcNow);
     }
 }

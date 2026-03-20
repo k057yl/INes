@@ -9,3 +9,8 @@ export const ITEM_STATUS_LABELS: Record<ItemStatus, string> = {
   [ItemStatus.Gifted]: 'STATUS.GIFTED',
   [ItemStatus.Listed]: 'STATUS.LISTED'
 };
+
+export const ITEM_STATUS_OPTIONS = Object.entries(ITEM_STATUS_LABELS).map(([value, label]) => ({
+  value: Number(value),
+  label
+}));

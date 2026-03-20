@@ -50,8 +50,8 @@
                 [style.color]="item.category.color">
             {{ item.category.name }}
           </span>
-          <span class="badge status">
-            {{ statusKeys[item.status] | translate }}
+          <span class="status-value">
+            {{ 'STATUS.' + (item.status | statusName) | translate }}
           </span>
         </div>
 

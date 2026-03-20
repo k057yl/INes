@@ -1,0 +1,125 @@
+<div class="explorer-page">
+  <div class="container">
+    
+    <header class="explorer-header">
+      <div class="header-left">
+        <h1>{{ 'HEADER.MANAGEMENT' | translate }}</h1>
+        <span class="badge" *ngIf="items.length > 0">{{ items.length }}</span>
+      </div>
+      
+      <div class="header-right">
+        <app-item-filter-bar (filterChanged)="loadData($event)"></app-item-filter-bar>
+        
+        <button class="inest-btn-ribbon-add" [routerLink]="['/item/create']">
+          <i class="fa fa-plus"></i> {{ 'MAIN.CREATE_ITEM' | translate }}
+        </button>
+      </div>
+    </header>
+
+    <div class="bulk-toolbar" [class.active]="selectedItems.size > 0">
+      <div class="toolbar-info">
+        <i class="fa fa-check-double"></i>
+        <span>Вибрано: <b>{{ selectedItems.size }}</b></span>
+      </div>
+      <div class="toolbar-actions">
+        <button class="action-btn" (click)="bulkMove()">
+          <i class="fa fa-exchange-alt"></i> {{ 'ITEM_CARD.M_MOVE' | translate }}
+        </button>
+        <button class="action-btn danger" (click)="bulkDelete()">
+          <i class="fa fa-trash"></i> {{ 'ITEM_CARD.DELETE' | translate }}
+        </button>
+        <div class="divider"></div>
+        <button class="close-btn" (click)="selectedItems.clear()">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="explorer-content" [class.is-loading]="isLoading">
+      <div class="explorer-table-wrapper">
+        <table class="inest-table">
+          <thead>
+            <tr>
+              <th class="col-check">
+                <input type="checkbox" 
+                       [checked]="isAllSelected" 
+                       [indeterminate]="isIndeterminate"
+                       (change)="selectAll($event)">
+              </th>
+              <th class="col-photo"></th>
+              <th class="col-name">{{ 'CREATE_ITEM.NAME' | translate }}</th>
+              <th class="col-cat">{{ 'CREATE_ITEM.CATEGORY' | translate }}</th>
+              <th class="col-loc">{{ 'CREATE_ITEM.LOCATION' | translate }}</th>
+              <th class="col-status">{{ 'CREATE_ITEM.STATUS' | translate }}</th>
+              <th class="col-price">{{ 'CREATE_ITEM.PRICE' | translate }}</th>
+              <th class="col-actions"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of items" 
+                [class.is-selected]="selectedItems.has(item.id)"
+                (click)="toggleSelection(item.id)">
+              
+              <td class="col-check" (click)="$event.stopPropagation()">
+                <input type="checkbox" 
+                       [checked]="selectedItems.has(item.id)" 
+                       (change)="toggleSelection(item.id)">
+              </td>
+              
+              <td class="col-photo">
+                <img [src]="item.photoUrl || 'assets/images/no-image.png'" class="mini-thumb">
+              </td>
+              
+              <td class="col-name">
+                <span class="name-text">{{ item.name }}</span>
+              </td>
+              
+              <td class="col-cat">
+                <span class="cat-tag">{{ item.category?.name || '—' }}</span>
+              </td>
+              
+              <td class="col-loc">
+                <i class="fa fa-folder-open" style="color: var(--accent-color); margin-right: 5px;"></i>
+                {{ item.storageLocation?.name || '—' }}
+              </td>
+              
+              <td class="col-status">
+                <span class="status-dot" [attr.data-status]="item.status"></span>
+                {{ 'STATUS.' + (item.status | statusName) | translate }}
+              </td>
+              
+              <td class="col-price">
+                {{ (item.purchasePrice || 0) | number:'1.2-2' }} $
+              </td>
+              
+              <td class="col-actions" (click)="$event.stopPropagation()">
+                <button class="icon-btn" [routerLink]="['/item', item.id]">
+                    <i class="fa fa-eye"></i>
+                </button>
+
+                <button class="icon-btn" 
+                        [routerLink]="['/item/edit', item.id]"
+                        [disabled]="item.status !== 0"
+                        [class.is-locked]="item.status !== 0"
+                        [title]="item.status !== 0 ? 'Редагування заборонено' : 'Редагувати'">
+                    <i class="fa fa-pen"></i>
+                </button>
+                </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="empty-state" *ngIf="items.length === 0 && !isLoading">
+        <i class="fa fa-search-minus"></i>
+        <p>Нічого не знайдено за вашим запитом</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-inest-modal 
+  *ngIf="selectedItems.size > 0 && false" 
+  mode="confirm"
+  [title]="'ITEM_CARD.M_MOVE'">
+</app-inest-modal>

@@ -1,6 +1,7 @@
 import { Category } from './category.entity';
 import { StorageLocation } from './storage-location.entity';
 import { ItemStatus } from '../enums/item-status.enum';
+import { ReminderType } from '../enums/reminder-type.enum';
 
 export interface ItemPhoto {
   id: string;
@@ -19,9 +20,31 @@ export interface ItemHistory {
   createdAt: string;
 }
 
-export interface Sale { price: number; }
-export interface Lending { borrowerName: string; }
-export interface Reminder { id: string; title: string; date: string; }
+export interface Sale {
+  id: string;
+  price: number;
+  soldDate: string;
+  platformName?: string;
+  profit: number;
+}
+
+export interface Lending {
+  id: string;
+  itemId: string;
+  personName: string;
+  dateGiven: string;
+  expectedReturnDate?: string;
+  returnedDate?: string;
+  comment?: string;
+}
+
+export interface Reminder {
+  id: string;
+  itemId: string;
+  type: ReminderType;
+  triggerAt: string;
+  isCompleted: boolean;
+}
 
 export interface Item {
   id: string;
@@ -33,8 +56,6 @@ export interface Item {
   estimatedValue?: number;
   createdAt: string;
   photoUrl?: string;
-  
-  // Связи
   categoryId: string;
   category?: Category;
   storageLocationId?: string;

@@ -54,7 +54,8 @@ namespace INest.Services
                                 Id = Guid.NewGuid(),
                                 ItemId = item.Id,
                                 FilePath = result.SecureUrl.ToString(),
-                                PublicId = result.PublicId
+                                PublicId = result.PublicId,
+                                UploadedAt = DateTime.UtcNow
                             };
 
                             if (string.IsNullOrEmpty(item.PhotoUrl))
@@ -95,6 +96,8 @@ namespace INest.Services
             var query = _context.Items
                 .Where(i => i.UserId == userId)
                 .Include(i => i.Photos)
+                .Include(i => i.Category)
+                .Include(i => i.StorageLocation)
                 .AsQueryable();
 
             if (!string.IsNullOrEmpty(filters.SearchQuery))
@@ -116,6 +119,7 @@ namespace INest.Services
                 .Include(i => i.Photos)
                 .Include(i => i.Category)
                 .Include(i => i.StorageLocation)
+                .Include(i => i.Sale)
                 .FirstOrDefaultAsync();
 
             if (item == null)
@@ -126,26 +130,40 @@ namespace INest.Services
 
         public async Task<bool> UpdateFullAsync(Guid userId, Guid itemId, UpdateItemFullDto dto, List<IFormFile>? photos)
         {
-            var item = await _context.Items
-                .Include(i => i.Photos)
-                .FirstOrDefaultAsync(i => i.Id == itemId && i.UserId == userId);
+            using var transaction = await _context.Database.BeginTransactionAsync();
 
-            if (item == null)
-                throw new KeyNotFoundException();
+            try
+            {
+                var item = await _context.Items
+                    .Include(i => i.Photos)
+                    .FirstOrDefaultAsync(i => i.Id == itemId && i.UserId == userId);
 
-            item.Name = dto.Name;
-            item.Description = dto.Description;
-            item.CategoryId = dto.CategoryId;
-            item.StorageLocationId = dto.StorageLocationId;
-            item.Status = dto.Status;
-            item.PurchaseDate = dto.PurchaseDate;
-            item.PurchasePrice = dto.PurchasePrice;
-            item.EstimatedValue = dto.EstimatedValue;
+                if (item == null)
+                    throw new KeyNotFoundException(LocalizationConstants.ITEMS.NOT_FOUND);
 
-            await HandlePhotos(item, photos);
+                if (item.Status != ItemStatus.Active)
+                    throw new InvalidOperationException("Only items with 'Active' status can be edited. Cancel active processes first.");
 
-            await _context.SaveChangesAsync();
-            return true;
+                item.Name = dto.Name;
+                item.Description = dto.Description;
+                item.CategoryId = dto.CategoryId;
+                item.StorageLocationId = dto.StorageLocationId;
+                item.PurchaseDate = dto.PurchaseDate;
+                item.PurchasePrice = dto.PurchasePrice;
+                item.EstimatedValue = dto.EstimatedValue;
+
+                await HandlePhotos(item, photos);
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return true;
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
 
         public async Task<bool> UpdatePartialAsync(Guid userId, Guid itemId, UpdateItemPartialDto dto, List<IFormFile>? photos)
@@ -160,6 +178,9 @@ namespace INest.Services
 
                 if (item == null)
                     throw new KeyNotFoundException(LocalizationConstants.ITEMS.NOT_FOUND);
+
+                if (item.Status != ItemStatus.Active)
+                    throw new InvalidOperationException("Only items with 'Active' status can be edited. Cancel active processes first.");
 
                 void LogChange(ItemHistoryType type, string? oldValue, string? newValue)
                 {
@@ -197,12 +218,6 @@ namespace INest.Services
                 {
                     LogChange(ItemHistoryType.Moved, item.StorageLocationId?.ToString(), dto.StorageLocationId.Value.ToString());
                     item.StorageLocationId = dto.StorageLocationId.Value;
-                }
-
-                if (dto.Status.HasValue && dto.Status.Value != item.Status)
-                {
-                    LogChange(ItemHistoryType.StatusChanged, item.Status.ToString(), dto.Status.Value.ToString());
-                    item.Status = dto.Status.Value;
                 }
 
                 if (dto.PurchaseDate.HasValue && dto.PurchaseDate != item.PurchaseDate)
@@ -400,25 +415,44 @@ namespace INest.Services
 
         public async Task<bool> DeleteAsync(Guid userId, Guid itemId)
         {
-            var item = await _context.Items
-                .Include(i => i.Photos)
-                .FirstOrDefaultAsync(i => i.Id == itemId && i.UserId == userId);
+            using var transaction = await _context.Database.BeginTransactionAsync();
 
-            if (item == null)
-                throw new KeyNotFoundException(LocalizationConstants.ITEMS.NOT_FOUND);
-
-            foreach (var photo in item.Photos)
+            try
             {
-                if (!string.IsNullOrEmpty(photo.PublicId))
-                    await _photoService.DeletePhotoAsync(photo.PublicId);
+                var item = await _context.Items
+                    .Include(i => i.Photos)
+                    .Include(i => i.Sale)
+                    .FirstOrDefaultAsync(i => i.Id == itemId && i.UserId == userId);
+
+                if (item == null)
+                    throw new KeyNotFoundException(LocalizationConstants.ITEMS.NOT_FOUND);
+
+                foreach (var photo in item.Photos)
+                {
+                    if (!string.IsNullOrEmpty(photo.PublicId))
+                        await _photoService.DeletePhotoAsync(photo.PublicId);
+                }
+
+                var history = await _context.ItemHistories.Where(h => h.ItemId == itemId).ToListAsync();
+                _context.ItemHistories.RemoveRange(history);
+
+                if (item.Sale != null)
+                {
+                    _context.Sales.Remove(item.Sale);
+                }
+
+                _context.Items.Remove(item);
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return true;
             }
-
-            var history = await _context.ItemHistories.Where(h => h.ItemId == itemId).ToListAsync();
-            _context.ItemHistories.RemoveRange(history);
-
-            _context.Items.Remove(item);
-            await _context.SaveChangesAsync();
-            return true;
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
     }
 }
