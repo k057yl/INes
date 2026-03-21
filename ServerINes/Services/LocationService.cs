@@ -50,6 +50,7 @@ namespace INest.Services
         {
             return await _context.StorageLocations
                 .Where(l => l.UserId == userId)
+                .AsNoTracking()
                 .OrderBy(l => l.SortOrder)
                 .Select(l => new {
                     l.Id,
@@ -85,23 +86,24 @@ namespace INest.Services
                 .FirstOrDefaultAsync(l => l.Id == locationId && l.UserId == userId);
 
             if (location == null)
-                throw new AppException(LocalizationConstants.LOCATIONS.NOT_FOUND, 404);
+                throw new KeyNotFoundException(LocalizationConstants.LOCATIONS.NOT_FOUND);
 
             if (locationId == newParentId)
-                throw new AppException(LocalizationConstants.LOCATIONS.SELF_NESTING, 400);
+                throw new InvalidOperationException(LocalizationConstants.LOCATIONS.SELF_NESTING);
 
             if (newParentId.HasValue)
             {
-                var parent = await _context.StorageLocations
-                    .FirstOrDefaultAsync(l => l.Id == newParentId && l.UserId == userId);
-
-                while (parent != null)
+                var currentParentId = newParentId;
+                while (currentParentId.HasValue)
                 {
-                    if (parent.Id == locationId)
-                        throw new AppException(LocalizationConstants.LOCATIONS.CIRCULAR_DEPENDENCY, 400);
+                    if (currentParentId == locationId)
+                        throw new InvalidOperationException(LocalizationConstants.LOCATIONS.CIRCULAR_DEPENDENCY);
 
-                    parent = await _context.StorageLocations
-                        .FirstOrDefaultAsync(l => l.Id == parent.ParentLocationId && l.UserId == userId);
+                    currentParentId = await _context.StorageLocations
+                        .AsNoTracking()
+                        .Where(l => l.Id == currentParentId && l.UserId == userId)
+                        .Select(l => l.ParentLocationId)
+                        .FirstOrDefaultAsync();
                 }
             }
 
@@ -115,11 +117,10 @@ namespace INest.Services
                 .Where(l => l.UserId == userId && l.ParentLocationId == parentId)
                 .ToListAsync();
 
-            for (int i = 0; i < orderedIds.Count; i++)
+            foreach (var loc in locations)
             {
-                var loc = locations.FirstOrDefault(x => x.Id == orderedIds[i]);
-                if (loc != null)
-                    loc.SortOrder = i;
+                var index = orderedIds.IndexOf(loc.Id);
+                if (index != -1) loc.SortOrder = index;
             }
 
             await _context.SaveChangesAsync();
@@ -130,21 +131,9 @@ namespace INest.Services
             return all
                 .Where(l => l.ParentLocationId == parentId)
                 .OrderBy(l => l.SortOrder)
-                .Select(l => new StorageLocation
-                {
-                    Id = l.Id,
-                    UserId = l.UserId,
-                    Name = l.Name,
-                    Description = l.Description,
-                    Color = l.Color,
-                    Icon = l.Icon,
-                    ParentLocationId = l.ParentLocationId,
-                    SortOrder = l.SortOrder,
-                    CreatedAt = l.CreatedAt,
-                    Items = l.Items,
-                    IsSalesLocation = l.IsSalesLocation,
-                    IsLendingLocation = l.IsLendingLocation,
-                    Children = BuildTree(all, l.Id)
+                .Select(l => {
+                    l.Children = BuildTree(all, l.Id);
+                    return l;
                 })
                 .ToList();
         }
@@ -153,6 +142,7 @@ namespace INest.Services
         {
             var all = await _context.StorageLocations
                 .Where(l => l.UserId == userId)
+                .AsNoTracking()
                 .Include(l => l.Items.Where(i => i.Status != ItemStatus.Sold))
                     .ThenInclude(i => i.Category)
                 .ToListAsync();
@@ -166,7 +156,7 @@ namespace INest.Services
                 .FirstOrDefaultAsync(l => l.Id == locationId && l.UserId == userId);
 
             if (location == null)
-                throw new AppException(LocalizationConstants.LOCATIONS.NOT_FOUND, 404);
+                throw new KeyNotFoundException(LocalizationConstants.LOCATIONS.NOT_FOUND);
 
             location.Name = newName;
             await _context.SaveChangesAsync();
@@ -178,7 +168,7 @@ namespace INest.Services
                 .FirstOrDefaultAsync(l => l.Id == locationId && l.UserId == userId);
 
             if (location == null)
-                throw new AppException(LocalizationConstants.LOCATIONS.NOT_FOUND, 404);
+                throw new KeyNotFoundException(LocalizationConstants.LOCATIONS.NOT_FOUND);
 
             _context.StorageLocations.Remove(location);
             await _context.SaveChangesAsync();
@@ -188,6 +178,7 @@ namespace INest.Services
         {
             return await _context.StorageLocations
                 .Where(l => l.UserId == userId && l.Id == locationId)
+                .AsNoTracking()
                 .Include(l => l.Items.Where(i => i.Status != ItemStatus.Sold))
                 .Include(l => l.Children)
                 .FirstOrDefaultAsync();

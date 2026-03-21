@@ -3,7 +3,10 @@ using INest.Models.DTOs.Item;
 using INest.Models.Entities;
 using INest.Models.Enums;
 using INest.Services.Interfaces;
+using INest.Services.Tracker;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Primitives;
+using System.Collections.Concurrent;
 
 namespace INest.Services.Decorator
 {
@@ -11,41 +14,28 @@ namespace INest.Services.Decorator
     {
         private readonly IItemService _inner;
         private readonly IMemoryCache _cache;
+        private readonly ICacheTracker _tracker;
 
-        public CachedItemService(IItemService inner, IMemoryCache cache)
+        public CachedItemService(IItemService inner, IMemoryCache cache, ICacheTracker tracker)
         {
             _inner = inner;
             _cache = cache;
+            _tracker = tracker;
         }
 
         public async Task<IEnumerable<Item>> GetUserItemsAsync(Guid userId, ItemFilterDto filters)
         {
-            var key = CacheConstants.GET_ITEMS_KEY(userId);
+            string cacheKey = $"items_{userId}_{filters.SearchQuery}_{filters.CategoryId}_{filters.Status}_{filters.SortBy}_{filters.MinPrice}_{filters.MaxPrice}";
 
-            var allItems = await _cache.GetOrCreateAsync(key, async entry =>
+            return await _cache.GetOrCreateAsync(cacheKey, async entry =>
             {
+                entry.AddExpirationToken(_tracker.GetToken(userId));
                 entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10);
-                return await _inner.GetUserItemsAsync(userId, new ItemFilterDto());
+                return await _inner.GetUserItemsAsync(userId, filters);
             }) ?? Enumerable.Empty<Item>();
-
-            var query = allItems.AsQueryable();
-
-            if (!string.IsNullOrWhiteSpace(filters.SearchQuery))
-            {
-                var search = filters.SearchQuery.ToLower();
-                query = query.Where(i =>
-                    i.Name.ToLower().Contains(search) ||
-                    (i.Description != null && i.Description.ToLower().Contains(search)));
-            }
-
-            if (filters.CategoryId.HasValue)
-                query = query.Where(i => i.CategoryId == filters.CategoryId.Value);
-
-            if (filters.Status.HasValue)
-                query = query.Where(i => i.Status == filters.Status.Value);
-
-            return query.ToList();
         }
+
+        private void InvalidateCache(Guid userId) => _tracker.InvalidateUserCache(userId);
 
         public async Task<Item> CreateItemAsync(Guid userId, CreateItemDto dto, List<IFormFile> photos)
         {
@@ -57,10 +47,7 @@ namespace INest.Services.Decorator
         public async Task<bool> UpdateFullAsync(Guid userId, Guid itemId, UpdateItemFullDto dto, List<IFormFile>? photos)
         {
             var result = await _inner.UpdateFullAsync(userId, itemId, dto, photos);
-
-            if (result)
-                InvalidateCache(userId);
-
+            if (result) InvalidateCache(userId);
             return result;
         }
 
@@ -88,6 +75,12 @@ namespace INest.Services.Decorator
             return result;
         }
 
+        public async Task BulkDeleteAsync(Guid userId, IEnumerable<Guid> itemIds)
+        {
+            await _inner.BulkDeleteAsync(userId, itemIds);
+            InvalidateCache(userId);
+        }
+
         public async Task<bool> ChangeStatusAsync(Guid userId, Guid itemId, ItemStatus newStatus)
         {
             var result = await _inner.ChangeStatusAsync(userId, itemId, newStatus);
@@ -102,17 +95,7 @@ namespace INest.Services.Decorator
             return result;
         }
 
-        public async Task<Item?> GetItemAsync(Guid userId, Guid itemId) =>
-            await _inner.GetItemAsync(userId, itemId);
-
-        public async Task<IEnumerable<ItemHistory>> GetItemHistoryAsync(Guid userId, Guid itemId) =>
-            await _inner.GetItemHistoryAsync(userId, itemId);
-
-        private void InvalidateCache(Guid userId)
-        {
-            _cache.Remove(CacheConstants.GET_ITEMS_KEY(userId));
-            _cache.Remove(CacheConstants.GET_LOCATIONS_TREE_KEY(userId));
-            _cache.Remove(CacheConstants.GET_USER_LOCATIONS_LIST_KEY(userId));
-        }
+        public Task<Item?> GetItemAsync(Guid userId, Guid itemId) => _inner.GetItemAsync(userId, itemId);
+        public Task<IEnumerable<ItemHistory>> GetItemHistoryAsync(Guid userId, Guid itemId) => _inner.GetItemHistoryAsync(userId, itemId);
     }
 }

@@ -24,36 +24,78 @@
   top: 55px;
   right: 0;
   z-index: 1000;
-  background: rgba(var(--bg-card-rgb, 28, 37, 65), 0.8);
+  background: rgba(var(--bg-card-rgb, 28, 37, 65), 0.9);
   backdrop-filter: blur(15px);
   border: 1px solid var(--border-color);
   border-radius: 16px;
-  padding: 16px;
-  min-width: 500px;
+  padding: 20px;
+  min-width: 650px; /* Сделали шире, чтобы все влезло */
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
   animation: slideIn 0.2s ease-out;
+}
 
-  .filter-grid {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-  }
+.filter-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.filter-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.inest-field {
+  flex: 1;
+  
+  &.search-field { flex: 2; }
 }
 
 .input-icon-wrapper {
   position: relative;
-  flex: 2;
   i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
   input { 
     width: 100%; padding: 10px 10px 10px 35px; 
     background: var(--bg-input); border: 1px solid var(--border-color); 
-    border-radius: 8px; color: var(--text-main);
+    border-radius: 8px; color: var(--text-main); outline: none;
+    &:focus { border-color: var(--accent-color); }
   }
 }
 
 select {
-  padding: 10px; background: var(--bg-input); border: 1px solid var(--border-color);
-  border-radius: 8px; color: var(--text-main); outline: none;
+  width: 100%; padding: 10px; background: var(--bg-input); border: 1px solid var(--border-color);
+  border-radius: 8px; color: var(--text-main); outline: none; cursor: pointer;
+  &:focus { border-color: var(--accent-color); }
+}
+
+/* Стили для диапазона цен */
+.price-range {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  
+  input {
+    width: 80px;
+    padding: 10px;
+    background: var(--bg-input); border: 1px solid var(--border-color);
+    border-radius: 8px; color: var(--text-main); outline: none;
+    text-align: center;
+    &:focus { border-color: var(--accent-color); }
+  }
+  
+  .separator { color: var(--text-muted); font-weight: bold; }
+}
+
+.reset-btn {
+  background: rgba(234, 67, 53, 0.1); /* Легкий красный оттенок */
+  color: var(--g-red);
+  border: 1px solid transparent;
+  width: 40px; height: 40px;
+  border-radius: 8px; cursor: pointer; transition: 0.2s;
+  display: flex; align-items: center; justify-content: center;
+
+  &:hover { background: var(--g-red); color: white; }
 }
 
 @keyframes slideIn {

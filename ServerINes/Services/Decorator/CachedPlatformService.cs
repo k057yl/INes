@@ -2,6 +2,7 @@
 using INest.Models.DTOs.Platform;
 using INest.Models.Entities;
 using INest.Services.Interfaces;
+using INest.Services.Tracker;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace INest.Services.Decorator
@@ -10,12 +11,14 @@ namespace INest.Services.Decorator
     {
         private readonly IPlatformService _inner;
         private readonly IMemoryCache _cache;
+        private readonly ICacheTracker _tracker;
         private readonly TimeSpan _cacheDuration = TimeSpan.FromHours(1);
 
-        public CachedPlatformService(IPlatformService inner, IMemoryCache cache)
+        public CachedPlatformService(IPlatformService inner, IMemoryCache cache, ICacheTracker tracker)
         {
             _inner = inner;
             _cache = cache;
+            _tracker = tracker;
         }
 
         public async Task<IEnumerable<Platform>> GetAllAsync(Guid userId)
@@ -23,6 +26,7 @@ namespace INest.Services.Decorator
             var key = CacheConstants.GET_PLATFORMS_KEY(userId);
             return await _cache.GetOrCreateAsync(key, async entry =>
             {
+                entry.AddExpirationToken(_tracker.GetToken(userId));
                 entry.AbsoluteExpirationRelativeToNow = _cacheDuration;
                 return await _inner.GetAllAsync(userId);
             }) ?? Enumerable.Empty<Platform>();
@@ -31,22 +35,24 @@ namespace INest.Services.Decorator
         public async Task<Platform> CreateAsync(Guid userId, PlatformDto dto)
         {
             var result = await _inner.CreateAsync(userId, dto);
-            _cache.Remove(CacheConstants.GET_PLATFORMS_KEY(userId));
+            Invalidate(userId);
             return result;
         }
 
         public async Task<Platform?> UpdateAsync(Guid userId, Guid id, PlatformDto dto)
         {
             var result = await _inner.UpdateAsync(userId, id, dto);
-            if (result != null) _cache.Remove(CacheConstants.GET_PLATFORMS_KEY(userId));
+            if (result != null) Invalidate(userId);
             return result;
         }
 
         public async Task<bool> DeleteAsync(Guid userId, Guid id)
         {
             var result = await _inner.DeleteAsync(userId, id);
-            if (result) _cache.Remove(CacheConstants.GET_PLATFORMS_KEY(userId));
+            if (result) Invalidate(userId);
             return result;
         }
+
+        private void Invalidate(Guid userId) => _tracker.InvalidateUserCache(userId);
     }
 }

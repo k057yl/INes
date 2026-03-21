@@ -19,6 +19,7 @@ namespace INest.Services
         {
             return await _context.Platforms
                 .Where(p => p.UserId == userId)
+                .AsNoTracking()
                 .OrderBy(p => p.Name)
                 .ToListAsync();
         }

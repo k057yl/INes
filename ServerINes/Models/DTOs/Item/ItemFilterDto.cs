@@ -7,6 +7,8 @@ namespace INest.Models.DTOs.Item
         public string? SearchQuery { get; set; }
         public Guid? CategoryId { get; set; }
         public ItemStatus? Status { get; set; }
-        public string? SortBy { get; set; }
+        public ItemSortOption SortBy { get; set; } = ItemSortOption.Newest;
+        public decimal? MinPrice { get; set; }
+        public decimal? MaxPrice { get; set; }
     }
 }

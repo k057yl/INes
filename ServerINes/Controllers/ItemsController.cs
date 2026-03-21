@@ -43,11 +43,15 @@ namespace INest.Controllers
             try
             {
                 var result = await _itemService.UpdateFullAsync(GetUserId(), id, dto, photos);
-                return result ? Ok() : BadRequest();
+                return result ? Ok() : BadRequest(LocalizationConstants.SYSTEM.DEFAULT_ERROR);
             }
-            catch (Exception ex)
+            catch (KeyNotFoundException ex)
             {
-                return StatusCode(500, ex.Message + " | " + ex.StackTrace);
+                return NotFound(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, LocalizationConstants.SYSTEM.DEFAULT_ERROR);
             }
         }
 
@@ -71,6 +75,16 @@ namespace INest.Controllers
         {
             await _itemService.DeleteAsync(GetUserId(), id);
             return NoContent();
+        }
+
+        [HttpDelete("bulk")]
+        public async Task<IActionResult> BulkDelete([FromBody] List<Guid> ids)
+        {
+            if (ids == null || !ids.Any())
+                return BadRequest(LocalizationConstants.SYSTEM.VALIDATION_FAILED);
+
+            await _itemService.BulkDeleteAsync(GetUserId(), ids);
+            return Ok(new { message = LocalizationConstants.ITEMS.DELETE_SUCCESS });
         }
     }
 }

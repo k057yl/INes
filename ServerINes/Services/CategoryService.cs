@@ -36,6 +36,7 @@ namespace INest.Services
         {
             return await _context.Categories
                 .Where(c => c.UserId == userId)
+                .AsNoTracking()
                 .ToListAsync();
         }
 
@@ -45,7 +46,10 @@ namespace INest.Services
                 .FirstOrDefaultAsync(c => c.Id == categoryId && c.UserId == userId);
 
             if (category == null)
-                throw new AppException(LocalizationConstants.CATEGORIES.NOT_FOUND, 404);
+                throw new KeyNotFoundException(LocalizationConstants.CATEGORIES.NOT_FOUND);
+
+            if (dto.ParentCategoryId == categoryId)
+                throw new InvalidOperationException(LocalizationConstants.SYSTEM.VALIDATION_FAILED);
 
             category.Name = dto.Name;
             if (dto.Color != null) category.Color = dto.Color;
@@ -62,41 +66,54 @@ namespace INest.Services
                 .FirstOrDefaultAsync(c => c.Id == categoryId && c.UserId == userId);
 
             if (category == null)
-                throw new AppException(LocalizationConstants.CATEGORIES.NOT_FOUND, 404);
+                throw new KeyNotFoundException(LocalizationConstants.CATEGORIES.NOT_FOUND);
 
             if (category.Name == SharedConstants.CATEGORY_OTHER)
-                throw new AppException(LocalizationConstants.CATEGORIES.CANNOT_DELETE_DEFAULT, 400);
+                throw new InvalidOperationException(LocalizationConstants.CATEGORIES.CANNOT_DELETE_DEFAULT);
 
             if (category.Items.Any())
             {
-                var targetId = targetCategoryId;
-                if (targetId == null)
-                {
-                    var defaultCat = await _context.Categories
-                        .FirstOrDefaultAsync(c => c.UserId == userId && c.Name == SharedConstants.CATEGORY_OTHER);
+                Guid targetId;
 
-                    if (defaultCat == null)
-                    {
-                        defaultCat = new Category
-                        {
-                            Id = Guid.NewGuid(),
-                            UserId = userId,
-                            Name = SharedConstants.CATEGORY_OTHER,
-                            Color = "#64748b"
-                        };
-                        _context.Categories.Add(defaultCat);
-                    }
-                    targetId = defaultCat.Id;
+                if (targetCategoryId.HasValue && targetCategoryId.Value != categoryId)
+                {
+                    var targetExists = await _context.Categories.AnyAsync(c => c.Id == targetCategoryId.Value && c.UserId == userId);
+                    targetId = targetExists ? targetCategoryId.Value : await GetOrCreateDefaultCategoryId(userId);
+                }
+                else
+                {
+                    targetId = await GetOrCreateDefaultCategoryId(userId);
                 }
 
                 foreach (var item in category.Items)
                 {
-                    item.CategoryId = targetId.Value;
+                    item.CategoryId = targetId;
                 }
             }
 
             _context.Categories.Remove(category);
             await _context.SaveChangesAsync();
+        }
+
+        private async Task<Guid> GetOrCreateDefaultCategoryId(Guid userId)
+        {
+            var defaultCat = await _context.Categories
+                .FirstOrDefaultAsync(c => c.UserId == userId && c.Name == SharedConstants.CATEGORY_OTHER);
+
+            if (defaultCat == null)
+            {
+                defaultCat = new Category
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = userId,
+                    Name = SharedConstants.CATEGORY_OTHER,
+                    Color = "#64748b"
+                };
+                _context.Categories.Add(defaultCat);
+                await _context.SaveChangesAsync();
+            }
+
+            return defaultCat.Id;
         }
     }
 }

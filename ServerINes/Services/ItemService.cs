@@ -98,16 +98,30 @@ namespace INest.Services
                 .Include(i => i.Photos)
                 .Include(i => i.Category)
                 .Include(i => i.StorageLocation)
+                .AsNoTracking()
                 .AsQueryable();
 
-            if (!string.IsNullOrEmpty(filters.SearchQuery))
-                query = query.Where(i => i.Name.Contains(filters.SearchQuery) || i.Description.Contains(filters.SearchQuery));
+            if (!string.IsNullOrWhiteSpace(filters.SearchQuery))
+            {
+                var search = filters.SearchQuery.Trim().ToLower();
+                query = query.Where(i => i.Name.ToLower().Contains(search) ||
+                                        (i.Description != null && i.Description.ToLower().Contains(search)));
+            }
 
-            if (filters.CategoryId.HasValue)
-                query = query.Where(i => i.CategoryId == filters.CategoryId.Value);
+            if (filters.CategoryId.HasValue) query = query.Where(i => i.CategoryId == filters.CategoryId);
+            if (filters.Status.HasValue) query = query.Where(i => i.Status == filters.Status);
+            if (filters.MinPrice.HasValue) query = query.Where(i => i.PurchasePrice >= filters.MinPrice);
+            if (filters.MaxPrice.HasValue) query = query.Where(i => i.PurchasePrice <= filters.MaxPrice);
 
-            if (filters.Status.HasValue)
-                query = query.Where(i => i.Status == filters.Status.Value);
+            query = filters.SortBy switch
+            {
+                ItemSortOption.NameAsc => query.OrderBy(i => i.Name),
+                ItemSortOption.NameDesc => query.OrderByDescending(i => i.Name),
+                ItemSortOption.PriceAsc => query.OrderBy(i => i.PurchasePrice),
+                ItemSortOption.PriceDesc => query.OrderByDescending(i => i.PurchasePrice),
+                ItemSortOption.Oldest => query.OrderBy(i => i.CreatedAt),
+                _ => query.OrderByDescending(i => i.CreatedAt)
+            };
 
             return await query.ToListAsync();
         }
@@ -142,7 +156,7 @@ namespace INest.Services
                     throw new KeyNotFoundException(LocalizationConstants.ITEMS.NOT_FOUND);
 
                 if (item.Status != ItemStatus.Active)
-                    throw new InvalidOperationException("Only items with 'Active' status can be edited. Cancel active processes first.");
+                    throw new InvalidOperationException(LocalizationConstants.SYSTEM.VALIDATION_FAILED);
 
                 item.Name = dto.Name;
                 item.Description = dto.Description;
@@ -449,6 +463,38 @@ namespace INest.Services
                 return true;
             }
             catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
+
+        public async Task BulkDeleteAsync(Guid userId, IEnumerable<Guid> itemIds)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                var items = await _context.Items
+                    .Include(i => i.Photos)
+                    .Where(i => itemIds.Contains(i.Id) && i.UserId == userId)
+                    .ToListAsync();
+
+                if (!items.Any()) return;
+
+                foreach (var item in items)
+                {
+                    foreach (var photo in item.Photos)
+                    {
+                        if (!string.IsNullOrEmpty(photo.PublicId))
+                            await _photoService.DeletePhotoAsync(photo.PublicId);
+                    }
+                }
+
+                _context.Items.RemoveRange(items);
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+            }
+            catch
             {
                 await transaction.RollbackAsync();
                 throw;

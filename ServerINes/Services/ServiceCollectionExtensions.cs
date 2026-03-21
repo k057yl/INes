@@ -1,10 +1,11 @@
-﻿using INest.Constants;
+﻿using FluentValidation;
+using FluentValidation.AspNetCore;
+using INest.Constants;
 using INest.Models.Entities;
+using INest.Models.Validators;
 using INest.Services.Decorator;
 using INest.Services.Interfaces;
-using INest.Models.Validators;
-using FluentValidation;
-using FluentValidation.AspNetCore;
+using INest.Services.Tracker;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -103,6 +104,9 @@ namespace INest.Services
 
         public static IServiceCollection AddBusinessServices(this IServiceCollection services)
         {
+            // Регистрация трекера для инвалидации кэша
+            services.AddSingleton<ICacheTracker, CacheTracker>();
+
             // Базовые сервисы
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<ITokenService, TokenService>();
@@ -129,8 +133,7 @@ namespace INest.Services
             services.AddScoped<TInterface>(sp =>
             {
                 var inner = sp.GetRequiredService<TService>();
-                var cache = sp.GetRequiredService<IMemoryCache>();
-                return (TDecorator)Activator.CreateInstance(typeof(TDecorator), inner, cache)!;
+                return ActivatorUtilities.CreateInstance<TDecorator>(sp, inner);
             });
         }
     }
