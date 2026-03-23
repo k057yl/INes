@@ -50,4 +50,8 @@ export class ItemService {
   delete(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
+
+  bulkDelete(ids: string[]): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/bulk`, { body: ids });
+  }
 }

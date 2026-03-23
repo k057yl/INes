@@ -468,37 +468,5 @@ namespace INest.Services
                 throw;
             }
         }
-
-        public async Task BulkDeleteAsync(Guid userId, IEnumerable<Guid> itemIds)
-        {
-            using var transaction = await _context.Database.BeginTransactionAsync();
-            try
-            {
-                var items = await _context.Items
-                    .Include(i => i.Photos)
-                    .Where(i => itemIds.Contains(i.Id) && i.UserId == userId)
-                    .ToListAsync();
-
-                if (!items.Any()) return;
-
-                foreach (var item in items)
-                {
-                    foreach (var photo in item.Photos)
-                    {
-                        if (!string.IsNullOrEmpty(photo.PublicId))
-                            await _photoService.DeletePhotoAsync(photo.PublicId);
-                    }
-                }
-
-                _context.Items.RemoveRange(items);
-                await _context.SaveChangesAsync();
-                await transaction.CommitAsync();
-            }
-            catch
-            {
-                await transaction.RollbackAsync();
-                throw;
-            }
-        }
     }
 }

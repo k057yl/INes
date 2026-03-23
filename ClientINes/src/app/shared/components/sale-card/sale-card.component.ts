@@ -2,11 +2,12 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SaleResponseDto } from '../../../models/dtos/sale.dto';
 import { TranslateModule } from '@ngx-translate/core';
+import { InestModalComponent } from '../modal/inest-modal.component';
 
 @Component({
   selector: 'app-sale-card',
   standalone: true,
-  imports: [CommonModule, TranslateModule],
+  imports: [CommonModule, TranslateModule, InestModalComponent],
   templateUrl: './sale-card.component.html',
   styleUrl: './sale-card.component.scss'
 })
@@ -31,8 +32,9 @@ export class SaleCardComponent {
     this.showDeleteModal = true;
   }
 
-  confirmDelete(keepHistory: boolean) {
+  confirmDelete(result: string) {
     this.showDeleteModal = false;
+    const keepHistory = result === 'smart';
     this.delete.emit({ sale: this.sale, keepHistory });
   }
 

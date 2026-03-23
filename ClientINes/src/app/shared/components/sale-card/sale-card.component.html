@@ -35,37 +35,12 @@
   </div>
 </div>
 
-<div class="modal-backdrop" *ngIf="showDeleteModal" (click)="closeModal()">
-  <div class="modal-card" (click)="$event.stopPropagation()">
-    <div class="modal-icon is-warning">
-      <i class="fa fa-layer-group"></i>
-    </div>
-
-    <h3>{{ 'ITEM_CARD.DELETE' | translate }}?</h3>
-    <p class="message">{{ 'SETTINGS.DELETE_PLATFORM_CONFIRM' | translate }}</p>
-    
-    <div class="modal-options">
-      <button *ngIf="isItemExists" class="opt-btn smart" (click)="confirmDelete(true)">
-        <div class="opt-icon"><i class="fa fa-broom"></i></div>
-        <div class="text">
-          <span class="title">Smart Delete</span>
-          <span class="desc">Удалить предмет, сохранив прибыль в истории</span>
-        </div>
-      </button>
-
-      <button class="opt-btn hard" (click)="confirmDelete(false)">
-        <div class="opt-icon"><i class="fa fa-fire-alt"></i></div>
-        <div class="text">
-          <span class="title">Hard Delete</span>
-          <span class="desc">Стереть всё (включая запись о прибыли)</span>
-        </div>
-      </button>
-    </div>
-
-    <div class="modal-actions" style="margin-top: 20px;">
-        <button class="inest-btn-cancel" (click)="closeModal()">
-            {{ 'COMMON.CANCEL' | translate }}
-        </button>
-    </div>
-  </div>
-</div>
+<app-inest-modal 
+  *ngIf="showDeleteModal" 
+  mode="smart-delete"
+  [showSmartOption]="isItemExists"
+  [title]="'ITEM_CARD.DELETE'"
+  [message]="'SETTINGS.DELETE_PLATFORM_CONFIRM'"
+  (confirmed)="confirmDelete($event)"
+  (cancelled)="closeModal()">
+</app-inest-modal>

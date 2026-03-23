@@ -11,7 +11,8 @@ import { TranslateModule } from '@ngx-translate/core';
   styleUrl: './inest-modal.component.scss'
 })
 export class InestModalComponent implements AfterViewInit {
-  @Input() mode: 'input' | 'delete' | 'confirm' = 'input';
+  @Input() mode: 'input' | 'delete' | 'confirm' | 'smart-delete' = 'input';
+  @Input() showSmartOption: boolean = true;
   
   @Input() title: string = '';
   @Input() message: string = '';
@@ -36,6 +37,7 @@ export class InestModalComponent implements AfterViewInit {
     switch (this.mode) {
       case 'delete': return 'fa-exclamation-triangle';
       case 'confirm': return 'fa-undo-alt';
+      case 'smart-delete': return 'fa-layer-group';
       default: return 'fa-edit';
     }
   }
@@ -48,10 +50,9 @@ export class InestModalComponent implements AfterViewInit {
     }
   }
 
-  submit() {
-    if (this.mode !== 'input' || this.name.trim()) {
-      this.confirmed.emit(this.name.trim());
-    }
+  submit(result?: string) {
+    const finalValue = result || this.name.trim();
+    this.confirmed.emit(finalValue);
   }
 
   close() {

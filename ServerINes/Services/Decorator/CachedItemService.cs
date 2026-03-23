@@ -75,12 +75,6 @@ namespace INest.Services.Decorator
             return result;
         }
 
-        public async Task BulkDeleteAsync(Guid userId, IEnumerable<Guid> itemIds)
-        {
-            await _inner.BulkDeleteAsync(userId, itemIds);
-            InvalidateCache(userId);
-        }
-
         public async Task<bool> ChangeStatusAsync(Guid userId, Guid itemId, ItemStatus newStatus)
         {
             var result = await _inner.ChangeStatusAsync(userId, itemId, newStatus);

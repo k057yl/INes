@@ -11,7 +11,7 @@ import { SettingsComponent } from './features/setting/settings.component';
 import { ItemDetailComponent } from './features/inventory/item/details/item-detail.component';
 import { authGuard } from './core/guards/auth.guard';
 import { ItemEditComponent } from './features/inventory/item/edit/Item-edit.component';
-import { ItemsExplorerComponent } from './features/inventory/item/explorer/items-explorer.component';//************ */
+import { ItemsExplorerComponent } from './features/inventory/item/explorer/items-explorer.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -28,5 +28,5 @@ export const routes: Routes = [
   { path: 'settings', component: SettingsComponent, canActivate: [authGuard] },
   { path: 'item/:id', component: ItemDetailComponent, canActivate: [authGuard] },
   { path: 'item/edit/:id', component: ItemEditComponent, canActivate: [authGuard] },
-  { path: 'explorer', component: ItemsExplorerComponent, canActivate: [authGuard] }//****************** */
+  { path: 'explorer', component: ItemsExplorerComponent, canActivate: [authGuard] }
 ];

@@ -76,15 +76,5 @@ namespace INest.Controllers
             await _itemService.DeleteAsync(GetUserId(), id);
             return NoContent();
         }
-
-        [HttpDelete("bulk")]
-        public async Task<IActionResult> BulkDelete([FromBody] List<Guid> ids)
-        {
-            if (ids == null || !ids.Any())
-                return BadRequest(LocalizationConstants.SYSTEM.VALIDATION_FAILED);
-
-            await _itemService.BulkDeleteAsync(GetUserId(), ids);
-            return Ok(new { message = LocalizationConstants.ITEMS.DELETE_SUCCESS });
-        }
     }
 }
