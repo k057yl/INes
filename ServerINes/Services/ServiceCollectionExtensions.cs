@@ -119,6 +119,8 @@ namespace INest.Services
             services.AddDecoratedService<IPlatformService, PlatformService, CachedPlatformService>();
             services.AddDecoratedService<ISalesService, SalesService, CachedSalesService>();
             services.AddDecoratedService<IItemService, ItemService, CachedItemService>();
+            services.AddDecoratedService<IReminderService, ReminderService, CachedReminderService>();
+            services.AddDecoratedService<ILendingService, LendingService, CachedLendingService>();
 
             return services;
         }

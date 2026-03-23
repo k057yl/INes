@@ -62,7 +62,8 @@ export interface Item {
   storageLocation?: StorageLocation;
   photos: ItemPhoto[];
   history: ItemHistory[];
-  reminders: Reminder[];
   sale?: Sale;
   lending?: Lending;
+  reminders: Reminder[];
+  hasActiveReminders: boolean;
 }

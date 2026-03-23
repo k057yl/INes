@@ -1,46 +1,66 @@
 <div class="filter-wrapper">
-  <div class="filter-actions">
-    <button class="inest-filter-btn" 
-            [class.active]="showPanel" 
-            (click)="toggle()"
-            [title]="'MAIN.FILTERS' | translate">
-      <i class="fa fa-filter"></i>
-    </button>
-  </div>
+  <button class="inest-filter-btn" [class.active]="showPanel" (click)="toggle()">
+    <i class="fa fa-sliders-h"></i>
+  </button>
 
   <div class="filter-panel" *ngIf="showPanel">
+    <div class="mobile-close-header">
+      <span class="m-title">{{ 'FILTERS.TITLE' | translate }}</span>
+      <button class="close-btn" (click)="toggle()"><i class="fa fa-times"></i></button>
+    </div>
+
     <form [formGroup]="filterForm" class="filter-grid">
-      
-      <div class="inest-field">
+      <div class="search-row">
         <div class="input-icon-wrapper">
+          <input type="text" formControlName="searchQuery" [placeholder]="'FILTERS.SEARCH_PLACEHOLDER' | translate">
           <i class="fa fa-search"></i>
-          <input type="text" 
-                 formControlName="searchQuery" 
-                 [placeholder]="'CREATE_ITEM.FIELD_NAME' | translate">
+        </div>
+        <button type="button" class="mini-reset-btn" (click)="reset()" title="Reset">
+          <i class="fa fa-sync-alt"></i>
+        </button>
+      </div>
+
+      <div class="main-filters">
+        <div class="field-group">
+          <label>{{ 'EXPLORER.TABLE.CATEGORY' | translate }}</label>
+          <select formControlName="categoryId">
+            <option [ngValue]="null">{{ 'CREATE_ITEM.FIELD_CATEGORY' | translate }}</option>
+            <option *ngFor="let cat of categories$ | async" [value]="cat.id">{{ cat.name }}</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label>{{ 'CREATE_ITEM.STATUS' | translate }}</label>
+          <select formControlName="status">
+            <option [ngValue]="null">{{ 'FILTERS.SHOW_ALL' | translate }}</option>
+            <option [ngValue]="0">{{ 'STATUS.ACTIVE' | translate }}</option>
+            <option [ngValue]="6">{{ 'STATUS.LISTED' | translate }}</option>
+            <option [ngValue]="1">{{ 'STATUS.LENT' | translate }}</option>
+            <option [ngValue]="4">{{ 'STATUS.SOLD' | translate }}</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label>{{ 'FILTERS.SORT_BY' | translate }}</label>
+          <select formControlName="sortBy">
+            <option [ngValue]="0">{{ 'FILTERS.SORT.NEWEST' | translate }}</option>
+            <option [ngValue]="1">{{ 'FILTERS.SORT.OLDEST' | translate }}</option>
+            <option [ngValue]="2">{{ 'FILTERS.SORT.NAME_ASC' | translate }}</option>
+            <option [ngValue]="3">{{ 'FILTERS.SORT.NAME_DESC' | translate }}</option>
+            <option [ngValue]="4">{{ 'FILTERS.SORT.PRICE_ASC' | translate }}</option>
+            <option [ngValue]="5">{{ 'FILTERS.SORT.PRICE_DESC' | translate }}</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label>{{ 'FILTERS.PRICE' | translate }}</label>
+          <div class="price-range">
+            <input type="number" formControlName="minPrice" [placeholder]="'FILTERS.PRICE_FROM' | translate">
+            <span class="sep">-</span>
+            <input type="number" formControlName="maxPrice" [placeholder]="'FILTERS.PRICE_TO' | translate">
+          </div>
         </div>
       </div>
-
-      <div class="inest-field">
-        <select formControlName="categoryId">
-          <option [ngValue]="null">{{ 'CREATE_ITEM.FIELD_CATEGORY' | translate }}</option>
-          <option *ngFor="let cat of categories$ | async" [value]="cat.id">
-            {{ cat.name }}
-          </option>
-        </select>
-      </div>
-
-      <div class="inest-field">
-        <select formControlName="status">
-          <option [ngValue]="null">{{ 'CREATE_ITEM.STATUS' | translate }}</option>
-          <option [value]="0">Active</option>
-          <option [value]="6">Listed</option>
-          <option [value]="1">Lent</option>
-        </select>
-      </div>
-
-      <button class="reset-btn" (click)="reset()" [title]="'COMMON.CANCEL' | translate">
-        <i class="fa fa-times"></i>
-      </button>
     </form>
   </div>
 </div>

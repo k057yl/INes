@@ -102,6 +102,9 @@
             public const string LENT = "HISTORY.LENT";
             public const string RETURNED = "HISTORY.RETURNED";
             public const string VALUE_UPDATED = "HISTORY.VALUE_UPDATED";
+            // Новые ключи не провтыкай добавить на фронте
+            public const string REMINDER_COMPLETED = "HISTORY.REMINDER.COMPLETED";
+            public const string REMINDER_SCHEDULED = "HISTORY.REMINDER.SCHEDULED";
         }
 
         public static class REMINDERS
@@ -110,6 +113,19 @@
             public const string MAINTENANCE = "REMINDERS.MAINTENANCE";
             public const string RETURN_ITEM = "REMINDERS.RETURN_ITEM";
             public const string CUSTOM = "REMINDERS.CUSTOM";
+            // Новые ключи не провтыкай добавить на фронте
+            public const string INSURANCE = "REMINDERS.INSURANCE";
+            public const string MEDICAL = "REMINDERS.MEDICAL";
+            public const string TAX = "REMINDERS.TAX";
+            public const string SUBSCRIPTION = "REMINDERS.SUBSCRIPTION";
+        }
+
+        // Новые ключи не провтыкай добавить на фронте
+        public static class LENDING
+        {
+            public const string NOT_FOUND = "LENDING.ERRORS.NOT_FOUND";
+            public const string ALREADY_LENT = "LENDING.ERRORS.ALREADY_LENT";
+            public const string NOT_LENT = "LENDING.ERRORS.NOT_LENT";
         }
     }
 }

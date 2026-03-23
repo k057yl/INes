@@ -110,6 +110,7 @@ namespace INest.Services
 
             if (filters.CategoryId.HasValue) query = query.Where(i => i.CategoryId == filters.CategoryId);
             if (filters.Status.HasValue) query = query.Where(i => i.Status == filters.Status);
+            if (filters.Status != null) query = query.Where(i => i.Status == filters.Status.Value);
             if (filters.MinPrice.HasValue) query = query.Where(i => i.PurchasePrice >= filters.MinPrice);
             if (filters.MaxPrice.HasValue) query = query.Where(i => i.PurchasePrice <= filters.MaxPrice);
 

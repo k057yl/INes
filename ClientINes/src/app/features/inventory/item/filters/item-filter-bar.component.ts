@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter, OnInit, inject } from '@angular/core';
+import { Component, Output, EventEmitter, OnInit, inject, ElementRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
@@ -15,6 +15,7 @@ import { CategoryService } from '../../../../shared/services/category.service';
 export class ItemFilterBarComponent implements OnInit {
   private fb = inject(FormBuilder);
   private categoryService = inject(CategoryService);
+  private eRef = inject(ElementRef);
 
   @Output() filterChanged = new EventEmitter<any>();
 
@@ -24,13 +25,23 @@ export class ItemFilterBarComponent implements OnInit {
   filterForm = this.fb.group({
     searchQuery: [''],
     categoryId: [null],
-    status: [null]
+    status: [null],
+    sortBy: [0],
+    minPrice: [null],
+    maxPrice: [null]
   });
+
+  @HostListener('document:click', ['$event'])
+  clickout(event: any) {
+    if (!this.eRef.nativeElement.contains(event.target)) {
+      this.showPanel = false;
+    }
+  }
 
   ngOnInit() {
     this.filterForm.valueChanges.pipe(
       debounceTime(400),
-      distinctUntilChanged()
+      distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr))
     ).subscribe(values => {
       this.filterChanged.emit(values);
     });
@@ -41,6 +52,13 @@ export class ItemFilterBarComponent implements OnInit {
   }
 
   reset() {
-    this.filterForm.reset();
+    this.filterForm.reset({
+      searchQuery: '',
+      categoryId: null,
+      status: null,
+      sortBy: 0,
+      minPrice: null,
+      maxPrice: null
+    });
   }
 }

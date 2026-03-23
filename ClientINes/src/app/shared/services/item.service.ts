@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Item } from '../../models/entities/item.entity';
@@ -11,19 +11,26 @@ export class ItemService {
   private readonly apiUrl = `${environment.apiBaseUrl}/items`;
 
   getAll(filters?: any): Observable<Item[]> {
-    const params = this.cleanParams(filters);
+    const params = this.buildParams(filters);
     return this.http.get<Item[]>(this.apiUrl, { params });
   }
 
-  private cleanParams(obj: any) {
-    const params: any = {};
+  private buildParams(obj: any): HttpParams {
+    let params = new HttpParams();
     if (!obj) return params;
-    
+
     Object.keys(obj).forEach(key => {
-      if (obj[key] !== null && obj[key] !== undefined && obj[key] !== '') {
-        params[key] = obj[key];
+      const value = obj[key];
+
+      if (value !== null && value !== undefined) {
+        const stringValue = value.toString().trim();
+        
+        if (stringValue !== '') {
+          params = params.set(key, stringValue);
+        }
       }
     });
+    
     return params;
   }
 
@@ -49,9 +56,5 @@ export class ItemService {
 
   delete(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
-  }
-
-  bulkDelete(ids: string[]): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/bulk`, { body: ids });
   }
 }

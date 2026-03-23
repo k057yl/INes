@@ -6,149 +6,206 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 24px;
-    
-    h1 { font-size: 1.8rem; font-weight: 800; color: var(--text-main); margin: 0; }
+    gap: 15px;
+
+    .header-left { 
+      display: flex; 
+      align-items: center; 
+      gap: 12px;
+      
+      h1 { font-size: 1.8rem; font-weight: 800; color: var(--text-main); margin: 0; line-height: 1; }
+    }
+
+    // Тот самый "ядовитый" счетчик стал спокойнее
     .badge { 
-      background: var(--accent-color); color: var(--dark-blue); 
-      padding: 2px 10px; border-radius: 8px; font-size: 0.9rem; margin-left: 12px;
-      font-weight: bold;
-    }
-    .header-right { display: flex; gap: 15px; align-items: center; }
-  }
-}
-
-/* Таблица */
-.inest-table {
-  width: 100%; border-collapse: separate; border-spacing: 0 6px;
-  
-  th { padding: 12px 16px; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; text-align: left; }
-  
-  /* Центрируем заголовок Действия */
-  th.col-actions { text-align: center; }
-
-  tr {
-    background: var(--bg-card); transition: 0.2s;
-    td { padding: 12px 16px; color: var(--text-main); vertical-align: middle; border-top: 1px solid transparent; border-bottom: 1px solid transparent; }
-    
-    td:first-child { border-radius: 12px 0 0 12px; border-left: 1px solid transparent; }
-    td:last-child { border-radius: 0 12px 12px 0; border-right: 1px solid transparent; }
-
-    &:hover { background: var(--bg-main-card); }
-    &.is-selected { 
-      background: rgba(0, 245, 212, 0.05); 
-      td { border-color: var(--accent-color); }
-      .name-text { color: var(--accent-color); font-weight: 600; }
-    }
-  }
-
-  .mini-thumb { width: 42px; height: 42px; border-radius: 8px; object-fit: cover; border: 1px solid rgba(255,255,255,0.1); }
-  .cat-tag { background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 6px; font-size: 0.8rem; border: 1px solid rgba(255,255,255,0.05); }
-}
-
-/* Группа кнопок (отцентрована в столбце) */
-.actions-group {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-
-  .icon-btn {
-    width: 34px; 
-    height: 34px; 
-    border-radius: 8px;
-    border: 1px solid var(--btn-border, rgba(128, 128, 128, 0.2));
-    background: var(--btn-bg, rgba(255, 255, 255, 0.03));
-    
-    color: var(--text-muted);
-    cursor: pointer;
-    display: flex; 
-    align-items: center; 
-    justify-content: center;
-    transition: all 0.2s ease;
-
-    &:hover:not(:disabled) {
-      transform: translateY(-2px);
-      border-color: var(--text-muted);
-      color: var(--text-main);
-    }
-
-    &.view-btn:hover:not(:disabled) { 
-      border-color: var(--accent-color); 
+      background: rgba(var(--accent-rgb), 0.1); // Мягкий тон
       color: var(--accent-color); 
-      box-shadow: 0 0 10px rgba(var(--accent-rgb), 0.2); 
-    }
-    
-    &.edit-btn:hover:not(:disabled) { 
-      border-color: var(--g-yellow); 
-      color: var(--g-yellow);  
-      box-shadow: 0 0 10px rgba(255, 193, 7, 0.2); 
-    }
-
-    &.edit-btn:hover:not(:disabled) { 
-      border-color: var(--g-yellow); 
-      color: var(--g-yellow); 
-      box-shadow: 0 0 10px rgba(255, 193, 7, 0.2); 
+      border: 1px solid rgba(var(--accent-rgb), 0.3);
+      padding: 6px 4px 0px 12px; 
+      border-radius: 20px; 
+      font-size: 0.85rem; 
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: none;
     }
 
-    &.delete-btn:hover:not(:disabled) { 
-      border-color: var(--g-red); 
-      color: var(--g-red); 
-      box-shadow: 0 0 10px rgba(255, 193, 7, 0.2); 
-    }
-
-    &.is-locked, &:disabled { 
-      opacity: 0.15; 
-      cursor: not-allowed; 
-      filter: grayscale(1); 
+    .header-right { 
+      .controls-toolbar {
+        display: flex; 
+        align-items: center; 
+        gap: 12px;
+      }
     }
   }
+}
+
+/* Таблица с закругленной шапкой */
+.inest-table {
+  width: 100%; 
+  border-collapse: separate; 
+  border-spacing: 0 8px; // Увеличил разрыв для "карточного" вида
+  
+  thead {
+    tr { background: rgba(255,255,255,0.03); } // Фон для всей строки заголовка
+    th { 
+      padding: 16px; 
+      color: var(--text-muted); 
+      font-size: 0.75rem; 
+      text-transform: uppercase; 
+      letter-spacing: 1px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+
+      // Закругляем углы шапки
+      &:first-child { border-radius: 12px 0 0 12px; }
+      &:last-child { border-radius: 0 12px 12px 0; text-align: right; }
+    }
+  }
+
+  tbody tr {
+    background: var(--bg-card);
+    transition: transform 0.2s ease, background 0.2s ease;
+    
+    td { 
+      padding: 14px 16px; 
+      color: var(--text-main); 
+      vertical-align: middle; 
+      
+      &:first-child { border-radius: 12px 0 0 12px; }
+      &:last-child { border-radius: 0 12px 12px 0; }
+    }
+    
+    &:hover { 
+      background: rgba(255,255,255,0.04); 
+      transform: translateX(4px); // Легкий эффект при наведении
+    }
+  }
+
+  .mini-thumb { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; }
+  .cat-tag { background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; color: var(--text-muted); }
+}
+
+/* Группа действий: сдвигаем вправо */
+.actions-group {
+  display: flex; 
+  gap: 8px; 
+  justify-content: flex-end; // Сдвиг вправо под заголовок
+  
+  .icon-btn {
+    width: 34px; height: 34px; border-radius: 8px;
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+    color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+    
+    &:hover:not(:disabled) { 
+        background: var(--accent-color); 
+        color: #000; 
+        border-color: var(--accent-color); 
+    }
+    &:disabled { opacity: 0.2; cursor: not-allowed; }
+  }
+}
+
+/* Статусы */
+.status-wrapper {
+  display: flex; align-items: center; gap: 8px;
+  .status-text { font-size: 0.85rem; font-weight: 500; }
 }
 
 .status-dot {
-  display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px;
-  box-shadow: 0 0 5px rgba(255,255,255,0.1);
-  
-  &[data-status="0"] { background: var(--g-green); box-shadow: 0 0 8px rgba(0, 255, 127, 0.3); } // Active
-  &[data-status="4"] { background: var(--error-red); } // Broken/Sold
-  &[data-status="6"] { background: var(--g-blue); box-shadow: 0 0 8px rgba(0, 200, 255, 0.3); } // Listed
-  &[data-status="1"] { background: var(--g-yellow); } // Lent
+  width: 7px; height: 7px; border-radius: 50%;
+  &[data-status="0"] { background: var(--g-green); box-shadow: 0 0 10px rgba(var(--g-green-rgb), 0.5); }
+  &[data-status="4"] { background: var(--error-red); }
 }
 
-.empty-state {
-  text-align: center; padding: 50px 0; color: var(--text-muted);
-  i { font-size: 2.5rem; margin-bottom: 15px; opacity: 0.4; }
+/* Кнопка добавления */
+.inest-btn-ribbon-add {
+  background: var(--accent-color); color: #000; border: none;
+  height: 40px; padding: 0 18px; border-radius: 10px;
+  font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px;
+  &:hover { filter: brightness(1.1); }
 }
 
+/* --- MOBILE ADAPTATION --- */
 @media (max-width: 768px) {
-  .explorer-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 15px;
-    
-    .header-right {
-      width: 100%;
-      flex-direction: column-reverse; // Кнопка "Создать" будет сверху
-      
-      button { width: 100%; }
-      app-item-filter-bar { width: 100%; }
+  .explorer-page {
+    padding: 15px 10px;
+
+    .explorer-header {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 16px;
+
+      .header-left {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        h1 { font-size: 1.4rem; }
+      }
+
+      .header-right {
+        width: 100%;
+        .controls-toolbar {
+          display: flex;
+          width: 100%;
+          gap: 8px;
+          
+          app-item-filter-bar { 
+            flex: 1; 
+            min-width: 0; // Позволяет фильтру сжиматься, не выталкивая кнопку +
+          }
+        }
+      }
     }
   }
 
-  /* Скрываем лишние колонки на мобилках, чтобы не было каши */
-  .col-cat, .col-loc, .col-price {
-    display: none;
-  }
-
-  .bulk-toolbar {
-    width: 95%;
-    padding: 10px 15px;
-    gap: 15px;
-    bottom: 20px;
-    
-    .toolbar-info span { font-size: 0.8rem; }
-  }
-
   .inest-table {
-    td, th { padding: 10px 8px; }
-    .mini-thumb { width: 35px; height: 35px; }
+    display: table;
+    table-layout: fixed; // Фиксируем ширину, чтобы избежать вылетов
+    width: 100%;
+
+    /* Скрываем ненужные колонки */
+    .col-cat, .col-loc, .col-price { 
+      display: none !important; 
+    }
+
+    thead th, tbody td {
+      padding: 10px 5px; // Уменьшаем падинги, чтобы сэкономить место
+      font-size: 0.8rem;
+    }
+
+    /* Настройка ширины оставшихся колонок */
+    .col-photo { width: 50px; text-align: center; }
+    .col-name { 
+      width: auto; 
+      .name-text {
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis; // Если имя слишком длинное, оно обрезается точками
+      }
+    }
+    .col-status { width: 85px; }
+    .col-actions { width: 90px; } // Задаем четкое место под 3 кнопки
+  }
+
+  /* Делаем кнопки действий чуть компактнее на мобилках */
+  .actions-group {
+    justify-content: flex-end;
+    gap: 4px;
+    .icon-btn {
+      width: 30px;
+      height: 30px;
+      i { font-size: 0.8rem; }
+    }
+  }
+
+  .status-wrapper {
+    gap: 4px;
+    .status-text { font-size: 0.75rem; }
+    .status-dot { width: 6px; height: 6px; }
   }
 }
