@@ -67,7 +67,7 @@ namespace INest.Services
         private static void AddCustomAuth(this IServiceCollection services, IConfiguration config)
         {
             var jwt = config.GetSection("Jwt");
-            var keyBytes = Encoding.UTF8.GetBytes(jwt["Key"]?.Trim() ?? throw new InvalidOperationException("JWT Key missing"));
+            var keyBytes = Encoding.UTF8.GetBytes(jwt["Key"]?.Trim() ?? throw new InvalidOperationException(SharedConstants.JWT_KEY_MISSING));
 
             services.AddAuthentication(options =>
             {

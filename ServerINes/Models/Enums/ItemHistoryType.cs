@@ -8,6 +8,8 @@
         Repaired = 3,
         Lent = 4,
         Returned = 5,
-        ValueUpdated = 6
+        ValueUpdated = 6,
+        ReminderCompleted = 7,
+        ReminderScheduled = 8
     }
 }

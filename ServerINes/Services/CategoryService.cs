@@ -1,5 +1,4 @@
 ﻿using INest.Constants;
-using INest.Exceptions;
 using INest.Models.DTOs.Category;
 using INest.Models.Entities;
 using INest.Services.Interfaces;

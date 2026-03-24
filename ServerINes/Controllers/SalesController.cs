@@ -1,4 +1,6 @@
-﻿using INest.Models.DTOs.Sale;
+﻿using INest.Constants;
+using INest.Exceptions;
+using INest.Models.DTOs.Sale;
 using INest.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +17,15 @@ namespace INest.Controllers
 
         public SalesController(ISalesService salesService) => _salesService = salesService;
 
-        private Guid GetUserId() => Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        private Guid GetUserId()
+        {
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                throw new AppException(LocalizationConstants.AUTH.TOKEN_MISSING, 401);
+            }
+            return Guid.Parse(userIdClaim);
+        }
 
         [HttpPost]
         public async Task<IActionResult> SellItem([FromBody] SellItemRequestDto request)

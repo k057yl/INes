@@ -78,7 +78,8 @@
 
   "ITEMS": {
     "ERRORS": {
-      "NOT_FOUND": "Item not found"
+      "NOT_FOUND": "Item not found",
+    "ONLY_ACTIVE_CAN_BE_EDITED": "Only items with 'Active' status can be edited. Cancel active processes first."
     },
     "SUCCESS": {
       "DELETE": "Item successfully deleted"
@@ -207,11 +208,12 @@
   "HISTORY": {
     "CREATED": "Item added to system",
     "MOVED": "Moved to another location",
-    "STATUS_CHANGED": "Status changed to",
+    "STATUS_CHANGED": "Status changed to : {{status}}",
     "REPAIRED": "Item repaired",
     "VALUE_UPDATED": "Price re-evaluated",
     "REMINDER_COMPLETED": "Reminder sent",
-    "REMINDER_SCHEDULED": "Reminder scheduled"
+    "REMINDER_SCHEDULED": "Reminder scheduled",
+    "PHOTOS_ADDED_COUNT": "New photos added: {{count}}"
   },
 
   "REMINDERS": {

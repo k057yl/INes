@@ -26,6 +26,8 @@ namespace INest.Exceptions
             ItemHistoryType.Lent => LocalizationConstants.HISTORY.LENT,
             ItemHistoryType.Returned => LocalizationConstants.HISTORY.RETURNED,
             ItemHistoryType.ValueUpdated => LocalizationConstants.HISTORY.VALUE_UPDATED,
+            ItemHistoryType.ReminderCompleted => LocalizationConstants.HISTORY.REMINDER_COMPLETED,
+            ItemHistoryType.ReminderScheduled => LocalizationConstants.HISTORY.REMINDER_SCHEDULED,
             _ => LocalizationConstants.SYSTEM.DEFAULT_ERROR
         };
 
@@ -34,6 +36,10 @@ namespace INest.Exceptions
             ReminderType.WarrantyExpiration => LocalizationConstants.REMINDERS.WARRANTY,
             ReminderType.Maintenance => LocalizationConstants.REMINDERS.MAINTENANCE,
             ReminderType.ReturnItem => LocalizationConstants.REMINDERS.RETURN_ITEM,
+            ReminderType.Insurance => LocalizationConstants.REMINDERS.INSURANCE,
+            ReminderType.MedicalCheckup => LocalizationConstants.REMINDERS.MEDICAL,
+            ReminderType.TaxPayment => LocalizationConstants.REMINDERS.TAX,
+            ReminderType.Subscription => LocalizationConstants.REMINDERS.SUBSCRIPTION,
             ReminderType.Custom => LocalizationConstants.REMINDERS.CUSTOM,
             _ => LocalizationConstants.SYSTEM.DEFAULT_ERROR
         };

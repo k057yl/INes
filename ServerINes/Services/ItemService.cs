@@ -197,7 +197,7 @@ namespace INest.Services
                     throw new KeyNotFoundException(LocalizationConstants.ITEMS.NOT_FOUND);
 
                 if (item.Status != ItemStatus.Active)
-                    throw new InvalidOperationException("Only items with 'Active' status can be edited. Cancel active processes first.");
+                    throw new InvalidOperationException(LocalizationConstants.ITEMS.ONLY_ACTIVE_CAN_BE_EDITED);
 
                 void LogChange(ItemHistoryType type, string? oldValue, string? newValue)
                 {
@@ -257,7 +257,7 @@ namespace INest.Services
                 if (photos != null && photos.Count > 0)
                 {
                     await HandlePhotos(item, photos);
-                    LogChange(ItemHistoryType.ValueUpdated, "Photos update", $"{photos.Count} new photos added");
+                    LogChange(ItemHistoryType.ValueUpdated, null, $"{LocalizationConstants.HISTORY.PHOTOS_ADDED_COUNT}|{photos.Count}");
                 }
 
                 await _context.SaveChangesAsync();
@@ -421,8 +421,8 @@ namespace INest.Services
                 Id = Guid.NewGuid(),
                 ItemId = item.Id,
                 Type = ItemHistoryType.StatusChanged,
-                OldValue = "Sold",
-                NewValue = "Active",
+                OldValue = SharedConstants.OLD_VALUE,
+                NewValue = SharedConstants.NEW_VALUE,
                 CreatedAt = DateTime.UtcNow
             });
 

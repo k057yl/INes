@@ -7,6 +7,7 @@ using INest.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
 using System.Collections.Concurrent;
+using System.Security.Cryptography;
 
 namespace INest.Services
 {
@@ -40,16 +41,21 @@ namespace INest.Services
             var user = await _userManager.FindByEmailAsync(normalizedEmail);
 
             if (user != null && user.EmailConfirmed)
-                throw new InvalidOperationException(LocalizationConstants.AUTH.EMAIL_ALREADY_EXISTS);
+                throw new AppException(LocalizationConstants.AUTH.EMAIL_ALREADY_EXISTS, 400);
 
             if (user == null)
             {
                 user = new AppUser { Email = normalizedEmail, UserName = dto.Username, EmailConfirmed = false };
                 var result = await _userManager.CreateAsync(user, dto.Password);
-                if (!result.Succeeded) throw new Exception(string.Join(", ", result.Errors.Select(e => e.Description)));
+
+                if (!result.Succeeded)
+                {
+                    var errorMsg = string.Join(", ", result.Errors.Select(e => e.Description));
+                    throw new AppException(errorMsg, 400);
+                }
             }
 
-            var code = new Random().Next(100000, 999999).ToString();
+            var code = RandomNumberGenerator.GetInt32(100000, 1000000).ToString();
             _otpStore[normalizedEmail] = (code, DateTime.UtcNow.AddMinutes(10));
 
             var subject = _emailT[LocalizationConstants.EMAILS.CONFIRM_SUBJECT];
@@ -99,7 +105,12 @@ namespace INest.Services
             if (user == null) return;
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var callbackUrl = $"{_config["Frontend:Url"]}/reset-password?email={dto.Email}&token={Uri.EscapeDataString(token)}";
+
+            var baseUrl = _config["Frontend:Url"];
+            var pathTemplate = _config["Frontend:ResetPasswordPath"]
+                               ?? "{0}/reset-password?email={1}&token={2}";
+
+            var callbackUrl = string.Format(pathTemplate, baseUrl, dto.Email, Uri.EscapeDataString(token));
 
             var subject = _emailT[LocalizationConstants.EMAILS.RESET_SUBJECT];
             var body = string.Format(_emailT[LocalizationConstants.EMAILS.RESET_BODY], callbackUrl);
@@ -124,20 +135,34 @@ namespace INest.Services
         {
             try
             {
-                var settings = new GoogleJsonWebSignature.ValidationSettings { Audience = new[] { _config["Google:ClientId"] } };
+                var settings = new GoogleJsonWebSignature.ValidationSettings
+                {
+                    Audience = new[] { _config["Google:ClientId"] }
+                };
+
                 var payload = await GoogleJsonWebSignature.ValidateAsync(idToken, settings);
 
                 var user = await _userManager.FindByEmailAsync(payload.Email);
                 if (user == null)
                 {
                     user = new AppUser { Email = payload.Email, UserName = payload.Email, EmailConfirmed = true };
-                    await _userManager.CreateAsync(user);
-                    await _userManager.AddToRoleAsync(user, SharedConstants.DEFAULT_ROLE);
+                    var result = await _userManager.CreateAsync(user);
+                    if (result.Succeeded)
+                    {
+                        await _userManager.AddToRoleAsync(user, SharedConstants.DEFAULT_ROLE);
+                    }
                 }
 
                 return await GenerateAuthResponse(user);
             }
-            catch { return null; }
+            catch (InvalidJwtException)
+            {
+                throw new AppException(LocalizationConstants.AUTH.GOOGLE_AUTH_FAILED, 400);
+            }
+            catch (Exception)
+            {
+                throw new AppException(LocalizationConstants.SYSTEM.DEFAULT_ERROR, 500);
+            }
         }
 
         public async Task LogoutAsync(string userId) => await Task.CompletedTask;

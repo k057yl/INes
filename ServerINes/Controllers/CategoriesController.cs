@@ -1,4 +1,5 @@
-﻿using INest.Exceptions;
+﻿using INest.Constants;
+using INest.Exceptions;
 using INest.Models.DTOs.Category;
 using INest.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -15,8 +16,15 @@ namespace INest.Controllers
         private readonly ICategoryService _service;
         public CategoriesController(ICategoryService service) => _service = service;
 
-        private Guid GetUserId() =>
-            Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new AppException("UNAUTHORIZED", 401));
+        private Guid GetUserId()
+        {
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                throw new AppException(LocalizationConstants.AUTH.TOKEN_MISSING, 401);
+            }
+            return Guid.Parse(userIdClaim);
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetAll() => Ok(await _service.GetAllAsync(GetUserId()));

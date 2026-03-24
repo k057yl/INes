@@ -1,4 +1,6 @@
-﻿using INest.Models.DTOs.Reminder;
+﻿using INest.Constants;
+using INest.Exceptions;
+using INest.Models.DTOs.Reminder;
 using INest.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +18,15 @@ namespace INest.Controllers
         public RemindersController(IReminderService reminderService)
             => _reminderService = reminderService;
 
-        private Guid GetUserId() => Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        private Guid GetUserId()
+        {
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                throw new AppException(LocalizationConstants.AUTH.TOKEN_MISSING, 401);
+            }
+            return Guid.Parse(userIdClaim);
+        }
 
         [HttpGet("active")]
         public async Task<IActionResult> GetActive()

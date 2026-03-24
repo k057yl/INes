@@ -16,8 +16,15 @@ namespace INest.Controllers
         private readonly ILocationService _locationService;
         public LocationsController(ILocationService locationService) => _locationService = locationService;
 
-        private Guid GetUserId() =>
-            Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new AppException("UNAUTHORIZED", 401));
+        private Guid GetUserId()
+        {
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                throw new AppException(LocalizationConstants.AUTH.TOKEN_MISSING, 401);
+            }
+            return Guid.Parse(userIdClaim);
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetAll() => Ok(await _locationService.GetUserLocationsAsync(GetUserId()));

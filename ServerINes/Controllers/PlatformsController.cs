@@ -1,4 +1,5 @@
 ﻿using INest.Constants;
+using INest.Exceptions;
 using INest.Models.DTOs.Platform;
 using INest.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -15,7 +16,15 @@ namespace INest.Controllers
         private readonly IPlatformService _service;
         public PlatformsController(IPlatformService service) => _service = service;
 
-        private Guid GetUserId() => Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        private Guid GetUserId()
+        {
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                throw new AppException(LocalizationConstants.AUTH.TOKEN_MISSING, 401);
+            }
+            return Guid.Parse(userIdClaim);
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetAll() => Ok(await _service.GetAllAsync(GetUserId()));

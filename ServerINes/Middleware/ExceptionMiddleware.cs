@@ -33,7 +33,7 @@ namespace INest.Middleware
 
         private async Task HandleExceptionAsync(HttpContext context, Exception ex)
         {
-            context.Response.ContentType = "application/json";
+            context.Response.ContentType = SharedConstants.CONTENT_TYPE_JSON;
 
             var statusCode = (int)HttpStatusCode.InternalServerError;
             var message = LocalizationConstants.SYSTEM.DEFAULT_ERROR;
@@ -57,7 +57,7 @@ namespace INest.Middleware
 
                 case UnauthorizedAccessException:
                     statusCode = (int)HttpStatusCode.Unauthorized;
-                    message = "AUTH.ERRORS.UNAUTHORIZED";
+                    message = LocalizationConstants.AUTH.TOKEN_MISSING;
                     break;
             }
 

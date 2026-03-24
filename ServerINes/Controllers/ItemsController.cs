@@ -1,4 +1,5 @@
 ﻿using INest.Constants;
+using INest.Exceptions;
 using INest.Models.DTOs.Item;
 using INest.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -15,7 +16,15 @@ namespace INest.Controllers
         private readonly IItemService _itemService;
         public ItemsController(IItemService itemService) => _itemService = itemService;
 
-        private Guid GetUserId() => Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        private Guid GetUserId()
+        {
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                throw new AppException(LocalizationConstants.AUTH.TOKEN_MISSING, 401);
+            }
+            return Guid.Parse(userIdClaim);
+        }
 
         [HttpPost]
         public async Task<IActionResult> Create([FromForm] CreateItemDto dto, List<IFormFile> photos)
@@ -40,26 +49,14 @@ namespace INest.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateFull(Guid id, [FromForm] UpdateItemFullDto dto, List<IFormFile>? photos)
         {
-            try
-            {
-                var result = await _itemService.UpdateFullAsync(GetUserId(), id, dto, photos);
-                return result ? Ok() : BadRequest(LocalizationConstants.SYSTEM.DEFAULT_ERROR);
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500, LocalizationConstants.SYSTEM.DEFAULT_ERROR);
-            }
+            await _itemService.UpdateFullAsync(GetUserId(), id, dto, photos);
+            return Ok();
         }
 
         [HttpPatch("{id}")]
         public async Task<IActionResult> UpdatePartial( Guid id,[FromForm] UpdateItemPartialDto dto,List<IFormFile>? photos)
         {
             var result = await _itemService.UpdatePartialAsync(GetUserId(), id, dto, photos);
-
             return result ? Ok() : BadRequest();
         }
 
