@@ -17,13 +17,19 @@ namespace INest.Services
             using var transaction = await _context.Database.BeginTransactionAsync();
 
             var item = await _context.Items
+                .Include(i => i.Lending)
                 .FirstOrDefaultAsync(i => i.Id == dto.ItemId && i.UserId == userId);
 
-            if (item == null)
-                throw new KeyNotFoundException(LocalizationConstants.ITEMS.NOT_FOUND);
+            if (item == null) throw new KeyNotFoundException(LocalizationConstants.ITEMS.NOT_FOUND);
 
-            if (item.Status == ItemStatus.Lent)
+            if (item.Lending != null && item.Lending.ReturnedDate == null)
                 throw new InvalidOperationException(LocalizationConstants.LENDING.ALREADY_LENT);
+
+            if (item.Lending != null)
+            {
+                _context.Lendings.Remove(item.Lending);
+                await _context.SaveChangesAsync();
+            }
 
             var lending = new Lending
             {
@@ -32,17 +38,18 @@ namespace INest.Services
                 PersonName = dto.PersonName,
                 DateGiven = DateTime.UtcNow,
                 ExpectedReturnDate = dto.ExpectedReturnDate,
-                ValueAtLending = item.EstimatedValue,
+                ValueAtLending = dto.ValueAtLending ?? item.EstimatedValue,
                 Comment = dto.Comment
             };
 
             item.Status = ItemStatus.Lent;
             _context.Lendings.Add(lending);
+
             _context.ItemHistories.Add(new ItemHistory
             {
                 ItemId = item.Id,
                 Type = ItemHistoryType.Lent,
-                NewValue = $"{LocalizationConstants.HISTORY.LENT}|{dto.PersonName}",
+                NewValue = $"{dto.PersonName}|{lending.ValueAtLending}$",
                 CreatedAt = DateTime.UtcNow
             });
 

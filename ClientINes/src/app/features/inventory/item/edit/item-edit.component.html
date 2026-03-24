@@ -1,92 +1,94 @@
-<div class="inest-form-container">
-  <header class="form-header">
-    <h2>{{ 'EDIT_ITEM.TITLE' | translate }}</h2>
-    
-    <div class="status-badge-static">
-      <span class="status-dot" [attr.data-status]="item?.status ?? 0"></span>
-        {{ 'STATUS.' + ((item?.status ?? 0) | statusName) | translate }}  
-    </div>
-  </header>
+<div class="edit-container" *ngIf="item">
+  
+  <div class="edit-card">
+    <header class="card-header">
+      <h2><i class="fa fa-pen"></i> {{ 'EDIT_ITEM.TITLE' | translate }}</h2>
+      <div class="status-badge" [class]="item.status | statusName">
+        {{ 'STATUS.' + (item.status | statusName) | translate }}
+      </div>
+    </header>
 
-  <div class="info-block lending" *ngIf="activeLending">
-    <div class="icon"><i class="fa fa-handshake"></i></div>
-    <div class="content">
-      <span class="label">Одолжено: <b>{{ activeLending.personName }}</b></span>
-      <span class="sub" *ngIf="activeLending.expectedReturnDate">
-        Вернуть до: {{ activeLending.expectedReturnDate | date:'dd.MM.yyyy' }}
-      </span>
-    </div>
-    <button class="btn-return-action" (click)="returnItem()">Вернули</button>
-  </div>
-
-  <div class="info-block reminder" *ngFor="let rem of activeReminders">
-    <div class="icon"><i class="fa fa-bell"></i></div>
-    <div class="content">
-      <span class="label">{{ 'REMINDERS.' + (rem.type | reminderName) | translate }}</span>
-      <span class="sub">{{ rem.triggerAt | date:'dd.MM.yyyy' }}</span>
-    </div>
-  </div>
-
-  <form [formGroup]="form" (ngSubmit)="onSubmit()">
-    
-    <div class="inest-field">
-      <label>{{ 'CREATE_ITEM.NAME' | translate }}</label>
-      <input type="text" formControlName="name">
+    <div class="lending-banner" *ngIf="item.status === 1 && item.lending">
+      <div class="lending-info">
+        <i class="fa fa-handshake"></i>
+        <span>{{ 'EDIT_ITEM.LENT_INFO' | translate: { name: item.lending.personName } }}</span>
+      </div>
+      <button class="return-btn" (click)="returnItem()">
+        <i class="fa fa-undo"></i> {{ 'EDIT_ITEM.RETURN_NOW' | translate }}
+      </button>
     </div>
 
-    <div class="form-grid">
-      <div class="inest-field" [class.is-locked]="form.get('purchasePrice')?.disabled">
-        <label>{{ 'CREATE_ITEM.PRICE' | translate }}</label>
-        <div class="input-wrapper">
-          <input type="number" formControlName="purchasePrice">
-          <span class="currency">$</span>
-          <i class="fa fa-lock" *ngIf="form.get('purchasePrice')?.disabled"></i>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="vertical-form">
+      
+      <div class="form-group">
+        <label>{{ 'EDIT_ITEM.NAME' | translate }} *</label>
+        <input type="text" formControlName="name">
+      </div>
+
+      <div class="form-group">
+        <label>{{ 'EDIT_ITEM.DESCRIPTION' | translate }}</label>
+        <textarea formControlName="description" rows="3"></textarea>
+      </div>
+
+      <div class="form-row-single">
+        <div class="form-group">
+          <label>{{ 'EDIT_ITEM.CATEGORY' | translate }} *</label>
+          <select formControlName="categoryId">
+            <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</option>
+          </select>
         </div>
       </div>
 
-      <div class="inest-field" [class.is-locked]="form.get('estimatedValue')?.disabled">
-        <label>{{ 'CREATE_ITEM.ESTIMATED' | translate }}</label>
-        <div class="input-wrapper">
-          <input type="number" formControlName="estimatedValue">
-          <span class="currency">$</span>
-          <i class="fa fa-lock" *ngIf="form.get('estimatedValue')?.disabled"></i>
-        </div>
-      </div>
-    </div>
-
-    <div class="form-grid">
-      <div class="inest-field">
-        <label>{{ 'CREATE_ITEM.CATEGORY' | translate }}</label>
-        <select formControlName="categoryId">
-          <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</option>
-        </select>
-      </div>
-
-      <div class="inest-field">
-        <label>{{ 'CREATE_ITEM.LOCATION' | translate }}</label>
+      <div class="form-group">
+        <label>{{ 'EDIT_ITEM.LOCATION' | translate }} *</label>
         <select formControlName="storageLocationId">
           <option *ngFor="let loc of locations" [value]="loc.id">{{ loc.name }}</option>
         </select>
       </div>
-    </div>
 
-    <div class="form-actions">
-      <button type="button" class="inest-btn-cancel" (click)="cancel()">
-        {{ 'COMMON.CANCEL' | translate }}
-      </button>
-      
-      <button type="submit" class="inest-btn-primary" 
-              [disabled]="form.invalid || (item && item.status !== 0)">
-        {{ 'COMMON.SAVE' | translate }}
-      </button>
-    </div>
-  </form>
+      <div class="form-group">
+        <label>{{ 'EDIT_ITEM.PURCHASE_PRICE' | translate }} ($)</label>
+        <input type="number" formControlName="purchasePrice">
+      </div>
+
+      <div class="form-group">
+        <label>{{ 'EDIT_ITEM.ESTIMATED_VALUE' | translate }} ($)</label>
+        <input type="number" formControlName="estimatedValue">
+      </div>
+
+      <div class="form-group">
+        <label>{{ 'EDIT_ITEM.PURCHASE_DATE' | translate }}</label>
+        <input type="date" formControlName="purchaseDate">
+      </div>
+
+      <div class="photo-section">
+        <label class="checkbox-label">
+          <input type="checkbox" formControlName="addPhoto"> {{ 'EDIT_ITEM.ADD_NEW_PHOTOS' | translate }}
+        </label>
+
+        <div class="photo-upload-box" *ngIf="form.get('addPhoto')?.value">
+          <input type="file" multiple (change)="onFileSelected($event)" accept="image/*" #fileInput hidden>
+          <button type="button" class="upload-trigger" (click)="fileInput.click()">
+            <i class="fa fa-camera"></i> {{ 'EDIT_ITEM.SELECT_PHOTOS' | translate }}
+          </button>
+
+          <div class="preview-grid" *ngIf="selectedPhotos.length">
+            <div class="preview-item" *ngFor="let p of selectedPhotos; let i = index">
+              <img [src]="p.preview">
+              <button type="button" (click)="removePhoto(i)" class="remove-p">×</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn-cancel" [routerLink]="['/item', itemId]">
+          {{ 'COMMON.CANCEL' | translate }}
+        </button>
+        <button type="submit" class="btn-save" [disabled]="form.invalid || (item.status !== 0 && !form.get('addPhoto')?.value)">
+          {{ 'COMMON.SAVE' | translate }}
+        </button>
+      </div>
+    </form>
+  </div>
 </div>
-
-<app-inest-modal 
-  *ngIf="showCategoryModal" 
-  mode="input"
-  [title]="'SETTINGS.ADD_CATEGORY_PROMPT'"
-  (confirmed)="onCategoryConfirmed($event)"
-  (cancelled)="showCategoryModal = false">
-</app-inest-modal>

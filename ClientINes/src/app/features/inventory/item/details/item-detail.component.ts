@@ -25,6 +25,8 @@ export class ItemDetailComponent implements OnInit {
   activePhotoUrl: string | null = null;
   readonly baseUrl = environment.apiBaseUrl.replace('/api', '');
 
+  showReminders = false;
+
   private readonly googleColors = [
     'var(--g-blue)', 
     'var(--g-red)', 
@@ -54,6 +56,10 @@ export class ItemDetailComponent implements OnInit {
     } else {
       this.router.navigate(['/main']);
     }
+  }
+
+  toggleReminders() {
+    this.showReminders = !this.showReminders;
   }
 
   getAccentColor(): string {

@@ -157,7 +157,18 @@
 
   "EDIT_ITEM": {
     "TITLE": "Редактирование предмета",
-    "ADD_NEW_PHOTOS": "Добавить новые фото"
+    "NAME": "Название предмета",
+    "DESCRIPTION": "Описание",
+    "CATEGORY": "Категория",
+    "LOCATION": "Место хранения",
+    "PURCHASE_PRICE": "Цена покупки",
+    "ESTIMATED_VALUE": "Оценочная стоимость",
+    "PURCHASE_DATE": "Дата покупки",
+    "ADD_NEW_PHOTOS": "Добавить новые фото",
+    "SELECT_PHOTOS": "Выбрать фото",
+    "LENT_TO": "Одолжено: {{name}}",
+    "RETURN_NOW": "Вернуть сейчас",
+    "LENT_INFO": "Одолжено: {{ name }}"
   },
 
   "ITEM_CARD": {
@@ -211,12 +222,26 @@
     "INSURANCE": "Страховые расходы",
     "MEDICAL": "Медицинские расходы",
     "TAX": "Налоги",
-    "SUBSCRIPTION": "Подписки"
+    "SUBSCRIPTION": "Подписки",
+    "UI": {
+      "TITLE": "Напоминания",
+      "TYPE_LABEL": "Тип",
+      "DATE_LABEL": "Дата",
+      "EMPTY_LABEL": "Нет напоминаний"
+    }
   },
 
   "LENDING": {
+    "TITLE": "Одолжить",
+    "PERSON_NAME": "Кому отдаем?",
+    "PLACEHOLDER_NAME": "Например: Брат, Иван, Сосед",
+    "ESTIMATED_VALUE": "Оценочная стоимость",
+    "EXPECTED_RETURN": "Когда вернуть?",
+    "COMMENT": "Комментарий",
+    "PLACEHOLDER_COMMENT": "В каком состоянии вещь, что в комплекте...",
+    "DATE_GIVEN": "Дата передачи",
+    "ERROR_NAME_REQ": "Имя обязательно для заполнения",
     "ERRORS": {
-      "NOT_FOUND": "Запись о передаче не найдена",
       "ALREADY_LENT": "Предмет уже передан",
       "NOT_LENT": "Предмет не находится в передаче"
     }
@@ -233,7 +258,8 @@
     "ESTIMATED_VALUE": "Текущая оценка",
     "HISTORY_TITLE": "История изменений",
     "HISTORY_EMPTY": "История пока пуста",
-    "NO_DESCRIPTION": "Описание отсутствует"
+    "NO_DESCRIPTION": "Описание отсутствует",
+    "LENT_TO": "Находится у "
   },
 
   "LOCATIONS": {

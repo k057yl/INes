@@ -6,18 +6,18 @@ import { ItemService } from '../../../../shared/services/item.service';
 import { LocationService } from '../../../../shared/services/location.service';
 import { CategoryService } from '../../../../shared/services/category.service';
 import { TranslateModule } from '@ngx-translate/core';
-import { InestModalComponent } from '../../../../shared/components/modal/shared-modal/inest-modal.component';
 import { Item } from '../../../../models/entities/item.entity';
 import { ITEM_STATUS_OPTIONS } from '../../../../models/constants/item-status.constants';
 import { StatusNamePipe } from '../../../../shared/components/pipe/status-name.pipe';
 import { ReminderNamePipe } from '../../../../shared/components/pipe/reminder-name.pipe';
+import { LendingService } from '../../../../shared/services/lending.service';
 
 @Component({
   selector: 'app-item-edit',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslateModule, RouterModule, InestModalComponent, StatusNamePipe, ReminderNamePipe],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule, RouterModule, StatusNamePipe, ReminderNamePipe],
   templateUrl: './item-edit.component.html',
-  styleUrl: '../create/item-create.component.scss'
+  styleUrls: ['./item-edit.component.scss']
 })
 export class ItemEditComponent implements OnInit {
   private route = inject(ActivatedRoute);
@@ -27,6 +27,7 @@ export class ItemEditComponent implements OnInit {
   private itemService = inject(ItemService);
   private locationService = inject(LocationService);
   private categoryService = inject(CategoryService);
+  private lendingService = inject(LendingService);
 
   itemId!: string;
   item?: Item;
@@ -45,7 +46,7 @@ export class ItemEditComponent implements OnInit {
     description: [''],
     categoryId: [null as string | null, Validators.required],
     storageLocationId: [null as string | null, Validators.required],
-    status: [{ value: 0, disabled: true }, Validators.required],
+    status: [{ value: 0, disabled: true }],
     purchaseDate: ['', [this.dateNotInFutureValidator]],
     purchasePrice: [null as number | null, [Validators.min(0)]],
     estimatedValue: [null as number | null, [Validators.min(0)]],
@@ -82,8 +83,15 @@ export class ItemEditComponent implements OnInit {
 
       if (item.status !== 0) {
         this.form.disable();
-      } else {
-        this.form.get('status')?.disable();
+        this.form.get('addPhoto')?.enable();
+      }
+    });
+  }
+
+  returnItem() {
+    this.lendingService.returnItem(this.itemId, { returnedDate: new Date().toISOString() }).subscribe({
+      next: () => {
+        this.loadItem();
       }
     });
   }
@@ -168,11 +176,6 @@ export class ItemEditComponent implements OnInit {
       next: () => this.router.navigate(['/item', this.itemId]),
       error: (err) => console.error('Update failed', err)
     });
-  }
-
-  returnItem() {
-    console.log('Логика возврата предмета будет здесь');
-    // В будущем тут будет вызов: this.itemService.returnItem(this.itemId).subscribe(...)
   }
 
   cancel() { window.history.back(); }

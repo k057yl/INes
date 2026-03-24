@@ -193,19 +193,26 @@ export class MainPageComponent implements OnInit {
 
     const item = event.previousContainer.data[event.previousIndex];
     
-    // 1. Сначала перемещаем физически в UI
+    // КЛЮЧЕВОЙ МОМЕНТ: Если вещь уходит из зоны одалживания
+    const wasLent = item.status === ItemStatus.Lent;
+    const isMovingToNormal = !loc.isLendingLocation;
+
+    if (wasLent && isMovingToNormal) {
+      // Автоматически закрываем лендинг на бэкенде
+      this.lendingService.returnItem(item.id, { returnedDate: new Date().toISOString() }).subscribe();
+    }
+
     transferArrayItem(event.previousContainer.data, event.container.data, event.previousIndex, event.currentIndex);
     
-    // 2. Устанавливаем статус
     item.status = loc.isSalesLocation ? ItemStatus.Listed : loc.isLendingLocation ? ItemStatus.Lent : ItemStatus.Active;
-    item.storageLocationId = loc.id; // Важно обновить ID локации сразу
+    item.storageLocationId = loc.id;
 
-    // 3. Отправляем запрос на перемещение
-    this.itemService.move(item.id, loc.id).subscribe();
+    this.itemService.move(item.id, loc.id).subscribe(() => {
+      // После перемещения обновляем данные, чтобы подтянулись чистые статусы
+      this.loadData();
+    });
 
-    // 4. И ТОЛЬКО ПОТОМ, если это зона одалживания, открываем модалку для доп. данных
-    if (loc.isLendingLocation) {
-      // Небольшая задержка, чтобы DnD завершил анимацию корректно
+    if (loc.isLendingLocation && !wasLent) {
       setTimeout(() => this.onLendRequest(item), 100);
     }
   }
@@ -247,16 +254,38 @@ export class MainPageComponent implements OnInit {
 
   confirmDeleteItem() {
     if (!this.itemToDelete) return;
-    this.itemService.delete(this.itemToDelete.id).subscribe(() => {
-      const location = this.flatLocations.find(l => l.id === this.itemToDelete!.storageLocationId);
-      if (location?.items) {
-        location.items = location.items.filter(i => i.id !== this.itemToDelete!.id);
-        this.locations = [...this.locations]; 
+    
+    this.itemService.delete(this.itemToDelete.id).subscribe({
+      next: () => {
+        this.loadData(); 
+        this.closeModals();
+      },
+      error: (err) => {
+        console.error('Ошибка при удалении:', err);
+        this.closeModals();
       }
-      this.closeModals();
     });
   }
 
+/*  confirmDeleteItem() {
+    if (!this.itemToDelete) return;
+    
+    this.itemService.delete(this.itemToDelete.id).subscribe({
+      next: () => {
+        const location = this.flatLocations.find(l => l.id === this.itemToDelete!.storageLocationId);
+        
+        if (location?.items) {
+          location.items = location.items.filter(i => i.id !== this.itemToDelete!.id);
+          
+          this.locations = [...this.locations]; 
+          this.refreshState(); 
+        }
+        this.closeModals();
+      },
+      error: (err) => console.error('Ошибка при удалении:', err)
+    });
+  }
+*/
   // --- ПРОДАЖИ ---
 
   onSellRequest(item: Item) { this.itemToSell = item; }
@@ -278,17 +307,32 @@ export class MainPageComponent implements OnInit {
   onLendConfirmed(dto: LendItemDto) {
     this.lendingService.lendItem(dto).subscribe({
       next: (result) => {
-        const loc = this.flatLocations.find(l => l.id === this.itemToLend?.storageLocationId);
-        if (loc && loc.items) {
-          const itemIdx = loc.items.findIndex(i => i.id === this.itemToLend?.id);
-          if (itemIdx !== -1) {
-            loc.items[itemIdx].status = ItemStatus.Lent;
-            loc.items[itemIdx].lending = result;
-          }
+        const targetItem = this.findItemInTree(this.locations, result.itemId);
+        if (targetItem) {
+          targetItem.status = ItemStatus.Lent;
+          targetItem.lending = result;
         }
+        this.locations = [...this.locations];
+        this.refreshState();
+        this.closeModals();
+      },
+      error: (err) => {
         this.closeModals();
       }
     });
+  }
+
+  // Вспомогательный метод для поиска айтема в глубоком дереве локаций
+  private findItemInTree(locations: StorageLocation[], itemId: string): Item | undefined {
+    for (const loc of locations) {
+      const item = loc.items?.find(i => i.id === itemId);
+      if (item) return item;
+      if (loc.children) {
+        const found = this.findItemInTree(loc.children, itemId);
+        if (found) return found;
+      }
+    }
+    return undefined;
   }
 
   // --- ОБЩЕЕ ---

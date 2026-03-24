@@ -5,48 +5,51 @@
     "EMAIL_SEND_FAILED": "Failed to send email",
     "CONFIG_ERROR": "Server configuration error"
   },
+
   "ERRORS": {
     "DEFAULT": "Invalid data",
     "REQUIRED_FIELD": "This field is required",
     "INVALID_EMAIL_FORMAT": "Invalid email format",
-    "INVALID_COLOR_HEX": "Invalid color hex format",
-    "MAX_LENGTH_50": "Maximum 50 characters allowed",
+    "INVALID_COLOR_HEX": "Invalid color format",
+    "MAX_LENGTH_50": "Maximum 50 characters",
     "PWD_MIN_LENGTH": "Minimum 6 characters",
-    "PWD_LATIN": "Only Latin letters and symbols",
-    "PWD_UPPER": "At least one uppercase letter (A-Z)",
+    "PWD_LATIN": "Only Latin letters and symbols allowed",
+    "PWD_UPPER": "One uppercase letter (A-Z)",
     "PWD_DIGIT": "At least one digit (0-9)",
-    "PWD_SPEC": "Special character required (!@#$%...)",
+    "PWD_SPEC": "Special character (!@#$%...)",
     "USERNAME_LATIN_ONLY": "Only Latin letters and numbers allowed",
     "NEGATIVE_NUMBER": "Value must be greater than zero",
     "FUTURE_DATE": "Date cannot be in the future",
     "FILE_TOO_LARGE": "File is too large to process",
-    "IMAGE_PROCESSING_FAILED": "Error during image processing"
+    "IMAGE_PROCESSING_FAILED": "Error processing image"
   },
+
   "AUTH": {
     "TITLE_REG": "Oh, Hi!",
     "SUBTITLE_REG": "Register in the system",
     "TITLE_LOGIN": "Welcome back!",
-    "SUBTITLE_LOGIN": "Log in to your inventory system",
-    "USERNAME": "Name",
-    "FIELD_USERNAME": "Enter name",
+    "SUBTITLE_LOGIN": "Log in to your storage system",
+    "USERNAME": "Username",
+    "FIELD_USERNAME": "Enter username",
     "EMAIL": "Email",
     "FIELD_EMAIL": "Enter email",
     "PASSWORD": "Password",
     "FIELD_PASSWORD": "Enter password",
     "CHECKING_MAIL": "Checking email...",
     "PASSWORD_MISMATCH": "Passwords do not match",
-    "CONFIRM_PASSWORD": "Confirm password",
+    "CONFIRM_PASSWORD": "Confirm Password",
     "CONFIRM_FIELD_PASSWORD": "Enter password again",
     "BUTTON_LOGIN": "Login",
     "BUTTON_REGISTER": "Register",
-    "NO_ACC_YET": "No account yet?",
+    "NO_ACC_YET": "Don't have an account yet?",
     "ALREADY_HAVE_ACC": "Already have an account?",
     "GO_TO_REGISTER": "Go to registration",
     "GO_TO_LOGIN": "Go to login",
     "OR": "Or",
     "BUTTON_HIDE_GOOGLE": "Hide button",
-    "BUTTON_SHOW_GOOGLE_LOGIN": "Login with Google",
-    "BUTTON_SHOW_GOOGLE_REG": "Register with Google",
+    "BUTTON_SHOW_GOOGLE_LOGIN": "Sign in with Google",
+    "BUTTON_SHOW_GOOGLE_REG": "Sign up with Google",
+    
     "CONFIRM": {
       "TITLE": "Email Confirmation",
       "SUBTITLE": "We've sent a code to your email",
@@ -56,40 +59,45 @@
       "RESEND_TEXT": "Didn't receive the code?",
       "RESEND_LINK": "Resend"
     },
+
     "ERRORS": {
       "EMAIL_ALREADY_EXISTS": "User with this email is already registered",
-      "INVALID_CREDENTIALS": "Invalid login or password",
+      "INVALID_CREDENTIALS": "Invalid username or password",
       "EMAIL_UNCONFIRMED": "Email not confirmed. Please enter the code.",
       "INVALID_OR_EXPIRED_CODE": "Invalid or expired code",
       "USER_NOT_FOUND": "User not found",
-      "GOOGLE_AUTH_FAILED": "Google authentication failed",
-      "TOKEN_MISSING": "Auth token is missing or invalid"
+      "GOOGLE_AUTH_FAILED": "Google authorization failed",
+      "TOKEN_MISSING": "Authorization token is missing or invalid"
     },
     "SUCCESS": {
-      "OTP_SENT": "Confirmation code sent to your email",
-      "PASSWORD_CHANGED": "Registration completed successfully!",
-      "RESET_EMAIL_SENT": "Reset instructions sent to your email"
+      "OTP_SENT": "Confirmation code sent to email",
+      "PASSWORD_CHANGED": "Registration successfully completed!",
+      "RESET_EMAIL_SENT": "Reset instructions sent to email"
     }
   },
+
   "ITEMS": {
     "ERRORS": {
       "NOT_FOUND": "Item not found"
     },
     "SUCCESS": {
-      "DELETE": "Item deleted successfully"
+      "DELETE": "Item successfully deleted"
     }
   },
+
   "CATEGORIES": {
     "ERRORS": {
       "NOT_FOUND": "Category not found",
-      "CANNOT_DELETE_DEFAULT": "Default category cannot be deleted"
+      "CANNOT_DELETE_DEFAULT": "Cannot delete default category"
     }
   },
+
   "PLATFORMS": {
     "ERRORS": {
       "NOT_FOUND": "Platform not found"
     }
   },
+
   "SALES": {
     "TITLE": "Sales History",
     "SUBTITLE": "Your success story in numbers",
@@ -107,6 +115,7 @@
       "NOT_FOUND": "Sale record not found"
     }
   },
+
   "HEADER": {
     "HOME": "Home",
     "LOGIN": "Login",
@@ -114,14 +123,17 @@
     "REGISTER": "Register",
     "SETTINGS": "Settings",
     "SALES": "Sales",
-    "MANAGEMENT": "Management"
+    "MANAGEMENT": "Management",
+    "ITEMS_MANAGEMENT": "Items"
   },
+
   "SHARED": {
     "TOOLTIP_INFO": "Information",
     "TOOLTIP_RENAME": "Rename",
     "TOOLTIP_DELETE": "Delete",
     "TOOLTIP_ADD": "Add"
   },
+
   "CREATE_ITEM": {
     "TITLE": "Create Item",
     "NAME": "Name",
@@ -142,19 +154,33 @@
     "BUTTON_CANCEL": "Cancel",
     "CREATE_CATEGORY": "Create Category"
   },
+
   "EDIT_ITEM": {
     "TITLE": "Edit Item",
-    "ADD_NEW_PHOTOS": "Add new photos"
+    "NAME": "Item Name",
+    "DESCRIPTION": "Description",
+    "CATEGORY": "Category",
+    "LOCATION": "Storage Place",
+    "PURCHASE_PRICE": "Purchase Price",
+    "ESTIMATED_VALUE": "Estimated Value",
+    "PURCHASE_DATE": "Purchase Date",
+    "ADD_NEW_PHOTOS": "Add new photos",
+    "SELECT_PHOTOS": "Select photos",
+    "LENT_TO": "Lent to: {{name}}",
+    "RETURN_NOW": "Return now",
+    "LENT_INFO": "Lent to: {{ name }}"
   },
+
   "ITEM_CARD": {
     "SELL": "Sell",
     "INFO": "Details",
     "DELETE": "Delete",
     "M_MOVE": "Move",
-    "M_SELECT_LOCATION": "Select place",
+    "M_SELECT_LOCATION": "Select location",
     "M_YOU_SURE": "Are you sure you want to permanently delete this item? This action is irreversible.",
-    "M_RETURN_ITEM": "Are you sure you want to return this item back to the location?"
+    "M_RETURN_ITEM": "Are you sure you want to return this item back to location?"
   },
+
   "STATUS": {
     "ACTIVE": "Active",
     "LENT": "Lent",
@@ -164,42 +190,83 @@
     "GIFTED": "Gifted",
     "LISTED": "Listed"
   },
+
   "COMMON": {
     "BACK": "Back",
     "EDIT": "Edit",
     "SAVE": "Save",
-    "CANCEL": "Cancel"
+    "CANCEL": "Cancel",
+    "DELETE": "Delete",
+    "M_YOU_SURE": "Are you sure you want to permanently delete this item? This action is irreversible.",
+    "SMART_DELETE": "Smart Delete",
+    "SMART_DELETE_TEXT": "Delete item while keeping profit in history",
+    "HARD_DELETE": "Hard Delete",
+    "HARD_DELETE_TEXT": "Delete everything (including profit record)"
   },
+
   "HISTORY": {
     "CREATED": "Item added to system",
     "MOVED": "Moved to another location",
     "STATUS_CHANGED": "Status changed to",
     "REPAIRED": "Item repaired",
-    "VALUE_UPDATED": "Price re-evaluated"
+    "VALUE_UPDATED": "Price re-evaluated",
+    "REMINDER_COMPLETED": "Reminder sent",
+    "REMINDER_SCHEDULED": "Reminder scheduled"
   },
+
   "REMINDERS": {
-    "WARRANTY": "Warranty expires soon",
+    "WARRANTY": "Warranty expires",
     "MAINTENANCE": "Maintenance required",
     "RETURN_ITEM": "Time to return item to owner",
-    "CUSTOM": "Reminder"
+    "CUSTOM": "Reminder",
+    "INSURANCE": "Insurance expenses",
+    "MEDICAL": "Medical expenses",
+    "TAX": "Taxes",
+    "SUBSCRIPTION": "Subscriptions",
+    "UI": {
+      "TITLE": "Reminders",
+      "TYPE_LABEL": "Type",
+      "DATE_LABEL": "Date",
+      "EMPTY_LABEL": "No reminders"
+    }
   },
+
+  "LENDING": {
+    "TITLE": "Lend",
+    "PERSON_NAME": "Who are we giving it to?",
+    "PLACEHOLDER_NAME": "e.g., Brother, Ivan, Neighbor",
+    "ESTIMATED_VALUE": "Estimated Value",
+    "EXPECTED_RETURN": "When to return?",
+    "COMMENT": "Comment",
+    "PLACEHOLDER_COMMENT": "Item condition, what's included...",
+    "DATE_GIVEN": "Date given",
+    "ERROR_NAME_REQ": "Name is required",
+    "ERRORS": {
+      "ALREADY_LENT": "Item already transferred",
+      "NOT_LENT": "Item is not currently lent"
+    }
+  },
+
   "MANAGEMENT": {
     "TITLE_CATEGORY": "Category Management",
     "TITLE_PLATFORM": "Platform Management"
   },
+
   "ITEM_DETAIL": {
     "STORAGE_PLACE": "Storage Place",
-    "PURCHASE_PRICE": "Purchased for",
-    "ESTIMATED_VALUE": "Current valuation",
+    "PURCHASE_PRICE": "Bought for",
+    "ESTIMATED_VALUE": "Current Evaluation",
     "HISTORY_TITLE": "Change History",
-    "HISTORY_EMPTY": "History is still empty",
-    "NO_DESCRIPTION": "No description available"
+    "HISTORY_EMPTY": "History is empty yet",
+    "NO_DESCRIPTION": "No description",
+    "LENT_TO": "Currently with "
   },
+
   "LOCATIONS": {
     "ERRORS": {
       "NOT_FOUND": "Location not found",
-      "SELF_NESTING": "Cannot nest a location inside itself",
-      "CIRCULAR_DEPENDENCY": "Circular dependency detected"
+      "SELF_NESTING": "Cannot nest location inside itself",
+      "CIRCULAR_DEPENDENCY": "Cannot nest parent into child (circular dependency)"
     },
     "UI": {
       "NAME_PLACEHOLDER": "e.g., Showcase or Garage",
@@ -209,17 +276,18 @@
       "SALES_HINT": "Items here will automatically become Listed",
       "LENDING_HINT": "Items here will automatically become Lent",
       "TITLE": "Create Location",
-      "COLOR_LABEL": "Label Color",
+      "COLOR_LABEL": "Tag Color",
       "COLOR_HINT_RANDOM": "If not selected, a random color will be assigned"
     },
-    "DROP_MENU": {
+    "DROP_MENU": {  
       "MOVE_TO": "Move to ...",
-      "HIGHER_LEVEL": "To higher level",
+      "HIGHER_LEVEL": "To upper level",
       "DETAILS": "Details",
       "RENAME": "Rename",
       "DELETE": "Delete"
     }
   },
+
   "MAIN": {
     "LOADING": "Loading...",
     "ADD": "Add",
@@ -227,23 +295,65 @@
     "CREATE_LOCATION": "Create Location",
     "CREATE_ITEM": "Create Item"
   },
+
   "LOCATION_RIB": {
     "GLOBAL_PAGE": "Page"
   },
+
   "SETTINGS": {
     "TITLE": "System Settings",
-    "SUBTITLE": "Manage modules and directories",
+    "SUBTITLE": "Modules and Directories Management",
     "GENERAL_TAB": "General",
     "CATEGORIES_TAB": "Categories",
     "PLATFORMS_TAB": "Platforms",
     "SALES_MODULE": "Sales Module",
-    "SALES_HINT": "Enables the ability to mark items as sold and track profit.",
+    "SALES_HINT": "Enables marking items as sold and profit tracking.",
     "LENDING_MODULE": "Lending Module",
     "LENDING_HINT": "Adds lending functionality and return tracking.",
     "GO_TO_ADMIN": "Admin Panel",
-    "ADD_CATEGORY_PROMPT": "Enter name for the new category:",
+    "ADD_CATEGORY_PROMPT": "Enter new category name:",
     "ADD_PLATFORM_PROMPT": "Enter platform name (e.g., OLX or eBay):",
-    "DELETE_CATEGORY_CONFIRM": "Delete category? Ensure there are no active items in it.",
-    "DELETE_PLATFORM_CONFIRM": "Delete platform? Connection in sales history may be lost."
+    "DELETE_CATEGORY_CONFIRM": "Delete category? Make sure it has no active items.",
+    "DELETE_PLATFORM_CONFIRM": "Delete platform? Sale history links might be lost."
+  },
+
+  "EXPLORER": {
+    "TITLE": "Management",
+    "CREATE_ITEM": "Create Item",
+    "SELECTED": "Selected",
+    "MOVE": "Move",
+    "DELETE": "Delete",
+    "EMPTY_RESULT": "Nothing found for your request",
+    "TABLE": {
+      "PHOTO": "Photo",
+      "NAME": "Name",
+      "CATEGORY": "Category",
+      "LOCATION": "Location",
+      "STATUS": "Status",
+      "PRICE": "Price",
+      "ACTION": "Actions"
+    },
+    "TOOLTIP_VIEW": "View details",
+    "TOOLTIP_EDIT": "Edit item",
+    "EDIT_LOCKED": "Editing locked (item is not active)"
+  },
+
+  "FILTERS": {
+    "TITLE": "Filters",
+    "SEARCH_PLACEHOLDER": "Enter item name",
+    "SHOW_ALL": "Show all",
+    "SORT_BY": "Sort by",
+    "PRICE": "Price ($)",
+    "PRICE_FROM": "From",
+    "PRICE_TO": "To",
+    "RESET": "Reset filters",
+    "SORT": {
+      "NEWEST": "Newest first",
+      "OLDEST": "Oldest first",
+      "NAME_ASC": "Name (A-Z)",
+      "NAME_DESC": "Name (Z-A)",
+      "PRICE_ASC": "Price (Cheap)",
+      "PRICE_DESC": "Price (Expensive)"
+    }
   }
 }

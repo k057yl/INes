@@ -3,6 +3,7 @@ export interface LendItemDto {
   personName: string;
   expectedReturnDate?: string | null;
   comment?: string | null;
+  valueAtLending?: number;
 }
 
 export interface ReturnItemDto {

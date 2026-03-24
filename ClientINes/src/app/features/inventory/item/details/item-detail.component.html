@@ -13,30 +13,79 @@
 
   <div class="content-layout">
     
-    <div class="visual-column">
-      <div class="main-image-wrapper" [style.border-bottom-color]="getAccentColor()">
+    <div class="column visual-col">
+      <div class="main-image-wrapper">
         <img [src]="getPhotoUrl(activePhotoUrl)" class="main-img">
       </div>
 
-      <div class="thumbs-gallery" *ngIf="item.photos.length">
+      <div class="thumbs-gallery" *ngIf="item.photos && item.photos.length > 0">
         <div class="thumb-item" 
              *ngFor="let p of item.photos" 
              [class.active]="activePhotoUrl === p.filePath"
-             [style.border-color]="activePhotoUrl === p.filePath ? getAccentColor() : 'transparent'"
              (click)="setMainPhoto(p.filePath)">
           <img [src]="getPhotoUrl(p.filePath)">
         </div>
       </div>
 
       <div class="location-badge" *ngIf="item.storageLocation" [routerLink]="['/location', item.storageLocationId]">
-        <div class="loc-icon" [style.color]="getAccentColor()">
-          <i class="fa fa-map-marker-alt"></i>
-        </div>
+        <div class="loc-icon"><i class="fa fa-map-marker-alt"></i></div>
         <div class="loc-info">
           <span>{{ 'ITEM_DETAIL.STORAGE_PLACE' | translate }}</span>
           <strong>{{ item.storageLocation.name }}</strong>
         </div>
-        <i class="fa fa-chevron-right arrow"></i>
+      </div>
+    </div>
+
+    <div class="column info-col">
+      <div class="accent-line" [style.background-color]="getAccentColor()"></div>
+      
+      <div class="tags-row">
+        <span class="badge category" *ngIf="item.category" 
+              [style.background-color]="item.category.color + '20'" 
+              [style.color]="item.category.color">
+          {{ item.category.name }}
+        </span>
+        <span class="status-value">
+          {{ 'STATUS.' + (item.status | statusName) | translate }}
+        </span>
+      </div>
+
+      <h1 class="item-name">{{ item.name }}</h1>
+      <p class="item-description">{{ item.description || ('ITEM_DETAIL.NO_DESCRIPTION' | translate) }}</p>
+
+      <div class="finance-grid">
+        <div class="finance-card">
+          <label>{{ 'ITEM_DETAIL.PURCHASE_PRICE' | translate }}</label>
+          <div class="price-val">{{ item.purchasePrice || 0 }} $</div>
+        </div>
+        <div class="finance-card">
+          <label>{{ 'ITEM_DETAIL.ESTIMATED_VALUE' | translate }}</label>
+          <div class="price-val">{{ item.estimatedValue || 0 }} $</div>
+        </div>
+      </div>
+
+      <div class="history-section">
+        <h3>{{ 'ITEM_DETAIL.HISTORY_TITLE' | translate }}</h3>
+        <div class="history-list">
+          <div class="history-record" *ngFor="let h of item.history">
+            <div class="history-icon" [style.color]="getAccentColor()">
+              <i class="fa" [ngClass]="historyIcons[h.type]"></i>
+            </div>
+            <div class="history-content">
+              <span class="history-action">{{ 'HISTORY.TYPE_' + h.type | translate }}</span>
+              <div class="history-meta">
+                <small>{{ h.createdAt | date:'dd.MM.yyyy' }}</small>
+                <span class="history-value" *ngIf="h.newValue"> → {{ h.newValue }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="column widget-col">
+      <div class="widget-wrapper">
+        <app-item-reminders [itemId]="item.id"></app-item-reminders>
       </div>
 
       <div class="lending-info-card" *ngIf="isLent && item.lending">
@@ -47,85 +96,22 @@
         <div class="card-body">
           <div class="lending-main-info">
             <strong class="person-name">{{ item.lending.personName }}</strong>
-            <div class="lending-value" *ngIf="item.lending.valueAtLending">
-               {{ item.lending.valueAtLending | number:'1.0-0' }} $
-            </div>
+            <div class="lending-value">{{ item.lending.valueAtLending }} $</div>
           </div>
-
-          <div class="lending-details-grid">
-            <div class="detail-row">
+          <div class="lending-dates">
+            <div class="date-row">
               <label>{{ 'LENDING.DATE_GIVEN' | translate }}</label>
-              <span>{{ item.lending.dateGiven | date:'dd.MM.yyyy' }}</span>
+              <span>{{ item.lending.dateGiven | date:'dd.MM' }}</span>
             </div>
-            <div class="detail-row" *ngIf="item.lending.expectedReturnDate">
+            <div class="date-row" *ngIf="item.lending.expectedReturnDate">
               <label>{{ 'LENDING.EXPECTED_RETURN' | translate }}</label>
-              <span class="return-deadline">{{ item.lending.expectedReturnDate | date:'dd.MM.yyyy' }}</span>
-            </div>
-          </div>
-
-          <div class="lending-comment" *ngIf="item.lending.comment">
-            <i class="fa fa-quote-left"></i>
-            {{ item.lending.comment }}
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="info-column">
-      <div class="title-section">
-        <div class="accent-line" [style.background-color]="getAccentColor()"></div>
-        
-        <div class="tags-row">
-          <span class="badge category" *ngIf="item.category" 
-                [style.background-color]="item.category.color + '20'" 
-                [style.color]="item.category.color">
-            {{ item.category.name }}
-          </span>
-          <span class="status-value">
-            {{ 'STATUS.' + (item.status | statusName) | translate }}
-          </span>
-        </div>
-
-        <h1 class="item-name">{{ item.name }}</h1>
-        <p class="item-description">{{ item.description || ('ITEM_DETAIL.NO_DESCRIPTION' | translate) }}</p>
-      </div>
-
-      <div class="finance-grid">
-        <div class="finance-card purchase">
-          <label>{{ 'ITEM_DETAIL.PURCHASE_PRICE' | translate }}</label>
-          <div class="price-val">{{ item.purchasePrice ? item.purchasePrice + ' $' : '—' }}</div>
-          <span class="date">{{ item.purchaseDate | date:'dd.MM.yyyy' }}</span>
-        </div>
-        <div class="finance-card estimated">
-          <label>{{ 'ITEM_DETAIL.ESTIMATED_VALUE' | translate }}</label>
-          <div class="price-val">{{ item.estimatedValue || 0 }} $</div>
-        </div>
-      </div>
-
-      <div class="reminders-section-wrapper">
-        <app-item-reminders [itemId]="item.id"></app-item-reminders>
-      </div>
-
-      <div class="history-section">
-        <h3>{{ 'ITEM_DETAIL.HISTORY_TITLE' | translate }}</h3>
-        <div class="history-placeholder" *ngIf="!item.history.length">
-          <i class="fa fa-history"></i>
-          <p>{{ 'ITEM_DETAIL.HISTORY_EMPTY' | translate }}</p>
-        </div>
-        
-        <div class="history-list" *ngIf="item.history.length">
-          <div class="history-record" *ngFor="let h of item.history">
-            <div class="history-icon" [style.color]="getAccentColor()">
-              <i class="fa" [ngClass]="historyIcons[h.type]"></i>
-            </div>
-            <div class="history-content">
-              <span class="history-action">{{ 'HISTORY.TYPE_' + h.type | translate }}</span>
-              <small class="history-date">{{ h.createdAt | date:'dd.MM.yyyy HH:mm' }}</small>
+              <span class="return-deadline">{{ item.lending.expectedReturnDate | date:'dd.MM' }}</span>
             </div>
           </div>
         </div>
       </div>
     </div>
+
   </div>
 </div>
 

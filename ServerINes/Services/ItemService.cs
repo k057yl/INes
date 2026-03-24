@@ -135,6 +135,8 @@ namespace INest.Services
                 .Include(i => i.Category)
                 .Include(i => i.StorageLocation)
                 .Include(i => i.Sale)
+                .Include(i => i.Lending)
+                .Include(i => i.Reminders)
                 .FirstOrDefaultAsync();
 
             if (item == null)

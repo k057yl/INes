@@ -1,30 +1,38 @@
 <div class="reminders-widget">
   <div class="widget-header">
-    <h3><i class="fa fa-bell"></i> {{ 'ITEM_DETAIL.REMINDERS_TITLE' | translate }}</h3>
-    <button class="add-btn" (click)="toggleAdd()">
+    <h3><i class="fa fa-bell"></i> {{ 'REMINDERS.UI.TITLE' | translate }}</h3>
+    <button class="add-btn" (click)="toggleAdd()" [title]="'COMMON.ADD' | translate">
       <i class="fa" [ngClass]="isAdding ? 'fa-times' : 'fa-plus'"></i>
     </button>
   </div>
 
   <div class="add-form-container" *ngIf="isAdding">
     <form [formGroup]="reminderForm" (ngSubmit)="onSubmit()">
-      <div class="form-row">
-        <select formControlName="type">
-          <option *ngFor="let type of availableTypes" [value]="type.value">
-            {{ type.label | translate }}
-          </option>
-        </select>
-        <input type="date" formControlName="triggerAt">
+      <div class="form-fields-stack">
+        <div class="field-group">
+          <label>{{ 'REMINDERS.UI.TYPE_LABEL' | translate }}</label>
+          <select formControlName="type">
+            <option *ngFor="let type of availableTypes" [value]="type.value">
+              {{ type.label | translate }}
+            </option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label>{{ 'REMINDERS.UI.DATE_LABEL' | translate }}</label>
+          <input type="date" formControlName="triggerAt">
+        </div>
+
+        <button type="submit" class="save-btn" [disabled]="reminderForm.invalid">
+          <i class="fa fa-save"></i> {{ 'COMMON.SAVE' | translate }}
+        </button>
       </div>
-      <button type="submit" class="save-btn" [disabled]="reminderForm.invalid">
-        {{ 'COMMON.SAVE' | translate }}
-      </button>
     </form>
   </div>
 
   <div class="reminders-list">
     <div *ngIf="reminders.length === 0" class="empty-state">
-      {{ 'REMINDERS.EMPTY' | translate }}
+      {{ 'REMINDERS.UI.EMPTY_LABEL' | translate }}
     </div>
 
     <div class="reminder-item" *ngFor="let r of reminders" [class.completed]="r.isCompleted">
@@ -34,7 +42,7 @@
           <span>{{ getReminderInfo(r.type).label | translate }}</span>
         </div>
         <div class="r-date">
-          <i class="fa fa-calendar-alt"></i> {{ r.triggerAt | date:'dd MMMM yyyy' }}
+          <i class="fa fa-calendar-alt"></i> {{ r.triggerAt | date:'dd.MM.yyyy' }}
         </div>
       </div>
       

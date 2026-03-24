@@ -2,7 +2,7 @@
   <div class="modal-container" (click)="$event.stopPropagation()">
     
     <div class="modal-header">
-      <h3>🤝 Одолжить "{{ item.name }}"</h3>
+      <h3>🤝 {{ 'LENDING.TITLE' | translate }} "{{ item.name }}"</h3>
       <button class="close-btn" (click)="onCancel()">×</button>
     </div>
 
@@ -10,21 +10,31 @@
       <div class="modal-body">
         
         <div class="form-group">
-          <label for="personName">Кому отдаем? *</label>
+          <label for="personName">{{ 'LENDING.PERSON_NAME' | translate }} *</label>
           <input 
             type="text" 
             id="personName" 
             formControlName="personName" 
-            placeholder="Например: Брат, Иван, Сосед"
+            [placeholder]="'LENDING.PLACEHOLDER_NAME' | translate"
             [class.is-invalid]="lendForm.get('personName')?.invalid && lendForm.get('personName')?.touched"
           >
           <span class="error-text" *ngIf="lendForm.get('personName')?.invalid && lendForm.get('personName')?.touched">
-            Имя обязательно
+            {{ 'LENDING.ERROR_NAME_REQ' | translate }}
           </span>
         </div>
 
         <div class="form-group">
-          <label for="expectedReturnDate">Когда вернуть? (необязательно)</label>
+          <label for="valueAtLending">{{ 'LENDING.ESTIMATED_VALUE' | translate }} ($)</label>
+          <input 
+            type="number" 
+            id="valueAtLending" 
+            formControlName="valueAtLending"
+            placeholder="0"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="expectedReturnDate">{{ 'LENDING.EXPECTED_RETURN' | translate }}</label>
           <input 
             type="date" 
             id="expectedReturnDate" 
@@ -33,11 +43,11 @@
         </div>
 
         <div class="form-group">
-          <label for="comment">Комментарий (необязательно)</label>
+          <label for="comment">{{ 'LENDING.COMMENT' | translate }}</label>
           <textarea 
             id="comment" 
             formControlName="comment" 
-            placeholder="Например: Отдал вместе с чехлом и зарядкой"
+            [placeholder]="'LENDING.PLACEHOLDER_COMMENT' | translate"
             rows="3"
           ></textarea>
         </div>
@@ -45,8 +55,12 @@
       </div>
 
       <div class="modal-footer">
-        <button type="button" class="btn-secondary" (click)="onCancel()">ОТМЕНА</button>
-        <button type="submit" class="btn-primary" [disabled]="lendForm.invalid">СОХРАНИТЬ</button>
+        <button type="button" class="btn-secondary" (click)="onCancel()">
+          {{ 'COMMON.CANCEL' | translate }}
+        </button>
+        <button type="submit" class="btn-primary" [disabled]="lendForm.invalid">
+          {{ 'COMMON.SAVE' | translate }}
+        </button>
       </div>
     </form>
 
