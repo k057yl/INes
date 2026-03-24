@@ -6,7 +6,7 @@ import { ItemService } from '../../../../shared/services/item.service';
 import { LocationService } from '../../../../shared/services/location.service';
 import { CategoryService } from '../../../../shared/services/category.service';
 import { TranslateModule } from '@ngx-translate/core';
-import { InestModalComponent } from '../../../../shared/components/modal/inest-modal.component';
+import { InestModalComponent } from '../../../../shared/components/modal/shared-modal/inest-modal.component';
 import { Item } from '../../../../models/entities/item.entity';
 import { ITEM_STATUS_OPTIONS } from '../../../../models/constants/item-status.constants';
 import { StatusNamePipe } from '../../../../shared/components/pipe/status-name.pipe';

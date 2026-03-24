@@ -19,6 +19,7 @@
       [connectedLists]="connectedLists"
       [isChildOf]="isChildOf"
       (itemDropped)="onItemDropped($event)"
+      (lendItem)="onLendRequest($event)"
       (sellItem)="onSellRequest($event)" 
       (move)="onLocationMove($event)"
       (moveItemManual)="onItemMoveManual($event)"
@@ -82,3 +83,11 @@
   (confirmed)="confirmNavigation()"
   (cancelled)="closeModals()">
 </app-inest-modal>
+
+<app-lend-item-modal 
+  *ngIf="showLendModal && itemToLend" 
+  [item]="itemToLend"
+  [isOpen]="showLendModal"
+  (close)="closeModals()"
+  (confirm)="onLendConfirmed($event)">
+</app-lend-item-modal>

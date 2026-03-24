@@ -1,7 +1,8 @@
 import { Category } from './category.entity';
 import { StorageLocation } from './storage-location.entity';
 import { ItemStatus } from '../enums/item-status.enum';
-import { ReminderType } from '../enums/reminder-type.enum';
+import { Lending } from './lending.entity';
+import { Reminder } from './reminder.entity';
 
 export interface ItemPhoto {
   id: string;
@@ -26,24 +27,6 @@ export interface Sale {
   soldDate: string;
   platformName?: string;
   profit: number;
-}
-
-export interface Lending {
-  id: string;
-  itemId: string;
-  personName: string;
-  dateGiven: string;
-  expectedReturnDate?: string;
-  returnedDate?: string;
-  comment?: string;
-}
-
-export interface Reminder {
-  id: string;
-  itemId: string;
-  type: ReminderType;
-  triggerAt: string;
-  isCompleted: boolean;
 }
 
 export interface Item {

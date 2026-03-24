@@ -177,3 +177,144 @@
 @media (max-width: 900px) {
   .detail-container .content-layout { grid-template-columns: 1fr; }
 }
+
+.lending-info-card {
+  margin-top: 1.5rem;
+  background: var(--bg-main-card);
+  border-radius: 12px;
+  padding: 1.25rem;
+  border-left: 4px solid var(--g-yellow);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--g-yellow);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    margin-bottom: 0.8rem;
+    letter-spacing: 0.5px;
+  }
+
+  .person-name {
+    display: block;
+    font-size: 1.25rem;
+    color: var(--text-main);
+    margin-bottom: 0.5rem;
+  }
+
+  .lending-dates {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    
+    .return-deadline {
+      color: var(--accent-color);
+      font-weight: 600;
+    }
+  }
+
+  .lending-comment {
+    margin-top: 1rem;
+    padding-top: 0.8rem;
+    border-top: 1px solid var(--border-color);
+    font-style: italic;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+}
+
+.reminders-section-wrapper {
+  margin: 1.5rem 0;
+}
+
+.lending-info-card {
+  margin-top: 2rem;
+  background: var(--bg-main-card);
+  border-radius: 20px;
+  padding: 1.5rem;
+  border-left: 5px solid var(--g-yellow);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border-color);
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--g-yellow);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    margin-bottom: 1.25rem;
+    letter-spacing: 1px;
+  }
+
+  .lending-main-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+
+    .person-name {
+      font-size: 1.4rem;
+      color: var(--text-main);
+      font-weight: 800;
+    }
+
+    .lending-value {
+      background: rgba(251, 188, 5, 0.1);
+      color: var(--g-yellow);
+      padding: 4px 12px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+  }
+
+  .lending-details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 1.5rem;
+
+    .detail-row {
+      label {
+        display: block;
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        margin-bottom: 4px;
+      }
+      span {
+        font-weight: 600;
+        color: var(--text-main);
+        font-size: 0.95rem;
+      }
+      .return-deadline {
+        color: var(--accent-color);
+      }
+    }
+  }
+
+  .lending-comment {
+    background: var(--bg-input);
+    padding: 12px;
+    border-radius: 12px;
+    font-style: italic;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+    display: flex;
+    gap: 10px;
+
+    i {
+      color: var(--border-color);
+      font-size: 0.8rem;
+    }
+  }
+}

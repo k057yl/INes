@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SaleResponseDto } from '../../../models/dtos/sale.dto';
 import { TranslateModule } from '@ngx-translate/core';
-import { InestModalComponent } from '../modal/inest-modal.component';
+import { InestModalComponent } from '../modal/shared-modal/inest-modal.component';
 
 @Component({
   selector: 'app-sale-card',

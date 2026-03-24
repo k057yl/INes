@@ -1,0 +1,60 @@
+<div class="reminders-widget">
+  <div class="widget-header">
+    <h3><i class="fa fa-bell"></i> {{ 'ITEM_DETAIL.REMINDERS_TITLE' | translate }}</h3>
+    <button class="add-btn" (click)="toggleAdd()">
+      <i class="fa" [ngClass]="isAdding ? 'fa-times' : 'fa-plus'"></i>
+    </button>
+  </div>
+
+  <div class="add-form-container" *ngIf="isAdding">
+    <form [formGroup]="reminderForm" (ngSubmit)="onSubmit()">
+      <div class="form-row">
+        <select formControlName="type">
+          <option *ngFor="let type of availableTypes" [value]="type.value">
+            {{ type.label | translate }}
+          </option>
+        </select>
+        <input type="date" formControlName="triggerAt">
+      </div>
+      <button type="submit" class="save-btn" [disabled]="reminderForm.invalid">
+        {{ 'COMMON.SAVE' | translate }}
+      </button>
+    </form>
+  </div>
+
+  <div class="reminders-list">
+    <div *ngIf="reminders.length === 0" class="empty-state">
+      {{ 'REMINDERS.EMPTY' | translate }}
+    </div>
+
+    <div class="reminder-item" *ngFor="let r of reminders" [class.completed]="r.isCompleted">
+      <div class="r-info">
+        <div class="r-type-row" [style.color]="getReminderInfo(r.type).color">
+          <i class="fa" [ngClass]="getReminderInfo(r.type).icon"></i>
+          <span>{{ getReminderInfo(r.type).label | translate }}</span>
+        </div>
+        <div class="r-date">
+          <i class="fa fa-calendar-alt"></i> {{ r.triggerAt | date:'dd MMMM yyyy' }}
+        </div>
+      </div>
+      
+      <div class="r-actions" *ngIf="!r.isCompleted">
+        <button class="icon-btn success" (click)="requestComplete(r.id)" [title]="'REMINDERS.MARK_DONE' | translate">
+          <i class="fa fa-check"></i>
+        </button>
+        <button class="icon-btn danger" (click)="requestDelete(r.id)" [title]="'COMMON.DELETE' | translate">
+          <i class="fa fa-trash"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-inest-modal
+  *ngIf="showConfirm"
+  [mode]="modalMode"
+  [title]="modalTitle | translate"
+  [message]="modalMessage | translate"
+  (confirmed)="handleConfirm()"
+  (cancelled)="showConfirm = false">
+</app-inest-modal>

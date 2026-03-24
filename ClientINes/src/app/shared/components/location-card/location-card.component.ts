@@ -30,6 +30,7 @@ export class LocationCardComponent {
   @Output() delete = new EventEmitter<StorageLocation>();
   @Output() deleteItem = new EventEmitter<Item>();
   @Output() moveItemManual = new EventEmitter<{item: Item, targetLocationId: string}>();
+  @Output() lendItem = new EventEmitter<Item>();
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {

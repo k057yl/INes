@@ -9,7 +9,7 @@ import { StorageLocation } from '../../../../models/entities/storage-location.en
 import { ItemStatus } from '../../../../models/enums/item-status.enum';
 import { ItemService } from '../../../../shared/services/item.service';
 import { LocationService } from '../../../../shared/services/location.service';
-import { InestModalComponent } from '../../../../shared/components/modal/inest-modal.component';
+import { InestModalComponent } from '../../../../shared/components/modal/shared-modal/inest-modal.component';
 
 @Component({
   selector: 'app-location-detail',

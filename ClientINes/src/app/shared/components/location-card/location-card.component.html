@@ -65,6 +65,7 @@
       [item]="item"
       [flatLocations]="flatLocations"
       (sell)="sellItem.emit($event)"
+      (lend)="lendItem.emit($event)"
       (delete)="deleteItem.emit($event)"
       (move)="onItemMoveManual($event)">
     </app-item-card>

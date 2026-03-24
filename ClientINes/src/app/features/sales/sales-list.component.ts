@@ -5,7 +5,7 @@ import { SalesService } from '../../shared/services/sales.service';
 import { ItemService } from '../../shared/services/item.service';
 import { SaleResponseDto } from '../../models/dtos/sale.dto';
 import { SaleCardComponent } from '../../shared/components/sale-card/sale-card.component';
-import { InestModalComponent } from '../../shared/components/modal/inest-modal.component';
+import { InestModalComponent } from '../../shared/components/modal/shared-modal/inest-modal.component';
 import { finalize } from 'rxjs';
 
 @Component({

@@ -1,0 +1,54 @@
+<div class="modal-backdrop" *ngIf="isOpen" (click)="onCancel()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    
+    <div class="modal-header">
+      <h3>🤝 Одолжить "{{ item.name }}"</h3>
+      <button class="close-btn" (click)="onCancel()">×</button>
+    </div>
+
+    <form [formGroup]="lendForm" (ngSubmit)="onSubmit()">
+      <div class="modal-body">
+        
+        <div class="form-group">
+          <label for="personName">Кому отдаем? *</label>
+          <input 
+            type="text" 
+            id="personName" 
+            formControlName="personName" 
+            placeholder="Например: Брат, Иван, Сосед"
+            [class.is-invalid]="lendForm.get('personName')?.invalid && lendForm.get('personName')?.touched"
+          >
+          <span class="error-text" *ngIf="lendForm.get('personName')?.invalid && lendForm.get('personName')?.touched">
+            Имя обязательно
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label for="expectedReturnDate">Когда вернуть? (необязательно)</label>
+          <input 
+            type="date" 
+            id="expectedReturnDate" 
+            formControlName="expectedReturnDate"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="comment">Комментарий (необязательно)</label>
+          <textarea 
+            id="comment" 
+            formControlName="comment" 
+            placeholder="Например: Отдал вместе с чехлом и зарядкой"
+            rows="3"
+          ></textarea>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" (click)="onCancel()">ОТМЕНА</button>
+        <button type="submit" class="btn-primary" [disabled]="lendForm.invalid">СОХРАНИТЬ</button>
+      </div>
+    </form>
+
+  </div>
+</div>

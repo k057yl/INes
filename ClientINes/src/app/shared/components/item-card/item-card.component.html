@@ -61,6 +61,10 @@
         <i class="fa fa-pen" style="color: var(--g-yellow) !important;"></i> {{'COMMON.EDIT' | translate}}
       </button>
 
+      <button *ngIf="item.status !== 1" (click)="lend.emit(item); showMenu = false">
+        <i class="fa fa-handshake" style="color: var(--g-yellow) !important;"></i> {{'ITEM_CARD.LEND' | translate}}
+      </button>
+
       <button *ngIf="isMobile && featureService.isSalesModeEnabled()" (click)="sell.emit(item); showMenu = false">
         <i class="fa fa-dollar-sign"></i> {{'ITEM_CARD.SELL' | translate}}
       </button>

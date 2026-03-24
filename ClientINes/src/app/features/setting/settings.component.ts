@@ -7,7 +7,7 @@ import { finalize } from 'rxjs';
 import { FeatureService } from '../../core/services/feature.service';
 import { CategoryService } from '../../shared/services/category.service';
 import { PlatformService } from '../../shared/services/platform.service';
-import { InestModalComponent } from '../../shared/components/modal/inest-modal.component';
+import { InestModalComponent } from '../../shared/components/modal/shared-modal/inest-modal.component';
 
 interface SimpleEntity {
   id: string;

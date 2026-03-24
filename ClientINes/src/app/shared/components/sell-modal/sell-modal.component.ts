@@ -6,7 +6,7 @@ import { Item } from '../../../models/entities/item.entity';
 import { SellItemRequestDto } from '../../../models/dtos/sale.dto';
 import { Platform } from '../../../models/entities/platform.entity';
 import { SalesService } from '../../services/sales.service';
-import { InestModalComponent } from '../modal/inest-modal.component';
+import { InestModalComponent } from '../modal/shared-modal/inest-modal.component';
 
 @Component({
   selector: 'app-sell-modal',

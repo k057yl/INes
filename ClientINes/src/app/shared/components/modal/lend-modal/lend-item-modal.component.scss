@@ -1,0 +1,148 @@
+// Обязательно фиксируем бэкдроп на весь экран
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7); // Сделал чуть темнее для акцента
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999; // Выше всего остального
+}
+
+.modal-container {
+  background: var(--bg-card);
+  border-radius: 12px;
+  width: 90%; // Для мобилок
+  max-width: 450px; // Чуть расширил для удобства
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; // Чтобы углы у футера/хедера не вылезали
+  animation: modalFadeIn 0.3s ease-out;
+}
+
+.modal-header {
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+
+  h3 {
+    margin: 0;
+    color: var(--text-main);
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+
+  .close-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.8rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+    
+    &:hover { color: var(--accent-color); }
+  }
+}
+
+.modal-body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  label {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+
+  input, textarea {
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px 12px;
+    color: var(--text-main);
+    font-family: inherit;
+    font-size: 0.95rem;
+    width: 100%; // Чтобы не схлопывались
+    box-sizing: border-box;
+
+    &:focus {
+      outline: none;
+      border-color: var(--accent-color);
+    }
+
+    &::placeholder { color: var(--text-muted); opacity: 0.5; }
+
+    &.is-invalid { border-color: var(--error-red); }
+  }
+
+  input[type="date"] {
+    min-height: 41px;
+    &::-webkit-calendar-picker-indicator {
+      cursor: pointer;
+      filter: invert(0.8);
+      &:hover { filter: invert(1); }
+    }
+  }
+}
+
+.modal-footer {
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  border-top: 1px solid var(--border-color);
+  background: rgba(0, 0, 0, 0.1); // Слегка выделяем зону кнопок
+
+  button {
+    padding: 10px 22px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+
+    &.btn-secondary {
+      background: var(--bg-cancel-button);
+      color: var(--text-main);
+      &:hover { filter: brightness(1.1); }
+    }
+
+    &.btn-primary {
+      background: var(--accent-color);
+      color: var(--text-on-accent);
+      &:hover { filter: brightness(1.1); transform: translateY(-1px); }
+      &:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    }
+  }
+}
+
+// Анимация появления
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+body.dark-theme {
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+  }
+}

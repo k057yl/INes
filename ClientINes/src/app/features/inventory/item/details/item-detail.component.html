@@ -38,6 +38,37 @@
         </div>
         <i class="fa fa-chevron-right arrow"></i>
       </div>
+
+      <div class="lending-info-card" *ngIf="isLent && item.lending">
+        <div class="card-header">
+          <i class="fa fa-handshake"></i>
+          <span>{{ 'STATUS.LENT' | translate }}</span>
+        </div>
+        <div class="card-body">
+          <div class="lending-main-info">
+            <strong class="person-name">{{ item.lending.personName }}</strong>
+            <div class="lending-value" *ngIf="item.lending.valueAtLending">
+               {{ item.lending.valueAtLending | number:'1.0-0' }} $
+            </div>
+          </div>
+
+          <div class="lending-details-grid">
+            <div class="detail-row">
+              <label>{{ 'LENDING.DATE_GIVEN' | translate }}</label>
+              <span>{{ item.lending.dateGiven | date:'dd.MM.yyyy' }}</span>
+            </div>
+            <div class="detail-row" *ngIf="item.lending.expectedReturnDate">
+              <label>{{ 'LENDING.EXPECTED_RETURN' | translate }}</label>
+              <span class="return-deadline">{{ item.lending.expectedReturnDate | date:'dd.MM.yyyy' }}</span>
+            </div>
+          </div>
+
+          <div class="lending-comment" *ngIf="item.lending.comment">
+            <i class="fa fa-quote-left"></i>
+            {{ item.lending.comment }}
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="info-column">
@@ -69,6 +100,10 @@
           <label>{{ 'ITEM_DETAIL.ESTIMATED_VALUE' | translate }}</label>
           <div class="price-val">{{ item.estimatedValue || 0 }} $</div>
         </div>
+      </div>
+
+      <div class="reminders-section-wrapper">
+        <app-item-reminders [itemId]="item.id"></app-item-reminders>
       </div>
 
       <div class="history-section">

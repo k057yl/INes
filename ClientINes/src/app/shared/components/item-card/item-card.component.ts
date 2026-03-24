@@ -8,7 +8,7 @@ import { Item } from '../../../models/entities/item.entity';
 import { FeatureService } from '../../../core/services/feature.service';
 import { StorageLocation } from '../../../models/entities/storage-location.entity';
 import { environment } from '../../../../environments/environment';
-import { InestModalComponent } from '../modal/inest-modal.component';
+import { InestModalComponent } from '../modal/shared-modal/inest-modal.component';
 
 @Component({
   selector: 'app-item-card',
@@ -33,6 +33,7 @@ export class ItemCardComponent {
   
   @Output() sell = new EventEmitter<Item>();
   @Output() delete = new EventEmitter<Item>();
+  @Output() lend = new EventEmitter<Item>();
   @Output() move = new EventEmitter<{item: Item, targetLocationId: string}>();
 
   showMenu = false;

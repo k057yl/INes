@@ -12,9 +12,13 @@ import { SalesService } from '../../../shared/services/sales.service';
 import { LocationService } from '../../../shared/services/location.service';
 import { ItemService } from '../../../shared/services/item.service';
 import { SellModalComponent } from '../../../shared/components/sell-modal/sell-modal.component';
-import { InestModalComponent } from '../../../shared/components/modal/inest-modal.component'; // Импорт комбайна
+import { InestModalComponent } from '../../../shared/components/modal/shared-modal/inest-modal.component';
 import { SellItemRequestDto } from '../../../models/dtos/sale.dto';
 import { ItemStatus } from '../../../models/enums/item-status.enum';
+
+import { LendingService } from '../../../shared/services/lending.service';
+import { LendItemModalComponent } from '../../../shared/components/modal/lend-modal/lend-item-modal.component';
+import { LendItemDto } from '../../../models/dtos/lending.dto';
 
 @Component({
   selector: 'app-main-page',
@@ -27,7 +31,8 @@ import { ItemStatus } from '../../../models/enums/item-status.enum';
     LocationRibbonComponent, 
     TranslateModule, 
     SellModalComponent,
-    InestModalComponent
+    InestModalComponent,
+    LendItemModalComponent
   ],
   templateUrl: './main-page.component.html',
   styleUrl: './main-page.component.scss'
@@ -37,6 +42,7 @@ export class MainPageComponent implements OnInit {
   private itemService = inject(ItemService);
   private salesService = inject(SalesService);
   private router = inject(Router);
+  private lendingService = inject(LendingService);
 
   locations: StorageLocation[] = [];
   flatLocations: StorageLocation[] = [];
@@ -49,11 +55,13 @@ export class MainPageComponent implements OnInit {
   locationToDelete: StorageLocation | null = null;
   locationToRename: StorageLocation | null = null;
   pendingLocationId: string | null = null;
+  itemToLend: Item | null = null;
 
   showDeleteItemModal = false;
   showDeleteLocationModal = false;
   showRenameModal = false;
   showMoveConfirm = false;
+  showLendModal = false;
 
   currentPageBoard = 0;
   readonly pageSizeBoard = 3;
@@ -182,10 +190,24 @@ export class MainPageComponent implements OnInit {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
       return;
     }
+
     const item = event.previousContainer.data[event.previousIndex];
-    item.status = loc.isSalesLocation ? ItemStatus.Listed : loc.isLendingLocation ? ItemStatus.Lent : ItemStatus.Active;
+    
+    // 1. Сначала перемещаем физически в UI
     transferArrayItem(event.previousContainer.data, event.container.data, event.previousIndex, event.currentIndex);
+    
+    // 2. Устанавливаем статус
+    item.status = loc.isSalesLocation ? ItemStatus.Listed : loc.isLendingLocation ? ItemStatus.Lent : ItemStatus.Active;
+    item.storageLocationId = loc.id; // Важно обновить ID локации сразу
+
+    // 3. Отправляем запрос на перемещение
     this.itemService.move(item.id, loc.id).subscribe();
+
+    // 4. И ТОЛЬКО ПОТОМ, если это зона одалживания, открываем модалку для доп. данных
+    if (loc.isLendingLocation) {
+      // Небольшая задержка, чтобы DnD завершил анимацию корректно
+      setTimeout(() => this.onLendRequest(item), 100);
+    }
   }
 
   onItemMoveManual(data: {item: Item, targetLocationId: string}) {
@@ -246,6 +268,29 @@ export class MainPageComponent implements OnInit {
     });
   }
 
+  // --- ОДАЛЖИВАНИЕ (LENDING) ---
+
+  onLendRequest(item: Item) {
+    this.itemToLend = item;
+    this.showLendModal = true;
+  }
+
+  onLendConfirmed(dto: LendItemDto) {
+    this.lendingService.lendItem(dto).subscribe({
+      next: (result) => {
+        const loc = this.flatLocations.find(l => l.id === this.itemToLend?.storageLocationId);
+        if (loc && loc.items) {
+          const itemIdx = loc.items.findIndex(i => i.id === this.itemToLend?.id);
+          if (itemIdx !== -1) {
+            loc.items[itemIdx].status = ItemStatus.Lent;
+            loc.items[itemIdx].lending = result;
+          }
+        }
+        this.closeModals();
+      }
+    });
+  }
+
   // --- ОБЩЕЕ ---
 
   closeModals() {
@@ -257,6 +302,8 @@ export class MainPageComponent implements OnInit {
     this.locationToDelete = null;
     this.locationToRename = null;
     this.pendingLocationId = null;
+    this.showLendModal = false;
+    this.itemToLend = null;
   }
 
   // --- ХЕЛПЕРЫ ---
