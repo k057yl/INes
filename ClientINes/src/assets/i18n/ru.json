@@ -153,7 +153,16 @@
     "CLICK_TO_UPLOAD": "Нажмите, чтобы выбрать фото",
     "BUTTON_START": "Создать",
     "BUTTON_CANCEL": "Отмена",
-    "CREATE_CATEGORY": "Создать категорию"
+    "CREATE_CATEGORY": "Создать категорию",
+    "LENT_INFO": "Кому вы отдали предмет?",
+    "BORROWED_INFO": "У кого вы взяли предмет?",
+    "PERSON_NAME": "Имя человека",
+    "CONTACT_EMAIL": "Email (для уведомления)",
+    "RETURN_DATE": "Ожидаемая дата возврата",
+    "PH_NAME": "Например, Александр",
+    "SEND_EMAIL": "Отправить письмо-уведомление",
+    "YOUR_EMAIL": "Ваш Email",
+    "SEND_EMAIL_TO_ME": "Напомнить мне на почту за 1 день до возврата"
   },
 
   "EDIT_ITEM": {
@@ -189,7 +198,8 @@
     "BROKEN": "Сломан",
     "SOLD": "Продан",
     "GIFTED": "Подарен",
-    "LISTED": "Выставлен"
+    "LISTED": "Выставлен",
+    "BORROWED": "Заимствованный"
   },
 
   "COMMON": {

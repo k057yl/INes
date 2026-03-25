@@ -91,6 +91,37 @@
         </div>
       </div>
 
+      <div class="lending-extra-fields" *ngIf="isLendingStatus">
+        <div class="divider-text">
+          <span>{{ (form.get('status')?.value == 7 ? 'CREATE_ITEM.BORROWED_INFO' : 'CREATE_ITEM.LENT_INFO') | translate }}</span>
+        </div>
+
+        <div class="form-row-2">
+          <div class="inest-form-group">
+            <label>{{ 'CREATE_ITEM.PERSON_NAME' | translate }} *</label>
+            <div class="inest-input-wrapper">
+              <i class="fa fa-user inest-field-icon-left"></i>
+              <input formControlName="personName" [placeholder]="'CREATE_ITEM.PH_NAME' | translate">
+            </div>
+          </div>
+
+          <div class="inest-form-group">
+            <label>{{ 'CREATE_ITEM.RETURN_DATE' | translate }} *</label>
+            <div class="inest-input-wrapper">
+              <i class="fa fa-calendar-check inest-field-icon-left"></i>
+              <input type="date" formControlName="expectedReturnDate">
+            </div>
+          </div>
+        </div>
+
+        <div class="inest-form-group">
+          <label class="inest-checkbox-label">
+            <input type="checkbox" formControlName="sendNotification">
+            <span>{{ 'CREATE_ITEM.SEND_EMAIL_TO_ME' | translate }}</span>
+          </label>
+        </div>
+      </div>
+
       <div class="photo-section">
         <div class="photo-header">
           <label class="photo-flag">

@@ -1,7 +1,15 @@
-﻿namespace INest.Services.Interfaces
+﻿using System.Threading.Tasks;
+
+namespace INest.Services.Interfaces
 {
     public interface IEmailService
     {
-        public Task<bool> SendEmailAsync(string toEmail, string subject, string htmlContent);
+        Task<bool> SendEmailAsync(string toEmail, string subject, string htmlContent);
+        System.Threading.Tasks.Task SendLendingNotificationAsync(
+            string toEmail,
+            string itemName,
+            string personName,
+            DateTime? returnDate,
+            bool isBorrowedByMe);
     }
 }

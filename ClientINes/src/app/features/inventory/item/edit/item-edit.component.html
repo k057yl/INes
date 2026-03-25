@@ -8,7 +8,7 @@
       </div>
     </header>
 
-    <div class="lending-banner" *ngIf="item.status === 1 && item.lending">
+    <div class="lending-banner" *ngIf="(item.status === 1 || item.status === 7) && item.lending">
       <div class="lending-info">
         <i class="fa fa-handshake"></i>
         <span>{{ 'EDIT_ITEM.LENT_INFO' | translate: { name: item.lending.personName } }}</span>
@@ -59,6 +59,31 @@
       <div class="form-group">
         <label>{{ 'EDIT_ITEM.PURCHASE_DATE' | translate }}</label>
         <input type="date" formControlName="purchaseDate">
+      </div>
+
+      <div class="lending-extra-fields" *ngIf="isLendingStatus">
+        <div class="divider-text" style="margin: 1.5rem 0 1rem; border-bottom: 1px solid #eee; padding-bottom: 5px;">
+          <b style="font-size: 0.9rem; color: #666; text-transform: uppercase;">
+            {{ (form.get('status')?.value == 7 ? 'CREATE_ITEM.BORROWED_INFO' : 'CREATE_ITEM.LENT_INFO') | translate }}
+          </b>
+        </div>
+
+        <div class="form-group">
+          <label>{{ 'CREATE_ITEM.PERSON_NAME' | translate }} *</label>
+          <input type="text" formControlName="personName">
+        </div>
+
+        <div class="form-group">
+          <label>{{ 'CREATE_ITEM.RETURN_DATE' | translate }} *</label>
+          <input type="date" formControlName="expectedReturnDate">
+        </div>
+
+        <div class="form-group" style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
+          <input type="checkbox" formControlName="sendNotification" id="sendNotifEdit">
+          <label for="sendNotifEdit" style="margin: 0; cursor: pointer;">
+            {{ 'CREATE_ITEM.SEND_EMAIL_TO_ME' | translate }}
+          </label>
+        </div>
       </div>
 
       <div class="photo-section">

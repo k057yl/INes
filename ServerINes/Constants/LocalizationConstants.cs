@@ -94,6 +94,7 @@
             public const string SOLD = "STATUS.SOLD";
             public const string GIFTED = "STATUS.GIFTED";
             public const string LISTED = "STATUS.LISTED";
+            public const string BORROWED = "STATUS.BORROWED";
         }
 
         public static class HISTORY

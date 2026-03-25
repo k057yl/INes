@@ -142,18 +142,27 @@
     "DESCRIPTION": "Description",
     "FIELD_DESCRIPTION": "Enter item description",
     "CATEGORY": "Category",
-    "FIELD_CATEGORY": "Select category",
+    "FIELD_CATEGORY": "Select a category",
     "STATUS": "Status",
     "LOCATION": "Location",
-    "SELECT_LOCATION": "Select location",
+    "SELECT_LOCATION": "Select a location",
     "PURCHASE_DATE": "Creation Date",
     "PRICE": "Price",
     "ESTIMATED": "Estimated Value",
     "ADD_PHOTO": "Add Photo",
-    "CLICK_TO_UPLOAD": "Click to select photo",
+    "CLICK_TO_UPLOAD": "Click to upload photos",
     "BUTTON_START": "Create",
     "BUTTON_CANCEL": "Cancel",
-    "CREATE_CATEGORY": "Create Category"
+    "CREATE_CATEGORY": "Create Category",
+    "LENT_INFO": "To whom did you lend the item?",
+    "BORROWED_INFO": "From whom did you borrow the item?",
+    "PERSON_NAME": "Person Name",
+    "CONTACT_EMAIL": "Email (for notification)",
+    "RETURN_DATE": "Expected Return Date",
+    "PH_NAME": "e.g., Alexander",
+    "SEND_EMAIL": "Send notification email",
+    "YOUR_EMAIL": "Your Email",
+    "SEND_EMAIL_TO_ME": "Remind me by email 1 day before return"
   },
 
   "EDIT_ITEM": {
@@ -189,7 +198,8 @@
     "BROKEN": "Broken",
     "SOLD": "Sold",
     "GIFTED": "Gifted",
-    "LISTED": "Listed"
+    "LISTED": "Listed",
+    "BORROWED": "Borrowed"
   },
 
   "COMMON": {

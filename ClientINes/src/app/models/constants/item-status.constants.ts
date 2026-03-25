@@ -7,7 +7,8 @@ export const ITEM_STATUS_LABELS: Record<ItemStatus, string> = {
   [ItemStatus.Broken]: 'STATUS.BROKEN',
   [ItemStatus.Sold]: 'STATUS.SOLD',
   [ItemStatus.Gifted]: 'STATUS.GIFTED',
-  [ItemStatus.Listed]: 'STATUS.LISTED'
+  [ItemStatus.Listed]: 'STATUS.LISTED',
+  [ItemStatus.Borrowed]: 'STATUS.BORROWED',
 };
 
 export const ITEM_STATUS_OPTIONS = Object.entries(ITEM_STATUS_LABELS).map(([value, label]) => ({

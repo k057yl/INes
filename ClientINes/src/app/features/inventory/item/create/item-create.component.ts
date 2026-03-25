@@ -8,6 +8,7 @@ import { CategoryService } from '../../../../shared/services/category.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { InestModalComponent } from '../../../../shared/components/modal/shared-modal/inest-modal.component';
 import { ITEM_STATUS_OPTIONS } from '../../../../models/constants/item-status.constants';
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-item-create',
@@ -24,6 +25,7 @@ export class ItemCreateComponent implements OnInit {
   private itemService = inject(ItemService);
   private locationService = inject(LocationService);
   private categoryService = inject(CategoryService);
+  private authService = inject(AuthService);
 
   locations: any[] = [];
   categories: any[] = [];
@@ -44,8 +46,17 @@ export class ItemCreateComponent implements OnInit {
     purchaseDate: [this.todayMax, [this.dateNotInFutureValidator]],
     purchasePrice: [null as number | null, [Validators.min(0)]],
     estimatedValue: [null as number | null, [Validators.min(0)]],
-    addPhoto: [false]
+    addPhoto: [false],
+    personName: [''],
+    contactEmail: ['', [Validators.email]],
+    expectedReturnDate: [null],
+    sendNotification: [false]
   });
+
+  get isLendingStatus(): boolean {
+    const s = Number(this.form.get('status')?.value);
+    return s === 1 || s === 7;
+  }
 
   ngOnInit() {
     this.loadData();
@@ -58,6 +69,41 @@ export class ItemCreateComponent implements OnInit {
 
     this.form.get('addPhoto')?.valueChanges.subscribe(val => {
       if (!val) this.selectedPhotos = [];
+    });
+
+    this.form.get('status')?.valueChanges.subscribe(statusId => {
+      const s = Number(statusId);
+      const isLending = (s === 1 || s === 7);
+      const emailControl = this.form.get('contactEmail');
+
+      if (s === 7) {
+        this.authService.user$.subscribe(user => {
+          if (user?.email) {
+            emailControl?.setValue(user.email);
+            emailControl?.disable(); 
+          }
+        });
+      } else {
+        emailControl?.enable();
+        if (s !== 1) emailControl?.setValue(''); 
+      }
+
+      this.updateLendingValidators(isLending);
+    });
+  }
+
+  private updateLendingValidators(isRequired: boolean) {
+    const fields = ['personName', 'expectedReturnDate'];
+    
+    fields.forEach(fieldName => {
+      const control = this.form.get(fieldName);
+      if (isRequired) {
+        control?.setValidators([Validators.required]);
+      } else {
+        control?.clearValidators();
+        control?.setValue(null);
+      }
+      control?.updateValueAndValidity();
     });
   }
 
@@ -92,7 +138,7 @@ export class ItemCreateComponent implements OnInit {
       return;
     }
 
-    const val = this.form.getRawValue();
+    const val = this.form.getRawValue(); 
     const formData = new FormData();
 
     formData.append('name', val.name!);
@@ -110,6 +156,16 @@ export class ItemCreateComponent implements OnInit {
       formData.append('estimatedValue', (val.estimatedValue ?? val.purchasePrice).toString());
     }
 
+    const s = Number(val.status);
+    if (s === 1 || s === 7) {
+      if (val.personName) formData.append('personName', val.personName);
+      if (val.contactEmail) formData.append('contactEmail', val.contactEmail);
+      if (val.expectedReturnDate) {
+        formData.append('expectedReturnDate', new Date(val.expectedReturnDate).toISOString());
+      }
+      formData.append('sendNotification', (!!val.sendNotification).toString());
+    }
+
     if (val.addPhoto) {
       this.selectedPhotos.forEach(p => formData.append('photos', p.file));
     }
@@ -117,6 +173,9 @@ export class ItemCreateComponent implements OnInit {
     this.itemService.createWithPhoto(formData).subscribe({
       next: () => {
         this.router.navigate(['/location', val.storageLocationId]);
+      },
+      error: (err) => {
+        console.error('Ошибка при создании предмета:', err);
       }
     });
   }

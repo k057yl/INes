@@ -10,4 +10,7 @@ export interface Lending {
   valueAtLending?: number;
   comment?: string;
   item?: Item;
+  contactEmail?: string;
+  sendNotification: boolean;
+  direction: number;
 }

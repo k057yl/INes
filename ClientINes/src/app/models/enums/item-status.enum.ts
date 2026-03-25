@@ -5,5 +5,6 @@ export enum ItemStatus {
   Broken = 3,
   Sold = 4,
   Gifted = 5,
-  Listed = 6
+  Listed = 6,
+  Borrowed =7
 }

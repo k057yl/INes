@@ -1,4 +1,6 @@
-﻿namespace INest.Models.Entities
+﻿using INest.Models.Enums;
+
+namespace INest.Models.Entities
 {
     public class Lending
     {
@@ -10,9 +12,13 @@
         public DateTime? ExpectedReturnDate { get; set; }
         public DateTime? ReturnedDate { get; set; }
 
-        // Фиксируем стоимость на момент передачи
-        public decimal? ValueAtLending { get; set; }
+        public LendingDirection Direction { get; set; }
+        public string? ContactEmail { get; set; }
 
+        public bool SendNotification { get; set; }
+        public bool NotificationSent { get; set; }
+
+        public decimal? ValueAtLending { get; set; }
         public string? Comment { get; set; }
         public Item Item { get; set; } = null!;
     }

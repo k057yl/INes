@@ -14,6 +14,7 @@ namespace INest.Exceptions
             ItemStatus.Sold => LocalizationConstants.STATUS.SOLD,
             ItemStatus.Gifted => LocalizationConstants.STATUS.GIFTED,
             ItemStatus.Listed => LocalizationConstants.STATUS.LISTED,
+            ItemStatus.Borrowed => LocalizationConstants.STATUS.BORROWED,
             _ => LocalizationConstants.SYSTEM.DEFAULT_ERROR
         };
 
@@ -41,6 +42,13 @@ namespace INest.Exceptions
             ReminderType.TaxPayment => LocalizationConstants.REMINDERS.TAX,
             ReminderType.Subscription => LocalizationConstants.REMINDERS.SUBSCRIPTION,
             ReminderType.Custom => LocalizationConstants.REMINDERS.CUSTOM,
+            _ => LocalizationConstants.SYSTEM.DEFAULT_ERROR
+        };
+
+        public static string GetLocalizationKey(this LendingDirection direction) => direction switch
+        {
+            LendingDirection.Out => LocalizationConstants.STATUS.LENT,      // Я отдал
+            LendingDirection.In => LocalizationConstants.STATUS.BORROWED,   // Я взял
             _ => LocalizationConstants.SYSTEM.DEFAULT_ERROR
         };
     }

@@ -19,6 +19,15 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
 
+  &.status-borrowed {
+    background: rgba(52, 168, 83, 0.05); // Легкий зеленый оттенок
+    border-style: dashed; // Сделаем рамку пунктирной, типа "временно"
+  }
+
+  &.status-lent {
+    opacity: 0.8; // Чуть приглушим, её же физически нет
+  }
+
   /* ЖЕСТКИЙ ФИКС: Убираем любые переходы, когда карточку реально тащат */
   &.cdk-drag-dragging {
     transition: none !important;

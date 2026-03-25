@@ -117,11 +117,26 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="COMMON_NOT_SPECIFIED" xml:space="preserve">
+    <value>not specified</value>
+  </data>
   <data name="CONFIRM_BODY" xml:space="preserve">
     <value>&lt;h3&gt;Welcome!&lt;/h3&gt;&lt;p&gt;Your code: &lt;b&gt;{0}&lt;/b&gt;&lt;/p&gt;</value>
   </data>
   <data name="CONFIRM_SUBJECT" xml:space="preserve">
     <value>Welcome to INest! Confirm your registration</value>
+  </data>
+  <data name="LENDING_BODY_IN" xml:space="preserve">
+    <value>&lt;h3&gt;INest&lt;/h3&gt;&lt;p&gt;You borrowed &lt;b&gt;{0}&lt;/b&gt; from &lt;b&gt;{1}&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;Return by: &lt;b&gt;{2}&lt;/b&gt;&lt;/p&gt;</value>
+  </data>
+  <data name="LENDING_BODY_OUT" xml:space="preserve">
+    <value>&lt;h3&gt;INest&lt;/h3&gt;&lt;p&gt;You lent &lt;b&gt;{0}&lt;/b&gt; to &lt;b&gt;{1}&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;Expected return: &lt;b&gt;{2}&lt;/b&gt;&lt;/p&gt;</value>
+  </data>
+  <data name="LENDING_SUBJECT_IN" xml:space="preserve">
+    <value>Reminder: You've borrowed an item</value>
+  </data>
+  <data name="LENDING_SUBJECT_OUT" xml:space="preserve">
+    <value>Notification: Item lent</value>
   </data>
   <data name="RESET_BODY" xml:space="preserve">
     <value>&lt;p&gt;Click &lt;a href='{0}'&gt;here&lt;/a&gt; to reset your password.&lt;/p&gt;</value>

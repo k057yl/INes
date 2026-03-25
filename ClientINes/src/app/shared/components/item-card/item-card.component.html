@@ -21,8 +21,11 @@
         {{ item.estimatedValue | number:'1.0-0' }} <i class="fa fa-coins" style="font-size: 0.7rem; margin-left: 2px;"></i>
       </span>
       <span class="status-badges" style="margin-left: 10px;">
-        <i *ngIf="item.status === 6" class="fa fa-shopping-cart" style="color: var(--g-blue); font-size: 0.8rem;" [title]="'STATUS.LISTED' | translate"></i>
-        <i *ngIf="item.status === 1" class="fa fa-handshake" style="color: var(--g-yellow); font-size: 0.8rem;" [title]="'STATUS.LENT' | translate"></i>
+        <i *ngIf="item.status === 6" class="fa fa-shopping-cart" style="color: var(--g-blue);" [title]="'STATUS.LISTED' | translate"></i>
+        
+        <i *ngIf="item.status === 1" class="fa fa-share-square" style="color: var(--g-yellow);" [title]="'STATUS.LENT' | translate"></i>
+        
+        <i *ngIf="item.status === 7" class="fa fa-reply-all" style="color: var(--g-green); transform: scaleX(-1);" [title]="'STATUS.BORROWED' | translate"></i>
       </span>
     </div>
   </div>

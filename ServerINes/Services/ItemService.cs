@@ -11,11 +11,13 @@ namespace INest.Services
     {
         private readonly AppDbContext _context;
         private readonly IPhotoService _photoService;
+        private readonly IEmailService _emailService;
 
-        public ItemService(AppDbContext context, IPhotoService photoService)
+        public ItemService(AppDbContext context, IPhotoService photoService, IEmailService emailService)
         {
             _context = context;
             _photoService = photoService;
+            _emailService = emailService;
         }
 
         public async Task<Item> CreateItemAsync(Guid userId, CreateItemDto dto, List<IFormFile> photos)
@@ -35,10 +37,45 @@ namespace INest.Services
                     Status = dto.Status,
                     PurchaseDate = dto.PurchaseDate,
                     PurchasePrice = dto.PurchasePrice,
-                    EstimatedValue = dto.EstimatedValue,
+                    EstimatedValue = dto.EstimatedValue ?? dto.PurchasePrice,
                     CreatedAt = DateTime.UtcNow,
                     Photos = new List<ItemPhoto>()
                 };
+
+                if (dto.Status == ItemStatus.Lent || dto.Status == ItemStatus.Borrowed)
+                {
+                    item.Lending = new Lending
+                    {
+                        Id = Guid.NewGuid(),
+                        ItemId = item.Id,
+                        PersonName = dto.PersonName ?? "Unknown",
+                        ContactEmail = dto.ContactEmail,
+                        ExpectedReturnDate = dto.ExpectedReturnDate,
+                        DateGiven = DateTime.UtcNow,
+                        Direction = dto.Status == ItemStatus.Borrowed ? LendingDirection.In : LendingDirection.Out,
+                        SendNotification = dto.SendNotification,
+                        ValueAtLending = item.EstimatedValue
+                    };
+
+                    _context.ItemHistories.Add(new ItemHistory
+                    {
+                        Id = Guid.NewGuid(),
+                        ItemId = item.Id,
+                        Type = ItemHistoryType.Lent,
+                        NewValue = item.Lending.PersonName,
+                        CreatedAt = DateTime.UtcNow.AddSeconds(1)
+                    });
+
+                    if (dto.SendNotification && !string.IsNullOrEmpty(dto.ContactEmail))
+                    {
+                        _ = _emailService.SendLendingNotificationAsync(
+                            dto.ContactEmail,
+                            item.Name,
+                            item.Lending.PersonName,
+                            item.Lending.ExpectedReturnDate,
+                            dto.Status == ItemStatus.Borrowed);
+                    }
+                }
 
                 if (photos != null && photos.Count > 0)
                 {

@@ -117,11 +117,26 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="COMMON_NOT_SPECIFIED" xml:space="preserve">
+    <value>не указана</value>
+  </data>
   <data name="CONFIRM_BODY" xml:space="preserve">
     <value>&lt;h3&gt;Добро пожаловать!&lt;/h3&gt;&lt;p&gt;Ваш код: &lt;b&gt;{0}&lt;/b&gt;&lt;/p&gt;</value>
   </data>
   <data name="CONFIRM_SUBJECT" xml:space="preserve">
     <value>Добро пожаловать в INest! Подтвердите регистрацию</value>
+  </data>
+  <data name="LENDING_BODY_IN" xml:space="preserve">
+    <value>&lt;h3&gt;INest&lt;/h3&gt;&lt;p&gt;Вы передали &lt;b&gt;{0}&lt;/b&gt; пользователю &lt;b&gt;{1}&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;Ожидаемая дата возврата: {2}&lt;/p&gt;</value>
+  </data>
+  <data name="LENDING_BODY_OUT" xml:space="preserve">
+    <value>&lt;h3&gt;INest&lt;/h3&gt;&lt;p&gt;Вы передали &lt;b&gt;{0}&lt;/b&gt; пользователю &lt;b&gt;{1}&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;Ожидаемая дата возврата: {2}&lt;/p&gt;</value>
+  </data>
+  <data name="LENDING_SUBJECT_IN" xml:space="preserve">
+    <value>Напоминание: Вы взяли вещь</value>
+  </data>
+  <data name="LENDING_SUBJECT_OUT" xml:space="preserve">
+    <value>Уведомление: Вы передали вещь</value>
   </data>
   <data name="RESET_BODY" xml:space="preserve">
     <value>&lt;p&gt;Нажмите &lt;a href='{0}'&gt;здесь&lt;/a&gt;, чтобы сбросить пароль.&lt;/p&gt;</value>
