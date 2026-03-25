@@ -24,6 +24,9 @@ export class ItemRemindersComponent implements OnInit {
   isAdding = false;
   reminderForm!: FormGroup;
 
+  modalConfirmText: string = 'COMMON.CONFIRM';
+  modalCancelText: string = 'COMMON.CANCEL';
+
   // СОСТОЯНИЕ МОДАЛКИ ПОДТВЕРЖДЕНИЯ
   showConfirm = false;
   modalMode: 'input' | 'delete' | 'confirm' | 'smart-delete' = 'confirm';
@@ -93,16 +96,20 @@ export class ItemRemindersComponent implements OnInit {
 
   requestComplete(id: string) {
     this.modalMode = 'confirm';
-    this.modalTitle = 'COMMON.CONFIRM_ACTION';
-    this.modalMessage = 'Вы уверены, что задача выполнена?';
+    this.modalTitle = 'REMINDERS.MODAL.CONFIRM_ACTION';
+    this.modalMessage = 'REMINDERS.MODAL.M_YOU_SURE_DONE';
+    this.modalConfirmText = 'REMINDERS.MODAL.YES';
+    this.modalCancelText = 'REMINDERS.MODAL.CANCEL';
     this.pendingAction = { type: 'complete', id };
     this.showConfirm = true;
     }
 
   requestDelete(id: string) {
     this.modalMode = 'delete';
-    this.modalTitle = 'ITEM_CARD.DELETE';
-    this.modalMessage = 'ITEM_CARD.M_YOU_SURE';
+    this.modalTitle = 'COMMON.DELETE';
+    this.modalMessage = 'REMINDERS.MODAL.M_YOU_SURE_DELETE';
+    this.modalConfirmText = 'REMINDERS.MODAL.DELETE';
+    this.modalCancelText = 'REMINDERS.MODAL.CANCEL';
     this.pendingAction = { type: 'delete', id };
     this.showConfirm = true;
   }

@@ -193,6 +193,7 @@
   },
 
   "COMMON": {
+    "ADD": "Add",
     "BACK": "Back",
     "EDIT": "Edit",
     "SAVE": "Save",
@@ -200,9 +201,9 @@
     "DELETE": "Delete",
     "M_YOU_SURE": "Are you sure you want to permanently delete this item? This action is irreversible.",
     "SMART_DELETE": "Smart Delete",
-    "SMART_DELETE_TEXT": "Delete item while keeping profit in history",
+    "SMART_DELETE_TEXT": "Remove item but keep the profit in history",
     "HARD_DELETE": "Hard Delete",
-    "HARD_DELETE_TEXT": "Delete everything (including profit record)"
+    "HARD_DELETE_TEXT": "Delete everything (including profit records)"
   },
 
   "HISTORY": {
@@ -217,12 +218,12 @@
   },
 
   "REMINDERS": {
-    "WARRANTY": "Warranty expires",
-    "MAINTENANCE": "Maintenance required",
-    "RETURN_ITEM": "Time to return item to owner",
+    "WARRANTY": "Warranty Expiration",
+    "MAINTENANCE": "Maintenance Required",
+    "RETURN_ITEM": "Return to Owner",
     "CUSTOM": "Reminder",
-    "INSURANCE": "Insurance expenses",
-    "MEDICAL": "Medical expenses",
+    "INSURANCE": "Insurance",
+    "MEDICAL": "Medical",
     "TAX": "Taxes",
     "SUBSCRIPTION": "Subscriptions",
     "UI": {
@@ -230,6 +231,14 @@
       "TYPE_LABEL": "Type",
       "DATE_LABEL": "Date",
       "EMPTY_LABEL": "No reminders"
+    },
+    "MODAL": {
+      "CONFIRM_ACTION": "Confirm Action",
+      "M_YOU_SURE_DONE": "Are you sure this task is completed?",
+      "M_YOU_SURE_DELETE": "Are you sure you want to delete this reminder?",
+      "YES": "Yes",
+      "CANCEL": "Cancel",
+      "DELETE": "Delete"
     }
   },
 

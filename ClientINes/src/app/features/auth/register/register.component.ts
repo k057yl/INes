@@ -48,7 +48,7 @@ export class RegisterComponent implements OnInit, AfterViewInit {
       ]],
       email: ['', 
         [Validators.required, Validators.pattern(emailRegex)], 
-        [emailUniqueValidator(this.authService)]
+        [emailUniqueValidator()]
       ],
       password: ['', [
         Validators.required, 

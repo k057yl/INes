@@ -48,6 +48,8 @@
             public const string OTP_SENT = "AUTH.SUCCESS.OTP_SENT";
             public const string RESET_EMAIL_SENT = "AUTH.SUCCESS.RESET_EMAIL_SENT";
             public const string PASSWORD_CHANGED = "AUTH.SUCCESS.PASSWORD_CHANGED";
+            public const string INVALID_TOKEN = "AUTH.ERRORS.INVALID_TOKEN";
+            public const string REFRESH_TOKEN_EXPIRED = "AUTH.ERRORS.REFRESH_TOKEN_EXPIRED";
         }
 
         public static class CATEGORIES

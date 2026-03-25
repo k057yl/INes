@@ -1,5 +1,6 @@
 ﻿using INest.Constants;
 using INest.Models.DTOs.Auth;
+using INest.Models.DTOs.Token;
 using INest.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -92,5 +93,12 @@ namespace INest.Controllers
         [Authorize]
         [HttpPost("logout")]
         public IActionResult Logout() => Ok();
+
+        [HttpPost("refresh")]
+        public async Task<IActionResult> Refresh([FromBody] TokenRequestDto dto)
+        {
+            var response = await _authService.RefreshTokenAsync(dto);
+            return Ok(response);
+        }
     }
 }

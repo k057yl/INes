@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
-import { AuthService } from '../../../core/services/auth.service';
+import { AuthService, AuthResponse } from '../../../core/services/auth.service';
 import { ThemeService } from '../../../core/services/theme.service';
 import { environment } from '../../../../environments/environment';
 
@@ -92,20 +92,20 @@ export class LoginComponent implements OnInit {
     this.error = undefined;
     
     this.authService.login(this.email, this.password).subscribe({
-      next: (res) => {
+      next: (res: AuthResponse) => {
         this.router.navigate(["/main"]);
       },
       error: (err) => {
         const errorKey = err.error?.error;
         
         if (errorKey === 'AUTH.ERRORS.EMAIL_UNCONFIRMED') {
-          this.router.navigate(['/confirm-email'], { queryParams: { email: this.email } });
+          this.router.navigate(['/confirm-register'], { 
+              state: { email: this.email, password: this.password } 
+          });
           return;
         }
 
         this.error = errorKey || "SYSTEM.DEFAULT_ERROR";
-        
-        console.error('Login Error:', err);
       }
     });
   }

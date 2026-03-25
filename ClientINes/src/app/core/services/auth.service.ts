@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { tap, finalize, catchError, map } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
+import { tap, finalize, catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
 export interface AppUser {
@@ -12,13 +12,16 @@ export interface AppUser {
 
 export interface AuthResponse {
   token: string;
+  refreshToken: string;
 }
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiBaseUrl}/auth`;
+  
   private readonly TOKEN_KEY = 'jwt';
+  private readonly REFRESH_TOKEN_KEY = 'refresh_token';
 
   private tokenSubject = new BehaviorSubject<string | null>(null);
   token$ = this.tokenSubject.asObservable();
@@ -35,8 +38,21 @@ export class AuthService {
   login(email: string, password: string): Observable<AuthResponse> {
     return this.http
       .post<AuthResponse>(`${this.apiUrl}/login`, { email, password })
+      .pipe(tap(res => this.setSession(res)));
+  }
+
+  refreshToken(): Observable<AuthResponse> {
+    const accessToken = localStorage.getItem(this.TOKEN_KEY);
+    const refreshToken = localStorage.getItem(this.REFRESH_TOKEN_KEY);
+
+    return this.http
+      .post<AuthResponse>(`${this.apiUrl}/refresh`, { accessToken, refreshToken })
       .pipe(
-        tap(res => this.setSession(res.token))
+        tap(res => this.setSession(res)),
+        catchError(err => {
+          this.logout().subscribe();
+          return throwError(() => err);
+        })
       );
   }
 
@@ -47,17 +63,13 @@ export class AuthService {
   confirmRegistration(email: string, code: string): Observable<AuthResponse> {
     return this.http
       .post<AuthResponse>(`${this.apiUrl}/confirm-register`, { email, code })
-      .pipe(
-        tap(res => this.setSession(res.token))
-      );
+      .pipe(tap(res => this.setSession(res)));
   }
 
   googleLogin(idToken: string): Observable<AuthResponse> {
     return this.http
       .post<AuthResponse>(`${this.apiUrl}/google-login`, { idToken })
-      .pipe(
-        tap(res => this.setSession(res.token))
-      );
+      .pipe(tap(res => this.setSession(res)));
   }
 
   logout(): Observable<any> {
@@ -70,32 +82,45 @@ export class AuthService {
     );
   }
 
+  // ================= VALIDATION =================
+
+  checkEmailUnique(email: string): Observable<boolean> {
+    return this.http.get<boolean>(`${this.apiUrl}/check-email`, {
+      params: { email }
+    }).pipe(
+      catchError(() => of(true))
+    );
+  }
+
   // ================= SESSION MANAGEMENT =================
 
-  public setSession(token: string) {
-    if (!token) return;
-    localStorage.setItem(this.TOKEN_KEY, token);
-    this.tokenSubject.next(token);
-    this.userSubject.next(this.parseUser(token));
+  public setSession(res: AuthResponse) {
+    if (!res.token) return;
+    localStorage.setItem(this.TOKEN_KEY, res.token);
+    localStorage.setItem(this.REFRESH_TOKEN_KEY, res.refreshToken);
+    
+    this.tokenSubject.next(res.token);
+    this.userSubject.next(this.parseUser(res.token));
   }
 
   private clearLocalSession() {
     localStorage.removeItem(this.TOKEN_KEY);
+    localStorage.removeItem(this.REFRESH_TOKEN_KEY);
     this.tokenSubject.next(null);
     this.userSubject.next(null);
   }
 
   private restoreSession() {
     const token = localStorage.getItem(this.TOKEN_KEY);
-    if (token && !this.isTokenExpired(token)) {
-      this.tokenSubject.next(token);
-      this.userSubject.next(this.parseUser(token));
+    const refreshToken = localStorage.getItem(this.REFRESH_TOKEN_KEY);
+    
+    if (token && refreshToken) {
+       this.tokenSubject.next(token);
+       this.userSubject.next(this.parseUser(token));
     } else {
-      this.clearLocalSession();
+       this.clearLocalSession();
     }
   }
-
-  // ================= JWT PARSE =================
 
   private parseUser(token: string): AppUser {
     try {
@@ -110,24 +135,7 @@ export class AuthService {
     }
   }
 
-  private isTokenExpired(token: string): boolean {
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload.exp ? Date.now() >= payload.exp * 1000 : false;
-    } catch { return true; }
-  }
-
-  // ================= HELPERS =================
-
   isAuthenticated(): boolean {
     return !!this.tokenSubject.value;
-  }
-
-  checkEmailUnique(email: string): Observable<boolean> {
-    return this.http.get<boolean>(`${this.apiUrl}/check-email`, {
-      params: { email }
-    }).pipe(
-      catchError(() => of(true))
-    );
   }
 }

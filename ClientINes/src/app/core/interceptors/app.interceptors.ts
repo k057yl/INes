@@ -1,50 +1,83 @@
-import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
+import { HttpInterceptorFn, HttpErrorResponse, HttpRequest, HttpHandlerFn } from '@angular/common/http';
 import { inject, Injector } from '@angular/core';
-import { catchError, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, filter, switchMap, take, throwError } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
+import { AuthService } from '../services/auth.service';
+
+let isRefreshing = false;
+const refreshTokenSubject = new BehaviorSubject<string | null>(null);
 
 export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
+  const authService = inject(AuthService);
   const token = localStorage.getItem('jwt');
-  const publicApiPaths = ['/auth/login', '/auth/register', '/auth/google-login', '/auth/confirm-register', '/auth/check-email'];
-  const isPublic = publicApiPaths.some(path => req.url.includes(path));
 
-  if (!isPublic && token) {
+  if (token) {
     req = req.clone({
       setHeaders: { Authorization: `Bearer ${token}` }
     });
   }
-  return next(req);
+
+  return next(req).pipe(
+    catchError((error: HttpErrorResponse) => {
+      if (error.status === 401 && !req.url.includes('/auth/')) {
+        return handle401Error(req, next, authService);
+      }
+      return throwError(() => error);
+    })
+  );
 };
+
+function handle401Error(req: HttpRequest<any>, next: HttpHandlerFn, authService: AuthService) {
+  if (!isRefreshing) {
+    isRefreshing = true;
+    refreshTokenSubject.next(null);
+
+    return authService.refreshToken().pipe(
+      switchMap((res) => {
+        isRefreshing = false;
+        refreshTokenSubject.next(res.token);
+        return next(req.clone({
+          setHeaders: { Authorization: `Bearer ${res.token}` }
+        }));
+      }),
+      catchError((err) => {
+        isRefreshing = false;
+        authService.logout().subscribe();
+        return throwError(() => err);
+      })
+    );
+  } else {
+    return refreshTokenSubject.pipe(
+      filter(token => token !== null),
+      take(1),
+      switchMap(token => next(req.clone({
+        setHeaders: { Authorization: `Bearer ${token}` }
+      })))
+    );
+  }
+}
 
 export const cultureInterceptor: HttpInterceptorFn = (req, next) => {
   const lang = localStorage.getItem('lang') || 'ru';
-  req = req.clone({
+  return next(req.clone({
     setHeaders: { 'Accept-Language': lang }
-  });
-  return next(req);
+  }));
 };
 
 export const globalErrorInterceptor: HttpInterceptorFn = (req, next) => {
-  const injector = inject(Injector); // Используем Injector для ленивого получения сервиса
+  const injector = inject(Injector);
 
-  // 1. ПРОВЕРКА: Если это запрос за файлом перевода (.json), просто пропускаем его
-  // Это разорвет бесконечный цикл
   if (req.url.includes('.json') || req.url.includes('/assets/i18n/')) {
     return next(req);
   }
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
-      // 2. Получаем TranslateService только здесь, когда ошибка УЖЕ случилась
       const translate = injector.get(TranslateService);
-
       const errorKey = error.error?.error || 'SYSTEM.DEFAULT_ERROR';
       const translatedMessage = translate.instant(errorKey);
 
-      //alert(translatedMessage); 
-
       console.error(`[API Error] ${errorKey}: ${translatedMessage}`);
-
       return throwError(() => error);
     })
   );

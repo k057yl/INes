@@ -108,6 +108,10 @@
               <span class="return-deadline">{{ item.lending.expectedReturnDate | date:'dd.MM' }}</span>
             </div>
           </div>
+          <div class="lending-comment-box" *ngIf="item.lending.comment">
+            <i class="fa fa-quote-left"></i>
+            <p>{{ item.lending.comment }}</p>
+          </div>
         </div>
       </div>
     </div>

@@ -164,6 +164,7 @@
     }
     .lending-dates {
       display: flex; gap: 20px;
+      justify-content: space-between;
       .date-row {
         label { display: block; font-size: 0.65rem; color: var(--text-muted); }
         span { font-size: 0.85rem; font-weight: 600; }
@@ -172,5 +173,30 @@
     }
   }
 }
+
+.lending-comment-box {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 12px 15px;
+    border-radius: 10px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+
+    i {
+      color: var(--g-yellow);
+      font-size: 0.8rem;
+      margin-top: 4px;
+      opacity: 0.6;
+    }
+
+    p {
+      margin: 0;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      font-style: italic;
+      color: var(--text-main);
+      opacity: 0.9;
+    }
+  }
 
 .loader-overlay { height: 50vh; display: flex; align-items: center; justify-content: center; font-size: 2rem; }

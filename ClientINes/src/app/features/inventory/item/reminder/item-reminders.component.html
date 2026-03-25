@@ -47,7 +47,7 @@
       </div>
       
       <div class="r-actions" *ngIf="!r.isCompleted">
-        <button class="icon-btn success" (click)="requestComplete(r.id)" [title]="'REMINDERS.MARK_DONE' | translate">
+        <button class="icon-btn success" (click)="requestComplete(r.id)" [title]="'COMMON.SAVE' | translate">
           <i class="fa fa-check"></i>
         </button>
         <button class="icon-btn danger" (click)="requestDelete(r.id)" [title]="'COMMON.DELETE' | translate">
@@ -63,6 +63,8 @@
   [mode]="modalMode"
   [title]="modalTitle | translate"
   [message]="modalMessage | translate"
+  [confirmText]="modalConfirmText | translate"  
+  [cancelText]="modalCancelText | translate"
   (confirmed)="handleConfirm()"
   (cancelled)="showConfirm = false">
 </app-inest-modal>

@@ -2,11 +2,13 @@
 using INest.Constants;
 using INest.Exceptions;
 using INest.Models.DTOs.Auth;
+using INest.Models.DTOs.Token;
 using INest.Models.Entities;
 using INest.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
 using System.Collections.Concurrent;
+using System.Security.Claims;
 using System.Security.Cryptography;
 
 namespace INest.Services
@@ -170,8 +172,34 @@ namespace INest.Services
         private async Task<AuthResponseDto> GenerateAuthResponse(AppUser user)
         {
             var roles = await _userManager.GetRolesAsync(user);
-            var token = _tokenService.GenerateJwtToken(user, roles);
-            return new AuthResponseDto { Token = token };
+            var accessToken = _tokenService.GenerateJwtToken(user, roles);
+            var refreshToken = _tokenService.GenerateRefreshToken();
+
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(30);
+            await _userManager.UpdateAsync(user);
+
+            return new AuthResponseDto
+            {
+                Token = accessToken,
+                RefreshToken = refreshToken
+            };
+        }
+
+        public async Task<AuthResponseDto> RefreshTokenAsync(TokenRequestDto dto)
+        {
+            var principal = _tokenService.GetPrincipalFromExpiredToken(dto.AccessToken);
+
+            var userId = principal.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+                throw new AppException(LocalizationConstants.AUTH.INVALID_TOKEN, 401);
+
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null || user.RefreshToken != dto.RefreshToken || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
+                throw new AppException(LocalizationConstants.AUTH.INVALID_OR_EXPIRED_CODE, 401);
+
+            return await GenerateAuthResponse(user);
         }
     }
 }
