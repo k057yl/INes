@@ -8,7 +8,6 @@ import { Item } from '../../../models/entities/item.entity';
 import { FeatureService } from '../../../core/services/feature.service';
 import { StorageLocation } from '../../../models/entities/storage-location.entity';
 import { environment } from '../../../../environments/environment';
-import { InestModalComponent } from '../modal/shared-modal/inest-modal.component';
 
 @Component({
   selector: 'app-item-card',
@@ -17,8 +16,7 @@ import { InestModalComponent } from '../modal/shared-modal/inest-modal.component
     CommonModule, 
     RouterModule, 
     DragDropModule, 
-    TranslateModule, 
-    InestModalComponent
+    TranslateModule
   ],
   templateUrl: './item-card.component.html',
   styleUrl: './item-card.component.scss'
@@ -37,7 +35,6 @@ export class ItemCardComponent {
   @Output() move = new EventEmitter<{item: Item, targetLocationId: string}>();
 
   showMenu = false;
-  showDelete = false;
   isMobile = window.innerWidth <= 768;
 
   private readonly googleColors = ['var(--g-blue)', 'var(--g-red)', 'var(--g-yellow)', 'var(--g-green)'];
@@ -78,20 +75,10 @@ export class ItemCardComponent {
     }
   }
 
-  // --- ЛОГИКА УДАЛЕНИЯ ---
-
+  // --- ЛОГИКА УДАЛЕНИЯ: ТЕПЕРЬ ПРОСТО ЭМИТ ---
   requestDelete(event: MouseEvent) {
     event.stopPropagation();
     this.showMenu = false;
-    this.showDelete = true;
-  }
-
-  confirmDelete() {
     this.delete.emit(this.item);
-    this.showDelete = false;
-  }
-
-  cancelDelete() {
-    this.showDelete = false;
   }
 }

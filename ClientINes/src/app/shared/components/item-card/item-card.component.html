@@ -34,21 +34,21 @@
       <button *ngIf="!isMobile && featureService.isSalesModeEnabled() && item.status !== 4" 
               class="inest-action-btn" 
               (click)="sell.emit(item); $event.stopPropagation()"
-              [title]="'ITEM_CARD.SELL' | translate">
+              [title]="'COMMON.SELL' | translate">
         <i class="fa fa-dollar-sign"></i>
       </button>
 
-      <button class="inest-action-btn" (click)="toggleMenu($event)" [class.active]="showMenu" [title]="'ITEM_CARD.INFO' | translate">
+      <button class="inest-action-btn" (click)="toggleMenu($event)" [class.active]="showMenu" [title]="'COMMON.MORE' | translate">
         <i class="fa fa-ellipsis-v"></i>
       </button>
 
     <div class="menu-dropdown item-menu" *ngIf="showMenu" (click)="$event.stopPropagation()">
       
       <div class="menu-section">
-        <label><i class="fa fa-exchange-alt"></i> {{'ITEM_CARD.M_MOVE' | translate}}</label>
+        <label><i class="fa fa-exchange-alt"></i> {{'ITEM_CARD.MOVE_MSG' | translate}}</label>
         <div class="select-wrapper">
           <select (change)="onMove($event)">
-            <option value="" disabled selected>{{'ITEM_CARD.M_SELECT_LOCATION' | translate}}</option>
+            <option value="" disabled selected>{{'ITEM_CARD.SELECT_LOCATION' | translate}}</option>
             <option *ngFor="let loc of availableLocations" [value]="loc.id">{{ loc.name }}</option>
           </select>
         </div>
@@ -57,7 +57,7 @@
       <div class="divider"></div>
 
       <button [routerLink]="['/item', item.id]" (click)="showMenu = false">
-        <i class="fa fa-info-circle"></i> {{'ITEM_CARD.INFO' | translate}}
+        <i class="fa fa-info-circle"></i> {{'COMMON.INFO' | translate}}
       </button>
 
       <button [routerLink]="['/item/edit', item.id]" (click)="showMenu = false">
@@ -65,29 +65,18 @@
       </button>
 
       <button *ngIf="item.status !== 1" (click)="lend.emit(item); showMenu = false">
-        <i class="fa fa-handshake" style="color: var(--g-yellow) !important;"></i> {{'ITEM_CARD.LEND' | translate}}
+        <i class="fa fa-handshake" style="color: var(--g-yellow) !important;"></i> {{'COMMON.LEND' | translate}}
       </button>
 
       <button *ngIf="isMobile && featureService.isSalesModeEnabled()" (click)="sell.emit(item); showMenu = false">
-        <i class="fa fa-dollar-sign"></i> {{'ITEM_CARD.SELL' | translate}}
+        <i class="fa fa-dollar-sign"></i> {{'COMMON.SELL' | translate}}
       </button>
 
       <button (click)="requestDelete($event)" class="delete-btn">
-        <i class="fa fa-trash-alt"></i> {{'ITEM_CARD.DELETE' | translate}}
+        <i class="fa fa-trash-alt"></i> {{'COMMON.DELETE' | translate}}
       </button>
     </div>
   </div>
 
   <div class="item-drag-placeholder" *cdkDragPlaceholder></div>
 </div>
-
-<app-inest-modal 
-  *ngIf="showDelete"
-  mode="delete"
-  [title]="'ITEM_CARD.DELETE'"
-  [message]="'ITEM_CARD.M_YOU_SURE'"
-  [confirmText]="'ITEM_CARD.DELETE'"
-  [cancelText]="'COMMON.CANCEL'"
-  (confirmed)="confirmDelete()"
-  (cancelled)="cancelDelete()">
-</app-inest-modal>

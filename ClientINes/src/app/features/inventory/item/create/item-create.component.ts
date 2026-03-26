@@ -37,6 +37,8 @@ export class ItemCreateComponent implements OnInit {
 
   readonly statusOptions = ITEM_STATUS_OPTIONS;
 
+  isLocationPredefined = false;
+
   form = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(2)]],
     description: [''],
@@ -62,8 +64,10 @@ export class ItemCreateComponent implements OnInit {
     this.loadData();
 
     this.route.queryParams.subscribe(params => {
-      if (params['locationId']) {
-        this.form.patchValue({ storageLocationId: params['locationId'] });
+      const locId = params['locationId'];
+      if (locId) {
+        this.form.patchValue({ storageLocationId: locId });
+        this.isLocationPredefined = true;
       }
     });
 
@@ -172,7 +176,10 @@ export class ItemCreateComponent implements OnInit {
 
     this.itemService.createWithPhoto(formData).subscribe({
       next: () => {
-        this.router.navigate(['/location', val.storageLocationId]);
+        const target = this.isLocationPredefined 
+          ? ['/location', this.form.get('storageLocationId')?.value] 
+          : ['/main'];
+        this.router.navigate(target);
       },
       error: (err) => {
         console.error('Ошибка при создании предмета:', err);

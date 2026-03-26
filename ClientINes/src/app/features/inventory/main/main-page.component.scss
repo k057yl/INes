@@ -5,6 +5,31 @@
   transition: background-color 0.3s ease;
 }
 
+/* --- ЦЕНТРАЛЬНАЯ КНОПКА (ZERO STATE) --- */
+.zero-state-container {
+  grid-column: 1 / -1; // Растягиваем на всю ширину сетки
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  min-height: 300px;
+
+  .zero-icon {
+    font-size: 4rem;
+    color: var(--accent-color);
+    opacity: 0.2;
+    margin-bottom: 20px;
+  }
+
+  h2 {
+    color: var(--text-muted);
+    font-weight: 300;
+    margin-bottom: 30px;
+  }
+}
+
 /* --- ПАГИНАЦИЯ --- */
 .board-pager-row {
   display: flex;
@@ -17,53 +42,52 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 30px;
-  width: 220px;
+  height: 40px; // Чуть увеличил для солидности
+  width: 240px;
   gap: 15px;
-  background: var(--bg-card);
+  background: rgba(var(--bg-card-rgb), 0.8);
   padding: 5px 15px;
   border-radius: 20px;
-  border: 1px solid var(--border-color);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(10px);
-  background: rgba(var(--bg-card-rgb), 0.8);
   border: 1px solid var(--accent-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
 
-  button:disabled {
-    filter: grayscale(1);
-    opacity: 0.3;
+  button {
+    background: var(--bg-input);
+    border: solid 1px var(--accent-color);
+    color: var(--text-muted);
+    cursor: pointer;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 0.8rem;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    outline: none;
+
+    &:hover:not(:disabled) {
+      color: var(--bg-card);
+      background: var(--accent-color);
+      box-shadow: 0 0 10px var(--accent-color);
+    }
+
+    &:active:not(:disabled) { transform: scale(0.9); }
+    &:disabled { 
+      opacity: 0.2; 
+      cursor: not-allowed; 
+      filter: grayscale(1);
+    }
   }
-}
-
-.board-pager-nav button {
-  background: var(--bg-input);
-  border: solid 1px var(--accent-color);
-  color: var(--text-muted);
-  cursor: pointer;
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  font-size: 1rem;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  outline: none;
-  padding: 0px 0px 2px 0px;
-
-  &:hover:not(:disabled) {
-    color: var(--accent-color);
-    background: rgba(0, 184, 148, 0.3);
-  }
-
-  &:active:not(:disabled) { transform: scale(0.9); }
-  &:disabled { opacity: 0.2; cursor: not-allowed; }
 }
 
 .page-info {
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   color: var(--accent-color);
-  font-weight: bold;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 /* --- СЕТКА ЛОКАЦИЙ --- */
@@ -92,15 +116,20 @@
 }
 
 /* --- МОБИЛЬНАЯ АДАПТАЦИЯ --- */
-@media (max-width: 768px) {
-  /* УДАЛЕНО: адаптация board-header-zone */
+@media (max-width: 1024px) {
+  .board-grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
 
+@media (max-width: 768px) {
   .board-grid-3 {
     grid-template-columns: 1fr;
     padding: 10px;
   }
-
-  .board-pager-nav {
-    justify-content: center;
+  
+  .zero-state-container {
+    padding: 30px 10px;
+    .zero-icon { font-size: 3rem; }
   }
 }

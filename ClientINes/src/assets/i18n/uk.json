@@ -1,381 +1,183 @@
 {
-  "SYSTEM": {
-    "DEFAULT_ERROR": "Виникла непередбачена помилка",
-    "VALIDATION_FAILED": "Помилка валідації даних",
-    "EMAIL_SEND_FAILED": "Не вдалося відправити лист",
-    "CONFIG_ERROR": "Помилка конфігурації сервера"
+"//--- BACKEND MIRROR (Синхронізовано з LocalizationConstants.cs) ---//": "",
+"SYSTEM": {
+  "DEFAULT_ERROR": "Сталася непередбачена помилка",
+  "VALIDATION_FAILED": "Помилка валідації даних",
+  "EMAIL_SEND_FAILED": "Не вдалося надіслати лист",
+  "CONFIG_ERROR": "Помилка конфігурації сервера"
+},
+
+"ERRORS": {
+  "REQUIRED_FIELD": "Поле обов'язкове для заповнення",
+  "INVALID_EMAIL_FORMAT": "Некоректний формат email",
+  "INVALID_COLOR_HEX": "Некоректний формат кольору",
+  "MAX_LENGTH_50": "Максимум 50 символів",
+  "PWD_MIN_LENGTH": "Мінімум 6 символів",
+  "PWD_UPPER": "Велика літера (A-Z)",
+  "PWD_DIGIT": "Хоча б одна цифра (0-9)",
+  "PWD_SPEC": "Спецсимвол (!@#$%...)",
+  "PWD_LATIN": "Тільки латиниця та символи",
+  "USERNAME_LATIN_ONLY": "Тільки латиниця та цифри",
+  "NEGATIVE_NUMBER": "Значення має бути більше нуля",
+  "FUTURE_DATE": "Дата не може бути в майбутньому",
+  "FILE_TOO_LARGE": "Файл занадто великий",
+  "IMAGE_PROCESSING_FAILED": "Помилка обробки зображення"
+},
+
+"AUTH": {
+"ERRORS": {
+  "EMAIL_ALREADY_EXISTS": "Користувач з таким email вже існує",
+  "INVALID_CREDENTIALS": "Невірний email або пароль",
+  "EMAIL_UNCONFIRMED": "Email не підтверджено. Введіть код.",
+  "INVALID_OR_EXPIRED_CODE": "Код невірний або прострочений",
+  "USER_NOT_FOUND": "Користувача не знайдено",
+  "GOOGLE_AUTH_FAILED": "Помилка авторизації через Google",
+  "TOKEN_MISSING": "Відсутній токен авторизації",
+  "INVALID_TOKEN": "Невірний токен",
+  "REFRESH_TOKEN_EXPIRED": "Сесія закінчилась, увійдіть знову"
   },
+"SUCCESS": {
+  "OTP_SENT": "Код підтвердження надіслано на email",
+  "RESET_EMAIL_SENT": "Інструкції для скидання пароля надіслані на email",
+  "PASSWORD_CHANGED": "Пароль успішно змінено"
+  }
+},
 
-  "ERRORS": {
-    "DEFAULT": "Невірні дані",
-    "REQUIRED_FIELD": "Поле обов'язкове для заповнення",
-    "INVALID_EMAIL_FORMAT": "Некоректний формат пошти",
-    "INVALID_COLOR_HEX": "Некоректний формат кольору",
-    "MAX_LENGTH_50": "Максимум 50 символів",
-    "PWD_MIN_LENGTH": "Мінімум 6 символів",
-    "PWD_LATIN": "Тільки латиниця та символи",
-    "PWD_UPPER": "Велика літера (A-Z)",
-    "PWD_DIGIT": "Хоча б одна цифра (0-9)",
-    "PWD_SPEC": "Спецсимвол (!@#$%...)",
-    "USERNAME_LATIN_ONLY": "Тільки латиниця та цифри",
-    "NEGATIVE_NUMBER": "Значення має бути більше нуля",
-    "FUTURE_DATE": "Дата не може бути в майбутньому",
-    "FILE_TOO_LARGE": "Файл занадто великий для обробки",
-    "IMAGE_PROCESSING_FAILED": "Помилка при обробці зображення"
+"ITEMS": {
+"ERRORS": {
+  "NOT_FOUND": "Предмет не знайдено",
+  "ONLY_ACTIVE_CAN_BE_EDITED": "Редагувати можна лише активні предмети"
   },
+"SUCCESS": {
+  "DELETE": "Предмет успішно видалено"
+  }
+},
 
-  "AUTH": {
-    "TITLE_REG": "О, Привіт!",
-    "SUBTITLE_REG": "Зареєструйтеся в системі",
-    "TITLE_LOGIN": "З поверненням!",
-    "SUBTITLE_LOGIN": "Увійдіть у свою систему зберігання",
-    "USERNAME": "Ім'я",
-    "FIELD_USERNAME": "Введіть ім'я",
-    "EMAIL": "Email",
-    "FIELD_EMAIL": "Введіть email",
-    "PASSWORD": "Пароль",
-    "FIELD_PASSWORD": "Введіть пароль",
-    "CHECKING_MAIL": "Перевірка пошти...",
-    "PASSWORD_MISMATCH": "Паролі не збігаються",
-    "CONFIRM_PASSWORD": "Перевірка пароля",
-    "CONFIRM_FIELD_PASSWORD": "Введіть пароль ще раз",
-    "BUTTON_LOGIN": "Увійти",
-    "BUTTON_REGISTER": "Зареєструватися",
-    "NO_ACC_YET": "Ще немає акаунту?",
-    "ALREADY_HAVE_ACC": "Вже є акаунт?",
-    "GO_TO_REGISTER": "Перейти до реєстрації",
-    "GO_TO_LOGIN": "Перейти до логіну",
-    "OR": "Або",
-    "BUTTON_HIDE_GOOGLE": "Приховати кнопку",
-    "BUTTON_SHOW_GOOGLE_LOGIN": "Увійти з Google",
-    "BUTTON_SHOW_GOOGLE_REG": "Зареєструватися з Google",
-    
-    "CONFIRM": {
-      "TITLE": "Підтвердження пошти",
-      "SUBTITLE": "Ми відправили код на вашу пошту",
-      "CODE_LABEL": "Код підтвердження",
-      "CODE_PLACEHOLDER": "123456",
-      "SUBMIT_BTN": "Підтвердити",
-      "RESEND_TEXT": "Не отримали код?",
-      "RESEND_LINK": "Відправити повторно"
-    },
+"LOCATIONS": {
+"ERRORS": {
+  "NOT_FOUND": "Локацію не знайдено",
+  "SELF_NESTING": "Не можна вкладати локацію в саму себе",
+  "CIRCULAR_DEPENDENCY": "Виявлено циклічну залежність"
+  }
+},
 
-    "ERRORS": {
-      "EMAIL_ALREADY_EXISTS": "Користувач з такою поштою вже зареєстрований",
-      "INVALID_CREDENTIALS": "Невірний логін або пароль",
-      "EMAIL_UNCONFIRMED": "Пошта не підтверджена. Будь ласка, введіть код.",
-      "INVALID_OR_EXPIRED_CODE": "Код невірний або його термін закінчився",
-      "USER_NOT_FOUND": "Користувача не знайдено",
-      "GOOGLE_AUTH_FAILED": "Помилка авторизації через Google",
-      "TOKEN_MISSING": "Токен авторизації відсутній або недійсний"
-    },
-    "SUCCESS": {
-      "OTP_SENT": "Код підтвердження відправлено на пошту",
-      "PASSWORD_CHANGED": "Реєстрацію успішно завершено!",
-      "RESET_EMAIL_SENT": "Інструкції зі скидання відправлено на пошту"
-    }
+"STATUS": {
+  "ACTIVE": "Активний",
+  "LENT": "Позичений",
+  "LOST": "Втрачений",
+  "BROKEN": "Зламаний",
+  "SOLD": "Проданий",
+  "GIFTED": "Подарований",
+  "LISTED": "Виставлений",
+  "BORROWED": "Запозичений"
+},
+
+"HISTORY": {
+  "CREATED": "Предмет додано до системи",
+  "MOVED": "Переміщено в іншу локацію",
+  "STATUS_CHANGED": "Статус змінено на: {{status}}",
+  "REPAIRED": "Предмет відремонтовано",
+  "RETURNED": "Предмет повернувся на базу",
+  "VALUE_UPDATED": "Ціну переоцінено",
+  "PHOTOS_ADDED_COUNT": "Додано фото: {{count}}"
+},
+
+"REMINDERS": {
+  "WARRANTY": "Закінчується гарантія",
+  "MAINTENANCE": "Технічне обслуговування",
+  "RETURN_ITEM": "Час повернути предмет",
+  "CUSTOM": "Нагадування",
+  "INSURANCE": "Страхування",
+  "SUBSCRIPTION": "Підписка"
+},
+
+"LENDING": {
+"ERRORS": {
+  "ALREADY_LENT": "Предмет уже позичений",
+  "NOT_LENT": "Предмет не знаходиться в оренді"
+  }
+},
+
+"//--- FRONTEND UI ---//": "",
+"COMMON": {
+  "SAVE": "Зберегти",
+  "CANCEL": "Скасувати",
+  "DELETE": "Видалити",
+  "EDIT": "Редагувати",
+  "ADD": "Додати",
+  "BACK": "Назад",
+  "LOADING": "Завантаження...",
+  "RENAME": "Перейменувати",
+  "INFO": "Інформація",
+  "CONFIRM": "Підтвердити",
+  "YES": "Так",
+  "NO": "Ні",
+  "SELL": "Продати",
+  "MORE": "Більше",
+  "LEND": "Позичити"
+},
+
+"HEADER": {
+  "HOME": "Головна",
+  "ITEMS": "Предмети",
+  "LOGIN": "Увійти",
+  "LOGOUT": "Вийти",
+  "SETTINGS": "Налаштування",
+  "SALES": "Продажі"
+},
+
+"AUTH_PAGE": {
+  "TITLE_LOGIN": "З поверненням!",
+  "TITLE_REG": "Привіт!",
+  "SUBTITLE_LOGIN": "Увійдіть у свою систему зберігання",
+  "SUBTITLE_REG": "Зареєструйтесь у системі",
+  "FIELD_EMAIL": "Введіть email",
+  "FIELD_PWD": "Введіть пароль",
+  "BTN_GOOGLE": "Увійти через Google",
+  "CONFIRM_TITLE": "Підтвердження email",
+  "CODE_LABEL": "Код з листа"
+},
+
+"LOCATIONS_PAGE": {
+"UI": {
+  "TITLE_CREATE": "Створити локацію",
+  "NAME_PLACEHOLDER": "Наприклад: Гараж або Полиця",
+  "AUTOMATION": "Автоматизація",
+  "SALES_ZONE": "Торгова зона",
+  "LENDING_ZONE": "Зона позичання",
+  "EMPTY": "Тут поки порожньо"
   },
+"MODAL": {
+  "DELETE_TITLE": "Видалення локації",
+  "DELETE_MSG": "Видалити локацію з усіма предметами? Цю дію неможливо скасувати!"
+  }
+},
 
-  "ITEMS": {
-    "ERRORS": {
-      "NOT_FOUND": "Предмет не знайдено"
-      ,
-    "ONLY_ACTIVE_CAN_BE_EDITED": "Редагування доступне лише для предметів у статусі 'Активний'. Спочатку завершіть активні процеси (продаж або прокат)."
-    },
-    "SUCCESS": {
-      "DELETE": "Предмет успішно видалено"
-    }
-  },
+"ITEM_CARD": {
+  "MOVE_MSG": "Перемістити в іншу локацію?",
+  "SELECT_LOCATION": "Оберіть локацію",
+  "DELETE_CONFIRM": "Ви впевнені, що хочете назавжди видалити цей предмет?"
+},
 
-  "CATEGORIES": {
-    "ERRORS": {
-      "NOT_FOUND": "Категорія не знайдена",
-      "CANNOT_DELETE_DEFAULT": "Не можна видалити категорію за замовчуванням"
-    }
-  },
+"LENDING_MODAL": {
+  "TITLE": "Позичити предмет",
+  "TO_WHOM": "Кому передаємо?",
+  "RETURN_DATE": "Коли повернути?",
+  "COMMENT": "Коментар (стан, комплект...)"
+},
 
-  "PLATFORMS": {
-    "ERRORS": {
-      "NOT_FOUND": "Платформа не знайдена"
-    }
-  },
+"SETTINGS_PAGE": {
+  "TITLE": "Налаштування",
+  "SALES_MODULE": "Модуль продажів",
+  "LENDING_MODULE": "Модуль позичання",
+  "DELETE_CAT_CONFIRM": "Видалити категорію? Переконайтесь, що в ній немає предметів."
+},
 
-  "SALES": {
-    "TITLE": "Історія продажів",
-    "SUBTITLE": "Ваша історія успіху в цифрах",
-    "TOTAL_REVENUE": "Оборот",
-    "TOTAL_PROFIT": "Чистий прибуток",
-    "COL_ITEM": "Предмет",
-    "COL_DATE": "Дата продажу",
-    "COL_PRICE": "Ціна продажу",
-    "COL_PROFIT": "Прибуток",
-    "NO_SALES": "Продажів поки немає",
-    "NO_SALES_SUB": "Продайте що-небудь, щоб побачити тут статистику",
-    "ERRORS": {
-      "ITEM_NOT_FOUND": "Предмет не знайдено в системі продажів",
-      "ALREADY_SOLD": "Предмет вже позначено як проданий",
-      "NOT_FOUND": "Запис про продаж не знайдено"
-    }
-  },
-
-  "HEADER": {
-    "HOME": "Головна",
-    "LOGIN": "Увійти",
-    "LOGOUT": "Вийти",
-    "REGISTER": "Реєстрація",
-    "SETTINGS": "Налаштування",
-    "SALES": "Продажі",
-    "MANAGEMENT": "Управління",
-    "ITEMS_MANAGEMENT": "Предмети"
-  },
-
-  "SHARED": {
-    "TOOLTIP_INFO": "Інформація",
-    "TOOLTIP_RENAME": "Перейменувати",
-    "TOOLTIP_DELETE": "Видалити",
-    "TOOLTIP_ADD": "Додати"
-  },
-
-  "CREATE_ITEM": {
-    "TITLE": "Створити предмет",
-    "NAME": "Назва",
-    "FIELD_NAME": "Введіть назву предмета",
-    "DESCRIPTION": "Опис",
-    "FIELD_DESCRIPTION": "Введіть опис предмета",
-    "CATEGORY": "Категорія",
-    "FIELD_CATEGORY": "Оберіть категорію",
-    "STATUS": "Статус",
-    "LOCATION": "Локація",
-    "SELECT_LOCATION": "Оберіть локацію",
-    "PURCHASE_DATE": "Дата створення",
-    "PRICE": "Ціна",
-    "ESTIMATED": "Оціночна вартість",
-    "ADD_PHOTO": "Додати фото",
-    "CLICK_TO_UPLOAD": "Натисніть, щоб обрати фото",
-    "BUTTON_START": "Створити",
-    "BUTTON_CANCEL": "Скасувати",
-    "CREATE_CATEGORY": "Створити категорію",
-    "LENT_INFO": "Кому ви віддали предмет?",
-    "BORROWED_INFO": "У кого ви взяли предмет?",
-    "PERSON_NAME": "Ім'я людини",
-    "CONTACT_EMAIL": "Email (для сповіщення)",
-    "RETURN_DATE": "Очікувана дата повернення",
-    "PH_NAME": "Наприклад, Олександр",
-    "SEND_EMAIL": "Надіслати лист-сповіщення",
-    "YOUR_EMAIL": "Ваш Email",
-    "SEND_EMAIL_TO_ME": "Нагадати мені на пошту за 1 день до повернення"
-  },
-
-  "EDIT_ITEM": {
-    "TITLE": "Редагування предмета",
-    "NAME": "Назва предмета",
-    "DESCRIPTION": "Опис",
-    "CATEGORY": "Категорія",
-    "LOCATION": "Місце зберігання",
-    "PURCHASE_PRICE": "Ціна купівлі",
-    "ESTIMATED_VALUE": "Оціночна вартість",
-    "PURCHASE_DATE": "Дата купівлі",
-    "ADD_NEW_PHOTOS": "Додати нові фото",
-    "SELECT_PHOTOS": "Обрати фото",
-    "LENT_TO": "Позичено: {{name}}",
-    "RETURN_NOW": "Повернути зараз",
-    "LENT_INFO": "Позичено: {{ name }}"
-  },
-
-  "ITEM_CARD": {
-    "SELL": "Продати",
-    "INFO": "Деталі",
-    "DELETE": "Видалити",
-    "M_MOVE": "Перемістити",
-    "M_SELECT_LOCATION": "Оберіть місце",
-    "M_YOU_SURE": "Ви впевнені, що хочете назавжди видалити цей предмет? Ця дія незворотна.",
-    "M_RETURN_ITEM": "Ви впевнені, що хочете повернути цей предмет назад у локацію?"
-  },
-
-  "STATUS": {
-    "ACTIVE": "Активний",
-    "LENT": "Позичений",
-    "LOST": "Втрачений",
-    "BROKEN": "Зламаний",
-    "SOLD": "Проданий",
-    "GIFTED": "Подарований",
-    "LISTED": "Виставлений",
-    "BORROWED": "Запозичений"
-  },
-
-  "COMMON": {
-    "ADD": "Додати",
-    "BACK": "Назад",
-    "EDIT": "Редагувати",
-    "SAVE": "Зберегти",
-    "CANCEL": "Скасувати",
-    "DELETE": "Видалити",
-    "M_YOU_SURE": "Ви впевнені, що хочете назавжди видалити цей предмет? Ця дія є незворотною.",
-    "SMART_DELETE": "Розумне видалення",
-    "SMART_DELETE_TEXT": "Видалити предмет, зберігши прибуток в історії",
-    "HARD_DELETE": "Повне видалення",
-    "HARD_DELETE_TEXT": "Видалити все (включаючи запис про прибуток)"
-  },
-
-  "HISTORY": {
-    "CREATED": "Предмет додано в систему",
-    "MOVED": "Переміщено в іншу локацію",
-    "STATUS_CHANGED": "Статус змінено на : {{status}}",
-    "REPAIRED": "Предмет відремонтовано",
-    "VALUE_UPDATED": "Ціну переоцінено",
-    "REMINDER_COMPLETED": "Нагадування надіслано",
-    "REMINDER_SCHEDULED": "Нагадування заплановано",
-    "PHOTOS_ADDED_COUNT": "Додано нових фото: {{count}}"
-  },
-
-  "REMINDERS": {
-    "WARRANTY": "Закінчується термін гарантії",
-    "MAINTENANCE": "Необхідне технічне обслуговування",
-    "RETURN_ITEM": "Час повернути предмет власнику",
-    "CUSTOM": "Нагадування",
-    "INSURANCE": "Страхові витрати",
-    "MEDICAL": "Медичні витрати",
-    "TAX": "Податки",
-    "SUBSCRIPTION": "Підписки",
-    "UI": {
-      "TITLE": "Нагадування",
-      "TYPE_LABEL": "Тип",
-      "DATE_LABEL": "Дата",
-      "EMPTY_LABEL": "Немає нагадувань"
-    },
-    "MODAL": {
-      "CONFIRM_ACTION": "Підтвердіть дію",
-      "M_YOU_SURE_DONE": "Ви впевнені, що завдання виконано?",
-      "M_YOU_SURE_DELETE": "Ви точно хочете видалити нагадування?",
-      "YES": "Так",
-      "CANCEL": "Скасувати",
-      "DELETE": "Видалити"
-    }
-  },
-
-  "LENDING": {
-    "TITLE": "Позичити",
-    "PERSON_NAME": "Кому віддаємо?",
-    "PLACEHOLDER_NAME": "Наприклад: Брат, Іван, Сусід",
-    "ESTIMATED_VALUE": "Оціночна вартість",
-    "EXPECTED_RETURN": "Коли повернути?",
-    "COMMENT": "Коментар",
-    "PLACEHOLDER_COMMENT": "В якому стані річ, що в комплекті...",
-    "DATE_GIVEN": "Дата передачі",
-    "ERROR_NAME_REQ": "Ім'я обов'язкове для заповнення",
-    "ERRORS": {
-      "ALREADY_LENT": "Предмет вже передано",
-      "NOT_LENT": "Предмет не знаходиться в передачі"
-    }
-  },
-
-  "MANAGEMENT": {
-    "TITLE_CATEGORY": "Управління категоріями",
-    "TITLE_PLATFORM": "Управління платформами"
-  },
-
-  "ITEM_DETAIL": {
-    "STORAGE_PLACE": "Місце зберігання",
-    "PURCHASE_PRICE": "Куплено за",
-    "ESTIMATED_VALUE": "Поточна оцінка",
-    "HISTORY_TITLE": "Історія змін",
-    "HISTORY_EMPTY": "Історія поки порожня",
-    "NO_DESCRIPTION": "Опис відсутній",
-    "LENT_TO": "Знаходиться у "
-  },
-
-  "LOCATIONS": {
-    "ERRORS": {
-      "NOT_FOUND": "Локація не знайдена",
-      "SELF_NESTING": "Не можна вкласти локацію в саму себе",
-      "CIRCULAR_DEPENDENCY": "Не можна вкласти батька в нащадка (циклічна залежність)"
-    },
-    "UI": {
-      "NAME_PLACEHOLDER": "Наприклад: Вітрина або Гараж",
-      "AUTOMATION": "Автоматизація",
-      "SALES_ZONE": "Торгова точка",
-      "LENDING_ZONE": "Зона позичання",
-      "SALES_HINT": "Предмети тут автоматично стануть Listed",
-      "LENDING_HINT": "Предмети тут автоматично стануть Lent",
-      "TITLE": "Створити локацію",
-      "COLOR_LABEL": "Колір мітки",
-      "COLOR_HINT_RANDOM": "Якщо не оберете — призначимо випадковий колір"
-    },
-    "DROP_MENU": {  
-      "MOVE_TO": "Перемістити в ...",
-      "HIGHER_LEVEL": "На верхній рівень",
-      "DETAILS": "Деталі",
-      "RENAME": "Перейменувати",
-      "DELETE": "Видалити"
-    }
-  },
-
-  "MAIN": {
-    "LOADING": "Завантаження...",
-    "ADD": "Додати",
-    "PAGE": " Сторінка ",
-    "CREATE_LOCATION": "Створити локацію",
-    "CREATE_ITEM": "Створити предмет"
-  },
-
-  "LOCATION_RIB": {
-    "GLOBAL_PAGE": "Сторінка"
-  },
-
-  "SETTINGS": {
-    "TITLE": "Налаштування системи",
-    "SUBTITLE": "Управління модулями та довідниками",
-    "GENERAL_TAB": "Загальні",
-    "CATEGORIES_TAB": "Категорії",
-    "PLATFORMS_TAB": "Платформи",
-    "SALES_MODULE": "Модуль продажів",
-    "SALES_HINT": "Включає можливість позначати предмети як продані та вести облік прибутку.",
-    "LENDING_MODULE": "Модуль прокату",
-    "LENDING_HINT": "Додає функціонал позичання та відстеження повернення речей.",
-    "GO_TO_ADMIN": "Панель адміністратора",
-    "ADD_CATEGORY_PROMPT": "Введіть назву нової категорії:",
-    "ADD_PLATFORM_PROMPT": "Введіть назву платформи (наприклад, OLX або eBay):",
-    "DELETE_CATEGORY_CONFIRM": "Видалити категорію? Переконайтеся, що в ній немає активних предметів.",
-    "DELETE_PLATFORM_CONFIRM": "Видалити платформу? Зв'язок в історії продажів може зникнути."
-  },
-
-  "EXPLORER": {
-    "TITLE": "Управління",
-    "CREATE_ITEM": "Створити предмет",
-    "SELECTED": "Вибрано",
-    "MOVE": "Перемістити",
-    "DELETE": "Видалити",
-    "EMPTY_RESULT": "Нічого не знайдено за вашим запитом",
-    "TABLE": {
-      "PHOTO": "Фото",
-      "NAME": "Назва",
-      "CATEGORY": "Категорія",
-      "LOCATION": "Місцезнаходження",
-      "STATUS": "Статус",
-      "PRICE": "Ціна",
-      "ACTION": "Дії"
-    },
-    "TOOLTIP_VIEW": "Переглянути деталі",
-    "TOOLTIP_EDIT": "Редагувати предмет",
-    "EDIT_LOCKED": "Редагування заблоковано (предмет не активний)"
-  },
-
-  "FILTERS": {
-    "TITLE": "Фільтри",
-    "SEARCH_PLACEHOLDER": "Введіть назву предмета",
-    "SHOW_ALL": "Показати всі",
-    "SORT_BY": "Сортування",
-    "PRICE": "Ціна ($)",
-    "PRICE_FROM": "Від",
-    "PRICE_TO": "До",
-    "RESET": "Скинути фільтри",
-    "SORT": {
-      "NEWEST": "Спочатку нові",
-      "OLDEST": "Спочатку старі",
-      "NAME_ASC": "Ім'я (А-Я)",
-      "NAME_DESC": "Ім'я (Я-А)",
-      "PRICE_ASC": "Ціна (Дешевше)",
-      "PRICE_DESC": "Ціна (Дорожче)"
-    }
+"FILTERS": {
+  "SEARCH": "Пошук за назвою",
+  "SORT_NEWEST": "Спочатку нові",
+  "SORT_PRICE_ASC": "Дешевші",
+  "SORT_PRICE_DESC": "Дорожчі",
+  "RESET": "Скинути фільтри"
   }
 }

@@ -1,62 +1,62 @@
 <div class="container-overlay">
   <div class="create-card">
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      
       <h2 [style.color]="form.controls.color.value || 'var(--accent-color)'">
         <i class="fa fa-map-marker-alt"></i> {{ 'LOCATIONS.UI.TITLE' | translate }}
       </h2>
-      
-      <div class="form-group">
-        <label>{{ 'CREATE_ITEM.NAME' | translate }}</label>
-        <input type="text" formControlName="name" [placeholder]="'LOCATIONS.UI.NAME_PLACEHOLDER' | translate">
-      </div>
 
       <div class="form-group">
+        <label>{{ 'CREATE_ITEM.NAME' | translate }}</label>
+        <input type="text"
+               formControlName="name"
+               [placeholder]="'LOCATIONS.UI.NAME_PLACEHOLDER' | translate"
+               autofocus>
+      </div>
+
+      <div class="form-group picker-wrapper">
         <label>{{ 'LOCATIONS.UI.COLOR_LABEL' | translate }}</label>
         
         <div class="color-selector-container">
           <div class="preset-colors-grid">
-            <div 
-              *ngFor="let color of presetColors" 
-              class="color-tile" 
-              [style.background-color]="color"
-              [class.active]="form.controls.color.value === color"
-              (click)="selectPresetColor(color)">
+
+            <div *ngFor="let color of presetColors" 
+                class="color-tile" 
+                [style.background-color]="color"
+                [class.active]="form.controls.color.value === color"
+                (click)="selectPresetColor(color)">
               <i class="fa fa-check" *ngIf="form.controls.color.value === color"></i>
             </div>
-            
-            <div class="color-tile custom-picker-tile" 
-                [style.background-color]="form.controls.color.value.startsWith('var') ? form.controls.color.value : form.controls.color.value">
-              <i class="fa fa-eye-dropper"></i>
-              <input formControlName="color" type="color">
+
+            <div class="color-tile custom-picker-tile"
+                (click)="openColorPicker()"
+                [class.active]="showColorPicker"
+                [style.background-color]="form.controls.color.value.startsWith('var') ? '' : form.controls.color.value">
+              <i class="fa" [ngClass]="showColorPicker ? 'fa-times' : 'fa-eye-dropper'"></i>
             </div>
+
+            <div class="color-popup" *ngIf="showColorPicker">
+              <color-chrome
+                [color]="tempColor"
+                (onChangeComplete)="tempColor = $event.color.hex">
+              </color-chrome>
+
+              <div class="color-actions">
+                <button type="button" class="btn-cancel" (click)="showColorPicker = false">
+                  {{ 'COMMON.CANCEL' | translate }}
+                </button>
+                <button type="button" class="btn-confirm" (click)="confirmColor()">
+                  OK
+                </button>
+              </div>
+            </div>
+
           </div>
         </div>
 
-  <small class="hint-text" *ngIf="!form.controls.color.value">
-    {{ 'LOCATIONS.UI.COLOR_HINT_RANDOM' | translate }}
-  </small>
-</div>
-
-      <div class="smart-options" *ngIf="featureService.isSalesModeEnabled() || featureService.isLendingModeEnabled()">
-        <p class="section-label">{{ 'LOCATIONS.UI.AUTOMATION' | translate }}</p>
-        
-        <div class="checkbox-group" *ngIf="featureService.isSalesModeEnabled()">
-          <label class="checkbox-wrapper">
-            <input type="checkbox" formControlName="isSalesLocation">
-            <div class="custom-check"></div>
-            <span class="label-text"><i class="fa fa-shopping-cart"></i> {{ 'LOCATIONS.UI.SALES_ZONE' | translate }}</span>
-          </label>
-          <small>{{ 'LOCATIONS.UI.SALES_HINT' | translate }}</small>
-        </div>
-
-        <div class="checkbox-group" *ngIf="featureService.isLendingModeEnabled()">
-          <label class="checkbox-wrapper">
-            <input type="checkbox" formControlName="isLendingLocation">
-            <div class="custom-check"></div>
-            <span class="label-text"><i class="fa fa-handshake"></i> {{ 'LOCATIONS.UI.LENDING_ZONE' | translate }}</span>
-          </label>
-          <small>{{ 'LOCATIONS.UI.LENDING_HINT' | translate }}</small>
-        </div>
+        <small class="hint-text" *ngIf="!form.controls.color.value">
+          {{ 'LOCATIONS.UI.COLOR_HINT_RANDOM' | translate }}
+        </small>
       </div>
 
       <div class="actions">
@@ -67,6 +67,7 @@
           {{ 'COMMON.SAVE' | translate }}
         </button>
       </div>
+
     </form>
   </div>
 </div>

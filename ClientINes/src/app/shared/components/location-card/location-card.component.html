@@ -11,13 +11,28 @@
           <i *ngIf="location.isSalesLocation" class="fa fa-shopping-cart status-icon sales" title="Sales Location"></i>
           <i *ngIf="location.isLendingLocation" class="fa fa-handshake status-icon lending" title="Lending Location"></i>
         </h3>
-        
       </div>
     </div>
     
-    <button class="inest-action-btn" (click)="$event.stopPropagation(); location.showMenu = !location.showMenu">
-      <i class="fa fa-ellipsis-v"></i>
-    </button>
+    <div class="header-actions">
+      <button class="quick-add-btn item-btn" 
+              [routerLink]="['/create-item']" 
+              [queryParams]="{ locationId: location.id }"
+              [title]="'MAIN.CREATE_ITEM' | translate">
+        <i class="fa fa-plus-square"></i>
+      </button>
+
+      <button class="quick-add-btn loc-btn" 
+              [routerLink]="['/location-create']" 
+              [queryParams]="{ parentId: location.id }"
+              [title]="'MAIN.CREATE_LOCATION' | translate">
+        <i class="fa fa-folder-plus"></i>
+      </button>
+
+      <button class="inest-action-btn" (click)="$event.stopPropagation(); location.showMenu = !location.showMenu">
+        <i class="fa fa-ellipsis-v"></i>
+      </button>
+    </div>
 
     <div class="menu-dropdown" *ngIf="location.showMenu" (click)="$event.stopPropagation()">
       <div class="menu-section">
@@ -72,7 +87,7 @@
     
     <div class="empty-state" *ngIf="location.items.length === 0">
       <i class="fa fa-box-open"></i>
-      <p>Пусто</p>
+      <p>{{'LOCATIONS.UI.EMPTY' | translate}}</p>
     </div>
   </div>
 
@@ -85,7 +100,8 @@
         [isChildOf]="isChildOf"
         (itemDropped)="itemDropped.emit($event)"
         (move)="move.emit($event)"
-        (moveItemManual)="moveItemManual.emit($event)" (rename)="rename.emit($event)"
+        (moveItemManual)="moveItemManual.emit($event)" 
+        (rename)="rename.emit($event)"
         (delete)="delete.emit($event)"
         (sellItem)="sellItem.emit($event)"
         (deleteItem)="deleteItem.emit($event)"> 

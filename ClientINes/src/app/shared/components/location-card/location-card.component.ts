@@ -7,11 +7,12 @@ import { Item } from '../../../models/entities/item.entity';
 import { FeatureService } from '../../../core/services/feature.service';
 import { ItemCardComponent } from '../item-card/item-card.component';
 import { TranslateModule } from '@ngx-translate/core';
+import { ColorChromeModule } from 'ngx-color/chrome';
 
 @Component({
   selector: 'app-location-card',
   standalone: true,
-  imports: [CommonModule, DragDropModule, RouterModule, ItemCardComponent, TranslateModule],
+  imports: [CommonModule, DragDropModule, RouterModule, ItemCardComponent, TranslateModule, ColorChromeModule],
   templateUrl: './location-card.component.html',
   styleUrl: './location-card.component.scss'
 })

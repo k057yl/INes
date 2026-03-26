@@ -25,8 +25,21 @@
       (moveItemManual)="onItemMoveManual($event)"
       (rename)="onRename($event)"
       (deleteItem)="onDeleteItem($event)"
-      (delete)="onDelete($event)">
+      (delete)="onDeleteLocation($event)">
     </app-location-card>
+
+    <div class="zero-state-container" *ngIf="!isLoading && locations.length === 0">
+      <div class="zero-state-content">
+        <i class="fa fa-box-open zero-icon"></i>
+        <h2>{{ 'LOCATIONS.UI.EMPTY' | translate }}</h2>
+        
+        <button class="inest-btn-primary" 
+                [routerLink]="['/location-create']" 
+                style="max-width: 300px; margin: 20px auto;">
+          <i class="fa fa-plus-circle"></i>
+          {{ 'MAIN.CREATE_LOCATION' | translate }}
+        </button>
+      </div>
   </div>
 </div>
 
@@ -38,56 +51,27 @@
   </div>
 </div>
 
+<app-inest-modal
+  *ngIf="activeModal === 'deleteItem' || activeModal === 'deleteLoc' || activeModal === 'renameLoc' || activeModal === 'moveConfirm'"
+  [mode]="(activeModal === 'renameLoc' || activeModal === 'moveConfirm') ? 'input' : 'delete'"
+  [title]="(activeModal === 'renameLoc' ? 'SHARED.TOOLTIP_RENAME' : activeModal === 'deleteLoc' ? 'LOCATIONS.MODAL.CANCEL' : 'ITEM_CARD.DELETE') | translate"
+  [message]="(activeModal === 'deleteLoc' ? 'LOCATIONS.MODAL.M_DELETE' : 'ITEM_CARD.M_YOU_SURE') | translate"
+  [name]="(activeModal === 'renameLoc' ? selectedLocation?.name : (activeModal === 'moveConfirm' ? 'skip' : '')) ?? ''"
+  (confirmed)="activeModal === 'renameLoc' ? confirmRename($event) : activeModal === 'deleteLoc' ? confirmDeleteLocation() : activeModal === 'deleteItem' ? confirmDeleteItem() : confirmNavigation()"
+  (cancelled)="closeModals()">
+</app-inest-modal>
+
 <app-sell-modal 
-  *ngIf="itemToSell" 
-  [item]="itemToSell"
-  (close)="itemToSell = null"
+  *ngIf="activeModal === 'sell' && selectedItem" 
+  [item]="selectedItem"
+  (close)="closeModals()"
   (confirm)="onSellConfirmed($event)">
 </app-sell-modal>
 
-<app-inest-modal
-  *ngIf="showDeleteItemModal"
-  mode="delete"
-  [title]="'ITEM_CARD.DELETE' | translate"
-  [message]="'ITEM_CARD.M_YOU_SURE' | translate"
-  (confirmed)="confirmDeleteItem()"
-  (cancelled)="closeModals()">
-</app-inest-modal>
-
-<app-inest-modal
-  *ngIf="showDeleteLocationModal"
-  mode="delete"
-  [title]="'SHARED.TOOLTIP_DELETE' | translate"
-  [message]="'SETTINGS.DELETE_CATEGORY_CONFIRM' | translate"
-  (confirmed)="confirmDeleteLocation()"
-  (cancelled)="closeModals()">
-</app-inest-modal>
-
-<app-inest-modal
-  *ngIf="showRenameModal"
-  mode="input"
-  [title]="'SHARED.TOOLTIP_RENAME' | translate"
-  [name]="locationToRename?.name || ''"
-  (confirmed)="confirmRename($event)"
-  (cancelled)="closeModals()">
-</app-inest-modal>
-
-<app-inest-modal
-  *ngIf="showMoveConfirm"
-  mode="input"
-  [name]="'skip'" 
-  [title]="'ITEM_CARD.M_MOVE' | translate"
-  [message]="'HISTORY.MOVED' | translate"
-  [confirmText]="'COMMON.EDIT' | translate"
-  [cancelText]="'COMMON.CANCEL' | translate"
-  (confirmed)="confirmNavigation()"
-  (cancelled)="closeModals()">
-</app-inest-modal>
-
 <app-lend-item-modal 
-  *ngIf="showLendModal && itemToLend" 
-  [item]="itemToLend"
-  [isOpen]="showLendModal"
+  *ngIf="activeModal === 'lend' && selectedItem" 
+  [item]="selectedItem"
+  [isOpen]="true"
   (close)="closeModals()"
   (confirm)="onLendConfirmed($event)">
 </app-lend-item-modal>

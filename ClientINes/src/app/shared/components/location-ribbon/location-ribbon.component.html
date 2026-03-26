@@ -33,10 +33,6 @@
     </div>
 
     <div class="add-chip-container" #createMenuContainer>
-      <button class="inest-btn-ribbon-add" (click)="toggleCreateMenu($event)">
-        <i class="fa fa-plus-circle"></i> {{ 'MAIN.ADD' | translate }}
-      </button>
-
       <div class="ribbon-dropdown-menu" *ngIf="isCreateMenuOpen" (click)="$event.stopPropagation()">
         <button routerLink="/location-create" class="dropdown-item" (click)="closeMenu()">
           <i class="fa fa-map-marker-alt"></i> {{'MAIN.CREATE_LOCATION' | translate }}

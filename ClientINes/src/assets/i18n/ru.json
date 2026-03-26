@@ -1,4 +1,5 @@
 {
+  "//--- BACKEND MIRROR (Синхронизировано с LocalizationConstants.cs) ---//": "",
   "SYSTEM": {
     "DEFAULT_ERROR": "Произошла непредвиденная ошибка",
     "VALIDATION_FAILED": "Ошибка валидации данных",
@@ -7,59 +8,23 @@
   },
 
   "ERRORS": {
-    "DEFAULT": "Неверные данные",
     "REQUIRED_FIELD": "Поле обязательно для заполнения",
     "INVALID_EMAIL_FORMAT": "Некорректный формат почты",
     "INVALID_COLOR_HEX": "Некорректный формат цвета",
     "MAX_LENGTH_50": "Максимум 50 символов",
     "PWD_MIN_LENGTH": "Минимум 6 символов",
-    "PWD_LATIN": "Только латиница и символы",
     "PWD_UPPER": "Заглавная буква (A-Z)",
     "PWD_DIGIT": "Хотя бы одна цифра (0-9)",
     "PWD_SPEC": "Спецсимвол (!@#$%...)",
+    "PWD_LATIN": "Только латиница и символы",
     "USERNAME_LATIN_ONLY": "Только латиница и цифры",
     "NEGATIVE_NUMBER": "Значение должно быть больше нуля",
     "FUTURE_DATE": "Дата не может быть в будущем",
-    "FILE_TOO_LARGE": "Файл слишком велик для обработки",
+    "FILE_TOO_LARGE": "Файл слишком велик",
     "IMAGE_PROCESSING_FAILED": "Ошибка при обработке изображения"
   },
 
   "AUTH": {
-    "TITLE_REG": "О, Привет!",
-    "SUBTITLE_REG": "Зарегистрируйтесь в системе",
-    "TITLE_LOGIN": "С возвращением!",
-    "SUBTITLE_LOGIN": "Войдите в свою систему хранения",
-    "USERNAME": "Имя",
-    "FIELD_USERNAME": "Введите имя",
-    "EMAIL": "Email",
-    "FIELD_EMAIL": "Введите email",
-    "PASSWORD": "Пароль",
-    "FIELD_PASSWORD": "Введите пароль",
-    "CHECKING_MAIL": "Проверка почты...",
-    "PASSWORD_MISMATCH": "Пароли не совпадают",
-    "CONFIRM_PASSWORD": "Проверка пароля",
-    "CONFIRM_FIELD_PASSWORD": "Введите пароль еще раз",
-    "BUTTON_LOGIN": "Войти",
-    "BUTTON_REGISTER": "Зарегистрироваться",
-    "NO_ACC_YET": "Ещё нет аккаунта?",
-    "ALREADY_HAVE_ACC": "Уже есть аккаунт?",
-    "GO_TO_REGISTER": "Перейти к регистрации",
-    "GO_TO_LOGIN": "Перейти к логину",
-    "OR": "Или",
-    "BUTTON_HIDE_GOOGLE": "Скрыть кнопку",
-    "BUTTON_SHOW_GOOGLE_LOGIN": "Войти с Google",
-    "BUTTON_SHOW_GOOGLE_REG": "Зарегистрироваться с Google",
-    
-    "CONFIRM": {
-      "TITLE": "Подтверждение почты",
-      "SUBTITLE": "Мы отправили код на вашу почту",
-      "CODE_LABEL": "Код подтверждения",
-      "CODE_PLACEHOLDER": "123456",
-      "SUBMIT_BTN": "Подтвердить",
-      "RESEND_TEXT": "Не получили код?",
-      "RESEND_LINK": "Отправить повторно"
-    },
-
     "ERRORS": {
       "EMAIL_ALREADY_EXISTS": "Пользователь с такой почтой уже зарегистрирован",
       "INVALID_CREDENTIALS": "Неверный логин или пароль",
@@ -67,128 +32,33 @@
       "INVALID_OR_EXPIRED_CODE": "Код неверный или его срок истек",
       "USER_NOT_FOUND": "Пользователь не найден",
       "GOOGLE_AUTH_FAILED": "Ошибка авторизации через Google",
-      "TOKEN_MISSING": "Токен авторизации отсутствует или недействителен"
+      "TOKEN_MISSING": "Токен авторизации отсутствует",
+      "INVALID_TOKEN": "Неверный токен",
+      "REFRESH_TOKEN_EXPIRED": "Сессия истекла, войдите заново"
     },
     "SUCCESS": {
       "OTP_SENT": "Код подтверждения отправлен на почту",
-      "PASSWORD_CHANGED": "Регистрация успешно завершена!",
-      "RESET_EMAIL_SENT": "Инструкции по сбросу отправлены на почту"
+      "RESET_EMAIL_SENT": "Инструкции по сбросу отправлены на почту",
+      "PASSWORD_CHANGED": "Пароль успешно изменен"
     }
   },
 
   "ITEMS": {
     "ERRORS": {
       "NOT_FOUND": "Предмет не найден",
-      "ONLY_ACTIVE_CAN_BE_EDITED": "Редактирование доступно только для предметов в статусе 'Активен'. Сначала завершите активные процессы (продажу или прокат)."
+      "ONLY_ACTIVE_CAN_BE_EDITED": "Редактирование доступно только для активных предметов"
     },
     "SUCCESS": {
       "DELETE": "Предмет успешно удален"
     }
   },
 
-  "CATEGORIES": {
+  "LOCATIONS": {
     "ERRORS": {
-      "NOT_FOUND": "Категория не найдена",
-      "CANNOT_DELETE_DEFAULT": "Нельзя удалить категорию по умолчанию"
+      "NOT_FOUND": "Локация не найдена",
+      "SELF_NESTING": "Нельзя вложить локацию в саму себя",
+      "CIRCULAR_DEPENDENCY": "Обнаружена циклическая зависимость вложений"
     }
-  },
-
-  "PLATFORMS": {
-    "ERRORS": {
-      "NOT_FOUND": "Платформа не найдена"
-    }
-  },
-
-  "SALES": {
-    "TITLE": "История продаж",
-    "SUBTITLE": "Ваша история успеха в цифрах",
-    "TOTAL_REVENUE": "Оборот",
-    "TOTAL_PROFIT": "Чистая прибыль",
-    "COL_ITEM": "Предмет",
-    "COL_DATE": "Дата продажи",
-    "COL_PRICE": "Цена продажи",
-    "COL_PROFIT": "Прибыль",
-    "NO_SALES": "Продаж пока нет",
-    "NO_SALES_SUB": "Продайте что-нибудь, чтобы увидеть здесь статистику",
-    "ERRORS": {
-      "ITEM_NOT_FOUND": "Предмет не найден в системе продаж",
-      "ALREADY_SOLD": "Предмет уже помечен как проданный",
-      "NOT_FOUND": "Запись о продаже не найдена"
-    }
-  },
-
-  "HEADER": {
-    "HOME": "Главная",
-    "LOGIN": "Войти",
-    "LOGOUT": "Выйти",
-    "REGISTER": "Регистрация",
-    "SETTINGS": "Настройки",
-    "SALES": "Продажи",
-    "MANAGEMENT": "Управление",
-    "ITEMS_MANAGEMENT": "Предметы"
-  },
-
-  "SHARED": {
-    "TOOLTIP_INFO": "Информация",
-    "TOOLTIP_RENAME": "Переименовать",
-    "TOOLTIP_DELETE": "Удалить",
-    "TOOLTIP_ADD": "Добавить"
-  },
-
-  "CREATE_ITEM": {
-    "TITLE": "Создайте предмет",
-    "NAME": "Название",
-    "FIELD_NAME": "Введите название предмета",
-    "DESCRIPTION": "Описание",
-    "FIELD_DESCRIPTION": "Введите описание предмета",
-    "CATEGORY": "Категория",
-    "FIELD_CATEGORY": "Выберите категорию",
-    "STATUS": "Статус",
-    "LOCATION": "Локация",
-    "SELECT_LOCATION": "Выберите локацию",
-    "PURCHASE_DATE": "Дата создания",
-    "PRICE": "Цена",
-    "ESTIMATED": "Оценочная стоимость",
-    "ADD_PHOTO": "Добавить фото",
-    "CLICK_TO_UPLOAD": "Нажмите, чтобы выбрать фото",
-    "BUTTON_START": "Создать",
-    "BUTTON_CANCEL": "Отмена",
-    "CREATE_CATEGORY": "Создать категорию",
-    "LENT_INFO": "Кому вы отдали предмет?",
-    "BORROWED_INFO": "У кого вы взяли предмет?",
-    "PERSON_NAME": "Имя человека",
-    "CONTACT_EMAIL": "Email (для уведомления)",
-    "RETURN_DATE": "Ожидаемая дата возврата",
-    "PH_NAME": "Например, Александр",
-    "SEND_EMAIL": "Отправить письмо-уведомление",
-    "YOUR_EMAIL": "Ваш Email",
-    "SEND_EMAIL_TO_ME": "Напомнить мне на почту за 1 день до возврата"
-  },
-
-  "EDIT_ITEM": {
-    "TITLE": "Редактирование предмета",
-    "NAME": "Название предмета",
-    "DESCRIPTION": "Описание",
-    "CATEGORY": "Категория",
-    "LOCATION": "Место хранения",
-    "PURCHASE_PRICE": "Цена покупки",
-    "ESTIMATED_VALUE": "Оценочная стоимость",
-    "PURCHASE_DATE": "Дата покупки",
-    "ADD_NEW_PHOTOS": "Добавить новые фото",
-    "SELECT_PHOTOS": "Выбрать фото",
-    "LENT_TO": "Одолжено: {{name}}",
-    "RETURN_NOW": "Вернуть сейчас",
-    "LENT_INFO": "Одолжено: {{ name }}"
-  },
-
-  "ITEM_CARD": {
-    "SELL": "Продать",
-    "INFO": "Детали",
-    "DELETE": "Удалить",
-    "M_MOVE": "Переместить",
-    "M_SELECT_LOCATION": "Выберите место",
-    "M_YOU_SURE": "Вы уверены, что хотите навсегда удалить этот предмет? Это действие необратимо.",
-    "M_RETURN_ITEM": "Вы уверены, что хотите вернуть этот предмет обратно в локацию?"
   },
 
   "STATUS": {
@@ -199,182 +69,115 @@
     "SOLD": "Продан",
     "GIFTED": "Подарен",
     "LISTED": "Выставлен",
-    "BORROWED": "Заимствованный"
-  },
-
-  "COMMON": {
-    "ADD": "Добавить",
-    "BACK": "Назад",
-    "EDIT": "Редактировать",
-    "SAVE": "Сохранить",
-    "CANCEL": "Отмена",
-    "DELETE": "Удалить",
-    "M_YOU_SURE": "Вы уверены, что хотите навсегда удалить этот предмет? Это действие необратимо.",
-    "SMART_DELETE": "Умное удаление",
-    "SMART_DELETE_TEXT": "Удалить предмет, сохранив прибыль в истории",
-    "HARD_DELETE": "Полное удаление",
-    "HARD_DELETE_TEXT": "Удалить всё (включая запись о прибыли)"
+    "BORROWED": "Заимствован"
   },
 
   "HISTORY": {
     "CREATED": "Предмет добавлен в систему",
     "MOVED": "Перемещён в другую локацию",
-    "STATUS_CHANGED": "Статус изменён на : {{status}}",
+    "STATUS_CHANGED": "Статус изменён на: {{status}}",
     "REPAIRED": "Предмет отремонтирован",
+    "RETURNED": "Предмет вернулся на базу",
     "VALUE_UPDATED": "Цена переоценена",
-    "REMINDER_COMPLETED": "Напоминание отправлено",
-    "REMINDER_SCHEDULED": "Напоминание запланировано",
-    "PHOTOS_ADDED_COUNT": "Добавлено новых фото: {{count}}"
+    "PHOTOS_ADDED_COUNT": "Добавлено фото: {{count}}"
   },
 
   "REMINDERS": {
     "WARRANTY": "Истекает срок гарантии",
-    "MAINTENANCE": "Необходимо техническое обслуживание",
-    "RETURN_ITEM": "Пора вернуть предмет владельцу",
+    "MAINTENANCE": "Техническое обслуживание",
+    "RETURN_ITEM": "Пора вернуть предмет",
     "CUSTOM": "Напоминание",
-    "INSURANCE": "Страховые расходы",
-    "MEDICAL": "Медицинские расходы",
-    "TAX": "Налоги",
-    "SUBSCRIPTION": "Подписки",
-    "UI": {
-      "TITLE": "Напоминания",
-      "TYPE_LABEL": "Тип",
-      "DATE_LABEL": "Дата",
-      "EMPTY_LABEL": "Нет напоминаний"
-    },
-    "MODAL": {
-      "CONFIRM_ACTION": "Подтвердите действие",
-      "M_YOU_SURE_DONE": "Вы уверены, что задача выполнена?",
-      "M_YOU_SURE_DELETE": "Вы точно хотите удалить напоминание?",
-      "YES": "Да",
-      "CANCEL": "Отмена",
-      "DELETE": "Удалить"
-    }
+    "INSURANCE": "Страховка",
+    "SUBSCRIPTION": "Подписка"
   },
 
   "LENDING": {
-    "TITLE": "Одолжить",
-    "PERSON_NAME": "Кому отдаем?",
-    "PLACEHOLDER_NAME": "Например: Брат, Иван, Сосед",
-    "ESTIMATED_VALUE": "Оценочная стоимость",
-    "EXPECTED_RETURN": "Когда вернуть?",
-    "COMMENT": "Комментарий",
-    "PLACEHOLDER_COMMENT": "В каком состоянии вещь, что в комплекте...",
-    "DATE_GIVEN": "Дата передачи",
-    "ERROR_NAME_REQ": "Имя обязательно для заполнения",
     "ERRORS": {
       "ALREADY_LENT": "Предмет уже передан",
-      "NOT_LENT": "Предмет не находится в передаче"
+      "NOT_LENT": "Предмет не находится в прокате"
     }
   },
 
-  "MANAGEMENT": {
-    "TITLE_CATEGORY": "Управление категориями",
-    "TITLE_PLATFORM": "Управление платформами"
+  "//--- FRONTEND UI (Общие компоненты и страницы) ---//": "",
+  "COMMON": {
+    "SAVE": "Сохранить",
+    "CANCEL": "Отмена",
+    "DELETE": "Удалить",
+    "EDIT": "Редактировать",
+    "ADD": "Добавить",
+    "BACK": "Назад",
+    "LOADING": "Загрузка...",
+    "RENAME": "Переименовать",
+    "INFO": "Информация",
+    "CONFIRM": "Подтвердить",
+    "YES": "Да",
+    "NO": "Нет",
+    "SELL": "Продать",
+    "MORE": "Больше",
+    "LEND": "Одолжить"
   },
 
-  "ITEM_DETAIL": {
-    "STORAGE_PLACE": "Место хранения",
-    "PURCHASE_PRICE": "Куплено за",
-    "ESTIMATED_VALUE": "Текущая оценка",
-    "HISTORY_TITLE": "История изменений",
-    "HISTORY_EMPTY": "История пока пуста",
-    "NO_DESCRIPTION": "Описание отсутствует",
-    "LENT_TO": "Находится у "
+  "HEADER": {
+    "HOME": "Главная",
+    "ITEMS": "Предметы",
+    "LOGIN": "Войти",
+    "LOGOUT": "Выйти",
+    "SETTINGS": "Настройки",
+    "SALES": "Продажи"
   },
 
-  "LOCATIONS": {
-    "ERRORS": {
-      "NOT_FOUND": "Локация не найдена",
-      "SELF_NESTING": "Нельзя вложить локацию в саму себя",
-      "CIRCULAR_DEPENDENCY": "Нельзя вложить родителя в потомка (циклическая зависимость)"
-    },
+  "AUTH_PAGE": {
+    "TITLE_LOGIN": "С возвращением!",
+    "TITLE_REG": "О, Привет!",
+    "SUBTITLE_LOGIN": "Войдите в свою систему хранения",
+    "SUBTITLE_REG": "Зарегистрируйтесь в системе",
+    "FIELD_EMAIL": "Введите email",
+    "FIELD_PWD": "Введите пароль",
+    "BTN_GOOGLE": "Войти с Google",
+    "CONFIRM_TITLE": "Подтверждение почты",
+    "CODE_LABEL": "Код из письма"
+  },
+
+  "LOCATIONS_PAGE": {
     "UI": {
-      "NAME_PLACEHOLDER": "Например: Витрина или Гараж",
+      "TITLE_CREATE": "Создать локацию",
+      "NAME_PLACEHOLDER": "Например: Гараж или Стеллаж",
       "AUTOMATION": "Автоматизация",
       "SALES_ZONE": "Торговая точка",
       "LENDING_ZONE": "Зона одалживания",
-      "SALES_HINT": "Предметы здесь автоматически станут Listed",
-      "LENDING_HINT": "Предметы здесь автоматически станут Lent",
-      "TITLE": "Создать локацию",
-      "COLOR_LABEL": "Цвет метки",
-      "COLOR_HINT_RANDOM": "Если не выберете — назначим случайный цвет"
+      "EMPTY": "Тут пока пусто"
     },
-    "DROP_MENU": {  
-      "MOVE_TO": "Переместить в ...",
-      "HIGHER_LEVEL": "На верхний уровень",
-      "DETAILS": "Детали",
-      "RENAME": "Переименовать",
-      "DELETE": "Удалить"
+    "MODAL": {
+      "DELETE_TITLE": "Удаление локации",
+      "DELETE_MSG": "Удалить локацию со всеми предметами? Это действие необратимо!"
     }
   },
 
-  "MAIN": {
-    "LOADING": "Загрузка...",
-    "ADD": "Добавить",
-    "PAGE": " Страница ",
-    "CREATE_LOCATION": "Создать локацию",
-    "CREATE_ITEM": "Создать предмет"
+  "ITEM_CARD": {
+    "MOVE_MSG": "Переместить в другую локацию?",
+    "SELECT_LOCATION": "Выберите локацию",
+    "DELETE_CONFIRM": "Вы уверены, что хотите навсегда удалить этот предмет?"
   },
 
-  "LOCATION_RIB": {
-    "GLOBAL_PAGE": "Страница"
+  "LENDING_MODAL": {
+    "TITLE": "Одолжить предмет",
+    "TO_WHOM": "Кому отдаем?",
+    "RETURN_DATE": "Когда вернуть?",
+    "COMMENT": "Комментарий (состояние, комплект...)"
   },
 
-  "SETTINGS": {
-    "TITLE": "Настройки системы",
-    "SUBTITLE": "Управление модулями и справочниками",
-    "GENERAL_TAB": "Общие",
-    "CATEGORIES_TAB": "Категории",
-    "PLATFORMS_TAB": "Платформы",
+  "SETTINGS_PAGE": {
+    "TITLE": "Настройки",
     "SALES_MODULE": "Модуль продаж",
-    "SALES_HINT": "Включает возможность помечать предметы как проданные и вести учет прибыли.",
     "LENDING_MODULE": "Модуль проката",
-    "LENDING_HINT": "Добавляет функционал одалживания и отслеживания возврата вещей.",
-    "GO_TO_ADMIN": "Панель администратора",
-    "ADD_CATEGORY_PROMPT": "Введите название новой категории:",
-    "ADD_PLATFORM_PROMPT": "Введите название платформы (например, OLX или eBay):",
-    "DELETE_CATEGORY_CONFIRM": "Удалить категорию? Убедитесь, что в ней нет активных предметов.",
-    "DELETE_PLATFORM_CONFIRM": "Удалить платформу? Связь в истории продаж может пропасть."
-  },
-
-  "EXPLORER": {
-    "TITLE": "Управление",
-    "CREATE_ITEM": "Создать предмет",
-    "SELECTED": "Выбрано",
-    "MOVE": "Переместить",
-    "DELETE": "Удалить",
-    "EMPTY_RESULT": "Ничего не найдено по вашему запросу",
-    "TABLE": {
-      "PHOTO": "Фото",
-      "NAME": "Название",
-      "CATEGORY": "Категория",
-      "LOCATION": "Местоположение",
-      "STATUS": "Статус",
-      "PRICE": "Цена",
-      "ACTION": "Действия"
-    },
-    "TOOLTIP_VIEW": "Просмотреть детали",
-    "TOOLTIP_EDIT": "Редактировать предмет",
-    "EDIT_LOCKED": "Редактирование заблокировано (предмет не активен)"
+    "DELETE_CAT_CONFIRM": "Удалить категорию? Убедитесь, что в ней нет предметов."
   },
 
   "FILTERS": {
-    "TITLE": "Фильтры",
-    "SEARCH_PLACEHOLDER": "Введите название предмета",
-    "SHOW_ALL": "Показать все",
-    "SORT_BY": "Сортировка",
-    "PRICE": "Цена ($)",
-    "PRICE_FROM": "От",
-    "PRICE_TO": "До",
-    "RESET": "Сбросить фильтры",
-    "SORT": {
-      "NEWEST": "Сначала новые",
-      "OLDEST": "Сначала старые",
-      "NAME_ASC": "Имя (А-Я)",
-      "NAME_DESC": "Имя (Я-А)",
-      "PRICE_ASC": "Цена (Дешевле)",
-      "PRICE_DESC": "Цена (Дороже)"
-    }
+    "SEARCH": "Поиск по названию",
+    "SORT_NEWEST": "Сначала новые",
+    "SORT_PRICE_ASC": "Дешевле",
+    "SORT_PRICE_DESC": "Дороже",
+    "RESET": "Сбросить фильтры"
   }
 }

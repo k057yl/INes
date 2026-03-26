@@ -55,7 +55,7 @@
           </div>
         </div>
 
-        <div class="inest-form-group">
+        <div class="inest-form-group" *ngIf="!isLocationPredefined">
           <label>{{ 'CREATE_ITEM.LOCATION' | translate }} *</label>
           <div class="inest-input-wrapper">
             <i class="fa fa-map-marker-alt inest-field-icon-left"></i>
@@ -63,6 +63,13 @@
               <option value="" disabled>{{ 'CREATE_ITEM.SELECT_LOCATION' | translate }}</option>
               <option *ngFor="let loc of locations" [value]="loc.id">{{ loc.name }}</option>
             </select>
+          </div>
+        </div>
+        
+        <div class="inest-form-group" *ngIf="isLocationPredefined">
+          <label>{{ 'CREATE_ITEM.LOCATION' | translate }}</label>
+          <div class="context-info-badge">
+            <i class="fa fa-check-circle"></i> {{ 'COMMON.LOCKED_CONTEXT' | translate }}
           </div>
         </div>
       </div>
