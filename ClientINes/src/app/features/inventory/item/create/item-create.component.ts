@@ -6,14 +6,13 @@ import { ItemService } from '../../../../shared/services/item.service';
 import { LocationService } from '../../../../shared/services/location.service';
 import { CategoryService } from '../../../../shared/services/category.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { InestModalComponent } from '../../../../shared/components/modal/shared-modal/inest-modal.component';
 import { ITEM_STATUS_OPTIONS } from '../../../../models/constants/item-status.constants';
 import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-item-create',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslateModule, RouterModule, InestModalComponent],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule, RouterModule],
   templateUrl: './item-create.component.html',
   styleUrl: './item-create.component.scss'
 })
@@ -206,6 +205,11 @@ export class ItemCreateComponent implements OnInit {
 
   removePhoto(index: number) {
     this.selectedPhotos.splice(index, 1);
+  }
+
+  isControlInvalid(controlName: string): boolean {
+    const control = this.form.get(controlName);
+    return !!(control && control.touched && control.invalid);
   }
 
   cancel() { window.history.back(); }
