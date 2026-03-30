@@ -168,31 +168,47 @@
 
 .header-actions {
   display: flex;
-  gap: 6px;
+  gap: 8px; // Чуть больше места для маневра
   align-items: center;
 
   .quick-add-btn {
-    background: transparent;
-    border: 1px solid transparent;
-    color: var(--text-muted);
-    width: 30px;
-    height: 30px;
-    border-radius: 6px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
+    gap: 6px;
+    padding: 4px 10px; // Делаем кнопку шире
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
     i { font-size: 0.9rem; }
-
-    &:hover {
-      color: var(--accent-color);
-      background: rgba(var(--accent-color-rgb), 0.1);
-      border-color: rgba(var(--accent-color-rgb), 0.2);
+    
+    .btn-label {
+      margin-left: 4px;
+      @media (max-width: 480px) {
+        display: none;
+      }
     }
 
-    &.item-btn:hover { color: var(--g-blue); }
-    &.loc-btn:hover { color: var(--g-green); }
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    &.item-btn:hover {
+      background: rgba(var(--g-blue-rgb, 64, 150, 255), 0.15);
+      color: #4096ff;
+      border-color: rgba(64, 150, 255, 0.3);
+    }
+
+    &.loc-btn:hover {
+      background: rgba(var(--g-green-rgb, 82, 196, 26), 0.15);
+      color: #52c41a;
+      border-color: rgba(82, 196, 26, 0.3);
+    }
   }
 }

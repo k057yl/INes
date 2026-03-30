@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
-import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { DragDropModule, CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { StorageLocation } from '../../../models/entities/storage-location.entity';
@@ -14,7 +14,6 @@ import { ItemService } from '../../../shared/services/item.service';
 import { SellModalComponent } from '../../../shared/components/sell-modal/sell-modal.component';
 import { InestModalComponent } from '../../../shared/components/modal/shared-modal/inest-modal.component';
 import { SellItemRequestDto } from '../../../models/dtos/sale.dto';
-import { ItemStatus } from '../../../models/enums/item-status.enum';
 
 import { LendingService } from '../../../shared/services/lending.service';
 import { LendItemModalComponent } from '../../../shared/components/modal/lend-modal/lend-item-modal.component';
@@ -125,12 +124,21 @@ export class MainPageComponent implements OnInit {
 
   confirmDeleteLocation() {
     if (!this.selectedLocation) return;
-    this.locationService.delete(this.selectedLocation.id).subscribe(() => {
-      this.removeLocationFromTree(this.locations, this.selectedLocation!.id);
-      this.locations = [...this.locations];
-      this.refreshState();
-      if (this.currentPageBoard > 0 && this.pagedBoardLocations.length === 0) this.currentPageBoard--;
-      this.closeModals();
+
+    this.locationService.delete(this.selectedLocation.id).subscribe({
+      next: () => {
+        this.removeLocationFromTree(this.locations, this.selectedLocation!.id);
+        this.locations = [...this.locations];
+        this.refreshState();
+
+        if (this.currentPageBoard > 0 && this.pagedBoardLocations.length === 0) {
+          this.currentPageBoard--;
+        }
+        this.closeModals();
+      },
+      error: (err) => {
+        this.closeModals(); 
+      }
     });
   }
 
@@ -148,7 +156,9 @@ export class MainPageComponent implements OnInit {
         this.loadData(); 
         this.closeModals();
       },
-      error: (err) => { console.error('F*ck:', err); this.closeModals(); }
+      error: (err) => { 
+        this.closeModals(); 
+      }
     });
   }
 
@@ -205,7 +215,57 @@ export class MainPageComponent implements OnInit {
     this.closeModals();
   }
 
+  // Геттер, который собирает настройки для модалки
+  get modalConfig() {
+    const type = this.activeModal;
+    if (!type || type === 'sell' || type === 'lend') return null;
+
+    const configs: Record<string, any> = {
+      renameLoc: {
+        mode: 'input',
+        title: 'COMMON.RENAME',
+        message: '',
+        confirmText: 'COMMON.SAVE',
+        cancelText: 'COMMON.CANCEL',
+        name: this.selectedLocation?.name
+      },
+      deleteLoc: {
+        mode: 'delete',
+        title: 'COMMON.DELETE',
+        message: 'LOCATION_CARD.MODAL.YOU_SURE_MSG',
+        confirmText: 'COMMON.DELETE',
+        cancelText: 'COMMON.CANCEL'
+      },
+      deleteItem: {
+        mode: 'delete',
+        title: 'COMMON.DELETE',
+        message: 'ITEM_CARD.MODAL.YOU_SURE_MSG',
+        confirmText: 'COMMON.DELETE',
+        cancelText: 'COMMON.CANCEL'
+      },
+      moveConfirm: {
+        mode: 'input',
+        title: 'COMMON.CONFIRM_MOVE',
+        message: 'LOCATIONS.MODAL.M_MOVE_SUCCESS',
+        name: 'skip',
+        confirmText: 'COMMON.GO_TO',
+        cancelText: 'COMMON.STAY_HERE'
+      }
+    };
+
+    return configs[type];
+  }
+
   // Вспомогательные методы
+  handleModalConfirm(value: string) {
+    switch (this.activeModal) {
+      case 'renameLoc': this.confirmRename(value); break;
+      case 'deleteLoc': this.confirmDeleteLocation(); break;
+      case 'deleteItem': this.confirmDeleteItem(); break;
+      case 'moveConfirm': this.confirmNavigation(); break;
+    }
+  }
+
   onRibbonReorder(event: CdkDragDrop<StorageLocation[]>) {
     const pageSize = window.innerWidth <= 768 ? 9 : 15;
     const offset = this.currentPageRibbon * pageSize;

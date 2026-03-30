@@ -3,14 +3,10 @@
     <div class="title-group">
       <div class="icon-wrapper" [style.background-color]="location.color + '20'">
         <i [className]="'fa ' + (location.icon || 'fa-folder')" [style.color]="location.color"></i>
-        <span class="item-count"> - {{ (location.items.length || 0) }}</span>
+        <span class="item-count"> - {{ location.items.length || 0 }}</span>
       </div>
       <div class="name-stack">
-        <h3>
-          {{ location.name }}
-          <i *ngIf="location.isSalesLocation" class="fa fa-shopping-cart status-icon sales" title="Sales Location"></i>
-          <i *ngIf="location.isLendingLocation" class="fa fa-handshake status-icon lending" title="Lending Location"></i>
-        </h3>
+        <h3>{{ location.name }}</h3>
       </div>
     </div>
     
@@ -18,29 +14,31 @@
       <button class="quick-add-btn item-btn" 
               [routerLink]="['/create-item']" 
               [queryParams]="{ locationId: location.id }"
-              [title]="'MAIN.CREATE_ITEM' | translate">
-        <i class="fa fa-plus-square"></i>
+              [title]="'LOCATION_CARD.BTN.ITEM' | translate">
+        <i class="fa fa-plus-circle"></i>
+        <span class="btn-label">{{'LOCATION_CARD.BTN.ITEM' | translate}}</span>
       </button>
 
       <button class="quick-add-btn loc-btn" 
               [routerLink]="['/location-create']" 
               [queryParams]="{ parentId: location.id }"
-              [title]="'MAIN.CREATE_LOCATION' | translate">
+              [title]="'LOCATION_CARD.BTN.LOCATION' | translate">
         <i class="fa fa-folder-plus"></i>
+        <span class="btn-label">{{'LOCATION_CARD.BTN.LOCATION' | translate}}</span>
       </button>
 
-      <button class="inest-action-btn" (click)="$event.stopPropagation(); location.showMenu = !location.showMenu">
+      <button class="inest-action-btn" (click)="location.showMenu = !location.showMenu" [title]="'COMMON.MORE' | translate">
         <i class="fa fa-ellipsis-v"></i>
       </button>
     </div>
 
-    <div class="menu-dropdown" *ngIf="location.showMenu" (click)="$event.stopPropagation()">
+    <div class="menu-dropdown" *ngIf="location.showMenu">
       <div class="menu-section">
-        <label><i class="fa fa-exchange-alt"></i> {{'LOCATIONS.DROP_MENU.MOVE_TO' | translate }}</label>
+        <label><i class="fa fa-exchange-alt"></i> {{'LOCATION_CARD.DROP_MENU.MOVE_MSG' | translate }}</label>
         <div class="select-wrapper">
           <select (change)="onMove($event)">
             <option value="" disabled selected>...</option>
-            <option value="root">📁 {{'LOCATIONS.DROP_MENU.HIGHER_LEVEL' | translate}}</option>
+            <option value="root">📁 {{'LOCATION_CARD.DROP_MENU.HIGHER_LEVEL' | translate}}</option>
             <option *ngFor="let target of flatLocations" 
                     [value]="target.id" 
                     [disabled]="target.id === location.id || isChildOf(target.id, location)">
@@ -54,40 +52,37 @@
       
       <div class="menu-actions">
         <button class="menu-item-btn" [routerLink]="['/location', location.id]" (click)="location.showMenu = false">
-          <i class="fa fa-expand-alt"></i> {{'LOCATIONS.DROP_MENU.DETAILS' | translate}}
+          <i class="fa fa-expand-alt"></i> {{'COMMON.INFO' | translate}}
         </button>
-        <button class="menu-item-btn" (click)="rename.emit(location)">
-          <i class="fa fa-pen"></i> {{'LOCATIONS.DROP_MENU.RENAME' | translate}}
+        <button class="menu-item-btn" (click)="rename.emit(location); location.showMenu = false">
+          <i class="fa fa-pen"></i> {{'COMMON.RENAME' | translate}}
         </button>
         <div class="divider"></div>
-        <button (click)="delete.emit(location)" class="menu-item-btn delete-loc-btn">
-          <i class="fa fa-trash-alt"></i> {{'LOCATIONS.DROP_MENU.DELETE' | translate}}
+        <button (click)="delete.emit(location); location.showMenu = false" class="menu-item-btn delete-loc-btn">
+          <i class="fa fa-trash-alt"></i> {{'COMMON.DELETE' | translate}}
         </button>
       </div>
     </div>
   </div>
 
-  <div
-    cdkDropList
-    [id]="location.id"
-    [cdkDropListData]="location.items"
-    [cdkDropListConnectedTo]="connectedLists"
-    (cdkDropListDropped)="onItemDrop($event)"
-    class="items-container">
+  <div cdkDropList [id]="location.id" [cdkDropListData]="location.items"
+       [cdkDropListConnectedTo]="connectedLists" (cdkDropListDropped)="onItemDrop($event)"
+       class="items-container">
     
-    <app-item-card 
-      *ngFor="let item of (location.items || [])" 
+    <app-item-card *ngFor="let item of location.items" 
       [item]="item"
       [flatLocations]="flatLocations"
+      [menuOpenItemId]="openItemMenuId"
+      (menuOpenedItemIdChange)="onItemMenuToggled($event)"
       (sell)="sellItem.emit($event)"
       (lend)="lendItem.emit($event)"
       (delete)="deleteItem.emit($event)"
-      (move)="onItemMoveManual($event)">
+      (move)="moveItemManual.emit($event)">
     </app-item-card>
     
     <div class="empty-state" *ngIf="location.items.length === 0">
       <i class="fa fa-box-open"></i>
-      <p>{{'LOCATIONS.UI.EMPTY' | translate}}</p>
+      <p>{{'LOCATION_CARD.EMPTY' | translate}}</p>
     </div>
   </div>
 
@@ -104,6 +99,7 @@
         (rename)="rename.emit($event)"
         (delete)="delete.emit($event)"
         (sellItem)="sellItem.emit($event)"
+        (lendItem)="lendItem.emit($event)"
         (deleteItem)="deleteItem.emit($event)"> 
     </app-location-card>
   </div>

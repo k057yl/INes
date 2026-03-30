@@ -31,13 +31,13 @@
     <div class="zero-state-container" *ngIf="!isLoading && locations.length === 0">
       <div class="zero-state-content">
         <i class="fa fa-box-open zero-icon"></i>
-        <h2>{{ 'LOCATIONS.UI.EMPTY' | translate }}</h2>
+        <h2>{{ 'MAIN_PAGE.LOCATION_EMPTY_MSG' | translate }}</h2>
         
         <button class="inest-btn-primary" 
                 [routerLink]="['/location-create']" 
                 style="max-width: 300px; margin: 20px auto;">
           <i class="fa fa-plus-circle"></i>
-          {{ 'MAIN.CREATE_LOCATION' | translate }}
+          {{ 'MAIN_PAGE.CREATE_FIRST_BTN' | translate }}
         </button>
       </div>
   </div>
@@ -52,12 +52,14 @@
 </div>
 
 <app-inest-modal
-  *ngIf="activeModal === 'deleteItem' || activeModal === 'deleteLoc' || activeModal === 'renameLoc' || activeModal === 'moveConfirm'"
-  [mode]="(activeModal === 'renameLoc' || activeModal === 'moveConfirm') ? 'input' : 'delete'"
-  [title]="(activeModal === 'renameLoc' ? 'SHARED.TOOLTIP_RENAME' : activeModal === 'deleteLoc' ? 'LOCATIONS.MODAL.CANCEL' : 'ITEM_CARD.DELETE') | translate"
-  [message]="(activeModal === 'deleteLoc' ? 'LOCATIONS.MODAL.M_DELETE' : 'ITEM_CARD.M_YOU_SURE') | translate"
-  [name]="(activeModal === 'renameLoc' ? selectedLocation?.name : (activeModal === 'moveConfirm' ? 'skip' : '')) ?? ''"
-  (confirmed)="activeModal === 'renameLoc' ? confirmRename($event) : activeModal === 'deleteLoc' ? confirmDeleteLocation() : activeModal === 'deleteItem' ? confirmDeleteItem() : confirmNavigation()"
+  *ngIf="modalConfig"
+  [mode]="modalConfig.mode"
+  [title]="modalConfig.title"
+  [message]="modalConfig.message"
+  [name]="modalConfig.name || ''"
+  [confirmText]="modalConfig.confirmText" 
+  [cancelText]="modalConfig.cancelText"
+  (confirmed)="handleModalConfirm($event)"
   (cancelled)="closeModals()">
 </app-inest-modal>
 

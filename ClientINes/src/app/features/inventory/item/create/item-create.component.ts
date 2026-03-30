@@ -169,7 +169,7 @@ export class ItemCreateComponent implements OnInit {
       formData.append('sendNotification', (!!val.sendNotification).toString());
     }
 
-    if (val.addPhoto) {
+    if (this.selectedPhotos.length > 0) {
       this.selectedPhotos.forEach(p => formData.append('photos', p.file));
     }
 
@@ -193,6 +193,10 @@ export class ItemCreateComponent implements OnInit {
     const files = Array.from(input.files);
     const availableSlots = this.MAX_PHOTOS - this.selectedPhotos.length;
 
+    if (availableSlots > 0) {
+      this.form.get('addPhoto')?.setValue(true);
+    }
+
     files.slice(0, availableSlots).forEach(file => {
       const reader = new FileReader();
       reader.onload = (e: any) => {
@@ -205,6 +209,9 @@ export class ItemCreateComponent implements OnInit {
 
   removePhoto(index: number) {
     this.selectedPhotos.splice(index, 1);
+    if (this.selectedPhotos.length === 0) {
+      this.form.get('addPhoto')?.setValue(false);
+    }
   }
 
   isControlInvalid(controlName: string): boolean {

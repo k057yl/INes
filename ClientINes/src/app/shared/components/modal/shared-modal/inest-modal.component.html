@@ -39,12 +39,14 @@
     <div class="modal-actions" *ngIf="mode !== 'smart-delete'">
       <button class="inest-btn-cancel" (click)="close()">{{ cancelText | translate }}</button>
       <button [ngClass]="getButtonClass()" (click)="submit()" [disabled]="mode === 'input' && !name.trim()">
-        {{ confirmText | translate }}
+        {{ getConfirmText() | translate }}
       </button>
     </div>
 
     <div class="modal-actions" *ngIf="mode === 'smart-delete'">
-      <button class="inest-btn-cancel" (click)="close()">{{ cancelText | translate }}</button>
+      <button class="inest-btn-cancel" (click)="close()">
+        {{ getCancelText() | translate }}
+      </button>
     </div>
   </div>
 </div>

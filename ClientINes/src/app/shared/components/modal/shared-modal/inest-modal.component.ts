@@ -50,6 +50,23 @@ export class InestModalComponent implements AfterViewInit {
     }
   }
 
+  getConfirmText(): string {
+    if (this.confirmText !== 'COMMON.SAVE') return this.confirmText;
+
+    switch (this.mode) {
+      case 'delete': 
+      case 'smart-delete': return 'COMMON.DELETE';
+      case 'confirm': return 'COMMON.OK';
+      default: return 'COMMON.SAVE';
+    }
+  }
+
+  getCancelText(): string {
+    if (this.cancelText !== 'COMMON.CANCEL') return this.cancelText;
+    
+    return this.mode === 'confirm' ? 'COMMON.STAY' : 'COMMON.CANCEL';
+  }
+
   submit(result?: string) {
     const finalValue = result || this.name.trim();
     this.confirmed.emit(finalValue);

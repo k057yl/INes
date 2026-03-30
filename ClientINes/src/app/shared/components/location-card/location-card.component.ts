@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, inject, HostListener } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject, HostListener, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DragDropModule, CdkDragDrop } from '@angular/cdk/drag-drop';
 import { RouterModule } from '@angular/router';
@@ -17,6 +17,7 @@ import { ColorChromeModule } from 'ngx-color/chrome';
   styleUrl: './location-card.component.scss'
 })
 export class LocationCardComponent {
+  private el = inject(ElementRef); // Инжектим для проверки границ клика
   public featureService = inject(FeatureService);
 
   @Input({ required: true }) location!: StorageLocation;
@@ -33,15 +34,23 @@ export class LocationCardComponent {
   @Output() moveItemManual = new EventEmitter<{item: Item, targetLocationId: string}>();
   @Output() lendItem = new EventEmitter<Item>();
 
+  // ID айтема, чье меню открыто в данной локации
+  openItemMenuId: string | null = null;
+
+  onItemMenuToggled(itemId: string | null) {
+    this.openItemMenuId = itemId;
+  }
+
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
-    if (!this.location.showMenu) return;
+    if (!this.location.showMenu && !this.openItemMenuId) return;
 
     const target = event.target as HTMLElement;
-    const clickedInside = target.closest('.menu-dropdown') || target.closest('.inest-action-btn');
-
-    if (!clickedInside) {
+    
+    // Если кликнули вообще вне этой карточки локации
+    if (!this.el.nativeElement.contains(target)) {
       this.location.showMenu = false;
+      this.openItemMenuId = null;
     }
   }
 
@@ -53,18 +62,11 @@ export class LocationCardComponent {
     this.itemDropped.emit({ event, loc: this.location });
   }
 
-  onSellClick(event: MouseEvent, item: Item) {
-    event.stopPropagation();
-    this.sellItem.emit(item);
-  }
-
   onMove(event: Event) {
     const targetId = (event.target as HTMLSelectElement).value;
-    this.move.emit({ loc: this.location, targetId });
-  }
-
-  onDeleteItem(event: MouseEvent, item: Item) {
-    event.stopPropagation();
-    this.deleteItem.emit(item);
+    if (targetId) {
+      this.move.emit({ loc: this.location, targetId });
+      this.location.showMenu = false;
     }
+  }
 }

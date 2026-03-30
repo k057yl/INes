@@ -12,12 +12,7 @@ import { environment } from '../../../../environments/environment';
 @Component({
   selector: 'app-item-card',
   standalone: true,
-  imports: [
-    CommonModule, 
-    RouterModule, 
-    DragDropModule, 
-    TranslateModule
-  ],
+  imports: [CommonModule, RouterModule, DragDropModule, TranslateModule],
   templateUrl: './item-card.component.html',
   styleUrl: './item-card.component.scss'
 })
@@ -29,13 +24,20 @@ export class ItemCardComponent {
   @Input({ required: true }) item!: Item;
   @Input() flatLocations: StorageLocation[] = [];
   
+  // Состояние меню теперь приходит сверху
+  @Input() menuOpenItemId: string | null = null;
+  @Output() menuOpenedItemIdChange = new EventEmitter<string | null>();
+
   @Output() sell = new EventEmitter<Item>();
   @Output() delete = new EventEmitter<Item>();
   @Output() lend = new EventEmitter<Item>();
   @Output() move = new EventEmitter<{item: Item, targetLocationId: string}>();
 
-  showMenu = false;
   isMobile = window.innerWidth <= 768;
+
+  get showMenu(): boolean {
+    return this.menuOpenItemId === this.item.id;
+  }
 
   private readonly googleColors = ['var(--g-blue)', 'var(--g-red)', 'var(--g-yellow)', 'var(--g-green)'];
 
@@ -59,26 +61,26 @@ export class ItemCardComponent {
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
     if (!this.showMenu) return;
-    if (!this.el.nativeElement.contains(event.target)) this.showMenu = false;
+    if (!this.el.nativeElement.contains(event.target)) {
+      this.menuOpenedItemIdChange.emit(null);
+    }
   }
 
   toggleMenu(event: MouseEvent) {
-    event.stopPropagation();
-    this.showMenu = !this.showMenu;
+    const nextState = this.showMenu ? null : this.item.id;
+    this.menuOpenedItemIdChange.emit(nextState);
   }
 
   onMove(event: Event) {
     const targetId = (event.target as HTMLSelectElement).value;
     if (targetId) {
       this.move.emit({ item: this.item, targetLocationId: targetId });
-      this.showMenu = false;
+      this.menuOpenedItemIdChange.emit(null);
     }
   }
 
-  // --- ЛОГИКА УДАЛЕНИЯ: ТЕПЕРЬ ПРОСТО ЭМИТ ---
   requestDelete(event: MouseEvent) {
-    event.stopPropagation();
-    this.showMenu = false;
+    this.menuOpenedItemIdChange.emit(null);
     this.delete.emit(this.item);
   }
 }
