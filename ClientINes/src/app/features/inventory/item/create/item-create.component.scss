@@ -50,21 +50,42 @@
 .upload-placeholder {
   width: 100%;
   height: 140px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  input { display: none; }
-  
+  position: relative; // Чтобы всё внутри держалось в узде
+
+  .hidden-input {
+    // Прячем так, чтобы даже детектив не нашел
+    position: absolute;
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    z-index: -1;
+  }
+
   .canvas-label {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
+    
+    width: 100%;  // Растягиваем на всю ширину
+    height: 100%; // Растягиваем на всю высоту
+    
+    cursor: pointer;
     color: var(--text-muted);
+    transition: all 0.2s ease-in-out;
+    
     i { font-size: 2.2rem; margin-bottom: 10px; }
     span { font-size: 0.85rem; font-weight: 600; }
     small { opacity: 0.5; margin-top: 4px; }
+
+    // Добавим немного секса при наведении
+    &:hover {
+      background: rgba(var(--accent-color-rgb), 0.05); // Если есть переменная цвета
+      color: var(--text-main);
+      
+      i { transform: scale(1.1); color: var(--accent-color); }
+    }
   }
 }
 
@@ -73,6 +94,7 @@
   flex-wrap: wrap;
   gap: 10px;
   justify-content: center;
+  align-items: center;
 
   .preview-card {
     position: relative;
@@ -97,6 +119,38 @@
     }
   }
 }
+
+.add-more-card {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: rgba(var(--accent-color-rgb), 0.15);
+    border: 2px dashed var(--accent-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.2s;
+    position: relative;
+
+    &:hover {
+      background: rgba(var(--accent-color-rgb), 0.25);
+    }
+
+    input {
+      position: absolute;
+      width: 0.1px;
+      height: 0.1px;
+      opacity: 0;
+      overflow: hidden;
+      z-index: -1;
+    }
+
+    i {
+      font-size: 1.6rem;
+      color: var(--accent-color);
+    }
+  }
 
 /* --- 3. Поля ввода (СТРОГО В 1 СТОЛБИК) --- */
 .inest-form-group {

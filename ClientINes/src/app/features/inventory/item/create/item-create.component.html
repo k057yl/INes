@@ -14,7 +14,13 @@
         <div class="photo-upload-canvas" [class.has-photos]="selectedPhotos.length > 0">
           
           <div class="upload-placeholder" *ngIf="selectedPhotos.length === 0">
-            <input type="file" accept="image/*" multiple (change)="onFileSelected($event)" id="fileInput">
+            <input type="file" 
+                  accept="image/*" 
+                  multiple 
+                  (change)="onFileSelected($event)" 
+                  id="fileInput" 
+                  class="hidden-input">
+            
             <label for="fileInput" class="canvas-label">
               <i class="fa fa-camera-retro"></i>
               <span>{{ 'CREATE_ITEM_PAGE.CLICK_TO_UPLOAD' | translate }}</span>
@@ -30,8 +36,12 @@
               </button>
             </div>
             
-            <label class="add-more-card" *ngIf="selectedPhotos.length < MAX_PHOTOS">
-              <input type="file" accept="image/*" multiple (change)="onFileSelected($event)">
+            <label class="add-more-card" *ngIf="selectedPhotos.length < MAX_PHOTOS" for="addMoreInput">
+              <input type="file" 
+                    accept="image/*" 
+                    multiple 
+                    (change)="onFileSelected($event)" 
+                    id="addMoreInput">
               <i class="fa fa-plus"></i>
             </label>
           </div>
