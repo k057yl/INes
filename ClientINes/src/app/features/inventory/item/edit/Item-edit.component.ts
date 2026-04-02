@@ -8,7 +8,7 @@ import { CategoryService } from '../../../../shared/services/category.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { Item } from '../../../../models/entities/item.entity';
 import { ITEM_STATUS_OPTIONS } from '../../../../models/constants/item-status.constants';
-import { StatusNamePipe } from '../../../../shared/components/pipe/status-name.pipe';
+import { StatusNamePipe } from '../../../../shared/pipe/status-name.pipe';
 import { LendingService } from '../../../../shared/services/lending.service';
 import { AuthService } from '../../../../core/services/auth.service';
 

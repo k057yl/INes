@@ -34,11 +34,11 @@
 
     <div class="menu-dropdown" *ngIf="location.showMenu">
       <div class="menu-section">
-        <label><i class="fa fa-exchange-alt"></i> {{'LOCATION_CARD.DROP_MENU.MOVE_MSG' | translate }}</label>
+        <label><i class="fa fa-exchange-alt"></i> {{'DROP_MENU.MOVE_MSG' | translate }}</label>
         <div class="select-wrapper">
           <select (change)="onMove($event)">
-            <option value="" disabled selected>...</option>
-            <option value="root">📁 {{'LOCATION_CARD.DROP_MENU.HIGHER_LEVEL' | translate}}</option>
+            <option value="" disabled selected>{{'DROP_MENU.SELECT_LOCATION' | translate}}</option>
+            <option value="root">📁 {{'DROP_MENU.HIGHER_LEVEL' | translate}}</option>
             <option *ngFor="let target of flatLocations" 
                     [value]="target.id" 
                     [disabled]="target.id === location.id || isChildOf(target.id, location)">

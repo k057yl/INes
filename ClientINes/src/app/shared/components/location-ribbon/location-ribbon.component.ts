@@ -4,6 +4,7 @@ import { DragDropModule, CdkDragDrop } from '@angular/cdk/drag-drop';
 import { TranslateModule } from '@ngx-translate/core';
 import { StorageLocation } from '../../../models/entities/storage-location.entity';
 import { RouterModule } from '@angular/router';
+import { RIBBON_CONFIG } from '../../constants/ui.constants';
 
 @Component({
   selector: 'app-location-ribbon',
@@ -36,17 +37,10 @@ export class LocationRibbonComponent {
     }
   }
 
-  toggleCreateMenu(event: MouseEvent) {
-    event.stopPropagation();
-    this.isCreateMenuOpen = !this.isCreateMenuOpen;
-  }
-
-  closeMenu() {
-    this.isCreateMenuOpen = false;
-  }
-
   get dynamicPageSize(): number {
-    return window.innerWidth <= 768 ? 9 : 15;
+    return window.innerWidth <= RIBBON_CONFIG.BREAKPOINT_MOBILE 
+      ? RIBBON_CONFIG.PAGE_SIZE_MOBILE 
+      : RIBBON_CONFIG.PAGE_SIZE_DESKTOP;
   }
 
   get pagedLocations(): StorageLocation[] {
@@ -55,10 +49,19 @@ export class LocationRibbonComponent {
   }
 
   get totalPages(): number {
-    return Math.ceil(this.locations.length / this.dynamicPageSize);
+    return Math.max(1, Math.ceil(this.locations.length / this.dynamicPageSize));
   }
 
   isLocActiveOnBoard(locId: string): boolean {
     return this.activeBoardIds.includes(locId);
+  }
+
+  toggleCreateMenu(event: MouseEvent) {
+    event.stopPropagation();
+    this.isCreateMenuOpen = !this.isCreateMenuOpen;
+  }
+
+  closeMenu() {
+    this.isCreateMenuOpen = false;
   }
 }

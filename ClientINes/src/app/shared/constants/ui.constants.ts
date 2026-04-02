@@ -1,0 +1,9 @@
+export const RIBBON_CONFIG = {
+  PAGE_SIZE_DESKTOP: 15,
+  PAGE_SIZE_MOBILE: 9,
+  BREAKPOINT_MOBILE: 768
+};
+
+export const BOARD_CONFIG = {
+  PAGE_SIZE: 3
+};

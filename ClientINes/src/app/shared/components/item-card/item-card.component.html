@@ -42,10 +42,10 @@
 
     <div class="menu-dropdown item-menu" *ngIf="showMenu">
       <div class="menu-section">
-        <label><i class="fa fa-exchange-alt"></i> {{'ITEM_CARD.DROP_MENU.MOVE_MSG' | translate}}</label>
+        <label><i class="fa fa-exchange-alt"></i> {{'DROP_MENU.MOVE_MSG' | translate}}</label>
         <div class="select-wrapper">
           <select (change)="onMove($event)">
-            <option value="" disabled selected>{{'ITEM_CARD.DROP_MENU.SELECT_LOCATION' | translate}}</option>
+            <option value="" disabled selected>{{'DROP_MENU.SELECT_LOCATION' | translate}}</option>
             <option *ngFor="let loc of availableLocations" [value]="loc.id">{{ loc.name }}</option>
           </select>
         </div>

@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { ItemStatus } from '../../../models/enums/item-status.enum';
-import { ITEM_STATUS_LABELS } from '../../../models/constants/item-status.constants';
+import { ItemStatus } from '../../models/enums/item-status.enum';
+import { ITEM_STATUS_LABELS } from '../../models/constants/item-status.constants';
 
 @Pipe({
   name: 'statusName',

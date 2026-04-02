@@ -1,7 +1,7 @@
 <div class="ribbon-container">
   <div class="ribbon-header">
     <div class="ribbon-label">
-      <i class="fa fa-sort-amount-down"></i> {{ 'LOCATION_RIB.GLOBAL_PAGE' | translate }}
+      <i class="fa fa-sort-amount-down"></i> {{ 'COMMON.PAGE' | translate }}
       <span class="count-badge">{{ currentPage + 1 }}/{{ totalPages }}</span>
     </div>
     
@@ -26,21 +26,13 @@
          cdkDrag
          [class.active-on-board]="isLocActiveOnBoard(loc.id)"
          (click)="jumpTo.emit(loc.id)">
+      
       <div class="chip-content">
         <i [className]="'fa ' + (loc.icon || 'fa-folder')" [style.color]="loc.color"></i>
         <span class="loc-name">{{ loc.name }}</span>
       </div>
-    </div>
 
-    <div class="add-chip-container" #createMenuContainer>
-      <div class="ribbon-dropdown-menu" *ngIf="isCreateMenuOpen" (click)="$event.stopPropagation()">
-        <button routerLink="/location-create" class="dropdown-item" (click)="closeMenu()">
-          <i class="fa fa-map-marker-alt"></i> {{'MAIN.CREATE_LOCATION' | translate }}
-        </button>
-        <button routerLink="/create-item" class="dropdown-item" (click)="closeMenu()">
-          <i class="fa fa-box"></i> {{'MAIN.CREATE_ITEM' | translate }}
-        </button>
-      </div>
+      <div class="chip-placeholder" *cdkDragPlaceholder></div>
     </div>
   </div>
 </div>

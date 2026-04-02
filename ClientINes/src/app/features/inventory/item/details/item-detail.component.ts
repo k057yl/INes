@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
 import { Item } from '../../../../models/entities/item.entity';
 import { TranslateModule } from '@ngx-translate/core';
-import { StatusNamePipe } from '../../../../shared/components/pipe/status-name.pipe';
+import { StatusNamePipe } from '../../../../shared/pipe/status-name.pipe';
 import { ItemRemindersComponent } from '../reminder/item-reminders.component';
 
 @Component({
