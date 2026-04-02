@@ -7,6 +7,8 @@ import { SellItemRequestDto } from '../../../models/dtos/sale.dto';
 import { Platform } from '../../../models/entities/platform.entity';
 import { SalesService } from '../../services/sales.service';
 import { InestModalComponent } from '../modal/shared-modal/inest-modal.component';
+import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
+import { FORM_VALIDATION } from '../../constants/form-defaults.constants';
 
 @Component({
   selector: 'app-sell-modal',
@@ -28,11 +30,30 @@ export class SellModalComponent implements OnInit {
   @Output() confirm = new EventEmitter<SellItemRequestDto>();
 
   sellForm = this.fb.group({
-    salePrice: [0, [Validators.required, Validators.min(0.01)]],
-    soldDate: [new Date().toISOString().substring(0, 10), Validators.required],
+    salePrice: [null as number | null, [Validators.required, Validators.min(FORM_VALIDATION.PRICE.MIN)]],
+    soldDate: [FORM_VALIDATION.DATE.TODAY, [Validators.required, this.futureDateValidator()]],
     platformId: [null as string | null],
     comment: ['']
   });
+
+  private getTodayDate(): string {
+    return new Date().toISOString().substring(0, 10);
+  }
+
+  private futureDateValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control.value) return null;
+      const dateValue = new Date(control.value);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return dateValue > today ? { futureDate: true } : null;
+    };
+  }
+
+  isControlInvalid(controlName: string, errorName: string): boolean {
+    const control = this.sellForm.get(controlName);
+    return !!(control?.touched && control?.hasError(errorName));
+  }
 
   ngOnInit(): void {
     this.loadPlatforms();
@@ -64,6 +85,10 @@ export class SellModalComponent implements OnInit {
   }
 
   onSubmit() {
+    if (this.sellForm.invalid) {
+      this.sellForm.markAllAsTouched(); 
+      return;
+    }
     if (this.sellForm.valid) {
       const formValue = this.sellForm.getRawValue();
       const dto: SellItemRequestDto = {

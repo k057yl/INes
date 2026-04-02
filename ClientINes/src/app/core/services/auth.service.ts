@@ -138,4 +138,8 @@ export class AuthService {
   isAuthenticated(): boolean {
     return !!this.tokenSubject.value;
   }
+
+  isLoggedIn(): boolean {
+    return !!localStorage.getItem(this.TOKEN_KEY);
+  }
 }

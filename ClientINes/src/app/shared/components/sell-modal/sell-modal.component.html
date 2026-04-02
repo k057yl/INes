@@ -1,41 +1,67 @@
 <div class="modal-backdrop" (click)="onCancel()">
   <div class="modal-content" (click)="$event.stopPropagation()">
-    <div class="modal-header">
-      <h2>{{ 'ITEM_CARD.SELL' | translate }}: {{ item.name }}</h2>
+    <header class="modal-header">
+      <h2>{{ 'COMMON.SELL' | translate }}: {{ item.name }}</h2>
       <button class="close-btn" (click)="onCancel()">&times;</button>
-    </div>
+    </header>
 
     <form [formGroup]="sellForm" (ngSubmit)="onSubmit()">
       <div class="form-group">
-        <label>{{ 'SALES.COL_PRICE' | translate }} ($)</label>
-        <input type="number" formControlName="salePrice" step="0.01">
+        <label>{{ 'SELL_PAGE.PRICE' | translate }}</label>
+        <input type="number" 
+               formControlName="salePrice" 
+               step="0.01" 
+               placeholder="0.00"
+               [class.is-invalid]="isControlInvalid('salePrice', 'min')">
+        
+        <div class="error-container">
+          <small class="error-text" *ngIf="isControlInvalid('salePrice', 'min')">
+            {{ 'ERRORS.NEGATIVE_NUMBER' | translate }}
+          </small>
+        </div>
       </div>
 
       <div class="form-group">
-        <label>{{ 'SALES.COL_DATE' | translate }}</label>
-        <input type="date" formControlName="soldDate">
+        <label>{{ 'SELL_PAGE.DATE' | translate }}</label>
+        <input type="date" 
+               formControlName="soldDate"
+               [class.is-invalid]="isControlInvalid('soldDate', 'futureDate')">
+        
+        <div class="error-container">
+          <small class="error-text" *ngIf="isControlInvalid('soldDate', 'futureDate')">
+            {{ 'ERRORS.FUTURE_DATE' | translate }}
+          </small>
+        </div>
       </div>
 
       <div class="form-group">
-        <label style="display: flex; justify-content: space-between;">
-          {{ 'MANAGEMENT.TITLE_PLATFORM' | translate }}
-          <button type="button" class="add-btn" (click)="addPlatform()">+ {{ 'SHARED.TOOLTIP_ADD' | translate }}</button>
-        </label>
-        <select formControlName="platformId">
-          <option [value]="null">-- {{ 'ITEM_CARD.M_SELECT_LOCATION' | translate }} --</option>
-          <option *ngFor="let p of platforms" [value]="p.id">{{ p.name }}</option>
-        </select>
+        <div class="label-row">
+          <label>{{ 'SELL_PAGE.SOLD_ON' | translate }}</label>
+          <button type="button" class="add-platform-btn" (click)="addPlatform()">
+            <i class="fa fa-plus"></i> {{ 'SELL_PAGE.CREATE' | translate }}
+          </button>
+        </div>
+        <div class="select-wrapper">
+          <select formControlName="platformId">
+            <option [value]="null">-- {{ 'SELL_PAGE.SELECT_PLATFORM' | translate }} --</option>
+            <option *ngFor="let p of platforms" [value]="p.id">{{ p.name }}</option>
+          </select>
+        </div>
       </div>
 
       <div class="form-group">
-        <label>{{ 'CREATE_ITEM.DESCRIPTION' | translate }} ({{ 'ITEM_CARD.INFO' | translate }})</label>
+        <label>{{ 'SELL_PAGE.COMMENT' | translate }}</label>
         <textarea formControlName="comment" rows="3"></textarea>
       </div>
 
-      <div class="modal-actions">
-        <button type="button" class="btn-cancel" (click)="onCancel()">{{ 'CREATE_ITEM.BUTTON_CANCEL' | translate }}</button>
-        <button type="submit" class="btn-confirm" [disabled]="sellForm.invalid">{{ 'ITEM_CARD.SELL' | translate }}</button>
-      </div>
+      <footer class="modal-actions">
+        <button type="button" class="btn-cancel" (click)="onCancel()">
+          {{ 'COMMON.CANCEL' | translate }}
+        </button>
+        <button type="submit" class="btn-confirm" [disabled]="sellForm.invalid">
+          {{ 'COMMON.SELL' | translate }}
+        </button>
+      </footer>
     </form>
   </div>
 </div>
@@ -43,8 +69,8 @@
 <app-inest-modal 
   *ngIf="showPlatformModal"
   mode="input"
-  [title]="'MANAGEMENT.TITLE_PLATFORM'"
-  [confirmText]="'MAIN.ADD'"
+  [title]="'PLATFORM_PAGE.CREATE'"
+  [confirmText]="'COMMON.SAVE'"
   (confirmed)="onPlatformConfirmed($event)"
   (cancelled)="showPlatformModal = false">
 </app-inest-modal>

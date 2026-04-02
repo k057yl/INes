@@ -9,17 +9,17 @@ import { LocationDetailComponent } from './features/inventory/location/details/l
 import { SalesListComponent } from './features/sales/sales-list.component';
 import { SettingsComponent } from './features/setting/settings.component';
 import { ItemDetailComponent } from './features/inventory/item/details/item-detail.component';
-import { authGuard } from './core/guards/auth.guard';
 import { ItemEditComponent } from './features/inventory/item/edit/Item-edit.component';
 import { ItemsExplorerComponent } from './features/inventory/item/explorer/items-explorer.component';
+import { authGuard, guestGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
-  { path: 'login', component: LoginComponent },
-  { path: 'register', component: RegisterComponent },
-  { path: 'confirm-register', component: ConfirmRegisterComponent },
+  { path: '', redirectTo: 'main', pathMatch: 'full' },
+  { path: 'login', component: LoginComponent, canActivate: [guestGuard] },
+  { path: 'register', component: RegisterComponent, canActivate: [guestGuard] },
+  { path: 'confirm-register', component: ConfirmRegisterComponent, canActivate: [guestGuard] },
   
-  // Защищенные роуты (добавляем canActivate)
+  // 3. Защищенные роуты (Inventory & App)
   { path: 'main', component: MainPageComponent, canActivate: [authGuard] }, 
   { path: 'location-create', component: LocationCreateComponent, canActivate: [authGuard] },
   { path: 'create-item', component: ItemCreateComponent, canActivate: [authGuard] },
@@ -28,5 +28,6 @@ export const routes: Routes = [
   { path: 'settings', component: SettingsComponent, canActivate: [authGuard] },
   { path: 'item/:id', component: ItemDetailComponent, canActivate: [authGuard] },
   { path: 'item/edit/:id', component: ItemEditComponent, canActivate: [authGuard] },
-  { path: 'explorer', component: ItemsExplorerComponent, canActivate: [authGuard] }
+  { path: 'explorer', component: ItemsExplorerComponent, canActivate: [authGuard] },
+  { path: '**', redirectTo: 'main' }
 ];

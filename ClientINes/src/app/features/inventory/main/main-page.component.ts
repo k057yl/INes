@@ -40,6 +40,8 @@ export class MainPageComponent implements OnInit {
   private router = inject(Router);
   private lendingService = inject(LendingService);
 
+  private pendingMoveData: { item: Item, targetLocationId: string } | null = null;
+
   locations: StorageLocation[] = [];
   flatLocations: StorageLocation[] = [];
   connectedLists: string[] = [];
@@ -108,8 +110,9 @@ export class MainPageComponent implements OnInit {
 
   // --- ДАННЫЕ И СОСТОЯНИЕ ---
 
-  loadData() {
-    this.isLoading = true;
+  loadData(showLoader = true) {
+    if (showLoader) this.isLoading = true; 
+    
     this.locationService.getTree().subscribe({
       next: (data) => {
         this.locations = data;
@@ -161,34 +164,37 @@ export class MainPageComponent implements OnInit {
   }
 
   onItemMoveManual(data: {item: Item, targetLocationId: string}) {
-    const { item, targetLocationId } = data;
-    this.itemService.move(item.id, targetLocationId).subscribe({
-      next: () => {
-        this.loadData();
-        if (!this.activeBoardIds.includes(targetLocationId)) {
-          this.pendingLocationId = targetLocationId;
-          this.activeModal = 'moveConfirm';
-        }
-      }
-    });
+    this.pendingMoveData = data;
+    this.pendingLocationId = data.targetLocationId;
+    this.activeModal = 'moveConfirm';
   }
 
   // --- ОБЩЕЕ ---
 
-  closeModals() { this.activeModal = null; this.selectedItem = null; this.selectedLocation = null; this.pendingLocationId = null; }
+  closeModals() { this.activeModal = null; this.selectedItem = null; this.selectedLocation = null; this.pendingLocationId = null; this.pendingMoveData = null; }
 
   confirmNavigation() {
-    if (this.pendingLocationId) this.jumpToLocation(this.pendingLocationId);
-    this.closeModals();
-  }
+  if (!this.pendingMoveData) return;
+  const { item, targetLocationId } = this.pendingMoveData;
+
+  this.moveItemLocally(item, targetLocationId);
+  this.closeModals();
+
+  this.itemService.move(item.id, targetLocationId).subscribe({
+    next: () => {
+      this.jumpToLocation(targetLocationId);
+    },
+    error: () => this.loadData()
+  });
+}
 
   get modalConfig() {
     const type = this.activeModal;
     if (!type || type === 'sell' || type === 'lend') return null;
     const configs: Record<string, any> = {
       renameLoc: { mode: 'input', title: 'COMMON.RENAME', message: '', confirmText: 'COMMON.SAVE', cancelText: 'COMMON.CANCEL', name: this.selectedLocation?.name },
-      deleteLoc: { mode: 'delete', title: 'COMMON.DELETE', message: 'LOCATION_CARD.MODAL.YOU_SURE_MSG' },
-      deleteItem: { mode: 'delete', title: 'COMMON.DELETE', message: 'ITEM_CARD.MODAL.YOU_SURE_MSG' },
+      deleteLoc: { mode: 'delete', title: 'COMMON.DELETE', message: 'LOCATION_CARD.MODAL.YOU_SURE_MSG', confirmText: 'COMMON.DELETE', cancelText: 'COMMON.CANCEL' },
+      deleteItem: { mode: 'delete', title: 'COMMON.DELETE', message: 'ITEM_CARD.MODAL.YOU_SURE_MSG', confirmText: 'COMMON.DELETE', cancelText: 'COMMON.CANCEL' },
       moveConfirm: { mode: 'input', title: 'COMMON.CONFIRM_MOVE', message: 'LOCATIONS.MODAL.M_MOVE_SUCCESS', name: 'skip', confirmText: 'COMMON.GO_TO', cancelText: 'COMMON.STAY_HERE' }
     };
     return configs[type];
@@ -214,17 +220,40 @@ export class MainPageComponent implements OnInit {
     this.locationService.move(event.loc.id, newParentId).subscribe(() => this.loadData());
   }
 
+  private moveItemLocally(item: Item, targetLocId: string) {
+  const sourceLoc = this.flatLocations.find(l => l.id === item.storageLocationId);
+  const targetLoc = this.flatLocations.find(l => l.id === targetLocId);
+
+  if (sourceLoc && targetLoc) {
+    sourceLoc.items = sourceLoc.items.filter(i => i.id !== item.id);
+    item.storageLocationId = targetLocId;
+    targetLoc.items.push(item);
+
+    this.refreshState();
+  }
+}
+
   onItemDropped(data: {event: CdkDragDrop<Item[]>, loc: StorageLocation}) {
     const { event, loc } = data;
+    
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
       return;
     }
+
     const item = event.previousContainer.data[event.previousIndex];
-    this.itemService.move(item.id, loc.id).subscribe(() => {
+
+    this.moveItemLocally(item, loc.id);
+
+    this.itemService.move(item.id, loc.id).subscribe({
+      error: () => {
         this.loadData();
-        if (loc.isLendingLocation) setTimeout(() => this.onLendRequest(item), 200);
+      }
     });
+
+    if (loc.isLendingLocation) {
+      setTimeout(() => this.onLendRequest(item), 200);
+    }
   }
 
   isChildOf(targetId: string, sourceLoc: StorageLocation): boolean {

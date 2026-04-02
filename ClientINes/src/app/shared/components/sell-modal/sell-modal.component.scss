@@ -1,118 +1,190 @@
+// Миксин для общих стилей инпутов
+@mixin input-base {
+  width: 100%;
+  padding: 12px 14px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  border-radius: 10px;
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.2s ease-in-out;
+
+  &:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(var(--accent-color-rgb), 0.1);
+  }
+
+  &.is-invalid {
+    border-color: var(--error-red);
+    background: rgba(var(--error-red-rgb), 0.05);
+    
+    &:focus {
+      box-shadow: 0 0 0 3px rgba(var(--error-red-rgb), 0.1);
+    }
+  }
+}
+
 .modal-backdrop {
   position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(10px);
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
   z-index: 1100;
   display: flex;
   justify-content: center;
   align-items: center;
+  animation: fadeIn 0.3s ease;
 }
 
 .modal-content {
   background: var(--bg-card);
   color: var(--text-main);
-  padding: 30px;
-  border-radius: 16px;
-  width: 450px;
-  max-width: 95%;
+  padding: 32px;
+  border-radius: 20px;
+  width: 480px;
+  max-width: 90%;
   border: 1px solid var(--border-color);
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 25px;
+  margin-bottom: 28px;
   
-  h2 { margin: 0; font-size: 1.4rem; color: var(--text-main); }
+  h2 { 
+    margin: 0; 
+    font-size: 1.5rem; 
+    font-weight: 700;
+    color: var(--text-main); 
+  }
+
   .close-btn { 
-    background: none; border: none; 
-    color: var(--text-muted); font-size: 1.8rem; cursor: pointer;
-    &:hover { color: var(--error-red); }
+    background: none; 
+    border: none; 
+    color: var(--text-muted); 
+    font-size: 2rem; 
+    cursor: pointer;
+    line-height: 1;
+    transition: 0.2s;
+    
+    &:hover { 
+      color: var(--error-red);
+      transform: rotate(90deg);
+    }
   }
 }
 
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
   
   label {
     display: block;
     margin-bottom: 8px;
     color: var(--text-muted);
-    font-size: 0.85rem;
+    font-size: 0.75rem;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.025em;
+    letter-spacing: 0.05em;
+  }
+
+  .label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    
+    label { margin-bottom: 0; }
   }
 
   input, select, textarea {
-    width: 100%;
-    padding: 10px 14px;
-    background: var(--bg-input);
-    border: 1px solid var(--border-color);
-    color: var(--text-main);
-    border-radius: 8px;
-    font-size: 1rem;
-    outline: none;
-    transition: border-color 0.2s;
+    @include input-base;
+  }
 
-    &:focus { border-color: var(--accent-color); }
+  textarea { resize: none; min-height: 80px; overflow-y: auto;}
+
+  // Контейнер для ошибки, чтобы верстка не прыгала при появлении текста
+  .error-container {
+    min-height: 18px;
+    margin-top: 4px;
+  }
+
+  .error-text {
+    color: var(--error-red);
+    font-size: 0.8rem;
+    font-weight: 500;
+    display: block;
+    animation: fadeInError 0.2s ease-out;
   }
 }
 
-.add-btn {
+.add-platform-btn {
   background: transparent;
-  color: var(--text-access);
-  border: 1px solid var(--text-access);
-  padding: 1px 8px;
-  border-radius: 4px;
-  font-size: 0.75rem;
+  color: var(--accent-color);
+  border: 1px solid var(--accent-color);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 600;
   cursor: pointer;
+  transition: all 0.2s;
   
   &:hover { 
-    background: var(--text-access); 
-    color: var(--text-on-accent); 
+    background: var(--accent-color); 
+    color: #fff; 
   }
 }
 
 .modal-actions {
   display: flex;
-  gap: 12px;
-  margin-top: 30px;
+  gap: 16px;
+  margin-top: 10px;
 
   button {
     flex: 1;
-    padding: 12px;
-    border-radius: 8px;
-    font-weight: 600;
+    padding: 14px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1rem;
     cursor: pointer;
     border: none;
-    transition: all 0.2s;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &:active { transform: scale(0.98); }
   }
-}
 
-.btn-confirm {
-  background: var(--accent-color);
-  color: var(--text-on-accent);
-  
-  &:disabled { 
-    background: var(--bg-cancel-button); 
-    color: var(--text-muted); 
+  .btn-confirm {
+    background: var(--accent-color);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(var(--accent-color-rgb), 0.2);
 
-    cursor: not-allowed !important; 
-    opacity: 0.6;
-    
-    &:hover {
-      transform: none;
-      opacity: 0.6;
+    &:hover:not(:disabled) {
+      filter: brightness(1.1);
+      box-shadow: 0 6px 16px rgba(var(--accent-color-rgb), 0.3);
+    }
+
+    &:disabled {
+      background: var(--bg-cancel-button);
+      color: var(--text-muted);
+      cursor: not-allowed;
+      opacity: 0.5;
+      box-shadow: none;
     }
   }
+
+  .btn-cancel {
+    background: var(--bg-cancel-button);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+
+    &:hover { background: var(--bg-input); }
+  }
 }
 
-.btn-cancel {
-  background: var(--bg-cancel-button);
-  color: var(--text-main);
-  border: 1px solid var(--border-color) !important;
-}
+// Анимации
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeInError { from { opacity: 0; transform: translateX(-5px); } to { opacity: 1; transform: translateX(0); } }

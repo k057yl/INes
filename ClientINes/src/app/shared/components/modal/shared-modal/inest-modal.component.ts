@@ -17,7 +17,7 @@ export class InestModalComponent implements AfterViewInit {
   @Input() title: string = '';
   @Input() message: string = '';
   @Input() name: string = '';
-  @Input() placeholder: string = 'AUTH.FIELD_USERNAME';
+  @Input() placeholder: string = 'COMMON.ENTER_NAME';
   
   @Input() confirmText: string = 'COMMON.SAVE';
   @Input() cancelText: string = 'COMMON.CANCEL';
