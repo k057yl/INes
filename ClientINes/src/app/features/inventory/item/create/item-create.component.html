@@ -12,15 +12,8 @@
       
       <div class="photo-hero-section">
         <div class="photo-upload-canvas" [class.has-photos]="selectedPhotos.length > 0">
-          
           <div class="upload-placeholder" *ngIf="selectedPhotos.length === 0">
-            <input type="file" 
-                  accept="image/*" 
-                  multiple 
-                  (change)="onFileSelected($event)" 
-                  id="fileInput" 
-                  class="hidden-input">
-            
+            <input type="file" accept="image/*" multiple (change)="onFileSelected($event)" id="fileInput" class="hidden-input">
             <label for="fileInput" class="canvas-label">
               <i class="fa fa-camera-retro"></i>
               <span>{{ 'CREATE_ITEM_PAGE.CLICK_TO_UPLOAD' | translate }}</span>
@@ -31,17 +24,10 @@
           <div class="photo-grid-inline" *ngIf="selectedPhotos.length > 0">
             <div class="preview-card" *ngFor="let p of selectedPhotos; let i = index">
               <img [src]="p.preview">
-              <button type="button" class="btn-del" (click)="removePhoto(i)">
-                <i class="fa fa-times"></i>
-              </button>
+              <button type="button" class="btn-del" (click)="removePhoto(i)"><i class="fa fa-times"></i></button>
             </div>
-            
             <label class="add-more-card" *ngIf="selectedPhotos.length < MAX_PHOTOS" for="addMoreInput">
-              <input type="file" 
-                    accept="image/*" 
-                    multiple 
-                    (change)="onFileSelected($event)" 
-                    id="addMoreInput">
+              <input type="file" accept="image/*" multiple (change)="onFileSelected($event)" id="addMoreInput">
               <i class="fa fa-plus"></i>
             </label>
           </div>
@@ -50,13 +36,15 @@
 
       <div class="inest-form-group">
         <label>{{ 'CREATE_ITEM_PAGE.NAME' | translate }} *</label>
-        <div class="inest-input-wrapper">
+        <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('name')">
           <i class="fa fa-tag inest-field-icon-left"></i>
           <input formControlName="name" [placeholder]="'CREATE_ITEM_PAGE.NAME_PHL' | translate">
         </div>
-        <small class="status-text error" *ngIf="isControlInvalid('name')">
-          {{ 'ERRORS.REQUIRED_FIELD' | translate }}
-        </small>
+        <div class="inest-error-container">
+          <small class="inest-error-text" *ngIf="isControlInvalid('name')">
+            {{ 'ERRORS.REQUIRED_FIELD' | translate }}
+          </small>
+        </div>
       </div>
 
       <div class="inest-form-group">
@@ -65,75 +53,78 @@
           <i class="fa fa-align-left inest-field-icon-left"></i>
           <textarea formControlName="description" [placeholder]="'CREATE_ITEM_PAGE.FIELD_DESCRIPTION' | translate" rows="2"></textarea>
         </div>
+        <div class="inest-error-container"></div>
       </div>
 
-      <div class="form-row-2">
-        <div class="inest-form-group">
-          <label class="label-with-action">
-            <span>{{ 'CREATE_ITEM_PAGE.CATEGORY' | translate }} *</span>
-            <button type="button" class="inline-add-btn" (click)="showCategoryModal = true">
-              <i class="fa fa-plus"></i> {{ 'CREATE_ITEM_PAGE.CREATE_CATEGORY' | translate }}
-            </button>
-          </label>
-          <div class="inest-input-wrapper">
-            <i class="fa fa-folder inest-field-icon-left"></i>
-            <select formControlName="categoryId">
-              <option value="" disabled>{{ 'CREATE_ITEM_PAGE.FIELD_CATEGORY' | translate }}</option>
-              <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</option>
-            </select>
-          </div>
+      <div class="inest-form-group">
+        <label class="label-with-action">
+          <span>{{ 'CREATE_ITEM_PAGE.CATEGORY' | translate }} *</span>
+          <button type="button" class="inline-add-btn" (click)="showCategoryModal = true">
+            <i class="fa fa-plus"></i> {{ 'CREATE_ITEM_PAGE.CREATE_CATEGORY' | translate }}
+          </button>
+        </label>
+        <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('categoryId')">
+          <i class="fa fa-folder inest-field-icon-left"></i>
+          <select formControlName="categoryId">
+            <option value="" disabled>{{ 'CREATE_ITEM_PAGE.FIELD_CATEGORY' | translate }}</option>
+            <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</option>
+          </select>
         </div>
+        <div class="inest-error-container">
+          <small class="inest-error-text" *ngIf="isControlInvalid('categoryId')">
+            {{ 'ERRORS.REQUIRED_FIELD' | translate }}
+          </small>
+        </div>
+      </div>
 
-        <div class="inest-form-group">
-          <label>{{ 'CREATE_ITEM_PAGE.STATUS' | translate }}</label>
-          <div class="inest-input-wrapper">
-            <i class="fa fa-info-circle inest-field-icon-left"></i>
-            <select formControlName="status">
-              <option *ngFor="let opt of statusOptions" [value]="opt.value">
-                {{ opt.label | translate }}
-              </option>
-            </select>
-          </div>
+      <div class="inest-form-group">
+        <label>{{ 'CREATE_ITEM_PAGE.STATUS' | translate }}</label>
+        <div class="inest-input-wrapper">
+          <i class="fa fa-info-circle inest-field-icon-left"></i>
+          <select formControlName="status">
+            <option *ngFor="let opt of statusOptions" [value]="opt.value">{{ opt.label | translate }}</option>
+          </select>
         </div>
+        <div class="inest-error-container"></div>
       </div>
 
       <div class="inest-form-group" *ngIf="!isLocationPredefined">
         <label>{{ 'CREATE_ITEM_PAGE.LOCATION' | translate }} *</label>
-        <div class="inest-input-wrapper">
+        <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('storageLocationId')">
           <i class="fa fa-map-marker-alt inest-field-icon-left"></i>
           <select formControlName="storageLocationId">
             <option value="" disabled>{{ 'CREATE_ITEM_PAGE.SELECT_LOCATION' | translate }}</option>
             <option *ngFor="let loc of locations" [value]="loc.id">{{ loc.name }}</option>
           </select>
         </div>
-      </div>
-      
-      <div class="inest-form-group" *ngIf="isLocationPredefined">
-        <label>{{ 'CREATE_ITEM_PAGE.LOCATION' | translate }}</label>
-        <div class="context-info-badge">
-          <i class="fa fa-check-circle"></i> {{ 'COMMON.LOCKED_CONTEXT' | translate }}
+        <div class="inest-error-container">
+          <small class="inest-error-text" *ngIf="isControlInvalid('storageLocationId')">
+            {{ 'ERRORS.REQUIRED_FIELD' | translate }}
+          </small>
         </div>
       </div>
 
-      <div class="form-row-2">
-        <div class="inest-form-group">
-          <label>{{ 'CREATE_ITEM_PAGE.PURCHASE_DATE' | translate }}</label>
-          <div class="inest-input-wrapper">
-            <i class="fa fa-calendar-alt inest-field-icon-left"></i>
-            <input type="date" formControlName="purchaseDate" [max]="todayMax">
-          </div>
-          <small class="status-text error" *ngIf="form.get('purchaseDate')?.hasError('futureDate')">
+      <div class="inest-form-group">
+        <label>{{ 'CREATE_ITEM_PAGE.PURCHASE_DATE' | translate }}</label>
+        <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('purchaseDate')">
+          <i class="fa fa-calendar-alt inest-field-icon-left"></i>
+          <input type="date" formControlName="purchaseDate" [max]="todayMax">
+        </div>
+        <div class="inest-error-container">
+          <small class="inest-error-text" *ngIf="form.get('purchaseDate')?.hasError('futureDate')">
             {{ 'ERRORS.FUTURE_DATE' | translate }}
           </small>
         </div>
+      </div>
 
-        <div class="inest-form-group">
-          <label>{{ 'CREATE_ITEM_PAGE.PRICE' | translate }}</label>
-          <div class="inest-input-wrapper">
-            <i class="fa fa-wallet inest-field-icon-left"></i>
-            <input formControlName="purchasePrice" type="number" placeholder="0.00">
-          </div>
-          <small class="status-text error" *ngIf="form.get('purchasePrice')?.hasError('min')">
+      <div class="inest-form-group">
+        <label>{{ 'CREATE_ITEM_PAGE.PRICE' | translate }}</label>
+        <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('purchasePrice')">
+          <i class="fa fa-wallet inest-field-icon-left"></i>
+          <input formControlName="purchasePrice" type="number" placeholder="0.00">
+        </div>
+        <div class="inest-error-container">
+          <small class="inest-error-text" *ngIf="form.get('purchasePrice')?.hasError('min')">
             {{ 'ERRORS.NEGATIVE_NUMBER' | translate }}
           </small>
         </div>
@@ -143,34 +134,27 @@
         <div class="divider-text">
           <span>{{ (form.get('status')?.value == 7 ? 'CREATE_ITEM_PAGE.BORROWED_INFO' : 'CREATE_ITEM_PAGE.LENT_INFO') | translate }}</span>
         </div>
-
-        <div class="form-row-2">
-          <div class="inest-form-group">
-            <label>{{ 'CREATE_ITEM_PAGE.PERSON_NAME' | translate }} *</label>
-            <div class="inest-input-wrapper">
-              <i class="fa fa-user inest-field-icon-left"></i>
-              <input formControlName="personName" [placeholder]="'CREATE_ITEM_PAGE.PH_NAME' | translate">
-            </div>
+        
+        <div class="inest-form-group">
+          <label>{{ 'CREATE_ITEM_PAGE.PERSON_NAME' | translate }} *</label>
+          <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('personName')">
+            <i class="fa fa-user inest-field-icon-left"></i>
+            <input formControlName="personName" [placeholder]="'CREATE_ITEM_PAGE.PH_NAME' | translate">
           </div>
-
-          <div class="inest-form-group">
-            <label>{{ 'CREATE_ITEM_PAGE.RETURN_DATE' | translate }} *</label>
-            <div class="inest-input-wrapper">
-              <i class="fa fa-calendar-check inest-field-icon-left"></i>
-              <input type="date" formControlName="expectedReturnDate">
-            </div>
-          </div>
+          <div class="inest-error-container"></div>
         </div>
 
         <div class="inest-form-group">
-          <label class="inest-checkbox-label">
-            <input type="checkbox" formControlName="sendNotification">
-            <span>{{ 'CREATE_ITEM_PAGE.SEND_EMAIL_TO_ME' | translate }}</span>
-          </label>
+          <label>{{ 'CREATE_ITEM_PAGE.RETURN_DATE' | translate }} *</label>
+          <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('expectedReturnDate')">
+            <i class="fa fa-calendar-check inest-field-icon-left"></i>
+            <input type="date" formControlName="expectedReturnDate">
+          </div>
+          <div class="inest-error-container"></div>
         </div>
       </div>
 
-      <div class="form-actions-fixed">
+      <div class="form-actions-row">
         <button type="button" class="inest-btn-cancel" (click)="cancel()">
           <i class="fa fa-times"></i> {{ 'CREATE_ITEM_PAGE.BUTTON_CANCEL' | translate }}
         </button>
@@ -181,3 +165,12 @@
     </form>
   </div>
 </div>
+
+<app-inest-modal 
+  *ngIf="showCategoryModal"
+  mode="input"
+  [title]="'CREATE_ITEM_PAGE.CREATE_CATEGORY' | translate"
+  [confirmText]="'COMMON.SAVE' | translate"
+  (confirmed)="onCategoryConfirmed($event)"
+  (cancelled)="showCategoryModal = false">
+</app-inest-modal>

@@ -1,7 +1,7 @@
 <div class="main-page-container">
   
   <app-location-ribbon
-    [locations]="locations"
+    [locations]="facade.locations"
     [currentPage]="currentPageRibbon"
     [activeBoardIds]="activeBoardIds"
     (pageChange)="onRibbonPageChange($event)"
@@ -10,13 +10,13 @@
   </app-location-ribbon>
 
   <div class="board-grid-3">
-    <div class="loader-overlay" *ngIf="isLoading">{{'COMMON.LOADING' | translate }}</div>
+    <div class="loader-overlay" *ngIf="facade.isLoading">{{'COMMON.LOADING' | translate }}</div>
     
     <app-location-card 
       *ngFor="let loc of pagedBoardLocations; trackBy: trackById"
       [location]="loc"
-      [flatLocations]="flatLocations"
-      [connectedLists]="connectedLists"
+      [flatLocations]="facade.flatLocations"
+      [connectedLists]="facade.connectedLists"
       [isChildOf]="isChildOf"
       (itemDropped)="onItemDropped($event)"
       (lendItem)="onLendRequest($event)"
@@ -28,7 +28,7 @@
       (delete)="onDeleteLocation($event)">
     </app-location-card>
 
-    <div class="zero-state-container" *ngIf="!isLoading && locations.length === 0">
+    <div class="zero-state-container" *ngIf="!facade.isLoading && facade.locations.length === 0">
       <div class="zero-state-content">
         <i class="fa fa-box-open zero-icon"></i>
         <h2>{{ 'MAIN_PAGE.LOCATION_EMPTY_MSG' | translate }}</h2>
@@ -49,16 +49,16 @@
   </div>
 </div>
 
-<app-inest-modal *ngIf="modalConfig" [mode]="modalConfig.mode" [title]="modalConfig.title" 
-  [message]="modalConfig.message" [name]="modalConfig.name || ''" 
-  [confirmText]="modalConfig.confirmText" [cancelText]="modalConfig.cancelText"
-  (confirmed)="handleModalConfirm($event)" (cancelled)="closeModals()">
+<app-inest-modal *ngIf="modal.config" [mode]="modal.config.mode" [title]="modal.config.title" 
+  [message]="modal.config.message" [name]="modal.config.name || ''" 
+  [confirmText]="modal.config.confirmText" [cancelText]="modal.config.cancelText"
+  (confirmed)="modal.confirm($event)" (cancelled)="modal.close()">
 </app-inest-modal>
 
-<app-sell-modal *ngIf="activeModal === 'sell' && selectedItem" [item]="selectedItem"
-  (close)="closeModals()" (confirm)="onSellConfirmed($event)">
+<app-sell-modal *ngIf="modal.activeModal === 'sell' && modal.selectedItem" [item]="modal.selectedItem"
+  (close)="modal.close()" (confirm)="modal.confirm($event)">
 </app-sell-modal>
 
-<app-lend-item-modal *ngIf="activeModal === 'lend' && selectedItem" [item]="selectedItem"
-  [isOpen]="true" (close)="closeModals()" (confirm)="onLendConfirmed($event)">
+<app-lend-item-modal *ngIf="modal.activeModal === 'lend' && modal.selectedItem" [item]="modal.selectedItem"
+  [isOpen]="true" (close)="modal.close()" (confirm)="modal.confirm($event)">
 </app-lend-item-modal>

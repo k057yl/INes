@@ -122,7 +122,8 @@
     "REQUIRED_FIELD": "Обязательное поле",
     "FUTURE_DATE": "Дата не может быть в будущем",
     "NEGATIVE_NUMBER": "Значение не может быть отрицательным",
-    "PAGE": "Страница: "
+    "PAGE": "Страница: ",
+    "SELECT": "Выбрать"
   },
 
   "HEADER": {
@@ -144,20 +145,24 @@
     "TITLE_REG": "О, Привет!",
     "SUBTITLE_LOGIN": "Войдите в свою систему хранения",
     "SUBTITLE_REG": "Зарегистрируйтесь в системе",
+    "EMAIL": "Почта",
     "FIELD_EMAIL": "Введите email",
+    "PWD": "Пароль",
     "FIELD_PWD": "Введите пароль",
     "BTN_GOOGLE": "Войти с Google",
     "CONFIRM_TITLE": "Подтверждение почты",
-    "CODE_LABEL": "Код из письма"
+    "CODE_LABEL": "Код из письма",
+    "LOGIN_BTN": "Войти",
+    "OR": "или"
   },
 
   "CREATE_LOCATION_PAGE": {
     "TITLE_CREATE": "Создать локацию",
+    "NAME": "Название",
     "NAME_PLACEHOLDER": "Например: Гараж или Стеллаж",
-    "AUTOMATION": "Автоматизация",
-    "SALES_ZONE": "Торговая точка",
-    "LENDING_ZONE": "Зона одалживания",
-    "EMPTY": "Тут пока пусто"
+    "SELECT_COLOR": "Выберите цвет",
+    "EMPTY": "Тут пока пусто",
+    "COLOR_HINT_RANDOM": "Если не выбрать цвет, он будет выбран случайным образом"
   },
 
   "LOCATION_CARD": {
@@ -230,6 +235,19 @@
     "CLICK_TO_UPLOAD": "Нажмите или перетащите файлы для загрузки",
     "BUTTON_CANCEL": "Отмена",
     "BUTTON_START": "Создать предмет"
+  },
+
+  "EDIT_ITEM_PAGE": {
+    "ADD_NEW_PHOTO": "Добавить новые фото",
+    "NAME": "Имя",
+    "DESCRIPTION": "Описание",
+    "CATEGORY": "Категория",
+    "LOCATION": "Локация",
+    "PRICE": "Цена",
+    "ESTIMATED": "Оценочная стоимость",
+    "DATE": "Дата",
+    "LENT_INFO": "Вернуть до : ",
+    "RETURN_NOW": "Вернуть сейчас"
   },
 
   "SELL_PAGE": {

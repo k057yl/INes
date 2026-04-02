@@ -1,6 +1,6 @@
-import { Component, OnInit, inject, HostListener } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Router } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { DragDropModule, CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 import { TranslateModule } from '@ngx-translate/core';
 
@@ -8,19 +8,13 @@ import { StorageLocation } from '../../../models/entities/storage-location.entit
 import { Item } from '../../../models/entities/item.entity';
 import { LocationCardComponent } from '../../../shared/components/location-card/location-card.component';
 import { LocationRibbonComponent } from '../../../shared/components/location-ribbon/location-ribbon.component';
-import { SalesService } from '../../../shared/services/sales.service';
-import { LocationService } from '../../../shared/services/location.service';
-import { ItemService } from '../../../shared/services/item.service';
 import { SellModalComponent } from '../../../shared/components/sell-modal/sell-modal.component';
 import { InestModalComponent } from '../../../shared/components/modal/shared-modal/inest-modal.component';
-import { SellItemRequestDto } from '../../../models/dtos/sale.dto';
-
-import { LendingService } from '../../../shared/services/lending.service';
 import { LendItemModalComponent } from '../../../shared/components/modal/lend-modal/lend-item-modal.component';
-import { LendItemDto } from '../../../models/dtos/lending.dto';
 import { RIBBON_CONFIG, BOARD_CONFIG } from '../../../shared/constants/ui.constants';
 
-type ModalType = 'deleteItem' | 'deleteLoc' | 'renameLoc' | 'moveConfirm' | 'sell' | 'lend' | null;
+import { MainPageFacade } from './main-page.facade';
+import { MainPageModalService } from './main-page.modal.service';
 
 @Component({
   selector: 'app-main-page',
@@ -30,28 +24,13 @@ type ModalType = 'deleteItem' | 'deleteLoc' | 'renameLoc' | 'moveConfirm' | 'sel
     LocationCardComponent, LocationRibbonComponent, 
     TranslateModule, SellModalComponent, InestModalComponent, LendItemModalComponent
   ],
+  providers: [MainPageFacade, MainPageModalService],
   templateUrl: './main-page.component.html',
   styleUrl: './main-page.component.scss'
 })
 export class MainPageComponent implements OnInit {
-  private locationService = inject(LocationService);
-  private itemService = inject(ItemService);
-  private salesService = inject(SalesService);
-  private router = inject(Router);
-  private lendingService = inject(LendingService);
-
-  private pendingMoveData: { item: Item, targetLocationId: string } | null = null;
-
-  locations: StorageLocation[] = [];
-  flatLocations: StorageLocation[] = [];
-  connectedLists: string[] = [];
-  isLoading = true;
-  
-  // ЦЕНТРАЛЬНЫЙ СТЭЙТ МОДАЛОК
-  activeModal: ModalType = null;
-  selectedItem: Item | null = null;
-  selectedLocation: StorageLocation | null = null;
-  pendingLocationId: string | null = null;
+  public facade = inject(MainPageFacade); 
+  public modal = inject(MainPageModalService);
 
   currentPageBoard = 0;
   currentPageRibbon = 0;
@@ -64,7 +43,7 @@ export class MainPageComponent implements OnInit {
 
   get pagedBoardLocations(): StorageLocation[] {
     const start = this.currentPageBoard * BOARD_CONFIG.PAGE_SIZE;
-    return this.locations.slice(start, start + BOARD_CONFIG.PAGE_SIZE);
+    return this.facade.locations.slice(start, start + BOARD_CONFIG.PAGE_SIZE);
   }
 
   get activeBoardIds(): string[] {
@@ -72,17 +51,10 @@ export class MainPageComponent implements OnInit {
   }
 
   get totalBoardPages(): number { 
-    return Math.ceil(this.locations.length / BOARD_CONFIG.PAGE_SIZE); 
+    return Math.ceil(this.facade.locations.length / BOARD_CONFIG.PAGE_SIZE); 
   }
 
   ngOnInit() { this.loadData(); }
-
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: MouseEvent) {
-    this.locations.forEach(loc => this.closeMenuRecursive(loc, event));
-  }
-
-  // --- ЛОГИКА СИНХРОНИЗАЦИИ ---
 
   changeBoardPage(delta: number) {
     this.currentPageBoard += delta;
@@ -95,7 +67,7 @@ export class MainPageComponent implements OnInit {
   }
 
   jumpToLocation(locId: string) {
-    const index = this.locations.findIndex(l => l.id === locId);
+    const index = this.facade.locations.findIndex(l => l.id === locId);
     if (index !== -1) {
       this.currentPageBoard = Math.floor(index / BOARD_CONFIG.PAGE_SIZE);
       this.syncRibbonWithBoard();
@@ -108,130 +80,74 @@ export class MainPageComponent implements OnInit {
     this.currentPageBoard = Math.floor(firstItemIndex / BOARD_CONFIG.PAGE_SIZE);
   }
 
-  // --- ДАННЫЕ И СОСТОЯНИЕ ---
+  loadData() {
+    this.facade.loadData().subscribe();
+  }
 
-  loadData(showLoader = true) {
-    if (showLoader) this.isLoading = true; 
-    
-    this.locationService.getTree().subscribe({
-      next: (data) => {
-        this.locations = data;
-        this.refreshState();
-        this.isLoading = false;
-      },
-      error: () => this.isLoading = false
+  // --- ЧИСТАЯ ЛОГИКА МОДАЛОК ---
+
+  onRename(loc: StorageLocation) { 
+    loc.showMenu = false;
+    this.modal.openRename(loc).subscribe(newName => {
+      if (newName) this.facade.renameLocation(loc.id, newName).subscribe();
     });
   }
 
-  refreshState() {
-    this.flatLocations = this.flattenLocations(this.locations);
-    this.connectedLists = this.flatLocations.map(l => l.id);
-  }
-
-  private flattenLocations(locs: StorageLocation[]): StorageLocation[] {
-    return locs.reduce<StorageLocation[]>((acc, l) => {
-      acc.push(l);
-      if (l.children?.length) acc.push(...this.flattenLocations(l.children));
-      return acc;
-    }, []);
-  }
-
-  // --- ЛОКАЦИИ И ПРЕДМЕТЫ (Методы оставлены без изменений для краткости) ---
-  
-  onRename(loc: StorageLocation) { this.selectedLocation = loc; this.activeModal = 'renameLoc'; loc.showMenu = false; }
-  onDeleteLocation(loc: StorageLocation) { this.selectedLocation = loc; this.activeModal = 'deleteLoc'; loc.showMenu = false; }
-  onDeleteItem(item: Item) { this.selectedItem = item; this.activeModal = 'deleteItem'; }
-  onSellRequest(item: Item) { this.selectedItem = item; this.activeModal = 'sell'; }
-  onLendRequest(item: Item) { this.selectedItem = item; this.activeModal = 'lend'; }
-
-  confirmDeleteLocation() {
-    if (!this.selectedLocation) return;
-    this.locationService.delete(this.selectedLocation.id).subscribe({
-      next: () => {
-        this.removeLocationFromTree(this.locations, this.selectedLocation!.id);
-        this.locations = [...this.locations];
-        this.refreshState();
+  onDeleteLocation(loc: StorageLocation) { 
+    loc.showMenu = false;
+    this.modal.openDeleteLocation(loc).subscribe(() => {
+      this.facade.deleteLocation(loc.id).subscribe(() => {
         if (this.currentPageBoard > 0 && this.pagedBoardLocations.length === 0) this.currentPageBoard--;
         this.syncRibbonWithBoard();
-        this.closeModals();
-      }
+      });
     });
   }
 
-  confirmDeleteItem() {
-    if (!this.selectedItem) return;
-    this.itemService.delete(this.selectedItem.id).subscribe(() => { this.loadData(); this.closeModals(); });
+  onDeleteItem(item: Item) { 
+    this.modal.openDeleteItem(item).subscribe(() => {
+      this.facade.deleteItem(item.id).subscribe(() => this.loadData());
+    });
+  }
+
+  onSellRequest(item: Item) { 
+    this.modal.openSell(item).subscribe(dto => {
+      if (dto) this.facade.sellItem(dto).subscribe();
+    });
+  }
+
+  onLendRequest(item: Item) { 
+    this.modal.openLend(item).subscribe(dto => {
+      if (dto) this.facade.lendItem(dto).subscribe(() => this.loadData());
+    });
   }
 
   onItemMoveManual(data: {item: Item, targetLocationId: string}) {
-    this.pendingMoveData = data;
-    this.pendingLocationId = data.targetLocationId;
-    this.activeModal = 'moveConfirm';
+    this.modal.openMoveConfirm().subscribe(() => {
+      this.facade.moveItemLocally(data.item, data.targetLocationId);
+      this.facade.moveItemApi(data.item.id, data.targetLocationId).subscribe({
+        next: () => this.jumpToLocation(data.targetLocationId),
+        error: () => this.loadData()
+      });
+    });
   }
 
-  // --- ОБЩЕЕ ---
-
-  closeModals() { this.activeModal = null; this.selectedItem = null; this.selectedLocation = null; this.pendingLocationId = null; this.pendingMoveData = null; }
-
-  confirmNavigation() {
-  if (!this.pendingMoveData) return;
-  const { item, targetLocationId } = this.pendingMoveData;
-
-  this.moveItemLocally(item, targetLocationId);
-  this.closeModals();
-
-  this.itemService.move(item.id, targetLocationId).subscribe({
-    next: () => {
-      this.jumpToLocation(targetLocationId);
-    },
-    error: () => this.loadData()
-  });
-}
-
-  get modalConfig() {
-    const type = this.activeModal;
-    if (!type || type === 'sell' || type === 'lend') return null;
-    const configs: Record<string, any> = {
-      renameLoc: { mode: 'input', title: 'COMMON.RENAME', message: '', confirmText: 'COMMON.SAVE', cancelText: 'COMMON.CANCEL', name: this.selectedLocation?.name },
-      deleteLoc: { mode: 'delete', title: 'COMMON.DELETE', message: 'LOCATION_CARD.MODAL.YOU_SURE_MSG', confirmText: 'COMMON.DELETE', cancelText: 'COMMON.CANCEL' },
-      deleteItem: { mode: 'delete', title: 'COMMON.DELETE', message: 'ITEM_CARD.MODAL.YOU_SURE_MSG', confirmText: 'COMMON.DELETE', cancelText: 'COMMON.CANCEL' },
-      moveConfirm: { mode: 'input', title: 'COMMON.CONFIRM_MOVE', message: 'LOCATIONS.MODAL.M_MOVE_SUCCESS', name: 'skip', confirmText: 'COMMON.GO_TO', cancelText: 'COMMON.STAY_HERE' }
-    };
-    return configs[type];
-  }
-
-  handleModalConfirm(value: string) {
-    switch (this.activeModal) {
-      case 'renameLoc': this.confirmRename(value); break;
-      case 'deleteLoc': this.confirmDeleteLocation(); break;
-      case 'deleteItem': this.confirmDeleteItem(); break;
-      case 'moveConfirm': this.confirmNavigation(); break;
-    }
-  }
-
+  // --- DRAG AND DROP ---
   onRibbonReorder(event: CdkDragDrop<StorageLocation[]>) {
     const offset = this.currentPageRibbon * this.ribbonPageSize;
-    moveItemInArray(this.locations, event.previousIndex + offset, event.currentIndex + offset);
-    this.locationService.reorder({ parentId: null, orderedIds: this.locations.map(l => l.id) }).subscribe();
+    moveItemInArray(this.facade.locations, event.previousIndex + offset, event.currentIndex + offset);
+    this.facade.reorderLocations(this.facade.locations.map(l => l.id)).subscribe();
   }
 
   onLocationMove(event: { loc: StorageLocation, targetId: string }) {
-    const newParentId = event.targetId === 'root' ? null : event.targetId;
-    this.locationService.move(event.loc.id, newParentId).subscribe(() => this.loadData());
+    const targetId = event.targetId === 'root' ? null : event.targetId;
+
+    // Оптимистично двигаем в UI, чтобы не было мигания
+    this.facade.moveLocationLocally(event.loc.id, targetId);
+
+    this.facade.moveLocation(event.loc.id, event.targetId).subscribe({
+      error: () => this.loadData() // Откат, если сервер помер
+    });
   }
-
-  private moveItemLocally(item: Item, targetLocId: string) {
-  const sourceLoc = this.flatLocations.find(l => l.id === item.storageLocationId);
-  const targetLoc = this.flatLocations.find(l => l.id === targetLocId);
-
-  if (sourceLoc && targetLoc) {
-    sourceLoc.items = sourceLoc.items.filter(i => i.id !== item.id);
-    item.storageLocationId = targetLocId;
-    targetLoc.items.push(item);
-
-    this.refreshState();
-  }
-}
 
   onItemDropped(data: {event: CdkDragDrop<Item[]>, loc: StorageLocation}) {
     const { event, loc } = data;
@@ -242,13 +158,10 @@ export class MainPageComponent implements OnInit {
     }
 
     const item = event.previousContainer.data[event.previousIndex];
+    this.facade.moveItemLocally(item, loc.id);
 
-    this.moveItemLocally(item, loc.id);
-
-    this.itemService.move(item.id, loc.id).subscribe({
-      error: () => {
-        this.loadData();
-      }
+    this.facade.moveItemApi(item.id, loc.id).subscribe({
+      error: () => this.loadData()
     });
 
     if (loc.isLendingLocation) {
@@ -256,41 +169,9 @@ export class MainPageComponent implements OnInit {
     }
   }
 
-  isChildOf(targetId: string, sourceLoc: StorageLocation): boolean {
-    return sourceLoc.children?.some(c => c.id === targetId || this.isChildOf(targetId, c)) || false;
-  }
-
-  private removeLocationFromTree(tree: StorageLocation[], id: string): boolean {
-    for (let i = 0; i < tree.length; i++) {
-      if (tree[i].id === id) { tree.splice(i, 1); return true; }
-      if (tree[i].children?.length && this.removeLocationFromTree(tree[i].children!, id)) return true;
-    }
-    return false;
-  }
-
-  private closeMenuRecursive(loc: StorageLocation, event: MouseEvent) {
-    if (loc.showMenu) {
-      const target = event.target as HTMLElement;
-      if (!target.closest('.menu-dropdown') && !target.closest('.inest-action-btn')) loc.showMenu = false;
-    }
-    loc.children?.forEach(c => this.closeMenuRecursive(c, event));
+  isChildOf = (targetId: string, sourceLoc: StorageLocation): boolean => {
+    return this.facade.isChildOf(targetId, sourceLoc);
   }
 
   trackById = (index: number, item: any) => item.id;
-
-  confirmRename(newName: string) {
-    if (!this.selectedLocation) return;
-    this.locationService.rename(this.selectedLocation.id, newName).subscribe(() => {
-      this.selectedLocation!.name = newName;
-      this.closeModals();
-    });
-  }
-
-  onSellConfirmed(dto: SellItemRequestDto) {
-    this.salesService.sellItem(dto).subscribe(() => { this.closeModals(); this.router.navigate(['/sales']); });
-  }
-
-  onLendConfirmed(dto: LendItemDto) {
-    this.lendingService.lendItem(dto).subscribe({ next: () => { this.loadData(); this.closeModals(); } });
-  }
 }

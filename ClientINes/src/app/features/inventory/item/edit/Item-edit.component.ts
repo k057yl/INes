@@ -63,6 +63,11 @@ export class ItemEditComponent implements OnInit {
     return s === 1 || s === 7;
   }
 
+  isControlInvalid(controlName: string): boolean {
+    const control = this.form.get(controlName);
+    return !!(control && control.touched && control.invalid);
+  }
+
   ngOnInit() {
     this.itemId = this.route.snapshot.paramMap.get('id')!;
     this.loadInitialData();

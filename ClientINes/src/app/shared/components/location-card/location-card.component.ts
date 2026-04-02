@@ -17,7 +17,7 @@ import { ColorChromeModule } from 'ngx-color/chrome';
   styleUrl: './location-card.component.scss'
 })
 export class LocationCardComponent {
-  private el = inject(ElementRef); // Инжектим для проверки границ клика
+  private el = inject(ElementRef);
   public featureService = inject(FeatureService);
 
   @Input({ required: true }) location!: StorageLocation;
@@ -34,7 +34,6 @@ export class LocationCardComponent {
   @Output() moveItemManual = new EventEmitter<{item: Item, targetLocationId: string}>();
   @Output() lendItem = new EventEmitter<Item>();
 
-  // ID айтема, чье меню открыто в данной локации
   openItemMenuId: string | null = null;
 
   onItemMenuToggled(itemId: string | null) {
@@ -46,8 +45,7 @@ export class LocationCardComponent {
     if (!this.location.showMenu && !this.openItemMenuId) return;
 
     const target = event.target as HTMLElement;
-    
-    // Если кликнули вообще вне этой карточки локации
+
     if (!this.el.nativeElement.contains(target)) {
       this.location.showMenu = false;
       this.openItemMenuId = null;

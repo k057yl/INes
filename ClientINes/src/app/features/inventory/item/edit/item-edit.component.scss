@@ -1,124 +1,66 @@
-.edit-container {
-  display: flex;
-  justify-content: center;
-  padding: 2rem 1rem;
-  background: var(--bg-main);
-  min-height: 90vh;
-
-  .edit-card {
-    width: 100%;
-    max-width: 600px; // Делаем форму узкой и аккуратной на десктопе
-    background: var(--bg-card);
-    border-radius: 20px;
-    padding: 2rem;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    border: 1px solid var(--border-color);
-  }
+.inest-form-card {
+  max-width: 550px;
 }
 
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
+.status-badge-inline {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-top: 8px;
+  background: rgba(255, 255, 255, 0.1);
   
-  h2 { margin: 0; font-size: 1.5rem; color: var(--text-main); }
+  &.available { color: var(--accent-color); background: rgba(0, 245, 214, 0.1); }
+  &.lent { color: var(--g-yellow); background: rgba(251, 188, 5, 0.1); }
+  &.sold { color: var(--text-muted); }
 }
 
-.vertical-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem; // Равномерные отступы между всеми полями
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-
-  label {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  input, select, textarea {
-    background: var(--bg-input);
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
-    padding: 12px;
-    color: var(--text-main);
-    font-size: 1rem;
-    width: 100%;
-    box-sizing: border-box;
-
-    &:focus {
-      outline: none;
-      border-color: var(--accent-color);
-    }
-    
-    &:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      background: var(--bg-main);
-    }
-  }
-}
-
-// Баннер одалживания
-.lending-banner {
-  background: rgba(251, 188, 5, 0.1);
-  border: 1px solid var(--g-yellow);
-  padding: 1rem;
+// Кастомный баннер для возврата
+.inest-lending-banner {
+  background: rgba(251, 188, 5, 0.05);
+  border: 1px solid rgba(251, 188, 5, 0.3);
+  padding: 1.2rem;
   border-radius: 12px;
   margin-bottom: 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 15px;
 
-  .lending-info {
+  .banner-content {
     color: var(--g-yellow);
     display: flex;
     align-items: center;
     gap: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
   }
 
-  .return-btn {
+  .inline-action-btn {
     background: var(--g-yellow);
     color: #000;
     border: none;
-    padding: 6px 12px;
+    padding: 8px 16px;
     border-radius: 8px;
-    font-weight: bold;
+    font-weight: 800;
     cursor: pointer;
-    font-size: 0.85rem;
-  }
-}
-
-.form-actions {
-  display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
-
-  button {
-    flex: 1;
-    padding: 14px;
-    border-radius: 12px;
-    font-weight: bold;
-    cursor: pointer;
-    border: none;
+    font-size: 0.75rem;
+    text-transform: uppercase;
     transition: 0.2s;
+    &:hover { filter: brightness(1.1); transform: translateY(-1px); }
   }
-
-  .btn-save { background: var(--accent-color); color: var(--text-on-accent); }
-  .btn-cancel { background: var(--bg-google-button); color: var(--text-main); }
-  
-  button:disabled { opacity: 0.5; cursor: not-allowed; }
 }
 
-// Сетка превью фото
+.photo-edit-section {
+  background: rgba(255, 255, 255, 0.02);
+  padding: 15px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  margin: 1rem 0;
+}
+
 .preview-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
@@ -128,15 +70,36 @@
   .preview-item {
     position: relative;
     aspect-ratio: 1;
-    img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
+    img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; border: 1px solid var(--border-color); }
     .remove-p {
       position: absolute; top: -5px; right: -5px;
-      background: var(--g-red); color: white; border: none;
-      border-radius: 50%; width: 20px; height: 20px; cursor: pointer;
+      background: var(--error-red); color: white; border: none;
+      border-radius: 50%; width: 22px; height: 22px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; font-size: 14px;
     }
   }
 }
 
-@media (max-width: 600px) {
-  .edit-card { padding: 1.5rem !important; border-radius: 0 !important; }
+.form-actions-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 2rem;
+  @media (max-width: 500px) { flex-direction: column-reverse; }
+}
+
+// Чекбокс стайл
+.inest-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  color: var(--text-main);
+  font-weight: 600;
+  font-size: 0.9rem;
+  
+  input[type="checkbox"] {
+    width: 18px; height: 18px;
+    accent-color: var(--accent-color);
+    cursor: pointer;
+  }
 }

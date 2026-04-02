@@ -3,19 +3,19 @@
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
       
       <h2 [style.color]="form.controls.color.value || 'var(--accent-color)'">
-        <i class="fa fa-map-marker-alt"></i> {{ 'LOCATIONS.UI.TITLE' | translate }}
+        <i class="fa fa-map-marker-alt"></i> {{ 'CREATE_LOCATION_PAGE.TITLE_CREATE' | translate }}
       </h2>
 
       <div class="form-group">
-        <label>{{ 'CREATE_ITEM.NAME' | translate }}</label>
+        <label>{{ 'CREATE_LOCATION_PAGE.NAME' | translate }}</label>
         <input type="text"
                formControlName="name"
-               [placeholder]="'LOCATIONS.UI.NAME_PLACEHOLDER' | translate"
+               [placeholder]="'CREATE_LOCATION_PAGE.NAME_PLACEHOLDER' | translate"
                autofocus>
       </div>
 
       <div class="form-group picker-wrapper">
-        <label>{{ 'LOCATIONS.UI.COLOR_LABEL' | translate }}</label>
+        <label>{{ 'CREATE_LOCATION_PAGE.SELECT_COLOR' | translate }}</label>
         
         <div class="color-selector-container">
           <div class="preset-colors-grid">
@@ -55,7 +55,7 @@
         </div>
 
         <small class="hint-text" *ngIf="!form.controls.color.value">
-          {{ 'LOCATIONS.UI.COLOR_HINT_RANDOM' | translate }}
+          {{ 'CREATE_LOCATION_PAGE.COLOR_HINT_RANDOM' | translate }}
         </small>
       </div>
 
