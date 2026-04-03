@@ -48,7 +48,7 @@
   height: 38px;
   display: flex;
   align-items: center;
-  padding: 0 12px;
+  padding: 0 10px; // Чуть уменьшил паддинг для места
   cursor: pointer;
   opacity: 0.7;
   transition: all 0.2s;
@@ -59,78 +59,66 @@
     background: var(--bg-ribbon-card-selected);
     color: var(--text-ribbon-card-selected);
     border-color: var(--border-ribbon-card-selected);
-    box-shadow: 0 0 10px rgba(68, 68, 68, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     
     .loc-name { 
       color: var(--text-ribbon-card-selected);
       font-weight: 800; 
     }
+
+    .nested-info {
+      color: var(--text-ribbon-card-selected);
+      opacity: 1;
+    }
   }
 
   &:hover {
     opacity: 1;
-    border-color: var(--border-ribbon-card-selected);
+    border-color: var(--accent-color);
+    background: rgba(255, 255, 255, 0.03);
   }
 }
 
-/* Позиционирование контейнера кнопки */
-.add-chip-container {
-  position: absolute;
-  bottom: -19px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 2;
+.chip-content { 
+  display: flex; 
+  align-items: center; 
+  gap: 8px; 
+  width: 100%; 
+  overflow: hidden; 
 }
 
-/* ВЫПАДАЮЩЕЕ МЕНЮ */
-.ribbon-dropdown-menu {
-  position: absolute;
-  bottom: calc(100% + 10px);
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-  z-index: 1000;
-  min-width: 210px;
-  padding: 6px;
-
-  &::after {
-    content: '';
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    border: 8px solid transparent;
-    border-top-color: var(--bg-card);
-  }
-
-  .dropdown-item {
-    width: 100%;
-    padding: 12px;
-    background: transparent;
-    border: none;
-    color: var(--text-main);
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    cursor: pointer;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    transition: 0.2s;
-
-    i { color: var(--accent-color); width: 16px; font-size: 1rem; }
-
-    &:hover { 
-      background: var(--bg-input); 
-      color: var(--accent-color);
-    }
-  }
+.loc-name { 
+  color: var(--text-main); 
+  font-size: 0.8rem; 
+  white-space: nowrap; 
+  text-overflow: ellipsis; 
+  overflow: hidden;
+  flex: 1; // Занимает всё доступное место
 }
 
-.chip-content { display: flex; align-items: center; gap: 8px; width: 100%; overflow: hidden; }
-.loc-name { color: var(--text-main); font-size: 0.8rem; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
+/* ИНФОРМАТИВНЫЙ ИНДИКАТОР */
+.nested-info {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.65rem;
+  font-weight: 900;
+  color: var(--accent-color);
+  opacity: 0.6;
+  padding-left: 4px;
+
+  .child-count {
+    background: rgba(var(--accent-color-rgb), 0.1);
+    padding: 1px 5px;
+    border-radius: 4px;
+    min-width: 14px;
+    text-align: center;
+  }
+
+  i {
+    font-size: 0.7rem;
+  }
+}
 
 .pagination-ctrl button {
   background: var(--bg-main); 
@@ -138,9 +126,10 @@
   color: var(--text-main);
   width: 26px; height: 26px; border-radius: 6px; cursor: pointer; margin-left: 5px;
   display: inline-flex; align-items: center; justify-content: center;
+  transition: 0.2s;
 
   &:disabled { opacity: 0.3; cursor: default; }
-  &:not(:disabled):hover { border-color: var(--accent-color); color: var(--accent-color); }
+  &:not(:disabled):hover { border-color: var(--accent-color); color: var(--accent-color); background: rgba(0, 245, 214, 0.05); }
 }
 
 @media (max-width: 768px) {
@@ -151,4 +140,5 @@
   }
   .root-chip { padding: 0 6px; }
   .loc-name { font-size: 0.7rem; }
+  .nested-info { gap: 2px; .child-count { padding: 1px 3px; } }
 }

@@ -80,8 +80,11 @@
       <div class="inest-form-group">
         <label>{{ 'AUTH_PAGE.CONFIRM_PASSWORD' | translate }}</label>
         <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('confirmPassword') || (registerForm.errors?.['mismatch'] && registerForm.get('confirmPassword')?.touched)">
-          <i class="fa fa-shield-alt inest-field-icon-left"></i>
-          <input [type]="showPassword ? 'text' : 'password'" formControlName="confirmPassword" [placeholder]="'AUTH_PAGE.CONFIRM_PASSWORD_PHL' | translate">
+          <i class="fa fa-lock inest-field-icon-left"></i>
+          <input [type]="showPassword ? 'text' : 'password'" formControlName="password" [placeholder]="'AUTH_PAGE.PASSWORD_PHL' | translate">
+            <button type="button" class="input-action" (click)="togglePassword()">
+              <i class="fa" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+            </button>
         </div>
         <div class="inest-error-container">
           <small class="inest-error-text" *ngIf="registerForm.errors?.['mismatch'] && registerForm.get('confirmPassword')?.touched">
@@ -99,24 +102,24 @@
       </div>
 
       <button type="submit" class="inest-btn-primary" [disabled]="registerForm.invalid">
-        <i class="fa fa-user-plus" style="margin-right: 8px;"></i> {{ 'AUTH_PAGE.BUTTON_REGISTER' | translate }}
+        <i class="fa fa-user-plus" style="margin-right: 8px;"></i> {{ 'AUTH_PAGE.REGISTRATION_BTN' | translate }}
       </button>
     </form>
 
     <div class="inest-form-divider">
-      <span>{{ 'AUTH.OR' | translate }}</span>
+      <span>{{ 'AUTH_PAGE.OR' | translate }}</span>
     </div>
 
     <button type="button" class="inest-btn-outline" (click)="toggleGoogle()">
       <i class="fab fa-google" style="margin-right: 8px;"></i>
-      {{ (showGoogle ? 'AUTH.BUTTON_HIDE_GOOGLE' : 'AUTH.BUTTON_SHOW_GOOGLE_REG') | translate }}
+      {{ (showGoogle ? 'AUTH_PAGE.HIDE_GOOGLE_BTN' : 'AUTH_PAGE.SHOW_REG_GOOGLE_BTN') | translate }}
     </button>
     
     <div id="googleBtn" *ngIf="showGoogle" class="google-btn-container" style="margin-top: 15px;"></div>
 
     <footer class="inest-form-footer">
-      <span>{{ 'AUTH.ALREADY_HAVE_ACC' | translate }}</span>  
-      <a routerLink="/login">{{ 'AUTH.GO_TO_LOGIN' | translate }}</a>
+      <span>{{ 'AUTH_PAGE.ALREADY_HAVE_ACC' | translate }}</span>  
+      <a routerLink="/login">{{ 'AUTH_PAGE.GO_TO_LOGIN' | translate }}</a>
     </footer>
   </div>
 </div>

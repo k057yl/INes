@@ -34,10 +34,9 @@
                  autocomplete="current-password"
                  [placeholder]="'AUTH_PAGE.PASSWORD_PHL' | translate">
           
-          <button type="button" 
-                  class="input-action inest-action-btn" 
-                  (click)="togglePassword()"> {{ showPassword ? '🙈' : '👁️' }}
-          </button>
+            <button type="button" class="input-action" (click)="togglePassword()">
+              <i class="fa" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+            </button>
         </div>
       </div>
 

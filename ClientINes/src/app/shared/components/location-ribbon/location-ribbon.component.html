@@ -16,20 +16,25 @@
   </div>
 
   <div class="root-ribbon-grid" 
-       cdkDropList 
-       cdkDropListOrientation="mixed" 
-       [cdkDropListData]="pagedLocations"
-       (cdkDropListDropped)="reorder.emit($event)">
+      cdkDropList 
+      cdkDropListOrientation="mixed" 
+      [cdkDropListData]="pagedLocations"
+      (cdkDropListDropped)="reorder.emit($event)">
     
     <div class="root-chip" 
-         *ngFor="let loc of pagedLocations" 
-         cdkDrag
-         [class.active-on-board]="isLocActiveOnBoard(loc.id)"
-         (click)="jumpTo.emit(loc.id)">
+        *ngFor="let loc of pagedLocations" 
+        cdkDrag
+        [class.active-on-board]="isLocActiveOnBoard(loc.id)"
+        (click)="jumpTo.emit(loc.id)">
       
       <div class="chip-content">
         <i [className]="'fa ' + (loc.icon || 'fa-folder')" [style.color]="loc.color"></i>
         <span class="loc-name">{{ loc.name }}</span>
+        
+        <div class="nested-info" *ngIf="loc.children && loc.children.length > 0">
+          <span class="child-count">{{ loc.children.length }}</span>
+          <i class="fa fa-angle-right"></i>
+        </div>
       </div>
 
       <div class="chip-placeholder" *cdkDragPlaceholder></div>

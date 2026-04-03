@@ -160,11 +160,13 @@
     "CONFIRM_TITLE": "Подтверждение почты",
     "CODE_LABEL": "Код из письма",
     "LOGIN_BTN": "Войти",
+    "REGISTRATION_BTN": "Зарегистрироваться",
     "OR": "или",
     "HIDE_GOOGLE_BTN": "Другой способ",
     "SHOW_GOOGLE_BTN": "Войти с Google",
-    "NO_ACC_YET": "Ещё нет аккаунта?",
-    "HAVE_ACC": "Есть аккаунт",
+    "SHOW_REG_GOOGLE_BTN": "Регистрация с Google",
+    "NO_ACC_YET": "Ещё нет аккаунта? ",
+    "ALREADY_HAVE_ACC": "Уже есть аккаунт? ",
     "GO_TO_REGISTER": "К регистрации",
     "GO_TO_LOGIN": "К логину"
   },
@@ -186,7 +188,10 @@
       "LOCATION": "Создать локацию",
       "ITEM": "Создать предмет"
     },
-    "EMPTY": "Тут пока пусто"
+    "EMPTY": "Тут пока пусто",
+    "RIBBON": {
+      "HAVE_TOOLTIP": "Есть вложенные локации"
+    }
   },
 
   "ITEM_CARD": {
