@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, AfterViewInit, NgZone } from '@angular/core';
+import { Component, inject, OnInit, AfterViewInit, NgZone, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -21,26 +21,31 @@ export class RegisterComponent implements OnInit, AfterViewInit {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private ngZone = inject(NgZone);
+  private cdr = inject(ChangeDetectorRef);
 
-  registerForm!: FormGroup;
+  registerForm: FormGroup; 
   message?: string;
   error?: string;
 
   showGoogle = false;
   showPassword = false;
 
+  constructor() {
+    this.registerForm = this.initForm();
+  }
+
   ngOnInit() {
-    this.initForm();
+    setTimeout(() => this.cdr.detectChanges(), 100);
   }
 
   ngAfterViewInit() {
     this.initGoogleSignIn();
   }
 
-  private initForm() {
+  private initForm(): FormGroup {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-    this.registerForm = this.fb.group({
+    return this.fb.group({
       username: ['', [
         Validators.required, 
         Validators.minLength(3),
@@ -62,6 +67,11 @@ export class RegisterComponent implements OnInit, AfterViewInit {
     }, { validators: this.passwordMatchValidator });
   }
 
+  isControlInvalid(controlName: string): boolean {
+    const control = this.registerForm.get(controlName);
+    return !!(control && control.touched && control.invalid);
+  }
+
   hasForbiddenChars(): boolean {
     const password = this.registerForm.get('password')?.value || '';
     if (!password) return false;
@@ -79,7 +89,10 @@ export class RegisterComponent implements OnInit, AfterViewInit {
   }
 
   register() {
-    if (this.registerForm.invalid) return;
+    if (this.registerForm.invalid) {
+      this.registerForm.markAllAsTouched();
+      return;
+    }
 
     this.error = undefined;
     this.message = undefined;
@@ -97,6 +110,7 @@ export class RegisterComponent implements OnInit, AfterViewInit {
       },
       error: (err) => {
         this.error = err.error?.error || 'SYSTEM.DEFAULT_ERROR';
+        this.cdr.detectChanges();
       }
     });
   }
@@ -136,7 +150,10 @@ export class RegisterComponent implements OnInit, AfterViewInit {
     this.ngZone.run(() => {
       this.authService.googleLogin(response.credential).subscribe({
         next: () => this.router.navigate(['/main']),
-        error: (err) => this.error = err.error?.error || 'AUTH.ERRORS.GOOGLE_AUTH_FAILED'
+        error: (err) => {
+          this.error = err.error?.error || 'AUTH.ERRORS.GOOGLE_AUTH_FAILED';
+          this.cdr.detectChanges();
+        }
       });
     });
   }

@@ -23,14 +23,17 @@ export class AuthService {
   private readonly TOKEN_KEY = 'jwt';
   private readonly REFRESH_TOKEN_KEY = 'refresh_token';
 
-  private tokenSubject = new BehaviorSubject<string | null>(null);
+  private tokenSubject = new BehaviorSubject<string | null>(localStorage.getItem('jwt'));
   token$ = this.tokenSubject.asObservable();
 
   private userSubject = new BehaviorSubject<AppUser | null>(null);
   user$ = this.userSubject.asObservable();
 
   constructor() {
-    this.restoreSession();
+    const token = this.tokenSubject.value;
+    if (token) {
+      this.userSubject.next(this.parseUser(token));
+    }
   }
 
   // ================= AUTH METHODS =================
@@ -112,13 +115,11 @@ export class AuthService {
 
   private restoreSession() {
     const token = localStorage.getItem(this.TOKEN_KEY);
-    const refreshToken = localStorage.getItem(this.REFRESH_TOKEN_KEY);
-    
-    if (token && refreshToken) {
-       this.tokenSubject.next(token);
-       this.userSubject.next(this.parseUser(token));
+    if (token) {
+      this.tokenSubject.next(token);
+      this.userSubject.next(this.parseUser(token));
     } else {
-       this.clearLocalSession();
+      this.clearLocalSession();
     }
   }
 
@@ -135,11 +136,11 @@ export class AuthService {
     }
   }
 
-  isAuthenticated(): boolean {
-    return !!this.tokenSubject.value;
+  isLoggedIn(): boolean {
+    return !!this.tokenSubject.value; 
   }
 
-  isLoggedIn(): boolean {
-    return !!localStorage.getItem(this.TOKEN_KEY);
+  isAuthenticated(): boolean {
+    return this.isLoggedIn();
   }
 }

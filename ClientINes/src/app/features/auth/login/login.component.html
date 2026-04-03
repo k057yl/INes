@@ -19,12 +19,12 @@
                  name="email" 
                  required 
                  autocomplete="email"
-                 [placeholder]="'AUTH_PAGE.FIELD_EMAIL' | translate">
+                 [placeholder]="'AUTH_PAGE.EMAIL_PHL' | translate">
         </div>
       </div>
 
       <div class="inest-form-group">
-        <label>{{ 'AUTH_PAGE.PWD' | translate }}</label>
+        <label>{{ 'AUTH_PAGE.PASSWORD' | translate }}</label>
         <div class="inest-input-wrapper">
           <i class="fa fa-lock inest-field-icon-left"></i>
           <input [type]="showPassword ? 'text' : 'password'" 
@@ -32,7 +32,7 @@
                  name="password" 
                  required 
                  autocomplete="current-password"
-                 [placeholder]="'AUTH_PAGE.FIELD_PWD' | translate">
+                 [placeholder]="'AUTH_PAGE.PASSWORD_PHL' | translate">
           
           <button type="button" 
                   class="input-action inest-action-btn" 
@@ -59,14 +59,14 @@
 
     <button type="button" class="inest-btn-outline" (click)="toggleGoogle()">
       <i class="fab fa-google"></i>
-      {{ (showGoogle ? 'AUTH_PAGE.BUTTON_HIDE_GOOGLE' : 'AUTH_PAGE.BUTTON_SHOW_GOOGLE_LOGIN') | translate }}
+      {{ (showGoogle ? 'AUTH_PAGE.HIDE_GOOGLE_BTN' : 'AUTH_PAGE.SHOW_GOOGLE_BTN') | translate }}
     </button>
 
     <div id="googleBtn" *ngIf="showGoogle" class="google-btn-container"></div>
 
     <footer class="inest-form-footer">
-      <span>{{ 'AUTH.NO_ACC_YET' | translate }}</span>
-      <a routerLink="/register">{{ 'AUTH.GO_TO_REGISTER' | translate }}</a>
+      <span>{{ 'AUTH_PAGE.NO_ACC_YET' | translate }}</span>
+      <a routerLink="/register">{{ 'AUTH_PAGE.GO_TO_REGISTER' | translate }}</a>
     </footer>
 
   </div>

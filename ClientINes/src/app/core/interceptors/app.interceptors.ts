@@ -8,7 +8,10 @@ let isRefreshing = false;
 const refreshTokenSubject = new BehaviorSubject<string | null>(null);
 
 export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
-  const authService = inject(AuthService);
+  if (req.url.includes('.json') || req.url.includes('/assets/i18n/')) {
+    return next(req);
+  }
+
   const token = localStorage.getItem('jwt');
 
   if (token) {
@@ -20,6 +23,8 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
       if (error.status === 401 && !req.url.includes('/auth/')) {
+        const injector = inject(Injector);
+        const authService = injector.get(AuthService); 
         return handle401Error(req, next, authService);
       }
       return throwError(() => error);

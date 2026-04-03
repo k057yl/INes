@@ -19,7 +19,7 @@ export const routes: Routes = [
   { path: 'register', component: RegisterComponent, canActivate: [guestGuard] },
   { path: 'confirm-register', component: ConfirmRegisterComponent, canActivate: [guestGuard] },
   
-  // 3. Защищенные роуты (Inventory & App)
+  // Защищенные роуты (Inventory & App)
   { path: 'main', component: MainPageComponent, canActivate: [authGuard] }, 
   { path: 'location-create', component: LocationCreateComponent, canActivate: [authGuard] },
   { path: 'create-item', component: ItemCreateComponent, canActivate: [authGuard] },

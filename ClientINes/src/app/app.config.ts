@@ -17,7 +17,7 @@ export const appConfig: ApplicationConfig = {
     provideAnimations(),
 
     provideHttpClient(
-      withInterceptors([jwtInterceptor, cultureInterceptor, globalErrorInterceptor])
+      withInterceptors([cultureInterceptor, jwtInterceptor, globalErrorInterceptor])
     ),
 
     provideTranslateService({
