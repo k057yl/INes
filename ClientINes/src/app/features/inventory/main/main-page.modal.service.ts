@@ -36,9 +36,9 @@ export class MainPageModalService {
     return this.resetSubject();
   }
 
-  openMoveConfirm(): Observable<void> {
+  openMoveConfirm(targetName: string): Observable<void> {
     this.activeModal = 'moveConfirm';
-    this.config = { mode: 'input', title: 'COMMON.CONFIRM_MOVE', message: 'LOCATIONS.MODAL.M_MOVE_SUCCESS', name: 'skip', confirmText: 'COMMON.GO_TO', cancelText: 'COMMON.STAY_HERE' };
+    this.config = { mode: 'confirm', title: 'ITEM_CARD.MODAL.MOVE_TITLE', message: targetName, name: 'skip', confirmText: 'COMMON.YES', cancelText: 'COMMON.NO' };
     return this.resetSubject();
   }
 

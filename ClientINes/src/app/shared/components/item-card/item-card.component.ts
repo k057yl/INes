@@ -24,7 +24,6 @@ export class ItemCardComponent {
   @Input({ required: true }) item!: Item;
   @Input() flatLocations: StorageLocation[] = [];
   
-  // Состояние меню теперь приходит сверху
   @Input() menuOpenItemId: string | null = null;
   @Output() menuOpenedItemIdChange = new EventEmitter<string | null>();
 

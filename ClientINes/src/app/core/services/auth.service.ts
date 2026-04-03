@@ -15,15 +15,15 @@ export interface AuthResponse {
   refreshToken: string;
 }
 
+const TOKEN_KEY = 'jwt';
+const REFRESH_TOKEN_KEY = 'refresh_token';
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiBaseUrl}/auth`;
-  
-  private readonly TOKEN_KEY = 'jwt';
-  private readonly REFRESH_TOKEN_KEY = 'refresh_token';
 
-  private tokenSubject = new BehaviorSubject<string | null>(localStorage.getItem('jwt'));
+  private tokenSubject = new BehaviorSubject<string | null>(localStorage.getItem(TOKEN_KEY));
   token$ = this.tokenSubject.asObservable();
 
   private userSubject = new BehaviorSubject<AppUser | null>(null);
@@ -36,7 +36,7 @@ export class AuthService {
     }
   }
 
-  // ================= AUTH METHODS =================
+  // ================= АВТОРИЗАЦИЯ =================
 
   login(email: string, password: string): Observable<AuthResponse> {
     return this.http
@@ -45,8 +45,8 @@ export class AuthService {
   }
 
   refreshToken(): Observable<AuthResponse> {
-    const accessToken = localStorage.getItem(this.TOKEN_KEY);
-    const refreshToken = localStorage.getItem(this.REFRESH_TOKEN_KEY);
+    const accessToken = localStorage.getItem(TOKEN_KEY);
+    const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
 
     return this.http
       .post<AuthResponse>(`${this.apiUrl}/refresh`, { accessToken, refreshToken })
@@ -85,7 +85,7 @@ export class AuthService {
     );
   }
 
-  // ================= VALIDATION =================
+  // ================= ВАЛИДАЦИЯ =================
 
   checkEmailUnique(email: string): Observable<boolean> {
     return this.http.get<boolean>(`${this.apiUrl}/check-email`, {
@@ -95,32 +95,22 @@ export class AuthService {
     );
   }
 
-  // ================= SESSION MANAGEMENT =================
+  // ================= УПРАВЛЕНИЕ СЕССИЕЙ =================
 
   public setSession(res: AuthResponse) {
     if (!res.token) return;
-    localStorage.setItem(this.TOKEN_KEY, res.token);
-    localStorage.setItem(this.REFRESH_TOKEN_KEY, res.refreshToken);
+    localStorage.setItem(TOKEN_KEY, res.token);
+    localStorage.setItem(REFRESH_TOKEN_KEY, res.refreshToken);
     
     this.tokenSubject.next(res.token);
     this.userSubject.next(this.parseUser(res.token));
   }
 
   private clearLocalSession() {
-    localStorage.removeItem(this.TOKEN_KEY);
-    localStorage.removeItem(this.REFRESH_TOKEN_KEY);
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(REFRESH_TOKEN_KEY);
     this.tokenSubject.next(null);
     this.userSubject.next(null);
-  }
-
-  private restoreSession() {
-    const token = localStorage.getItem(this.TOKEN_KEY);
-    if (token) {
-      this.tokenSubject.next(token);
-      this.userSubject.next(this.parseUser(token));
-    } else {
-      this.clearLocalSession();
-    }
   }
 
   private parseUser(token: string): AppUser {

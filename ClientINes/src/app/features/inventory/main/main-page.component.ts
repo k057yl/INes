@@ -122,7 +122,10 @@ export class MainPageComponent implements OnInit {
   }
 
   onItemMoveManual(data: {item: Item, targetLocationId: string}) {
-    this.modal.openMoveConfirm().subscribe(() => {
+    const targetLoc = this.facade.flatLocations.find(l => l.id === data.targetLocationId);
+    const targetName = targetLoc ? targetLoc.name : '...';
+
+    this.modal.openMoveConfirm(targetName).subscribe(() => {
       this.facade.moveItemLocally(data.item, data.targetLocationId);
       this.facade.moveItemApi(data.item.id, data.targetLocationId).subscribe({
         next: () => this.jumpToLocation(data.targetLocationId),

@@ -3,7 +3,7 @@
     
     <header class="explorer-header">
       <div class="header-left">
-        <h1>{{ 'EXPLORER.TITLE' | translate }}</h1>
+        <h1>{{ 'EXPLORER_PAGE.TITLE' | translate }}</h1>
         <div class="badge" *ngIf="items.length > 0">
           <i class="fa fa-box"></i> {{ items.length }}
         </div>
@@ -14,7 +14,7 @@
           <app-item-filter-bar (filterChanged)="loadData($event)"></app-item-filter-bar>
           <button class="inest-btn-ribbon-add" [routerLink]="['/create-item']">
             <i class="fa fa-plus"></i> 
-            <span class="btn-text">{{ 'EXPLORER.CREATE_ITEM' | translate }}</span>
+            <span class="btn-text">{{ 'CREATE_ITEM_PAGE.TITLE' | translate }}</span>
           </button>
         </div>
       </div>
@@ -25,13 +25,13 @@
         <table class="inest-table">
           <thead>
             <tr>
-              <th class="col-photo">{{ 'EXPLORER.TABLE.PHOTO' | translate }}</th>
-              <th class="col-name">{{ 'EXPLORER.TABLE.NAME' | translate }}</th>
-              <th class="col-cat">{{ 'EXPLORER.TABLE.CATEGORY' | translate }}</th>
-              <th class="col-loc">{{ 'EXPLORER.TABLE.LOCATION' | translate }}</th>
-              <th class="col-status">{{ 'EXPLORER.TABLE.STATUS' | translate }}</th>
-              <th class="col-price">{{ 'EXPLORER.TABLE.PRICE' | translate }}</th>
-              <th class="col-actions">{{ 'EXPLORER.TABLE.ACTION' | translate }}</th>
+              <th class="col-photo">{{ 'EXPLORER_PAGE.TABLE.PHOTO' | translate }}</th>
+              <th class="col-name">{{ 'EXPLORER_PAGE.TABLE.NAME' | translate }}</th>
+              <th class="col-cat">{{ 'EXPLORER_PAGE.TABLE.CATEGORY' | translate }}</th>
+              <th class="col-loc">{{ 'EXPLORER_PAGE.TABLE.LOCATION' | translate }}</th>
+              <th class="col-status">{{ 'EXPLORER_PAGE.TABLE.STATUS' | translate }}</th>
+              <th class="col-price">{{ 'EXPLORER_PAGE.TABLE.PRICE' | translate }}</th>
+              <th class="col-actions">{{ 'EXPLORER_PAGE.TABLE.ACTION' | translate }}</th>
             </tr>
           </thead>
           <tbody>

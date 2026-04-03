@@ -31,9 +31,9 @@
         <i [className]="'fa ' + (loc.icon || 'fa-folder')" [style.color]="loc.color"></i>
         <span class="loc-name">{{ loc.name }}</span>
         
-        <div class="nested-info" *ngIf="loc.children && loc.children.length > 0">
+        <div class="nested-info" *ngIf="loc.children && loc.children.length > 0" [title]="'LOCATION_CARD.RIBBON.HAVE_TOOLTIP' | translate">
           <span class="child-count">{{ loc.children.length }}</span>
-          <i class="fa fa-angle-right"></i>
+          <i class="fa fa-layer-group"></i>
         </div>
       </div>
 
