@@ -1,4 +1,8 @@
 :root {
+  /*logo*/
+  --logo-url: url('/assets/images/LogoKaraLight.png');
+
+  /*main*/
   --bg-main: #e2e8f0;
   --bg-card: #f8fafc;
   --bg-main-card: #dbe1e7; 
@@ -44,6 +48,10 @@
 }
 
 body.dark-theme {
+  /*logo*/
+  --logo-url: url('/assets/images/LogoKaraDark.png');
+
+  /*main*/
   --bg-main: #0b132b;
   --bg-card: #1c2541;
   --bg-main-card: #19213a; 

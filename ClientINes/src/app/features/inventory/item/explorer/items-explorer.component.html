@@ -11,7 +11,7 @@
 
       <div class="header-right">
         <div class="controls-toolbar">
-          <app-item-filter-bar (filterChanged)="loadData($event)"></app-item-filter-bar>
+          <app-item-filter-bar [title]="'EXPLORER_PAGE.FILTER_TOOLTIP' | translate" (filterChanged)="loadData($event)"></app-item-filter-bar>
           <button class="inest-btn-ribbon-add" [routerLink]="['/create-item']">
             <i class="fa fa-plus"></i> 
             <span class="btn-text">{{ 'CREATE_ITEM_PAGE.TITLE' | translate }}</span>

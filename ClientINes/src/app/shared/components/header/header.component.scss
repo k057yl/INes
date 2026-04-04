@@ -8,38 +8,57 @@
 .header {
   background: var(--bg-card); 
   border-bottom: 1px solid var(--border-color);
-  padding: 0.5rem 1.5rem;
+  padding: 0 1.5rem;
+  height: 80px;
+  display: flex;
+  align-items: center;
   transition: background 0.3s ease;
+  backdrop-filter: blur(10px);
 }
 
 .header-main {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: 1400px;
+  width: 100%;
+  max-width: 1600px;
   margin: 0 auto;
 }
 
-/* 1. Убираем чёрточку: скрываем бургер на десктопе */
-.menu-toggle {
-  display: none;
+/* --- ЛОГОТИП --- */
+.brand-section {
+  display: flex;
+  align-items: center;
 }
 
 .logo {
-  color: var(--accent-color);
   cursor: pointer;
   margin: 0;
-  font-weight: 800;
-  font-size: 1.4rem;
-  letter-spacing: 0.5px;
-  text-decoration: none;
+  display: flex;
+  align-items: center;
+}
+
+.logo-icon {
+  width: 80px; 
+  height: 80px;
+  background-image: var(--logo-url);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  
+  &:hover {
+    transform: scale(1.1);
+  }
 }
 
 /* --- НАВИГАЦИЯ --- */
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  flex: 1;
+  justify-content: center;
 
   a {
     color: var(--text-main);
@@ -52,9 +71,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-
-    /* 2. Убираем "точку": обнуляем возможные псевдоэлементы */
-    &::after, &::before { content: none !important; }
+    white-space: nowrap;
 
     i { color: var(--text-muted); font-size: 1rem; }
 
@@ -66,27 +83,31 @@
   }
 }
 
+.mobile-divider, .mobile-only { display: none; }
+
+/* --- ЮЗЕР-БОКС (ФИКС) --- */
 .user-box {
-  /* Твои базовые стили */
-  max-width: 120px;
-  min-width: 34px;
-  height: 34px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 0 10px;
-  font-size: 0.85rem;
+  gap: 8px;
+  padding: 0 12px;
+  height: 38px;
   background: var(--bg-input);
   border: 1px solid var(--border-color);
   color: var(--accent-color);
-  border-radius: 8px;
+  border-radius: 10px;
   transition: all 0.3s ease;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  flex-shrink: 1;
+  
+  // Ключевые правки:
+  min-width: fit-content; 
+  flex-shrink: 0; 
+
+  i { font-size: 1.1rem; opacity: 0.8; }
 
   strong {
+    font-size: 0.85rem;
+    font-weight: 600;
+    max-width: 150px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -94,79 +115,72 @@
 
   &:hover {
     border-color: var(--accent-color);
-    max-width: 200px;
+    background: var(--bg-card);
   }
 }
 
-/* --- КНОПКИ (Тема и Язык) --- */
+/* --- КНОПКИ ДЕЙСТВИЙ --- */
 .actions {
   display: flex;
   align-items: center;
   gap: 10px;
-  justify-content: flex-end;
+  flex-shrink: 0; // Чтобы кнопки не сжимались
 }
 
-.theme-toggle, .lang-trigger {
+.theme-toggle, .lang-trigger, .logout-icon-btn {
   background: var(--bg-input);
   border: 1px solid var(--border-color);
   color: var(--text-main);
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
   transition: 0.2s;
-  height: 34px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   box-sizing: border-box;
 
   &:hover {
     border-color: var(--accent-color);
     color: var(--accent-color);
+    transform: translateY(-2px);
   }
 }
 
-.theme-toggle {
-  width: 34px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  font-size: 1rem;
+.theme-toggle { width: 38px; font-size: 1rem; }
+
+.logout-icon-btn {
+  width: 38px;
+  color: #ff7675;
+  &:hover { border-color: #ff7675; background: rgba(255, 118, 117, 0.1); }
 }
 
 .lang-trigger {
   padding: 0 12px;
-  display: flex;
-  align-items: center;
   gap: 8px;
   font-size: 0.85rem;
   font-weight: 800;
-  min-width: 60px;
   
+  i:first-child { font-size: 1rem; }
   .fa-chevron-down { font-size: 0.6rem; transition: 0.3s; }
   .fa-chevron-down.rotate { transform: rotate(180deg); }
 }
 
-.lang-dropdown {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-/* --- МЕНЮ ЯЗЫКОВ --- */
 .lang-menu {
   position: absolute;
-  top: calc(100% + 8px);
+  top: calc(100% + 10px);
   right: 0;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: 10px;
-  padding: 5px;
-  min-width: 140px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-  
-  z-index: 1001;
+  border-radius: 12px;
+  padding: 6px;
+  min-width: 160px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+  z-index: 1100;
 
   button {
     width: 100%;
-    padding: 8px 12px;
+    padding: 10px 12px;
     background: transparent;
     border: none;
     color: var(--text-main);
@@ -174,89 +188,51 @@
     align-items: center;
     gap: 10px;
     cursor: pointer;
-    border-radius: 6px;
+    border-radius: 8px;
+    font-size: 0.9rem;
 
     &:hover { background: var(--bg-input); color: var(--accent-color); }
-    &.selected { color: var(--accent-color); font-weight: 700; }
+    &.selected { color: var(--accent-color); font-weight: 700; background: rgba(0, 184, 148, 0.05); }
   }
 }
 
-/* Мобильная адаптация */
-@media (max-width: 850px) {
-  .header {
-    padding: 0.5rem 1rem; /* Уменьшаем отступы по краям */
-  }
+.lang-dropdown { position: relative; }
 
-  /* 1. Прячем почту в шапке на мобилках, чтобы не занимала место */
-  .user-box {
-    display: none !important;
-  }
-
-  /* 2. Показываем бургер-кнопку */
+/* --- МОБИЛКИ --- */
+@media (max-width: 950px) {
+  .header { height: 70px; padding: 0 1rem; }
+  .logo-icon { width: 55px; height: 55px; }
+  
   .menu-toggle {
     display: flex;
     flex-direction: column;
     gap: 4px;
     background: transparent;
     border: none;
-    cursor: pointer;
     width: 24px;
-    padding: 0;
-
-    span {
-      display: block;
-      width: 100%;
-      height: 2px;
-      background: var(--accent-color);
-      transition: 0.3s;
-      border-radius: 2px;
-    }
+    span { height: 2px; width: 100%; background: var(--accent-color); border-radius: 2px; }
   }
 
-  /* 3. Навигация превращается в выездную панель */
   .nav-links {
     position: fixed;
     top: 0;
-    left: -100%; /* Спрятана слева */
+    left: -100%;
     width: 280px;
     height: 100vh;
     background: var(--bg-card);
-    border-right: 1px solid var(--border-color);
     flex-direction: column;
-    padding: 5rem 1.5rem 2rem;
-    transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 10px 0 30px rgba(0,0,0,0.3);
-    z-index: 1100;
-    align-items: flex-start;
-    gap: 10px;
-
-    &.mobile-open {
-      left: 0; /* Выезжает при клике */
-    }
-
-    a {
-      margin: 0;
-      width: 100%;
-      font-size: 1.1rem;
-      padding: 12px;
-      
-      &:hover {
-        background: var(--bg-input);
-      }
-    }
+    justify-content: flex-start;
+    padding: 80px 20px;
+    transition: 0.4s;
+    box-shadow: 15px 0 30px rgba(0,0,0,0.3);
+    
+    &.mobile-open { left: 0; }
+    a { width: 100%; padding: 15px; font-size: 1.1rem; }
   }
 
-  /* 4. Кнопки Темы и Языка — делаем их компактнее */
-  .actions {
-    gap: 8px;
-  }
-
-  .theme-toggle, .lang-trigger {
-    height: 32px;
-    font-size: 0.8rem;
-  }
-
-  .lang-trigger .active-lang {
-    font-size: 0.75rem;
-  }
+  .mobile-only { display: flex; }
+  .mobile-divider { display: block; width: 100%; border: 0; border-top: 1px solid var(--border-color); margin: 10px 0; }
+  
+  .user-box strong { display: none; } // На мобилках только иконка
+  .user-box { padding: 0 10px; }
 }

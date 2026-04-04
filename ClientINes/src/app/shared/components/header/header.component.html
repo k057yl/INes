@@ -1,10 +1,10 @@
 <header class="header">
   <div class="header-main">
+    
     <div class="brand-section">
-      <button class="menu-toggle" (click)="toggleMenu()" [class.open]="isMenuOpen()">
-        <span></span><span></span><span></span>
-      </button>
-      <h2 class="logo" routerLink="/main">INest</h2>
+      <div class="logo" routerLink="/main">
+          <div class="logo-icon"></div>
+      </div>
     </div>
 
     <nav class="nav-links" [class.mobile-open]="isMenuOpen()">
@@ -26,27 +26,24 @@
       
       <hr class="mobile-divider">
 
-      <ng-container *ngIf="!(user$ | async); else logoutBtn">
-        <a routerLink="/login" routerLinkActive="active" (click)="closeMenu()" class="auth-link">
+      <ng-container *ngIf="!(user$ | async);">
+        <a routerLink="/login" routerLinkActive="active" (click)="closeMenu()" class="auth-link mobile-only">
           <i class="fa fa-sign-in-alt"></i> {{ 'HEADER.LOGIN' | translate }}
         </a>
-        <a routerLink="/register" routerLinkActive="active" (click)="closeMenu()" class="auth-link">
-          <i class="fa fa-user-plus"></i> {{ 'HEADER.REGISTERATION' | translate }}
+
+        <a routerLink="/register" routerLinkActive="active" (click)="closeMenu()" class="auth-link mobile-only">
+          <i class="fa fa-sign-in-alt"></i> {{ 'HEADER.REGISTERATION' | translate }}
         </a>
       </ng-container>
-
-      <ng-template #logoutBtn>
-        <a (click)="onLogout()" class="auth-link logout-trigger" style="cursor: pointer;">
-          <i class="fa fa-sign-out-alt"></i> {{ 'HEADER.LOGOUT' | translate }}
-        </a>
-      </ng-template>
     </nav>
 
     <div class="actions">
       <div class="user-box" *ngIf="user$ | async as user" [title]="user.email">
+        <i class="fa fa-user-circle"></i>
         <strong>{{ user.email }}</strong>
       </div>
-      <button class="theme-toggle" (click)="toggleTheme()">
+
+      <button class="theme-toggle" (click)="toggleTheme()" title="Сменить тему">
         {{ themeService.isDarkTheme() ? '🌙' : '☀️' }}
       </button>
 
@@ -58,17 +55,16 @@
         </button>
 
         <div class="lang-menu" *ngIf="isLangMenuOpen()" (click)="$event.stopPropagation()">
-          <button
-            *ngFor="let lang of languages"
-            (click)="changeLang(lang.code)"
-            [class.selected]="currentLang === lang.code">
-
+          <button *ngFor="let lang of languages" (click)="changeLang(lang.code)" [class.selected]="currentLang === lang.code">
             <span class="flag">{{ lang.flag }}</span>
             {{ lang.label }}
-
           </button>
         </div>
       </div>
+
+      <button class="logout-icon-btn" *ngIf="user$ | async" (click)="onLogout()" title="Выйти">
+        <i class="fa fa-sign-out-alt"></i>
+      </button>
     </div>
   </div>
 </header>
