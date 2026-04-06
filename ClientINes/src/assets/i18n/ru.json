@@ -102,6 +102,7 @@
   "COMMON": {
     "SAVE": "Сохранить",
     "CANCEL": "Отмена",
+    "CLOSE": "Закрыть",
     "DELETE": "Удалить",
     "ENTER_NAME": "Введите название",
     "STAY": "Остаться",
@@ -223,11 +224,26 @@
   },
 
   "FILTERS": {
-    "SEARCH": "Поиск по названию",
-    "SORT_NEWEST": "Сначала новые",
-    "SORT_PRICE_ASC": "Дешевле",
-    "SORT_PRICE_DESC": "Дороже",
-    "RESET": "Сбросить фильтры"
+    "TITLE": "Фильтры",
+    "RESET": "Сбросить все фильтры",
+    "RESET_SHORT": "Сбросить",
+    "SEARCH_PHL": "Начните вводить название...",
+    "CATEGORY": "Категория",
+    "CATEGORY_PHL": "Выберите категорию",
+    "STATUS": "Статус",
+    "PRICE": "Цена",
+    "PRICE_FROM": "От",
+    "PRICE_TO": "До",
+    "SHOW_ALL": "Все статусы",
+    "SORT_BY": "Сортировка",
+    "SORT": {
+      "NEWEST": "Сначала новые",
+      "OLDEST": "Сначала старые",
+      "NAME_ASC": "По названию (А-Я)",
+      "NAME_DESC": "По названию (Я-А)",
+      "PRICE_ASC": "Дешевле",
+      "PRICE_DESC": "Дороже"
+    }
   },
 
   "CREATE_ITEM_PAGE": {
@@ -287,6 +303,8 @@
   "EXPLORER_PAGE": {
     "TITLE": "Управление предметами",
     "FILTER_TOOLTIP": "Фильтры",
+    "CREATE_TOOLTIP": "Создать предмет",
+    "EMPTY_RESULT": "Ничего не найдено",
     "TABLE": {
       "PHOTO": "Фото",
       "NAME": "Название",

@@ -11,8 +11,8 @@
 
       <div class="header-right">
         <div class="controls-toolbar">
-          <app-item-filter-bar [title]="'EXPLORER_PAGE.FILTER_TOOLTIP' | translate" (filterChanged)="loadData($event)"></app-item-filter-bar>
-          <button class="inest-btn-ribbon-add" [routerLink]="['/create-item']">
+          <app-item-filter-bar (filterChanged)="loadData($event)"></app-item-filter-bar>
+          <button class="inest-btn-ribbon-add" [routerLink]="['/create-item']" [title]="'EXPLORER_PAGE.CREATE_TOOLTIP' | translate">
             <i class="fa fa-plus"></i> 
             <span class="btn-text">{{ 'CREATE_ITEM_PAGE.TITLE' | translate }}</span>
           </button>
@@ -26,16 +26,26 @@
           <thead>
             <tr>
               <th class="col-photo">{{ 'EXPLORER_PAGE.TABLE.PHOTO' | translate }}</th>
-              <th class="col-name">{{ 'EXPLORER_PAGE.TABLE.NAME' | translate }}</th>
+              
+              <th class="col-name sortable" (click)="toggleSort(2, 3)">
+                {{ 'EXPLORER_PAGE.TABLE.NAME' | translate }}
+                <i class="fa" [ngClass]="getSortIcon(2, 3)"></i>
+              </th>
+
               <th class="col-cat">{{ 'EXPLORER_PAGE.TABLE.CATEGORY' | translate }}</th>
               <th class="col-loc">{{ 'EXPLORER_PAGE.TABLE.LOCATION' | translate }}</th>
               <th class="col-status">{{ 'EXPLORER_PAGE.TABLE.STATUS' | translate }}</th>
-              <th class="col-price">{{ 'EXPLORER_PAGE.TABLE.PRICE' | translate }}</th>
+
+              <th class="col-price sortable" (click)="toggleSort(4, 5)">
+                {{ 'EXPLORER_PAGE.TABLE.PRICE' | translate }}
+                <i class="fa" [ngClass]="getSortIcon(4, 5)"></i>
+              </th>
+
               <th class="col-actions">{{ 'EXPLORER_PAGE.TABLE.ACTION' | translate }}</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let item of items">
+            <tr *ngFor="let item of items; trackBy: trackById">
               <td class="col-photo">
                 <img [src]="item.photoUrl || 'assets/images/no-image.png'" class="mini-thumb">
               </td>
@@ -66,7 +76,7 @@
 
       <div class="empty-state" *ngIf="items.length === 0 && !isLoading">
         <i class="fa fa-search-minus"></i>
-        <p>{{'EXPLORER.EMPTY_RESULT' | translate}}</p>
+        <p>{{'EXPLORER_PAGE.EMPTY_RESULT' | translate}}</p>
       </div>
     </div>
   </div>

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
@@ -29,11 +29,16 @@ export class ItemsExplorerComponent implements OnInit {
   private itemService = inject(ItemService);
   private salesService = inject(SalesService);
 
+  @ViewChild(ItemFilterBarComponent) filterBar!: ItemFilterBarComponent;
+
   items: Item[] = [];
   isLoading = true;
+  currentFilters: any = {};
 
   itemToDelete: any = null;
   showDeleteModal = false;
+
+  trackById = (index: number, item: any) => item.id;
 
   ngOnInit() {
     this.loadData();
@@ -41,11 +46,30 @@ export class ItemsExplorerComponent implements OnInit {
 
   loadData(filters?: any) {
     this.isLoading = true;
-    this.itemService.getAll(filters)
+    this.currentFilters = filters || {};
+    this.itemService.getAll(this.currentFilters)
       .pipe(finalize(() => this.isLoading = false))
       .subscribe(data => {
         this.items = data;
       });
+  }
+
+  // --- ЛОГИКА СОРТИРОВКИ ---
+
+  toggleSort(asc: number, desc: number) {
+    const currentSort = this.currentFilters.sortBy;
+    const nextSort = currentSort === asc ? desc : asc;
+    
+    if (this.filterBar) {
+      this.filterBar.filterForm.patchValue({ sortBy: nextSort });
+    }
+  }
+
+  getSortIcon(asc: number, desc: number): string {
+    const s = this.currentFilters.sortBy;
+    if (s === asc) return 'fa-sort-amount-up active-sort';
+    if (s === desc) return 'fa-sort-amount-down active-sort';
+    return 'fa-sort muted-sort';
   }
 
   onDeleteClick(item: any) {

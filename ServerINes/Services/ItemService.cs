@@ -42,6 +42,7 @@ namespace INest.Services
                     Photos = new List<ItemPhoto>()
                 };
 
+                // Логика одалживания
                 if (dto.Status == ItemStatus.Lent || dto.Status == ItemStatus.Borrowed)
                 {
                     item.Lending = new Lending
@@ -77,33 +78,10 @@ namespace INest.Services
                     }
                 }
 
+                // Обработка фото через унифицированный метод
                 if (photos != null && photos.Count > 0)
                 {
-                    var uploadTasks = photos.Select(p => _photoService.AddPhotoAsync(p)).ToList();
-                    var results = await Task.WhenAll(uploadTasks);
-
-                    foreach (var result in results)
-                    {
-                        if (result.Error == null)
-                        {
-                            var itemPhoto = new ItemPhoto
-                            {
-                                Id = Guid.NewGuid(),
-                                ItemId = item.Id,
-                                FilePath = result.SecureUrl.ToString(),
-                                PublicId = result.PublicId,
-                                UploadedAt = DateTime.UtcNow
-                            };
-
-                            if (string.IsNullOrEmpty(item.PhotoUrl))
-                            {
-                                item.PhotoUrl = itemPhoto.FilePath;
-                                item.PublicId = itemPhoto.PublicId;
-                            }
-
-                            item.Photos.Add(itemPhoto);
-                        }
-                    }
+                    await HandlePhotos(item, photos, dto.MainPhotoName);
                 }
 
                 _context.Items.Add(item);
@@ -128,6 +106,52 @@ namespace INest.Services
             }
         }
 
+        private async Task HandlePhotos(Item item, List<IFormFile>? photos, string? mainPhotoName = null)
+        {
+            if (photos == null || photos.Count == 0) return;
+
+            item.Photos ??= new List<ItemPhoto>();
+
+            // Загружаем все фото параллельно (так быстрее)
+            var uploadTasks = photos.Select(async photoFile =>
+            {
+                var result = await _photoService.AddPhotoAsync(photoFile);
+                return new { File = photoFile, Result = result };
+            }).ToList();
+
+            var uploadResults = await Task.WhenAll(uploadTasks);
+
+            foreach (var upload in uploadResults)
+            {
+                if (upload.Result.Error != null)
+                    throw new Exception(upload.Result.Error.Message);
+
+                var itemPhoto = new ItemPhoto
+                {
+                    Id = Guid.NewGuid(),
+                    ItemId = item.Id,
+                    FilePath = upload.Result.SecureUrl.ToString(),
+                    PublicId = upload.Result.PublicId,
+                    UploadedAt = DateTime.UtcNow
+                };
+
+                // Если это фото помечено как главное ИЛИ если у предмета еще нет PhotoUrl
+                if ((!string.IsNullOrEmpty(mainPhotoName) && upload.File.FileName == mainPhotoName) ||
+                    string.IsNullOrEmpty(item.PhotoUrl))
+                {
+                    item.PhotoUrl = itemPhoto.FilePath;
+                    item.PublicId = itemPhoto.PublicId;
+                }
+
+                item.Photos.Add(itemPhoto);
+                // Если мы в контексте обновления, нужно добавить в контекст
+                if (_context.Entry(item).State != EntityState.Detached)
+                {
+                    await _context.ItemPhotos.AddAsync(itemPhoto);
+                }
+            }
+        }
+
         public async Task<IEnumerable<Item>> GetUserItemsAsync(Guid userId, ItemFilterDto filters)
         {
             var query = _context.Items
@@ -142,12 +166,11 @@ namespace INest.Services
             {
                 var search = filters.SearchQuery.Trim().ToLower();
                 query = query.Where(i => i.Name.ToLower().Contains(search) ||
-                                        (i.Description != null && i.Description.ToLower().Contains(search)));
+                                         (i.Description != null && i.Description.ToLower().Contains(search)));
             }
 
             if (filters.CategoryId.HasValue) query = query.Where(i => i.CategoryId == filters.CategoryId);
             if (filters.Status.HasValue) query = query.Where(i => i.Status == filters.Status);
-            if (filters.Status != null) query = query.Where(i => i.Status == filters.Status.Value);
             if (filters.MinPrice.HasValue) query = query.Where(i => i.PurchasePrice >= filters.MinPrice);
             if (filters.MaxPrice.HasValue) query = query.Where(i => i.PurchasePrice <= filters.MaxPrice);
 
@@ -185,7 +208,6 @@ namespace INest.Services
         public async Task<bool> UpdateFullAsync(Guid userId, Guid itemId, UpdateItemFullDto dto, List<IFormFile>? photos)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
-
             try
             {
                 var item = await _context.Items
@@ -206,11 +228,11 @@ namespace INest.Services
                 item.PurchasePrice = dto.PurchasePrice;
                 item.EstimatedValue = dto.EstimatedValue;
 
+                // Здесь тоже можно прокинуть MainPhotoName, если добавишь его в UpdateItemFullDto
                 await HandlePhotos(item, photos);
 
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
-
                 return true;
             }
             catch (Exception)
@@ -223,7 +245,6 @@ namespace INest.Services
         public async Task<bool> UpdatePartialAsync(Guid userId, Guid itemId, UpdateItemPartialDto dto, List<IFormFile>? photos)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
-
             try
             {
                 var item = await _context.Items
@@ -299,7 +320,6 @@ namespace INest.Services
 
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
-
                 return true;
             }
             catch (Exception)
@@ -309,46 +329,10 @@ namespace INest.Services
             }
         }
 
-        private async Task HandlePhotos(Item item, List<IFormFile>? photos)
-        {
-            if (photos == null || photos.Count == 0) return;
-
-            item.Photos ??= new List<ItemPhoto>();
-
-            foreach (var photoFile in photos)
-            {
-                var result = await _photoService.AddPhotoAsync(photoFile);
-
-                if (result.Error != null)
-                    throw new Exception(result.Error.Message);
-
-                var itemPhoto = new ItemPhoto
-                {
-                    Id = Guid.NewGuid(),
-                    ItemId = item.Id,
-                    FilePath = result.SecureUrl.ToString(),
-                    PublicId = result.PublicId,
-                    UploadedAt = DateTime.UtcNow
-                };
-
-                await _context.ItemPhotos.AddAsync(itemPhoto);
-
-                if (string.IsNullOrEmpty(item.PhotoUrl))
-                {
-                    item.PhotoUrl = itemPhoto.FilePath;
-                    item.PublicId = itemPhoto.PublicId;
-                }
-
-                item.Photos.Add(itemPhoto);
-            }
-        }
-
         public async Task<bool> MoveItemAsync(Guid userId, Guid itemId, Guid? targetLocationId)
         {
             var item = await _context.Items.FirstOrDefaultAsync(i => i.Id == itemId && i.UserId == userId);
-
-            if (item == null)
-                throw new KeyNotFoundException(LocalizationConstants.ITEMS.NOT_FOUND);
+            if (item == null) throw new KeyNotFoundException(LocalizationConstants.ITEMS.NOT_FOUND);
 
             if (item.StorageLocationId != targetLocationId)
             {
@@ -366,9 +350,7 @@ namespace INest.Services
 
                 if (targetLocationId.HasValue)
                 {
-                    var targetLocation = await _context.StorageLocations
-                        .FirstOrDefaultAsync(l => l.Id == targetLocationId.Value);
-
+                    var targetLocation = await _context.StorageLocations.FirstOrDefaultAsync(l => l.Id == targetLocationId.Value);
                     if (targetLocation != null)
                     {
                         if (targetLocation.IsSalesLocation) item.Status = ItemStatus.Listed;
@@ -398,16 +380,13 @@ namespace INest.Services
                 item.StorageLocationId = targetLocationId;
                 await _context.SaveChangesAsync();
             }
-
             return true;
         }
 
         public async Task<bool> ChangeStatusAsync(Guid userId, Guid itemId, ItemStatus newStatus)
         {
             var item = await _context.Items.FirstOrDefaultAsync(i => i.Id == itemId && i.UserId == userId);
-
-            if (item == null)
-                throw new KeyNotFoundException(LocalizationConstants.ITEMS.NOT_FOUND);
+            if (item == null) throw new KeyNotFoundException(LocalizationConstants.ITEMS.NOT_FOUND);
 
             if (item.Status != newStatus)
             {
@@ -424,16 +403,13 @@ namespace INest.Services
                 item.Status = newStatus;
                 await _context.SaveChangesAsync();
             }
-
             return true;
         }
 
         public async Task<IEnumerable<ItemHistory>> GetItemHistoryAsync(Guid userId, Guid itemId)
         {
             var exists = await _context.Items.AnyAsync(i => i.Id == itemId && i.UserId == userId);
-
-            if (!exists)
-                throw new KeyNotFoundException(LocalizationConstants.ITEMS.NOT_FOUND);
+            if (!exists) throw new KeyNotFoundException(LocalizationConstants.ITEMS.NOT_FOUND);
 
             return await _context.ItemHistories
                 .Where(h => h.ItemId == itemId)
@@ -447,8 +423,7 @@ namespace INest.Services
                 .Include(i => i.Sale)
                 .FirstOrDefaultAsync(i => i.Id == itemId && i.UserId == userId);
 
-            if (item == null || item.Sale == null)
-                throw new KeyNotFoundException(LocalizationConstants.SALES.NOT_FOUND);
+            if (item == null || item.Sale == null) throw new KeyNotFoundException(LocalizationConstants.SALES.NOT_FOUND);
 
             _context.Sales.Remove(item.Sale);
             item.Status = ItemStatus.Active;
@@ -470,7 +445,6 @@ namespace INest.Services
         public async Task<bool> DeleteAsync(Guid userId, Guid itemId)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
-
             try
             {
                 var item = await _context.Items
@@ -478,8 +452,7 @@ namespace INest.Services
                     .Include(i => i.Sale)
                     .FirstOrDefaultAsync(i => i.Id == itemId && i.UserId == userId);
 
-                if (item == null)
-                    throw new KeyNotFoundException(LocalizationConstants.ITEMS.NOT_FOUND);
+                if (item == null) throw new KeyNotFoundException(LocalizationConstants.ITEMS.NOT_FOUND);
 
                 foreach (var photo in item.Photos)
                 {
@@ -490,16 +463,11 @@ namespace INest.Services
                 var history = await _context.ItemHistories.Where(h => h.ItemId == itemId).ToListAsync();
                 _context.ItemHistories.RemoveRange(history);
 
-                if (item.Sale != null)
-                {
-                    _context.Sales.Remove(item.Sale);
-                }
+                if (item.Sale != null) _context.Sales.Remove(item.Sale);
 
                 _context.Items.Remove(item);
-
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
-
                 return true;
             }
             catch (Exception)

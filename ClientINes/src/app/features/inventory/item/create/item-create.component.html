@@ -22,13 +22,17 @@
           </div>
 
           <div class="photo-grid-inline" *ngIf="selectedPhotos.length > 0">
-            <div class="preview-card" *ngFor="let p of selectedPhotos; let i = index">
+            <div class="preview-card" *ngFor="let p of selectedPhotos; let i = index" [class.is-main]="p.isMain" (click)="setMain(i)">
               <img [src]="p.preview">
-              <button type="button" class="btn-del" (click)="removePhoto(i)"><i class="fa fa-times"></i></button>
+              <div class="main-badge" *ngIf="p.isMain"><i class="fa fa-star"></i></div>
+              <button type="button" class="btn-del" (click)="removePhoto(i, $event)"><i class="fa fa-times"></i></button>
             </div>
             <label class="add-more-card" *ngIf="selectedPhotos.length < MAX_PHOTOS" for="addMoreInput">
               <input type="file" accept="image/*" multiple (change)="onFileSelected($event)" id="addMoreInput">
-              <i class="fa fa-plus"></i>
+              <div class="plus-content">
+                <i class="fa fa-plus"></i>
+                <span>{{ selectedPhotos.length }}/{{ MAX_PHOTOS }}</span>
+              </div>
             </label>
           </div>
         </div>
@@ -41,9 +45,7 @@
           <input formControlName="name" [placeholder]="'CREATE_ITEM_PAGE.NAME_PHL' | translate">
         </div>
         <div class="inest-error-container">
-          <small class="inest-error-text" *ngIf="isControlInvalid('name')">
-            {{ 'ERRORS.REQUIRED_FIELD' | translate }}
-          </small>
+          <small class="inest-error-text" *ngIf="isControlInvalid('name')">{{ 'ERRORS.REQUIRED_FIELD' | translate }}</small>
         </div>
       </div>
 
@@ -53,7 +55,6 @@
           <i class="fa fa-align-left inest-field-icon-left"></i>
           <textarea formControlName="description" [placeholder]="'CREATE_ITEM_PAGE.FIELD_DESCRIPTION' | translate" rows="2"></textarea>
         </div>
-        <div class="inest-error-container"></div>
       </div>
 
       <div class="inest-form-group">
@@ -70,11 +71,6 @@
             <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</option>
           </select>
         </div>
-        <div class="inest-error-container">
-          <small class="inest-error-text" *ngIf="isControlInvalid('categoryId')">
-            {{ 'ERRORS.REQUIRED_FIELD' | translate }}
-          </small>
-        </div>
       </div>
 
       <div class="inest-form-group">
@@ -85,7 +81,6 @@
             <option *ngFor="let opt of statusOptions" [value]="opt.value">{{ opt.label | translate }}</option>
           </select>
         </div>
-        <div class="inest-error-container"></div>
       </div>
 
       <div class="inest-form-group" *ngIf="!isLocationPredefined">
@@ -97,11 +92,6 @@
             <option *ngFor="let loc of locations" [value]="loc.id">{{ loc.name }}</option>
           </select>
         </div>
-        <div class="inest-error-container">
-          <small class="inest-error-text" *ngIf="isControlInvalid('storageLocationId')">
-            {{ 'ERRORS.REQUIRED_FIELD' | translate }}
-          </small>
-        </div>
       </div>
 
       <div class="inest-form-group">
@@ -109,11 +99,6 @@
         <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('purchaseDate')">
           <i class="fa fa-calendar-alt inest-field-icon-left"></i>
           <input type="date" formControlName="purchaseDate" [max]="todayMax">
-        </div>
-        <div class="inest-error-container">
-          <small class="inest-error-text" *ngIf="form.get('purchaseDate')?.hasError('futureDate')">
-            {{ 'ERRORS.FUTURE_DATE' | translate }}
-          </small>
         </div>
       </div>
 
@@ -123,34 +108,25 @@
           <i class="fa fa-wallet inest-field-icon-left"></i>
           <input formControlName="purchasePrice" type="number" placeholder="0.00">
         </div>
-        <div class="inest-error-container">
-          <small class="inest-error-text" *ngIf="form.get('purchasePrice')?.hasError('min')">
-            {{ 'ERRORS.NEGATIVE_NUMBER' | translate }}
-          </small>
-        </div>
       </div>
 
       <div class="lending-extra-fields" *ngIf="isLendingStatus">
         <div class="divider-text">
           <span>{{ (form.get('status')?.value == 7 ? 'CREATE_ITEM_PAGE.BORROWED_INFO' : 'CREATE_ITEM_PAGE.LENT_INFO') | translate }}</span>
         </div>
-        
         <div class="inest-form-group">
           <label>{{ 'CREATE_ITEM_PAGE.PERSON_NAME' | translate }} *</label>
           <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('personName')">
             <i class="fa fa-user inest-field-icon-left"></i>
             <input formControlName="personName" [placeholder]="'CREATE_ITEM_PAGE.PH_NAME' | translate">
           </div>
-          <div class="inest-error-container"></div>
         </div>
-
         <div class="inest-form-group">
           <label>{{ 'CREATE_ITEM_PAGE.RETURN_DATE' | translate }} *</label>
           <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('expectedReturnDate')">
             <i class="fa fa-calendar-check inest-field-icon-left"></i>
             <input type="date" formControlName="expectedReturnDate">
           </div>
-          <div class="inest-error-container"></div>
         </div>
       </div>
 
@@ -166,11 +142,4 @@
   </div>
 </div>
 
-<app-inest-modal 
-  *ngIf="showCategoryModal"
-  mode="input"
-  [title]="'CREATE_ITEM_PAGE.CREATE_CATEGORY' | translate"
-  [confirmText]="'COMMON.SAVE' | translate"
-  (confirmed)="onCategoryConfirmed($event)"
-  (cancelled)="showCategoryModal = false">
-</app-inest-modal>
+<app-inest-modal *ngIf="showCategoryModal" mode="input" [title]="'CREATE_ITEM_PAGE.CREATE_CATEGORY' | translate" [confirmText]="'COMMON.SAVE' | translate" (confirmed)="onCategoryConfirmed($event)" (cancelled)="showCategoryModal = false"></app-inest-modal>

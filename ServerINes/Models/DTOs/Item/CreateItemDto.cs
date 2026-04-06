@@ -22,5 +22,8 @@ namespace INest.Models.DTOs.Item
         public string? ContactEmail { get; set; }
         public DateTime? ExpectedReturnDate { get; set; }
         public bool SendNotification { get; set; }
+
+        // Логика главного фото
+        public string? MainPhotoName { get; set; }
     }
 }

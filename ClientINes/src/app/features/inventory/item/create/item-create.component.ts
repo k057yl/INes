@@ -5,10 +5,16 @@ import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { ItemService } from '../../../../shared/services/item.service';
 import { LocationService } from '../../../../shared/services/location.service';
 import { CategoryService } from '../../../../shared/services/category.service';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { ITEM_STATUS_OPTIONS } from '../../../../models/constants/item-status.constants';
 import { AuthService } from '../../../../core/services/auth.service';
 import { InestModalComponent } from '../../../../shared/components/modal/shared-modal/inest-modal.component';
+
+interface PhotoSlot {
+  file: File;
+  preview: string;
+  isMain: boolean;
+}
 
 @Component({
   selector: 'app-item-create',
@@ -29,14 +35,12 @@ export class ItemCreateComponent implements OnInit {
 
   locations: any[] = [];
   categories: any[] = [];
-  selectedPhotos: { file: File, preview: string }[] = [];
+  selectedPhotos: PhotoSlot[] = [];
   showCategoryModal = false;
   
   readonly MAX_PHOTOS = 5;
   todayMax = new Date().toISOString().split('T')[0];
-
   readonly statusOptions = ITEM_STATUS_OPTIONS;
-
   isLocationPredefined = false;
 
   form = this.fb.group({
@@ -51,7 +55,7 @@ export class ItemCreateComponent implements OnInit {
     addPhoto: [false],
     personName: [''],
     contactEmail: ['', [Validators.email]],
-    expectedReturnDate: [null],
+    expectedReturnDate: [null as string | null],
     sendNotification: [false]
   });
 
@@ -98,7 +102,6 @@ export class ItemCreateComponent implements OnInit {
 
   private updateLendingValidators(isRequired: boolean) {
     const fields = ['personName', 'expectedReturnDate'];
-    
     fields.forEach(fieldName => {
       const control = this.form.get(fieldName);
       if (isRequired) {
@@ -171,7 +174,10 @@ export class ItemCreateComponent implements OnInit {
     }
 
     if (this.selectedPhotos.length > 0) {
-      this.selectedPhotos.forEach(p => formData.append('photos', p.file));
+      this.selectedPhotos.forEach(p => {
+        formData.append('photos', p.file);
+        if (p.isMain) formData.append('mainPhotoName', p.file.name);
+      });
     }
 
     this.itemService.createWithPhoto(formData).subscribe({
@@ -181,9 +187,7 @@ export class ItemCreateComponent implements OnInit {
           : ['/main'];
         this.router.navigate(target);
       },
-      error: (err) => {
-        console.error('Ошибка при создании предмета:', err);
-      }
+      error: (err) => console.error('Error:', err)
     });
   }
 
@@ -194,24 +198,27 @@ export class ItemCreateComponent implements OnInit {
     const files = Array.from(input.files);
     const availableSlots = this.MAX_PHOTOS - this.selectedPhotos.length;
 
-    if (availableSlots > 0) {
-      this.form.get('addPhoto')?.setValue(true);
-    }
-
     files.slice(0, availableSlots).forEach(file => {
       const reader = new FileReader();
       reader.onload = (e: any) => {
-        this.selectedPhotos.push({ file, preview: e.target.result });
+        const isFirst = this.selectedPhotos.length === 0;
+        this.selectedPhotos.push({ file, preview: e.target.result, isMain: isFirst });
       };
       reader.readAsDataURL(file);
     });
     input.value = ''; 
   }
 
-  removePhoto(index: number) {
+  setMain(index: number) {
+    this.selectedPhotos.forEach((p, i) => p.isMain = (i === index));
+  }
+
+  removePhoto(index: number, event: Event) {
+    event.stopPropagation();
+    const removedWasMain = this.selectedPhotos[index].isMain;
     this.selectedPhotos.splice(index, 1);
-    if (this.selectedPhotos.length === 0) {
-      this.form.get('addPhoto')?.setValue(false);
+    if (removedWasMain && this.selectedPhotos.length > 0) {
+      this.selectedPhotos[0].isMain = true;
     }
   }
 
