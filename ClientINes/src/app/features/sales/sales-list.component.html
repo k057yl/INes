@@ -3,42 +3,36 @@
     
     <header class="sales-header">
       <div class="title-group">
-        <h1>{{ 'SALES.TITLE' | translate }}</h1>
-        <p class="subtitle">{{ 'SALES.SUBTITLE' | translate }}</p>
+        <h1>{{ 'SALES_PAGE.TITLE' | translate }}</h1>
+        <p class="subtitle">{{ 'SALES_PAGE.TITLE_SUB' | translate }}</p>
       </div>
 
       <div class="stats-grid">
         <div class="stat-card revenue">
-          <div class="stat-icon">
-            <i class="fa fa-university"></i>
-          </div>
+          <div class="stat-icon"><i class="fa fa-university"></i></div>
           <div class="stat-info">
-            <span class="label">{{ 'SALES.TOTAL_REVENUE' | translate }}</span>
+            <span class="label">{{ 'SALES_PAGE.TOTAL_REVENUE' | translate }}</span>
             <span class="value">{{ totalRevenue | number:'1.2-2' }} </span>
           </div>
           <div class="stat-progress" [style.background]="'var(--g-blue)'"></div>
         </div>
 
         <div class="stat-card profit">
-          <div class="stat-icon">
-            <i class="fa fa-line-chart"></i>
-          </div>
+          <div class="stat-icon"><i class="fa fa-line-chart"></i></div>
           <div class="stat-info">
-            <span class="label">{{ 'SALES.TOTAL_PROFIT' | translate }}</span>
+            <span class="label">{{ 'SALES_PAGE.TOTAL_PROFIT' | translate }}</span>
             <span class="value" [class.negative]="totalProfit < 0">
               {{ totalProfit | number:'1.2-2' }}
             </span>
           </div>
-          <div class="stat-progress" 
-               [style.background]="totalProfit >= 0 ? 'var(--g-green)' : 'var(--error-red)'">
-          </div>
+          <div class="stat-progress" [style.background]="totalProfit >= 0 ? 'var(--g-green)' : 'var(--error-red)'"></div>
         </div>
       </div>
     </header>
 
     <div class="sales-content">
       <div class="list-header" *ngIf="sales.length > 0">
-        <span class="count">{{ 'HEADER.MANAGEMENT' | translate }}: {{ sales.length }}</span>
+        <span class="count">{{ 'SALES_PAGE.COUNT_LABEL' | translate }}: {{ sales.length }}</span>
       </div>
 
       <div class="sales-grid" *ngIf="!isLoading; else loader">
@@ -50,11 +44,9 @@
         </app-sale-card>
 
         <div class="empty-state" *ngIf="sales.length === 0">
-          <div class="empty-icon">
-            <i class="fa fa-shopping-bag"></i>
-          </div>
-          <h3>{{ 'SALES.NO_SALES' | translate }}</h3>
-          <p>{{ 'SALES.NO_SALES_SUB' | translate }}</p>
+          <div class="empty-icon"><i class="fa fa-shopping-bag"></i></div>
+          <h3>{{ 'SALES_PAGE.NO_SALES' | translate }}</h3>
+          <p>{{ 'SALES_PAGE.NO_SALES_SUB' | translate }}</p>
         </div>
       </div>
     </div>
@@ -69,12 +61,22 @@
 </ng-template>
 
 <app-inest-modal 
-  *ngIf="showUndoModal"
+  *ngIf="activeAction === 'undo'"
   mode="confirm"
-  [title]="'SALES.TITLE'" 
-  [message]="'ITEM_CARD.M_RETURN_ITEM'"
-  [confirmText]="'AUTH.CONFIRM.SUBMIT_BTN'"
-  [cancelText]="'COMMON.CANCEL'"
-  (confirmed)="onConfirmUndo()"
-  (cancelled)="showUndoModal = false; saleToUndo = null">
+  [title]="'SALES_PAGE.MODALS.RETURN_TITLE' | translate" 
+  [message]="'SALES_PAGE.MODALS.RETURN_MESSAGE' | translate"
+  [confirmText]="'AUTH.CONFIRM.SUBMIT_BTN' | translate"
+  [cancelText]="'COMMON.CANCEL' | translate"
+  (confirmed)="onConfirm()"
+  (cancelled)="closeModal()">
+</app-inest-modal>
+
+<app-inest-modal 
+  *ngIf="activeAction === 'delete'" 
+  mode="smart-delete"
+  [showSmartOption]="!!selectedSale && selectedSale.itemId !== EMPTY_GUID"
+  [title]="'SALES_PAGE.MODALS.DELETE_TITLE' | translate"
+  [message]="'SALES_PAGE.MODALS.DELETE_MESSAGE' | translate"
+  (confirmed)="onConfirm($event)"
+  (cancelled)="closeModal()">
 </app-inest-modal>

@@ -29,34 +29,44 @@ export class SellModalComponent implements OnInit {
   @Output() close = new EventEmitter<void>();
   @Output() confirm = new EventEmitter<SellItemRequestDto>();
 
+  private readonly localToday = this.getLocalDateString();
+
   sellForm = this.fb.group({
     salePrice: [null as number | null, [Validators.required, Validators.min(FORM_VALIDATION.PRICE.MIN)]],
-    soldDate: [FORM_VALIDATION.DATE.TODAY, [Validators.required, this.futureDateValidator()]],
-    platformId: [null as string | null],
+    soldDate: [this.localToday, [Validators.required, this.futureDateValidator()]],
+    platformId: [null as string | null, [Validators.required]],
     comment: ['']
   });
 
-  private getTodayDate(): string {
-    return new Date().toISOString().substring(0, 10);
+  ngOnInit(): void {
+    this.loadPlatforms();
+  }
+
+  private getLocalDateString(): string {
+    const now = new Date();
+    const tzo = -now.getTimezoneOffset();
+    const dif = tzo >= 0 ? '+' : '-';
+    const pad = (num: number) => (num < 10 ? '0' : '') + num;
+
+    return now.getFullYear() +
+      '-' + pad(now.getMonth() + 1) +
+      '-' + pad(now.getDate());
   }
 
   private futureDateValidator(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
       if (!control.value) return null;
-      const dateValue = new Date(control.value);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      return dateValue > today ? { futureDate: true } : null;
+      
+      const selectedDate = control.value;
+      const today = this.getLocalDateString();
+
+      return selectedDate > today ? { futureDate: true } : null;
     };
   }
 
   isControlInvalid(controlName: string, errorName: string): boolean {
     const control = this.sellForm.get(controlName);
     return !!(control?.touched && control?.hasError(errorName));
-  }
-
-  ngOnInit(): void {
-    this.loadPlatforms();
   }
 
   loadPlatforms() {
@@ -89,17 +99,16 @@ export class SellModalComponent implements OnInit {
       this.sellForm.markAllAsTouched(); 
       return;
     }
-    if (this.sellForm.valid) {
-      const formValue = this.sellForm.getRawValue();
-      const dto: SellItemRequestDto = {
-        itemId: this.item.id,
-        salePrice: Number(formValue.salePrice),
-        soldDate: new Date(formValue.soldDate!).toISOString(),
-        platformId: formValue.platformId || null,
-        comment: formValue.comment || undefined
-      };
-      this.confirm.emit(dto);
-    }
+    
+    const formValue = this.sellForm.getRawValue();
+    const dto: SellItemRequestDto = {
+      itemId: this.item.id,
+      salePrice: Number(formValue.salePrice),
+      soldDate: new Date(formValue.soldDate!).toISOString(),
+      platformId: formValue.platformId || null,
+      comment: formValue.comment || undefined
+    };
+    this.confirm.emit(dto);
   }
 
   onCancel() {

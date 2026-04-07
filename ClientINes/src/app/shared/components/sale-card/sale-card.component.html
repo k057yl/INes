@@ -34,13 +34,3 @@
     </button>
   </div>
 </div>
-
-<app-inest-modal 
-  *ngIf="showDeleteModal" 
-  mode="smart-delete"
-  [showSmartOption]="isItemExists"
-  [title]="'ITEM_CARD.DELETE'"
-  [message]="'SETTINGS.DELETE_PLATFORM_CONFIRM'"
-  (confirmed)="confirmDelete($event)"
-  (cancelled)="closeModal()">
-</app-inest-modal>
