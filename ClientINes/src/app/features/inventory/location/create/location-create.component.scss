@@ -30,7 +30,7 @@
 
 .form-group {
   margin-bottom: 28px;
-  position: relative; /* Критично для позиционирования попапа */
+  position: relative;
   
   label {
     display: block;
@@ -72,7 +72,6 @@
   justify-content: space-between;
   align-items: center;
   gap: 10px;
-  position: relative;
 
   .color-tile {
     width: 44px;
@@ -108,20 +107,38 @@
   }
 }
 
-/* ВСПЛЫВАШКА ПИКЕРА */
+/* ФИКС: ВСПЛЫВАШКА ТЕПЕРЬ ПО ЦЕНТРУ ЭКРАНА С РАЗМЫТИЕМ */
+.color-picker-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  animation: fadeIn 0.2s ease-out;
+}
+
 .color-popup {
-  position: absolute;
-  top: 60px;
-  right: 0;
-  z-index: 1000;
+  background: var(--bg-card);
+  padding: 24px;
+  border-radius: 28px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+  animation: popupShow 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   
-  /* ВОТ ЭТО ЛЕЧИТ КОНСОЛЬ */
   ::ng-deep {
     .chrome-picker {
-      /* Заставляем браузер не лезть со своими оптимизациями скролла */
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
       touch-action: none !important; 
       
-      /* И на все активные зоны внутри пикера */
       canvas, .chrome-hue, .chrome-alpha {
         touch-action: none !important;
       }
@@ -131,16 +148,16 @@
 
 .color-actions {
   display: flex;
-  gap: 10px;
-  margin-top: 15px;
+  gap: 12px;
+  margin-top: 20px;
 
   button {
     flex: 1;
-    height: 36px;
+    height: 44px;
     border: none;
-    border-radius: 8px;
+    border-radius: 12px;
     font-weight: 800;
-    font-size: 0.7rem;
+    font-size: 0.8rem;
     text-transform: uppercase;
     cursor: pointer;
     transition: 0.2s;
@@ -150,11 +167,13 @@
     background: var(--bg-input);
     color: var(--text-muted);
     border: 1px solid var(--border-color);
+    &:hover { background: rgba(255,255,255,0.05); }
   }
 
   .btn-confirm {
     background: var(--accent-color);
     color: var(--bg-main);
+    &:hover { filter: brightness(1.1); }
   }
 }
 
@@ -167,18 +186,35 @@
   font-style: italic;
 }
 
-@keyframes popupShow {
-  from { opacity: 0; transform: translateY(-10px) scale(0.95); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-/* КНОПКИ ФОРМЫ */
 .actions {
   display: flex;
   gap: 15px;
   margin-top: 40px;
 
-  button { height: 52px; font-weight: 800; }
-  .inest-btn-cancel { flex: 1; }
-  .inest-btn-primary { flex: 2; }
+  button { height: 52px; font-weight: 800; border-radius: 14px; transition: 0.2s; cursor: pointer; }
+  .inest-btn-cancel { 
+    flex: 1; 
+    background: transparent; 
+    border: 1px solid var(--border-color); 
+    color: var(--text-muted);
+    &:hover { border-color: var(--text-main); color: var(--text-main); }
+  }
+  .inest-btn-primary { 
+    flex: 2; 
+    background: var(--accent-color); 
+    border: none; 
+    color: var(--bg-main);
+    &:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(var(--accent-rgb), 0.3); }
+    &:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes popupShow {
+  from { opacity: 0; transform: scale(0.9) translateY(20px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
 }

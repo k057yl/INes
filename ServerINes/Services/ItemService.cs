@@ -42,7 +42,6 @@ namespace INest.Services
                     Photos = new List<ItemPhoto>()
                 };
 
-                // Логика одалживания
                 if (dto.Status == ItemStatus.Lent || dto.Status == ItemStatus.Borrowed)
                 {
                     item.Lending = new Lending
@@ -78,7 +77,6 @@ namespace INest.Services
                     }
                 }
 
-                // Обработка фото через унифицированный метод
                 if (photos != null && photos.Count > 0)
                 {
                     await HandlePhotos(item, photos, dto.MainPhotoName);
@@ -112,7 +110,6 @@ namespace INest.Services
 
             item.Photos ??= new List<ItemPhoto>();
 
-            // Загружаем все фото параллельно (так быстрее)
             var uploadTasks = photos.Select(async photoFile =>
             {
                 var result = await _photoService.AddPhotoAsync(photoFile);
@@ -135,7 +132,6 @@ namespace INest.Services
                     UploadedAt = DateTime.UtcNow
                 };
 
-                // Если это фото помечено как главное ИЛИ если у предмета еще нет PhotoUrl
                 if ((!string.IsNullOrEmpty(mainPhotoName) && upload.File.FileName == mainPhotoName) ||
                     string.IsNullOrEmpty(item.PhotoUrl))
                 {
@@ -144,7 +140,6 @@ namespace INest.Services
                 }
 
                 item.Photos.Add(itemPhoto);
-                // Если мы в контексте обновления, нужно добавить в контекст
                 if (_context.Entry(item).State != EntityState.Detached)
                 {
                     await _context.ItemPhotos.AddAsync(itemPhoto);
@@ -228,7 +223,6 @@ namespace INest.Services
                 item.PurchasePrice = dto.PurchasePrice;
                 item.EstimatedValue = dto.EstimatedValue;
 
-                // Здесь тоже можно прокинуть MainPhotoName, если добавишь его в UpdateItemFullDto
                 await HandlePhotos(item, photos);
 
                 await _context.SaveChangesAsync();

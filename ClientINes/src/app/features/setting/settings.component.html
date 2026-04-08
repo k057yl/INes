@@ -10,15 +10,15 @@
       <nav class="nav-menu">
         <button [class.active]="activeTab === 'general'" (click)="switchTab('general')">
           <i class="fa fa-sliders-h"></i> 
-          <span class="btn-text">{{ 'SETTINGS.GENERAL_TAB' | translate }}</span>
+          <span class="btn-text">{{ 'SETTINGS_PAGE.GENERAL_TAB' | translate }}</span>
         </button>
         <button [class.active]="activeTab === 'categories'" (click)="switchTab('categories')">
           <i class="fa fa-tags"></i> 
-          <span class="btn-text">{{ 'SETTINGS.CATEGORIES_TAB' | translate }}</span>
+          <span class="btn-text">{{ 'SETTINGS_PAGE.CATEGORIES_TAB' | translate }}</span>
         </button>
         <button [class.active]="activeTab === 'platforms'" (click)="switchTab('platforms')">
           <i class="fa fa-share-alt"></i> 
-          <span class="btn-text">{{ 'SETTINGS.PLATFORMS_TAB' | translate }}</span>
+          <span class="btn-text">{{ 'SETTINGS_PAGE.PLATFORMS_TAB' | translate }}</span>
         </button>
       </nav>
 
@@ -37,14 +37,14 @@
       </div>
 
       <section *ngIf="activeTab === 'general'" class="content-section animate-fade">
-        <h2 class="section-title">{{ 'SETTINGS.TITLE' | translate }}</h2>
+        <h2 class="section-title">{{ 'SETTINGS_PAGE.TITLE' | translate }}</h2>
         <div class="settings-grid">
           <div class="config-card">
             <div class="card-info">
               <i class="fa fa-shopping-cart"></i>
               <div class="text">
-                <span class="label">{{ 'SETTINGS.SALES_MODULE' | translate }}</span>
-                <p>{{ 'SETTINGS.SALES_HINT' | translate }}</p>
+                <span class="label">{{ 'SETTINGS_PAGE.SALES_MODULE' | translate }}</span>
+                <p>{{ 'SETTINGS_PAGE.SALES_SUB' | translate }}</p>
               </div>
             </div>
             <label class="inest-switch">
@@ -57,8 +57,8 @@
             <div class="card-info">
               <i class="fa fa-handshake"></i>
               <div class="text">
-                <span class="label">{{ 'SETTINGS.LENDING_MODULE' | translate }}</span>
-                <p>{{ 'SETTINGS.LENDING_HINT' | translate }}</p>
+                <span class="label">{{ 'SETTINGS_PAGE.LENDING_MODULE' | translate }}</span>
+                <p>{{ 'SETTINGS_PAGE.LENDING_SUB' | translate }}</p>
               </div>
             </div>
             <label class="inest-switch">
@@ -71,10 +71,10 @@
 
       <section *ngIf="activeTab === 'categories'" class="content-section animate-fade">
         <div class="section-header">
-          <h2 class="section-title">{{ 'MANAGEMENT.TITLE_CATEGORY' | translate }}</h2>
+          <h2 class="section-title">{{ 'SETTINGS_PAGE.CATEGORIES_TAB' | translate }}</h2>
           <button class="inest-btn-ribbon-add admin-add-btn" (click)="addCategory()">
             <i class="fa fa-plus"></i>
-            <span>{{ 'SHARED.TOOLTIP_ADD' | translate }}</span>
+            <span>{{ 'COMMON.ADD' | translate }}</span>
           </button>
         </div>
 
@@ -85,11 +85,11 @@
               <span class="name">{{ cat.name }}</span>
             </div>
             <div class="item-actions">
-              <button class="inest-action-btn" (click)="renameCategory(cat)" [title]="'SHARED.TOOLTIP_RENAME' | translate">
+              <button class="inest-action-btn" (click)="renameCategory(cat)" [title]="'COMMON.RENAME' | translate">
                 <i class="fa-solid fa-pen"></i>
               </button>
 
-              <button class="inest-action-btn is-danger" (click)="deleteCategory(cat)" [title]="'SHARED.TOOLTIP_DELETE' | translate">
+              <button class="inest-action-btn is-danger" (click)="deleteCategory(cat)" [title]="'COMMON.DELETE' | translate">
                 <i class="fa-solid fa-trash"></i>
               </button>
             </div>
@@ -99,10 +99,10 @@
 
       <section *ngIf="activeTab === 'platforms'" class="content-section animate-fade">
         <div class="section-header">
-          <h2 class="section-title">{{ 'MANAGEMENT.TITLE_PLATFORM' | translate }}</h2>
+          <h2 class="section-title">{{ 'SETTINGS_PAGE.PLATFORMS_TAB' | translate }}</h2>
           <button class="inest-btn-ribbon-add admin-add-btn" (click)="addPlatform()">
             <i class="fa fa-plus"></i>
-            <span>{{ 'SHARED.TOOLTIP_ADD' | translate }}</span>
+            <span>{{ 'COMMON.ADD' | translate }}</span>
           </button>
         </div>
 
@@ -110,10 +110,10 @@
           <div class="entity-item" *ngFor="let plat of platforms">
             <div class="item-main"><span class="name">{{ plat.name }}</span></div>
             <div class="item-actions">
-              <button class="inest-action-btn" (click)="renamePlatform(plat)" [title]="'SHARED.TOOLTIP_RENAME' | translate">
+              <button class="inest-action-btn" (click)="renamePlatform(plat)" [title]="'COMMON.RENAME' | translate">
                 <i class="fa-solid fa-pen"></i>
               </button>
-              <button class="inest-action-btn is-danger" (click)="deletePlatform(plat)" [title]="'SHARED.TOOLTIP_DELETE' | translate">
+              <button class="inest-action-btn is-danger" (click)="deletePlatform(plat)" [title]="'COMMON.DELETE' | translate">
                 <i class="fa-solid fa-trash"></i>
               </button>
             </div>
@@ -127,7 +127,7 @@
 <app-inest-modal
   *ngIf="showEntityModal"
   mode="input"
-  [title]="(modalMode === 'create' ? 'SHARED.TOOLTIP_ADD' : 'COMMON.EDIT')"
+  [title]="(modalMode === 'create' ? 'COMMON.CREATE' : 'COMMON.EDIT')"
   [name]="selectedEntity?.name || ''"
   (confirmed)="handleEntityConfirm($event)"
   (cancelled)="closeModals()">
@@ -136,9 +136,9 @@
 <app-inest-modal
   *ngIf="showDeleteModal"
   mode="delete"
-  [title]="'SHARED.TOOLTIP_DELETE'"
-  [message]="(modalType === 'category' ? 'SETTINGS.DELETE_CATEGORY_CONFIRM' : 'SETTINGS.DELETE_PLATFORM_CONFIRM')"
-  [confirmText]="'ITEM_CARD.DELETE'"
+  [title]="'COMMON.DELETE'"
+  [message]="(modalType === 'category' ? 'SETTINGS_PAGE.MODAL.DELETE_CATEGORY' : 'SETTINGS_PAGE.MODAL.DELETE_PLATFORM')"
+  [confirmText]="'COMMON.DELETE'"
   (confirmed)="handleDeleteConfirm()" 
   (cancelled)="closeModals()">
 </app-inest-modal>

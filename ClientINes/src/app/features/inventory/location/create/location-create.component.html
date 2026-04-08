@@ -21,33 +21,35 @@
           <div class="preset-colors-grid">
 
             <div *ngFor="let color of presetColors" 
-                class="color-tile" 
-                [style.background-color]="color"
-                [class.active]="form.controls.color.value === color"
-                (click)="selectPresetColor(color)">
+                 class="color-tile" 
+                 [style.background-color]="color"
+                 [class.active]="form.controls.color.value === color"
+                 (click)="selectPresetColor(color)">
               <i class="fa fa-check" *ngIf="form.controls.color.value === color"></i>
             </div>
 
             <div class="color-tile custom-picker-tile"
-                (click)="openColorPicker()"
-                [class.active]="showColorPicker"
-                [style.background-color]="form.controls.color.value.startsWith('var') ? '' : form.controls.color.value">
+                 (click)="openColorPicker()"
+                 [class.active]="showColorPicker"
+                 [style.background-color]="form.controls.color.value.startsWith('var') ? '' : form.controls.color.value">
               <i class="fa" [ngClass]="showColorPicker ? 'fa-times' : 'fa-eye-dropper'"></i>
             </div>
 
-            <div class="color-popup" *ngIf="showColorPicker">
-              <color-chrome
-                [color]="tempColor"
-                (onChangeComplete)="tempColor = $event.color.hex">
-              </color-chrome>
+            <div class="color-picker-overlay" *ngIf="showColorPicker" (click)="showColorPicker = false">
+              <div class="color-popup" (click)="$event.stopPropagation()">
+                <color-chrome
+                  [color]="tempColor"
+                  (onChangeComplete)="tempColor = $event.color.hex">
+                </color-chrome>
 
-              <div class="color-actions">
-                <button type="button" class="btn-cancel" (click)="showColorPicker = false">
-                  {{ 'COMMON.CANCEL' | translate }}
-                </button>
-                <button type="button" class="btn-confirm" (click)="confirmColor()">
-                  OK
-                </button>
+                <div class="color-actions">
+                  <button type="button" class="btn-cancel" (click)="showColorPicker = false">
+                    {{ 'COMMON.CANCEL' | translate }}
+                  </button>
+                  <button type="button" class="btn-confirm" (click)="confirmColor()">
+                    OK
+                  </button>
+                </div>
               </div>
             </div>
 
