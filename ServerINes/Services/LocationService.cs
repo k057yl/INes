@@ -58,8 +58,6 @@ namespace INest.Services
                     l.Description,
                     l.Color,
                     l.Icon,
-                    l.IsSalesLocation,
-                    l.IsLendingLocation,
                     items = l.Items
                     .Where(i => i.Status != ItemStatus.Sold)
                     .Select(i => new { i.Id, i.Name })
@@ -176,12 +174,35 @@ namespace INest.Services
 
         public async Task<StorageLocation?> GetLocationByIdAsync(Guid userId, Guid locationId)
         {
-            return await _context.StorageLocations
+            var location = await _context.StorageLocations
                 .Where(l => l.UserId == userId && l.Id == locationId)
-                .AsNoTracking()
-                .Include(l => l.Items.Where(i => i.Status != ItemStatus.Sold))
                 .Include(l => l.Children)
+                .Include(l => l.Items.Where(i => i.Status != ItemStatus.Sold))
+                    .ThenInclude(i => i.Category)
                 .FirstOrDefaultAsync();
+
+            if (location == null) return null;
+
+            location.ParentLocation = await GetParentChainAsync(userId, location.ParentLocationId);
+
+            return location;
+        }
+
+        private async Task<StorageLocation?> GetParentChainAsync(Guid userId, Guid? parentId)
+        {
+            if (!parentId.HasValue) return null;
+
+            var parent = await _context.StorageLocations
+                .Where(l => l.UserId == userId && l.Id == parentId)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            if (parent != null)
+            {
+                parent.ParentLocation = await GetParentChainAsync(userId, parent.ParentLocationId);
+            }
+
+            return parent;
         }
     }
 }

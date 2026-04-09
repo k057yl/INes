@@ -1,55 +1,60 @@
 <div class="location-view" *ngIf="!isLoading; else loader">
   <div class="container" *ngIf="location">
     
-    <header class="header-card">
-      <div class="header-left">
-        <button (click)="goBack()" class="inest-btn-cancel back-btn-mod">
-          <i class="fa fa-chevron-left"></i>
-          <span>{{ 'COMMON.BACK' | translate }}</span>
-        </button>
-        
-        <div class="vertical-divider"></div>
+    <div class="breadcrumb-trail">
+      <ng-container *ngFor="let crumb of breadcrumbs; let last = last">
+        <a [routerLink]="['/location', crumb.id]" [class.active]="last">{{ crumb.name }}</a>
+        <i class="fa fa-chevron-right" *ngIf="!last"></i>
+      </ng-container>
+    </div>
 
+    <header class="header-card main-location-card" [style.border-top-color]="location.color">
+      <div class="header-left">
         <div class="location-info">
           <div class="icon-wrapper" [style.background-color]="location.color + '20'">
             <i [className]="'fa ' + (location.icon || 'fa-folder')" [style.color]="location.color"></i>
           </div>
           <div class="title-block">
+            <span class="location-label">{{ 'ITEM_DETAIL.STORAGE_PLACE' | translate }}</span>
             <h1>{{ location.name }}</h1>
-            <div class="automation-badges">
-              <span *ngIf="location.isSalesLocation" class="tag sales">
-                <i class="fa fa-shopping-cart"></i> {{ 'LOCATIONS.UI.SALES_ZONE' | translate }}
-              </span>
-              <span *ngIf="location.isLendingLocation" class="tag lending">
-                <i class="fa fa-handshake-o"></i> {{ 'LOCATIONS.UI.LENDING_ZONE' | translate }}
-              </span>
-            </div>
           </div>
         </div>
       </div>
 
-      <button class="inest-btn-ribbon-add" [routerLink]="['/create-item']" [queryParams]="{locationId: location.id}">
-        <i class="fa fa-plus"></i>
-        <span>{{ 'SHARED.TOOLTIP_ADD' | translate }}</span>
-      </button>
+      <div class="header-actions">
+        <button class="inest-btn-ribbon-add" [routerLink]="['/create-item']" [queryParams]="{locationId: location.id}">
+          <i class="fa fa-plus"></i>
+          <span>{{ 'COMMON.ADD' | translate }}</span>
+        </button>
+      </div>
     </header>
 
     <div class="content-grid">
       <aside class="side-panel">
-        <h3 class="panel-title">{{ 'ITEM_DETAIL.STORAGE_PLACE' | translate }}</h3>
-        <div class="sub-locations">
-          <div class="sub-loc-card active">
-             <i [className]="'fa ' + (location.icon || 'fa-folder')" [style.color]="location.color"></i>
-             <span class="name">{{ location.name }}</span>
-          </div>
-
-          <a *ngFor="let child of location.children" 
-             [routerLink]="['/location', child.id]" 
-             class="sub-loc-card">
-            <i [className]="'fa ' + (child.icon || 'fa-folder')" [style.color]="child.color"></i>
-            <span class="name">{{ child.name }}</span>
-            <i class="fa fa-chevron-right"></i>
+        <div class="panel-section" *ngIf="location.parentLocation">
+          <h3 class="panel-title">{{ 'LOCATIONS.UPPER_LEVEL' | translate }}</h3>
+          <a [routerLink]="['/location', location.parentLocation.id]" class="sub-loc-card parent-link">
+            <i class="fa fa-level-up-alt"></i>
+            <span class="name">{{ location.parentLocation.name }}</span>
           </a>
+        </div>
+
+        <div class="panel-section">
+          <h3 class="panel-title">{{ 'LOCATIONS.NESTED' | translate }}</h3>
+          <div class="sub-locations">
+            <div class="sub-loc-card current">
+               <i [className]="'fa ' + (location.icon || 'fa-folder')" [style.color]="location.color"></i>
+               <span class="name">{{ location.name }}</span>
+            </div>
+
+            <a *ngFor="let child of location.children" 
+               [routerLink]="['/location', child.id]" 
+               class="sub-loc-card child-link">
+              <i [className]="'fa ' + (child.icon || 'fa-folder')" [style.color]="child.color"></i>
+              <span class="name">{{ child.name }}</span>
+              <i class="fa fa-chevron-right arrow"></i>
+            </a>
+          </div>
         </div>
       </aside>
 
@@ -65,7 +70,7 @@
                *ngFor="let item of location.items"
                [style.border-left]="'4px solid ' + getAccentColor(item.id)">
             
-            <div class="tile-image" [routerLink]="['/item', item.id]" style="cursor: pointer;">
+            <div class="tile-image" [routerLink]="['/item', item.id]">
               <img *ngIf="item.photoUrl" [src]="getPhotoUrl(item.photoUrl)" loading="lazy">
               <i *ngIf="!item.photoUrl" class="fa fa-archive"></i>
               
@@ -75,7 +80,7 @@
             </div>
             
             <div class="tile-content">
-              <h3 [routerLink]="['/item', item.id]" style="cursor: pointer;">{{ item.name }}</h3>
+              <h3 [routerLink]="['/item', item.id]">{{ item.name }}</h3>
               <p>{{ item.description || ('ITEM_DETAIL.NO_DESCRIPTION' | translate) }}</p>
               
               <div class="tile-actions">

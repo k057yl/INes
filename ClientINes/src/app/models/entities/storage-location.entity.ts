@@ -6,12 +6,10 @@ export interface StorageLocation {
   description?: string;
   color?: string;
   icon?: string;
-  parentId?: string | null;
+  parentLocation?: StorageLocation;
   sortOrder: number;
   
   // UI свойства
-  isSalesLocation: boolean;
-  isLendingLocation: boolean;
   items: Item[];
   children?: StorageLocation[];
   showMenu?: boolean;

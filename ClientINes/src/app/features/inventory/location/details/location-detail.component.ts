@@ -30,9 +30,10 @@ export class LocationDetailComponent implements OnInit {
   location: StorageLocation | null = null;
   isLoading = true;
 
-  // Состояние модалки удаления
   showDeleteModal = false;
   selectedItem: any = null;
+
+  breadcrumbs: StorageLocation[] = [];
 
   readonly statusKeys: Record<number, string> = {
     [ItemStatus.Active]: 'STATUS.ACTIVE',
@@ -53,13 +54,23 @@ export class LocationDetailComponent implements OnInit {
     ).subscribe({
       next: (data) => {
         this.location = data;
+        this.buildBreadcrumbs(data);
         this.isLoading = false;
       },
       error: () => this.isLoading = false
     });
   }
 
-  // --- ЛОГИКА МОДАЛКИ УДАЛЕНИЯ ---
+  private buildBreadcrumbs(current: StorageLocation) {
+    const path: StorageLocation[] = [];
+    let temp: StorageLocation | undefined = current;
+    
+    while (temp) {
+      path.unshift(temp);
+      temp = temp.parentLocation;
+    }
+    this.breadcrumbs = path;
+  }
 
   openDeleteModal(item: any) {
     this.selectedItem = item;
@@ -83,8 +94,6 @@ export class LocationDetailComponent implements OnInit {
     this.showDeleteModal = false;
     this.selectedItem = null;
   }
-
-  // --- ХЕЛПЕРЫ ---
 
   getAccentColor(id: string): string {
     const sum = id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);

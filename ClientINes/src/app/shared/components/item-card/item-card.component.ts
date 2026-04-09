@@ -38,6 +38,16 @@ export class ItemCardComponent {
     return this.menuOpenItemId === this.item.id;
   }
 
+  get canSell(): boolean {
+    const forbiddenStatuses = [1, 7, 4];
+    return !forbiddenStatuses.includes(this.item.status);
+  }
+
+  get canLend(): boolean {
+    const forbiddenStatuses = [1, 7, 4];
+    return !forbiddenStatuses.includes(this.item.status);
+  }
+
   private readonly googleColors = ['var(--g-blue)', 'var(--g-red)', 'var(--g-yellow)', 'var(--g-green)'];
 
   getAccentColor(): string {

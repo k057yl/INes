@@ -1,4 +1,3 @@
-/* --- ОСНОВНАЯ КАРТОЧКА --- */
 .item-card {
   display: flex;
   align-items: center;
@@ -20,15 +19,14 @@
   }
 
   &.status-borrowed {
-    background: rgba(52, 168, 83, 0.05); // Легкий зеленый оттенок
-    border-style: dashed; // Сделаем рамку пунктирной, типа "временно"
+    background: rgba(52, 168, 83, 0.05);
+    border-style: dashed;
   }
 
   &.status-lent {
-    opacity: 0.8; // Чуть приглушим, её же физически нет
+    opacity: 0.8;
   }
 
-  /* ЖЕСТКИЙ ФИКС: Убираем любые переходы, когда карточку реально тащат */
   &.cdk-drag-dragging {
     transition: none !important;
     cursor: grabbing;
@@ -46,7 +44,6 @@
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1) !important;
 }
 
-/* --- КОНТЕНТ --- */
 .item-thumb {
   width: 54px;
   height: 54px;
@@ -76,7 +73,6 @@
   }
 }
 
-/* --- ЭКШЕНЫ --- */
 .item-actions {
   display: flex;
   align-items: center;
@@ -84,7 +80,15 @@
   margin-left: auto;
 }
 
-/* ВЫПАДАЮЩЕЕ МЕНЮ */
+.inest-action-btn {
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    filter: grayscale(1);
+    pointer-events: none;
+  }
+}
+
 .menu-dropdown.item-menu {
   position: absolute;
   right: 0;
@@ -129,15 +133,23 @@
 
   i { width: 18px; color: var(--accent-color); text-align: center; font-size: 1rem; }
 
-  &:hover { 
+  &:hover:not(:disabled) { 
     background: var(--bg-input); 
-    color: var(--accent-color); // Текст становится акцентным при наведении
+    color: var(--accent-color);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    color: var(--text-muted) !important;
+    cursor: not-allowed;
+    
+    i { color: var(--text-muted) !important; }
   }
 
   &.delete-btn {
     color: var(--error-red);
     i { color: var(--error-red); }
-    &:hover { background: rgba(255, 77, 77, 0.1); }
+    &:hover:not(:disabled) { background: rgba(255, 77, 77, 0.1); }
   }
 }
 
@@ -148,7 +160,6 @@
   opacity: 0.5;
 }
 
-/* СЕКЦИЯ ПЕРЕМЕЩЕНИЯ ВНУТРИ МЕНЮ */
 .menu-section {
   label {
     display: block;
@@ -179,7 +190,6 @@
   }
 }
 
-/* DRAG & DROP STATES */
 .item-drag-placeholder {
   background: var(--bg-input);
   border: 2px dashed var(--accent-color);
@@ -189,7 +199,6 @@
   opacity: 0.5;
 }
 
-/* АДАПТИВНОСТЬ */
 @media (max-width: 768px) {
   .item-card { 
     touch-action: auto !important; 

@@ -166,10 +166,6 @@ export class MainPageComponent implements OnInit {
     this.facade.moveItemApi(item.id, loc.id).subscribe({
       error: () => this.loadData()
     });
-
-    if (loc.isLendingLocation) {
-      setTimeout(() => this.onLendRequest(item), 200);
-    }
   }
 
   isChildOf = (targetId: string, sourceLoc: StorageLocation): boolean => {

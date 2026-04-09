@@ -44,23 +44,14 @@ export class SellModalComponent implements OnInit {
 
   private getLocalDateString(): string {
     const now = new Date();
-    const tzo = -now.getTimezoneOffset();
-    const dif = tzo >= 0 ? '+' : '-';
     const pad = (num: number) => (num < 10 ? '0' : '') + num;
-
-    return now.getFullYear() +
-      '-' + pad(now.getMonth() + 1) +
-      '-' + pad(now.getDate());
+    return now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate());
   }
 
   private futureDateValidator(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
       if (!control.value) return null;
-      
-      const selectedDate = control.value;
-      const today = this.getLocalDateString();
-
-      return selectedDate > today ? { futureDate: true } : null;
+      return control.value > this.getLocalDateString() ? { futureDate: true } : null;
     };
   }
 
@@ -95,6 +86,12 @@ export class SellModalComponent implements OnInit {
   }
 
   onSubmit() {
+    if (this.item.status === 1 || this.item.status === 7) {
+      alert(this.translate.instant('STATUS.ERRORS.CANT_SELL_LENT'));
+      this.close.emit();
+      return;
+    }
+
     if (this.sellForm.invalid) {
       this.sellForm.markAllAsTouched(); 
       return;
@@ -105,7 +102,7 @@ export class SellModalComponent implements OnInit {
       itemId: this.item.id,
       salePrice: Number(formValue.salePrice),
       soldDate: new Date(formValue.soldDate!).toISOString(),
-      platformId: formValue.platformId || null,
+      platformId: formValue.platformId!,
       comment: formValue.comment || undefined
     };
     this.confirm.emit(dto);
