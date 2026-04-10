@@ -3,6 +3,7 @@ import { StorageLocation } from './storage-location.entity';
 import { ItemStatus } from '../enums/item-status.enum';
 import { Lending } from './lending.entity';
 import { Reminder } from './reminder.entity';
+import { ItemHistory } from './item-history.entity';
 
 export interface ItemPhoto {
   id: string;
@@ -10,15 +11,6 @@ export interface ItemPhoto {
   filePath: string;
   isMain: boolean;
   uploadedAt: string;
-}
-
-export interface ItemHistory {
-  id: string;
-  itemId: string;
-  type: number;
-  oldValue?: string;
-  newValue?: string;
-  createdAt: string;
 }
 
 export interface Sale {

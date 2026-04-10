@@ -5,8 +5,6 @@ using INest.Models.Enums;
 using INest.Services.Interfaces;
 using INest.Services.Tracker;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Primitives;
-using System.Collections.Concurrent;
 
 namespace INest.Services.Decorator
 {
@@ -25,7 +23,8 @@ namespace INest.Services.Decorator
 
         public async Task<IEnumerable<Item>> GetUserItemsAsync(Guid userId, ItemFilterDto filters)
         {
-            string cacheKey = $"items_{userId}_{filters.SearchQuery}_{filters.CategoryId}_{filters.Status}_{filters.SortBy}_{filters.MinPrice}_{filters.MaxPrice}";
+            string baseKey = CacheConstants.GET_ITEMS_KEY(userId);
+            string cacheKey = $"{baseKey}_{filters.SearchQuery}_{filters.CategoryId}_{filters.Status}_{filters.SortBy}_{filters.MinPrice}_{filters.MaxPrice}";
 
             return await _cache.GetOrCreateAsync(cacheKey, async entry =>
             {
@@ -33,6 +32,18 @@ namespace INest.Services.Decorator
                 entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10);
                 return await _inner.GetUserItemsAsync(userId, filters);
             }) ?? Enumerable.Empty<Item>();
+        }
+
+        public async Task<Item?> GetItemAsync(Guid userId, Guid itemId)
+        {
+            string cacheKey = CacheConstants.GET_ITEM_DETAIL_KEY(userId, itemId);
+
+            return await _cache.GetOrCreateAsync(cacheKey, async entry =>
+            {
+                entry.AddExpirationToken(_tracker.GetToken(userId));
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30);
+                return await _inner.GetItemAsync(userId, itemId);
+            });
         }
 
         private void InvalidateCache(Guid userId) => _tracker.InvalidateUserCache(userId);
@@ -54,10 +65,7 @@ namespace INest.Services.Decorator
         public async Task<bool> UpdatePartialAsync(Guid userId, Guid itemId, UpdateItemPartialDto dto, List<IFormFile>? photos)
         {
             var result = await _inner.UpdatePartialAsync(userId, itemId, dto, photos);
-
-            if (result)
-                InvalidateCache(userId);
-
+            if (result) InvalidateCache(userId);
             return result;
         }
 
@@ -89,7 +97,7 @@ namespace INest.Services.Decorator
             return result;
         }
 
-        public Task<Item?> GetItemAsync(Guid userId, Guid itemId) => _inner.GetItemAsync(userId, itemId);
-        public Task<IEnumerable<ItemHistory>> GetItemHistoryAsync(Guid userId, Guid itemId) => _inner.GetItemHistoryAsync(userId, itemId);
+        public Task<IEnumerable<ItemHistory>> GetItemHistoryAsync(Guid userId, Guid itemId)
+            => _inner.GetItemHistoryAsync(userId, itemId);
     }
 }

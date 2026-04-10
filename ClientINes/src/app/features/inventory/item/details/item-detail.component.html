@@ -65,18 +65,35 @@
       </div>
 
       <div class="history-section">
-        <h3>{{ 'ITEM_DETAIL.HISTORY_TITLE' | translate }}</h3>
-        <div class="history-list">
-          <div class="history-record" *ngFor="let h of item.history">
+        <h3>{{ 'ITEM_HISTORY.TITLE' | translate }}</h3>
+        <div class="history-list" *ngIf="item.history">
+          <div class="history-record" *ngFor="let h of item.history; let first = first">
+            
             <div class="history-icon" [style.color]="getAccentColor()">
-              <i class="fa" [ngClass]="historyIcons[h.type]"></i>
+              <i class="fa" [ngClass]="historyIcons[h.type] || 'fa-history'"></i>
             </div>
+
             <div class="history-content">
-              <span class="history-action">{{ 'HISTORY.TYPE_' + h.type | translate }}</span>
+              <span class="history-action">
+                {{ 'ITEM_HISTORY.RECORD' + h.type | translate }}
+                <span class="history-date">({{ h.createdAt | date:'dd.MM.yyyy HH:mm' }})</span>
+              </span>
+
               <div class="history-meta">
-                <small>{{ h.createdAt | date:'dd.MM.yyyy' }}</small>
-                <span class="history-value" *ngIf="h.newValue"> → {{ h.newValue }}</span>
+                <ng-container *ngIf="h.type === 1">
+                  <span class="loc-path">
+                    {{ h.oldValue || '???' }} 
+                    <i class="fa fa-long-arrow-alt-right"></i> 
+                    {{ h.newValue || '???' }}
+                  </span>
+                </ng-container>
+
+                <ng-container *ngIf="h.type !== 1 && h.type !== 0 && h.newValue">
+                  <span class="status-change">→ {{ h.newValue }}</span>
+                </ng-container>
               </div>
+
+              <p class="history-comment" *ngIf="h.comment">{{ h.comment }}</p>
             </div>
           </div>
         </div>
@@ -88,10 +105,10 @@
         <app-item-reminders [itemId]="item.id"></app-item-reminders>
       </div>
 
-      <div class="lending-info-card" *ngIf="isLent && item.lending">
-        <div class="card-header">
-          <i class="fa fa-handshake"></i>
-          <span>{{ 'STATUS.LENT' | translate }}</span>
+      <div class="lending-info-card" *ngIf="(isLent || isBorrowed) && item.lending">
+        <div class="card-header" [class.borrowed-header]="isBorrowed">
+          <i class="fa" [ngClass]="isLent ? 'fa-handshake' : 'fa-reply-all'"></i>
+          <span>{{ (isLent ? 'STATUS.LENT' : 'STATUS.BORROWED') | translate }}</span>
         </div>
         <div class="card-body">
           <div class="lending-main-info">
@@ -101,11 +118,11 @@
           <div class="lending-dates">
             <div class="date-row">
               <label>{{ 'LENDING.DATE_GIVEN' | translate }}</label>
-              <span>{{ item.lending.dateGiven | date:'dd.MM' }}</span>
+              <span>{{ item.lending.dateGiven | date:'dd.MM.yyyy' }}</span>
             </div>
             <div class="date-row" *ngIf="item.lending.expectedReturnDate">
               <label>{{ 'LENDING.EXPECTED_RETURN' | translate }}</label>
-              <span class="return-deadline">{{ item.lending.expectedReturnDate | date:'dd.MM' }}</span>
+              <span class="return-deadline">{{ item.lending.expectedReturnDate | date:'dd.MM.yyyy' }}</span>
             </div>
           </div>
           <div class="lending-comment-box" *ngIf="item.lending.comment">

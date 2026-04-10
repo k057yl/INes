@@ -1,6 +1,7 @@
 ﻿using INest.Constants;
 using INest.Exceptions;
 using INest.Models.DTOs.Item;
+using INest.Models.Enums;
 using INest.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -54,7 +55,7 @@ namespace INest.Controllers
         }
 
         [HttpPatch("{id}")]
-        public async Task<IActionResult> UpdatePartial( Guid id,[FromForm] UpdateItemPartialDto dto,List<IFormFile>? photos)
+        public async Task<IActionResult> UpdatePartial(Guid id, [FromForm] UpdateItemPartialDto dto, List<IFormFile>? photos)
         {
             var result = await _itemService.UpdatePartialAsync(GetUserId(), id, dto, photos);
             return result ? Ok() : BadRequest();
@@ -64,6 +65,20 @@ namespace INest.Controllers
         public async Task<IActionResult> Move(Guid id, [FromBody] MoveItemDto dto)
         {
             await _itemService.MoveItemAsync(GetUserId(), id, dto.TargetLocationId);
+            return Ok();
+        }
+
+        [HttpPatch("{id}/status")]
+        public async Task<IActionResult> ChangeStatus(Guid id, [FromBody] ItemStatus status)
+        {
+            await _itemService.ChangeStatusAsync(GetUserId(), id, status);
+            return Ok();
+        }
+
+        [HttpDelete("{id}/sale")]
+        public async Task<IActionResult> CancelSale(Guid id)
+        {
+            await _itemService.CancelSaleAsync(GetUserId(), id);
             return Ok();
         }
 

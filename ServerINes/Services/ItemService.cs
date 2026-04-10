@@ -20,6 +20,20 @@ namespace INest.Services
             _emailService = emailService;
         }
 
+        private void AddHistoryEntry(Guid itemId, ItemHistoryType type, string? oldValue = null, string? newValue = null, string? comment = null)
+        {
+            _context.ItemHistories.Add(new ItemHistory
+            {
+                Id = Guid.NewGuid(),
+                ItemId = itemId,
+                Type = type,
+                OldValue = oldValue,
+                NewValue = newValue,
+                Comment = comment,
+                CreatedAt = DateTime.UtcNow
+            });
+        }
+
         public async Task<Item> CreateItemAsync(Guid userId, CreateItemDto dto, List<IFormFile> photos)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
@@ -42,6 +56,10 @@ namespace INest.Services
                     Photos = new List<ItemPhoto>()
                 };
 
+                _context.Items.Add(item);
+
+                AddHistoryEntry(item.Id, ItemHistoryType.Created, null, item.Name);
+
                 if (dto.Status == ItemStatus.Lent || dto.Status == ItemStatus.Borrowed)
                 {
                     item.Lending = new Lending
@@ -57,14 +75,29 @@ namespace INest.Services
                         ValueAtLending = item.EstimatedValue
                     };
 
-                    _context.ItemHistories.Add(new ItemHistory
+                    AddHistoryEntry(item.Id,
+                        dto.Status == ItemStatus.Lent ? ItemHistoryType.Lent : ItemHistoryType.Borrowed,
+                        null,
+                        item.Lending.PersonName);
+
+                    if (dto.SendNotification && dto.ExpectedReturnDate.HasValue)
                     {
-                        Id = Guid.NewGuid(),
-                        ItemId = item.Id,
-                        Type = ItemHistoryType.Lent,
-                        NewValue = item.Lending.PersonName,
-                        CreatedAt = DateTime.UtcNow.AddSeconds(1)
-                    });
+                        var reminderDate = dto.ExpectedReturnDate.Value.AddDays(-1);
+                        if (reminderDate > DateTime.UtcNow)
+                        {
+                            var reminder = new Reminder
+                            {
+                                Id = Guid.NewGuid(),
+                                ItemId = item.Id,
+                                TriggerAt = reminderDate,
+                                Type = ReminderType.ReturnItem,
+                                IsCompleted = false
+                            };
+                            _context.Reminders.Add(reminder);
+
+                            AddHistoryEntry(item.Id, ItemHistoryType.ReminderScheduled, null, reminderDate.ToString("dd.MM.yyyy"));
+                        }
+                    }
 
                     if (dto.SendNotification && !string.IsNullOrEmpty(dto.ContactEmail))
                     {
@@ -81,16 +114,6 @@ namespace INest.Services
                 {
                     await HandlePhotos(item, photos, dto.MainPhotoName);
                 }
-
-                _context.Items.Add(item);
-
-                _context.ItemHistories.Add(new ItemHistory
-                {
-                    Id = Guid.NewGuid(),
-                    ItemId = item.Id,
-                    Type = ItemHistoryType.Created,
-                    CreatedAt = DateTime.UtcNow
-                });
 
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
@@ -192,6 +215,7 @@ namespace INest.Services
                 .Include(i => i.Sale)
                 .Include(i => i.Lending)
                 .Include(i => i.Reminders)
+                .Include(i => i.History.OrderByDescending(h => h.CreatedAt))
                 .FirstOrDefaultAsync();
 
             if (item == null)
@@ -254,15 +278,7 @@ namespace INest.Services
                 void LogChange(ItemHistoryType type, string? oldValue, string? newValue)
                 {
                     if (oldValue == newValue) return;
-                    _context.ItemHistories.Add(new ItemHistory
-                    {
-                        Id = Guid.NewGuid(),
-                        ItemId = item.Id,
-                        Type = type,
-                        OldValue = oldValue ?? string.Empty,
-                        NewValue = newValue ?? string.Empty,
-                        CreatedAt = DateTime.UtcNow
-                    });
+                    AddHistoryEntry(item.Id, type, oldValue, newValue);
                 }
 
                 if (dto.Name != null && dto.Name != item.Name)
@@ -285,8 +301,7 @@ namespace INest.Services
 
                 if (dto.StorageLocationId.HasValue && dto.StorageLocationId.Value != item.StorageLocationId)
                 {
-                    LogChange(ItemHistoryType.Moved, item.StorageLocationId?.ToString(), dto.StorageLocationId.Value.ToString());
-                    item.StorageLocationId = dto.StorageLocationId.Value;
+                    await MoveItemAsync(userId, itemId, dto.StorageLocationId.Value);
                 }
 
                 if (dto.PurchaseDate.HasValue && dto.PurchaseDate != item.PurchaseDate)
@@ -325,20 +340,24 @@ namespace INest.Services
 
         public async Task<bool> MoveItemAsync(Guid userId, Guid itemId, Guid? targetLocationId)
         {
-            var item = await _context.Items.FirstOrDefaultAsync(i => i.Id == itemId && i.UserId == userId);
+            var item = await _context.Items
+                .Include(i => i.StorageLocation)
+                .FirstOrDefaultAsync(i => i.Id == itemId && i.UserId == userId);
+
             if (item == null) throw new KeyNotFoundException(LocalizationConstants.ITEMS.NOT_FOUND);
 
             if (item.StorageLocationId != targetLocationId)
             {
-                _context.ItemHistories.Add(new ItemHistory
+                string? oldLocName = item.StorageLocation?.Name;
+                string? newLocName = null;
+
+                if (targetLocationId.HasValue)
                 {
-                    Id = Guid.NewGuid(),
-                    ItemId = item.Id,
-                    Type = ItemHistoryType.Moved,
-                    OldValue = item.StorageLocationId?.ToString(),
-                    NewValue = targetLocationId?.ToString(),
-                    CreatedAt = DateTime.UtcNow
-                });
+                    var targetLoc = await _context.StorageLocations.AsNoTracking().FirstOrDefaultAsync(l => l.Id == targetLocationId.Value);
+                    newLocName = targetLoc?.Name;
+                }
+
+                AddHistoryEntry(item.Id, ItemHistoryType.Moved, oldLocName, newLocName);
 
                 var oldStatus = item.Status;
 
@@ -360,15 +379,7 @@ namespace INest.Services
 
                 if (oldStatus != item.Status)
                 {
-                    _context.ItemHistories.Add(new ItemHistory
-                    {
-                        Id = Guid.NewGuid(),
-                        ItemId = item.Id,
-                        Type = ItemHistoryType.StatusChanged,
-                        OldValue = oldStatus.ToString(),
-                        NewValue = item.Status.ToString(),
-                        CreatedAt = DateTime.UtcNow
-                    });
+                    AddHistoryEntry(item.Id, ItemHistoryType.StatusChanged, oldStatus.ToString(), item.Status.ToString());
                 }
 
                 item.StorageLocationId = targetLocationId;
@@ -384,16 +395,10 @@ namespace INest.Services
 
             if (item.Status != newStatus)
             {
-                _context.ItemHistories.Add(new ItemHistory
-                {
-                    Id = Guid.NewGuid(),
-                    ItemId = item.Id,
-                    Type = ItemHistoryType.StatusChanged,
-                    OldValue = item.Status.ToString(),
-                    NewValue = newStatus.ToString(),
-                    CreatedAt = DateTime.UtcNow
-                });
+                ItemHistoryType type = ItemHistoryType.StatusChanged;
+                if (newStatus == ItemStatus.Sold) type = ItemHistoryType.Sold;
 
+                AddHistoryEntry(item.Id, type, item.Status.ToString(), newStatus.ToString());
                 item.Status = newStatus;
                 await _context.SaveChangesAsync();
             }
@@ -422,15 +427,7 @@ namespace INest.Services
             _context.Sales.Remove(item.Sale);
             item.Status = ItemStatus.Active;
 
-            _context.ItemHistories.Add(new ItemHistory
-            {
-                Id = Guid.NewGuid(),
-                ItemId = item.Id,
-                Type = ItemHistoryType.StatusChanged,
-                OldValue = SharedConstants.OLD_VALUE,
-                NewValue = SharedConstants.NEW_VALUE,
-                CreatedAt = DateTime.UtcNow
-            });
+            AddHistoryEntry(item.Id, ItemHistoryType.Returned, SharedConstants.OLD_VALUE, SharedConstants.NEW_VALUE, "Sale canceled");
 
             await _context.SaveChangesAsync();
             return true;
@@ -444,6 +441,7 @@ namespace INest.Services
                 var item = await _context.Items
                     .Include(i => i.Photos)
                     .Include(i => i.Sale)
+                    .Include(i => i.Reminders)
                     .FirstOrDefaultAsync(i => i.Id == itemId && i.UserId == userId);
 
                 if (item == null) throw new KeyNotFoundException(LocalizationConstants.ITEMS.NOT_FOUND);
@@ -458,6 +456,7 @@ namespace INest.Services
                 _context.ItemHistories.RemoveRange(history);
 
                 if (item.Sale != null) _context.Sales.Remove(item.Sale);
+                if (item.Reminders != null && item.Reminders.Any()) _context.Reminders.RemoveRange(item.Reminders);
 
                 _context.Items.Remove(item);
                 await _context.SaveChangesAsync();
