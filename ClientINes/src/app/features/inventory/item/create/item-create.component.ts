@@ -9,6 +9,8 @@ import { TranslateModule } from '@ngx-translate/core';
 import { ITEM_STATUS_OPTIONS } from '../../../../models/constants/item-status.constants';
 import { AuthService } from '../../../../core/services/auth.service';
 import { InestModalComponent } from '../../../../shared/components/modal/shared-modal/inest-modal.component';
+import { LocalizationService } from '../../../../shared/services/localization.service';
+import { TranslateService } from '@ngx-translate/core';
 
 interface PhotoSlot {
   file: File;
@@ -32,6 +34,8 @@ export class ItemCreateComponent implements OnInit {
   private locationService = inject(LocationService);
   private categoryService = inject(CategoryService);
   private authService = inject(AuthService);
+  private localizationService = inject(LocalizationService);
+  private translate = inject(TranslateService);
 
   locations: any[] = [];
   categories: any[] = [];
@@ -49,6 +53,7 @@ export class ItemCreateComponent implements OnInit {
     categoryId: ['', Validators.required],
     storageLocationId: ['', Validators.required],
     status: [0, Validators.required],
+    currency: ['USD', Validators.required],
     purchaseDate: [this.todayMax, [this.dateNotInFutureValidator]],
     purchasePrice: [null as number | null, [Validators.min(0)]],
     estimatedValue: [null as number | null, [Validators.min(0)]],
@@ -65,7 +70,17 @@ export class ItemCreateComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.loadData();
+  this.loadData();
+
+    const initialCurrency = this.localizationService.getDefaultCurrency();
+    this.form.patchValue({ currency: initialCurrency });
+
+    this.translate.onLangChange.subscribe(() => {
+      const currencyControl = this.form.get('currency');
+      if (currencyControl?.pristine) {
+        currencyControl.setValue(this.localizationService.getDefaultCurrency());
+      }
+    });
 
     this.route.queryParams.subscribe(params => {
       const locId = params['locationId'];
@@ -153,6 +168,7 @@ export class ItemCreateComponent implements OnInit {
     formData.append('categoryId', val.categoryId!);
     formData.append('storageLocationId', val.storageLocationId!);
     formData.append('status', val.status!.toString());
+    formData.append('currency', val.currency!);
 
     if (val.purchaseDate) {
       formData.append('purchaseDate', new Date(val.purchaseDate).toISOString());

@@ -52,6 +52,7 @@ namespace INest.Services
                     PurchaseDate = dto.PurchaseDate,
                     PurchasePrice = dto.PurchasePrice,
                     EstimatedValue = dto.EstimatedValue ?? dto.PurchasePrice,
+                    Currency = dto.Currency ?? "USD",
                     CreatedAt = DateTime.UtcNow,
                     Photos = new List<ItemPhoto>()
                 };
@@ -246,6 +247,7 @@ namespace INest.Services
                 item.PurchaseDate = dto.PurchaseDate;
                 item.PurchasePrice = dto.PurchasePrice;
                 item.EstimatedValue = dto.EstimatedValue;
+                item.Currency = dto.Currency ?? item.Currency;
 
                 await HandlePhotos(item, photos);
 
@@ -319,6 +321,11 @@ namespace INest.Services
                 {
                     LogChange(ItemHistoryType.ValueUpdated, item.EstimatedValue?.ToString(), dto.EstimatedValue.Value.ToString());
                     item.EstimatedValue = dto.EstimatedValue;
+                }
+
+                if (dto.Currency != null)
+                {
+                    item.Currency = dto.Currency;
                 }
 
                 if (photos != null && photos.Count > 0)

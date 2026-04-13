@@ -9,6 +9,7 @@ import { jwtInterceptor, cultureInterceptor, globalErrorInterceptor } from './co
 
 import { provideTranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
+import { CurrencyPipe } from '@angular/common';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -28,6 +29,8 @@ export const appConfig: ApplicationConfig = {
       })
     }),
 
-    importProvidersFrom(FormsModule)
+    importProvidersFrom(FormsModule),
+
+    CurrencyPipe
   ]
 };

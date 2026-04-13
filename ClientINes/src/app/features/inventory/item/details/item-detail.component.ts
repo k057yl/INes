@@ -8,11 +8,12 @@ import { ItemHistoryType } from '../../../../models/enums/item-history-type.enum
 import { TranslateModule } from '@ngx-translate/core';
 import { StatusNamePipe } from '../../../../shared/pipe/status-name.pipe';
 import { ItemRemindersComponent } from '../reminder/item-reminders.component';
+import { PricePipe } from '../../../../shared/pipe/price-currency.pipe';
 
 @Component({
   selector: 'app-item-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, TranslateModule, StatusNamePipe, ItemRemindersComponent],
+  imports: [CommonModule, RouterModule, TranslateModule, StatusNamePipe, ItemRemindersComponent, PricePipe],
   templateUrl: './item-detail.component.html',
   styleUrls: ['./item-detail.component.scss']
 })

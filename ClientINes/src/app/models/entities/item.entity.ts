@@ -29,6 +29,7 @@ export interface Item {
   purchaseDate?: string;
   purchasePrice?: number;
   estimatedValue?: number;
+  currency: string;
   createdAt: string;
   photoUrl?: string;
   categoryId: string;

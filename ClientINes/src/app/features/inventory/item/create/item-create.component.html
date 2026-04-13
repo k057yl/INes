@@ -110,6 +110,19 @@
         </div>
       </div>
 
+      <div class="inest-form-group" style="flex: 1;">
+        <label>{{ 'CREATE_ITEM_PAGE.CURRENCY' | translate }}</label>
+        <div class="inest-input-wrapper">
+          <i class="fa fa-coins inest-field-icon-left"></i>
+          <select formControlName="currency">
+            <option value="UAH">UAH (₴)</option>
+            <option value="USD">USD ($)</option>
+            <option value="EUR">EUR (€)</option>
+            <option value="USDT">USDT (₮)</option>
+          </select>
+        </div>
+      </div>
+
       <div class="lending-extra-fields" *ngIf="isLendingStatus">
         <div class="divider-text">
           <span>{{ (form.get('status')?.value == 7 ? 'CREATE_ITEM_PAGE.BORROWED_INFO' : 'CREATE_ITEM_PAGE.LENT_INFO') | translate }}</span>

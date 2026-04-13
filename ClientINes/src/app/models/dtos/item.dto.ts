@@ -13,6 +13,7 @@ export interface CreateItemDto {
   purchaseDate?: string;
   purchasePrice?: number;
   estimatedValue?: number;
+  currency: string;
 }
 
 export interface UpdateItemDto extends Partial<CreateItemDto> {}

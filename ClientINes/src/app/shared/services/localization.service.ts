@@ -3,6 +3,11 @@ import { TranslateService } from '@ngx-translate/core';
 
 @Injectable({ providedIn: 'root' })
 export class LocalizationService {
+  private readonly langToCurrency: Record<string, string> = {
+    'uk': 'UAH',
+    'ru': 'UAH',
+    'en': 'USD'
+  };
 
   constructor(private translate: TranslateService) {
     translate.addLangs(['en', 'ru', 'uk']);
@@ -23,5 +28,9 @@ export class LocalizationService {
 
   getLanguage(): string {
     return this.currentLang;
+  }
+
+  getDefaultCurrency(): string {
+    return this.langToCurrency[this.currentLang] || 'USD';
   }
 }

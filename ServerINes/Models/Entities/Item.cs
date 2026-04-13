@@ -16,6 +16,7 @@ namespace INest.Models.Entities
         public DateTime? PurchaseDate { get; set; }
         public decimal? PurchasePrice { get; set; }
         public decimal? EstimatedValue { get; set; }
+        public string Currency { get; set; } = "USD";
 
         public DateTime CreatedAt { get; set; }
 

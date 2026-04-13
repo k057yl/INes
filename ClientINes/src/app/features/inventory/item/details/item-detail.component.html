@@ -56,11 +56,11 @@
       <div class="finance-grid">
         <div class="finance-card">
           <label>{{ 'ITEM_DETAIL.PURCHASE_PRICE' | translate }}</label>
-          <div class="price-val">{{ item.purchasePrice || 0 }} $</div>
+          <div class="price-val">{{ item.purchasePrice | price:item.currency }}</div>
         </div>
         <div class="finance-card">
           <label>{{ 'ITEM_DETAIL.ESTIMATED_VALUE' | translate }}</label>
-          <div class="price-val">{{ item.estimatedValue || 0 }} $</div>
+          <div class="price-val">{{ item.estimatedValue | price:item.currency }}</div>
         </div>
       </div>
 
