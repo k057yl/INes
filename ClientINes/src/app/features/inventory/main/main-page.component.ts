@@ -8,9 +8,6 @@ import { StorageLocation } from '../../../models/entities/storage-location.entit
 import { Item } from '../../../models/entities/item.entity';
 import { LocationCardComponent } from '../../../shared/components/location-card/location-card.component';
 import { LocationRibbonComponent } from '../../../shared/components/location-ribbon/location-ribbon.component';
-import { SellModalComponent } from '../../../shared/components/sell-modal/sell-modal.component';
-import { InestModalComponent } from '../../../shared/components/modal/shared-modal/inest-modal.component';
-import { LendItemModalComponent } from '../../../shared/components/modal/lend-modal/lend-item-modal.component';
 import { RIBBON_CONFIG, BOARD_CONFIG } from '../../../shared/constants/ui.constants';
 
 import { MainPageFacade } from './main-page.facade';
@@ -22,9 +19,8 @@ import { MainPageModalService } from './main-page.modal.service';
   imports: [
     CommonModule, RouterModule, DragDropModule, 
     LocationCardComponent, LocationRibbonComponent, 
-    TranslateModule, SellModalComponent, InestModalComponent, LendItemModalComponent
-  ],
-  providers: [MainPageFacade, MainPageModalService],
+    TranslateModule ],
+  providers: [MainPageFacade],
   templateUrl: './main-page.component.html',
   styleUrl: './main-page.component.scss'
 })
@@ -144,11 +140,10 @@ export class MainPageComponent implements OnInit {
   onLocationMove(event: { loc: StorageLocation, targetId: string }) {
     const targetId = event.targetId === 'root' ? null : event.targetId;
 
-    // Оптимистично двигаем в UI, чтобы не было мигания
     this.facade.moveLocationLocally(event.loc.id, targetId);
 
     this.facade.moveLocation(event.loc.id, event.targetId).subscribe({
-      error: () => this.loadData() // Откат, если сервер помер
+      error: () => this.loadData()
     });
   }
 

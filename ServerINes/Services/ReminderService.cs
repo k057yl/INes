@@ -21,9 +21,12 @@ namespace INest.Services
             {
                 Id = Guid.NewGuid(),
                 ItemId = dto.ItemId,
+                Title = dto.Title,
                 Type = dto.Type,
+                Recurrence = dto.Recurrence,
                 TriggerAt = dto.TriggerAt,
-                IsCompleted = false
+                IsCompleted = false,
+                IsNotificationSent = false
             };
 
             _context.Reminders.Add(reminder);
@@ -41,21 +44,25 @@ namespace INest.Services
 
             reminder.IsCompleted = true;
 
-            var recurringTypes = new[] {
-            ReminderType.Insurance,
-            ReminderType.Maintenance,
-            ReminderType.MedicalCheckup,
-            ReminderType.TaxPayment
-        };
-
-            if (recurringTypes.Contains(reminder.Type))
+            if (reminder.Recurrence != ReminderRecurrence.None)
             {
+                DateTime nextTrigger = reminder.Recurrence switch
+                {
+                    ReminderRecurrence.Daily => reminder.TriggerAt.AddDays(1),
+                    ReminderRecurrence.Weekly => reminder.TriggerAt.AddDays(7),
+                    ReminderRecurrence.Monthly => reminder.TriggerAt.AddMonths(1),
+                    ReminderRecurrence.Yearly => reminder.TriggerAt.AddYears(1),
+                    _ => reminder.TriggerAt
+                };
+
                 _context.Reminders.Add(new Reminder
                 {
                     Id = Guid.NewGuid(),
                     ItemId = reminder.ItemId,
+                    Title = reminder.Title,
                     Type = reminder.Type,
-                    TriggerAt = reminder.TriggerAt.AddYears(1),
+                    Recurrence = reminder.Recurrence,
+                    TriggerAt = nextTrigger,
                     IsCompleted = false
                 });
             }
@@ -64,7 +71,7 @@ namespace INest.Services
             {
                 ItemId = reminder.ItemId,
                 Type = ItemHistoryType.ValueUpdated,
-                NewValue = $"{LocalizationConstants.HISTORY.REMINDER_COMPLETED}|{reminder.Type}",
+                NewValue = $"{LocalizationConstants.HISTORY.REMINDER_COMPLETED}|{reminder.Title}",
                 CreatedAt = DateTime.UtcNow
             });
 

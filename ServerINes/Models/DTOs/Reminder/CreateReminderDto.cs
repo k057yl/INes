@@ -2,5 +2,11 @@
 
 namespace INest.Models.DTOs.Reminder
 {
-    public record CreateReminderDto(Guid ItemId, ReminderType Type, DateTime TriggerAt);
+    public record CreateReminderDto(
+        Guid ItemId,
+        string Title,
+        ReminderType Type,
+        ReminderRecurrence Recurrence,
+        DateTime TriggerAt
+    );
 }

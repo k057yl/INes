@@ -34,21 +34,21 @@ namespace INest.Exceptions
 
         public static string GetLocalizationKey(this ReminderType type) => type switch
         {
-            ReminderType.WarrantyExpiration => LocalizationConstants.REMINDERS.WARRANTY,
+            ReminderType.Custom => LocalizationConstants.REMINDERS.CUSTOM,
+            ReminderType.Warranty => LocalizationConstants.REMINDERS.WARRANTY,
             ReminderType.Maintenance => LocalizationConstants.REMINDERS.MAINTENANCE,
             ReminderType.ReturnItem => LocalizationConstants.REMINDERS.RETURN_ITEM,
             ReminderType.Insurance => LocalizationConstants.REMINDERS.INSURANCE,
-            ReminderType.MedicalCheckup => LocalizationConstants.REMINDERS.MEDICAL,
-            ReminderType.TaxPayment => LocalizationConstants.REMINDERS.TAX,
+            ReminderType.Medical => LocalizationConstants.REMINDERS.MEDICAL,
+            ReminderType.Tax => LocalizationConstants.REMINDERS.TAX,
             ReminderType.Subscription => LocalizationConstants.REMINDERS.SUBSCRIPTION,
-            ReminderType.Custom => LocalizationConstants.REMINDERS.CUSTOM,
-            _ => LocalizationConstants.SYSTEM.DEFAULT_ERROR
+            _ => LocalizationConstants.REMINDERS.CUSTOM
         };
 
         public static string GetLocalizationKey(this LendingDirection direction) => direction switch
         {
-            LendingDirection.Out => LocalizationConstants.STATUS.LENT,      // Я отдал
-            LendingDirection.In => LocalizationConstants.STATUS.BORROWED,   // Я взял
+            LendingDirection.Out => LocalizationConstants.STATUS.LENT,
+            LendingDirection.In => LocalizationConstants.STATUS.BORROWED,
             _ => LocalizationConstants.SYSTEM.DEFAULT_ERROR
         };
     }

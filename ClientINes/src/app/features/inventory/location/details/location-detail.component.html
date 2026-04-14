@@ -15,7 +15,7 @@
             <i [className]="'fa ' + (location.icon || 'fa-folder')" [style.color]="location.color"></i>
           </div>
           <div class="title-block">
-            <span class="location-label">{{ 'ITEM_DETAIL.STORAGE_PLACE' | translate }}</span>
+            <span class="location-label">{{ 'LOCATION_DETAILS.STORAGE_PLACE' | translate }}</span>
             <h1>{{ location.name }}</h1>
           </div>
         </div>
@@ -32,7 +32,7 @@
     <div class="content-grid">
       <aside class="side-panel">
         <div class="panel-section" *ngIf="location.parentLocation">
-          <h3 class="panel-title">{{ 'LOCATIONS.UPPER_LEVEL' | translate }}</h3>
+          <h3 class="panel-title">{{ 'LOCATION_DETAILS.UPPER_LEVEL' | translate }}</h3>
           <a [routerLink]="['/location', location.parentLocation.id]" class="sub-loc-card parent-link">
             <i class="fa fa-level-up-alt"></i>
             <span class="name">{{ location.parentLocation.name }}</span>
@@ -40,7 +40,7 @@
         </div>
 
         <div class="panel-section">
-          <h3 class="panel-title">{{ 'LOCATIONS.NESTED' | translate }}</h3>
+          <h3 class="panel-title">{{ 'LOCATION_DETAILS.NESTED' | translate }}</h3>
           <div class="sub-locations">
             <div class="sub-loc-card current">
                <i [className]="'fa ' + (location.icon || 'fa-folder')" [style.color]="location.color"></i>
@@ -61,7 +61,7 @@
       <main class="items-area">
         <div class="area-header">
           <h2 class="panel-title">
-            {{ 'HEADER.MANAGEMENT' | translate }} ({{ location.items.length || 0 }})
+            {{ 'LOCATION_DETAILS.ITEMS_COUNT' | translate }} ({{ location.items.length || 0 }})
           </h2>
         </div>
 
@@ -81,7 +81,7 @@
             
             <div class="tile-content">
               <h3 [routerLink]="['/item', item.id]">{{ item.name }}</h3>
-              <p>{{ item.description || ('ITEM_DETAIL.NO_DESCRIPTION' | translate) }}</p>
+              <p>{{ item.description || ('LOCATION_DETAILS.NO_DESCRIPTION' | translate) }}</p>
               
               <div class="tile-actions">
                 <button class="inest-action-btn edit" 
@@ -90,8 +90,8 @@
                   <i class="fa fa-pencil"></i>
                 </button>
                 <button class="inest-action-btn is-danger" 
-                        (click)="openDeleteModal(item)"
-                        [title]="'ITEM_CARD.DELETE' | translate">
+                        (click)="onDeleteItem(item)"
+                        [title]="'COMMON.DELETE' | translate">
                   <i class="fa fa-trash"></i>
                 </button>
               </div>
@@ -101,22 +101,11 @@
       </main>
     </div>
   </div>
-
-  <app-inest-modal
-    *ngIf="showDeleteModal"
-    mode="delete"
-    [title]="'ITEM_CARD.DELETE' | translate"
-    [message]="'ITEM_CARD.M_YOU_SURE' | translate"
-    [confirmText]="'ITEM_CARD.DELETE'"
-    (confirmed)="confirmDeleteItem()"
-    (cancelled)="closeModals()">
-  </app-inest-modal>
 </div>
 
 <ng-template #emptyState>
   <div class="empty-view">
-    <i class="fa fa-search"></i>
-    <p>{{ 'SALES.NO_SALES' | translate }}</p>
+    <p>{{ 'LOCATION_DETAILS.NO_ITEMS' | translate }}</p>
   </div>
 </ng-template>
 

@@ -48,17 +48,3 @@
     <button (click)="changeBoardPage(1)" [disabled]="currentPageBoard === totalBoardPages - 1"><i class="fa fa-angle-right"></i></button>
   </div>
 </div>
-
-<app-inest-modal *ngIf="modal.config" [mode]="modal.config.mode" [title]="modal.config.title" 
-  [message]="modal.config.message" [name]="modal.config.name || ''" 
-  [confirmText]="modal.config.confirmText" [cancelText]="modal.config.cancelText"
-  (confirmed)="modal.confirm($event)" (cancelled)="modal.close()">
-</app-inest-modal>
-
-<app-sell-modal *ngIf="modal.activeModal === 'sell' && modal.selectedItem" [item]="modal.selectedItem"
-  (close)="modal.close()" (confirm)="modal.confirm($event)">
-</app-sell-modal>
-
-<app-lend-item-modal *ngIf="modal.activeModal === 'lend' && modal.selectedItem" [item]="modal.selectedItem"
-  [isOpen]="true" (close)="modal.close()" (confirm)="modal.confirm($event)">
-</app-lend-item-modal>

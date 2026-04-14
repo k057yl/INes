@@ -159,8 +159,9 @@
       backdrop-filter: blur(4px);
       border: 1px solid currentColor;
       
-      &.active { color: var(--turquoise); }
+      &.active { color: var(--g-green); }
       &.lent { color: var(--g-yellow); }
+      &.borrowed { color: var(--g-red); }
     }
   }
 

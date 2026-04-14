@@ -3,6 +3,7 @@ using FluentValidation.AspNetCore;
 using INest.Constants;
 using INest.Models.Entities;
 using INest.Models.Validators;
+using INest.Services.BackgroundServices;
 using INest.Services.Decorator;
 using INest.Services.Interfaces;
 using INest.Services.Tracker;
@@ -120,6 +121,9 @@ namespace INest.Services
             services.AddDecoratedService<IItemService, ItemService, CachedItemService>();
             services.AddDecoratedService<IReminderService, ReminderService, CachedReminderService>();
             services.AddDecoratedService<ILendingService, LendingService, CachedLendingService>();
+
+            // Старт вместе с приложением
+            services.AddHostedService<ReminderWorker>();
 
             return services;
         }

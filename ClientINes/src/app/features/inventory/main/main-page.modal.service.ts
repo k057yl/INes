@@ -5,7 +5,9 @@ import { Item } from '../../../models/entities/item.entity';
 
 export type ModalType = 'deleteItem' | 'deleteLoc' | 'renameLoc' | 'moveConfirm' | 'sell' | 'lend' | null;
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class MainPageModalService {
   activeModal: ModalType = null;
   config: any = null;

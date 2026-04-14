@@ -11,5 +11,6 @@ namespace INest.Services.Interfaces
             string personName,
             DateTime? returnDate,
             bool isBorrowedByMe);
+        Task SendReminderNotificationAsync(string toEmail, string title, DateTime triggerAt);
     }
 }

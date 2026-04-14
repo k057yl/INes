@@ -4,13 +4,14 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { ReminderService } from '../../../../shared/services/reminder.service';
 import { Reminder } from '../../../../models/entities/reminder.entity';
 import { ReminderType } from '../../../../models/enums/reminder-type.enum';
+import { ReminderRecurrence } from '../../../../models/enums/reminder-recurrence.enum';
 import { TranslateModule } from '@ngx-translate/core';
-import { InestModalComponent } from '../../../../shared/components/modal/shared-modal/inest-modal.component';
+import { MainPageModalService } from '../../main/main-page.modal.service';
 
 @Component({
   selector: 'app-item-reminders',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslateModule, InestModalComponent],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule],
   templateUrl: './item-reminders.component.html',
   styleUrls: ['./item-reminders.component.scss']
 })
@@ -19,29 +20,34 @@ export class ItemRemindersComponent implements OnInit {
 
   private reminderService = inject(ReminderService);
   private fb = inject(FormBuilder);
+  private modal = inject(MainPageModalService);
 
   reminders: Reminder[] = [];
   isAdding = false;
   reminderForm!: FormGroup;
 
-  modalConfirmText: string = 'COMMON.CONFIRM';
-  modalCancelText: string = 'COMMON.CANCEL';
-
-  // СОСТОЯНИЕ МОДАЛКИ ПОДТВЕРЖДЕНИЯ
-  showConfirm = false;
-  modalMode: 'input' | 'delete' | 'confirm' | 'smart-delete' = 'confirm';
-  modalTitle = '';
-  modalMessage = '';
-  pendingAction: { type: 'complete' | 'delete', id: string } | null = null;
-
   ReminderType = ReminderType;
-  
+  ReminderRecurrence = ReminderRecurrence;
+
+  // Список типов для селекта (8 штук)
   availableTypes = [
+    { value: ReminderType.Custom, label: 'REMINDERS.CUSTOM' },
+    { value: ReminderType.Warranty, label: 'REMINDERS.WARRANTY' },
     { value: ReminderType.Maintenance, label: 'REMINDERS.MAINTENANCE' },
+    { value: ReminderType.ReturnItem, label: 'REMINDERS.RETURN_ITEM' },
     { value: ReminderType.Insurance, label: 'REMINDERS.INSURANCE' },
-    { value: ReminderType.WarrantyExpiration, label: 'REMINDERS.WARRANTY' },
-    { value: ReminderType.MedicalCheckup, label: 'REMINDERS.MEDICAL' },
-    { value: ReminderType.Custom, label: 'REMINDERS.CUSTOM' }
+    { value: ReminderType.Medical, label: 'REMINDERS.MEDICAL' },
+    { value: ReminderType.Tax, label: 'REMINDERS.TAX' },
+    { value: ReminderType.Subscription, label: 'REMINDERS.SUBSCRIPTION' }
+  ];
+
+  // Список повторений для селекта
+  availableRecurrences = [
+    { value: ReminderRecurrence.None, label: 'RECURRENCE.NONE' },
+    { value: ReminderRecurrence.Daily, label: 'RECURRENCE.DAILY' },
+    { value: ReminderRecurrence.Weekly, label: 'RECURRENCE.WEEKLY' },
+    { value: ReminderRecurrence.Monthly, label: 'RECURRENCE.MONTHLY' },
+    { value: ReminderRecurrence.Yearly, label: 'RECURRENCE.YEARLY' }
   ];
 
   ngOnInit(): void {
@@ -51,15 +57,17 @@ export class ItemRemindersComponent implements OnInit {
 
   getReminderInfo(type: number) {
     const info: Record<number, { icon: string, color: string, label: string }> = {
+        [ReminderType.Custom]: { icon: 'fa-bell', color: 'var(--text-muted)', label: 'REMINDERS.CUSTOM' },
+        [ReminderType.Warranty]: { icon: 'fa-shield-alt', color: 'var(--g-blue)', label: 'REMINDERS.WARRANTY' },
         [ReminderType.Maintenance]: { icon: 'fa-tools', color: 'var(--g-green)', label: 'REMINDERS.MAINTENANCE' },
-        [ReminderType.Insurance]: { icon: 'fa-file-shield', color: 'var(--accent-color)', label: 'REMINDERS.INSURANCE' },
-        [ReminderType.WarrantyExpiration]: { icon: 'fa-calendar-check', color: 'var(--g-blue)', label: 'REMINDERS.WARRANTY' },
-        [ReminderType.MedicalCheckup]: { icon: 'fa-stethoscopes', color: 'var(--g-red)', label: 'REMINDERS.MEDICAL' },
-        [ReminderType.ReturnItem]: { icon: 'fa-hand-holding-heart', color: 'var(--g-yellow)', label: 'REMINDERS.RETURN_ITEM' },
-        [ReminderType.Custom]: { icon: 'fa-bell', color: 'var(--text-muted)', label: 'REMINDERS.CUSTOM' }
+        [ReminderType.ReturnItem]: { icon: 'fa-undo', color: 'var(--g-yellow)', label: 'REMINDERS.RETURN_ITEM' },
+        [ReminderType.Insurance]: { icon: 'fa-file-invoice-dollar', color: 'var(--accent-color)', label: 'REMINDERS.INSURANCE' },
+        [ReminderType.Medical]: { icon: 'fa-heartbeat', color: 'var(--g-red)', label: 'REMINDERS.MEDICAL' },
+        [ReminderType.Tax]: { icon: 'fa-coins', color: 'var(--g-yellow)', label: 'REMINDERS.TAX' },
+        [ReminderType.Subscription]: { icon: 'fa-calendar-alt', color: 'var(--g-blue)', label: 'REMINDERS.SUBSCRIPTION' }
     };
     return info[type] || info[ReminderType.Custom];
-    }
+  }
 
   loadReminders() {
     this.reminderService.getItemReminders(this.itemId).subscribe(res => {
@@ -69,21 +77,25 @@ export class ItemRemindersComponent implements OnInit {
 
   initForm() {
     this.reminderForm = this.fb.group({
-      type: [ReminderType.Maintenance, Validators.required],
+      title: ['', [Validators.required, Validators.maxLength(100)]],
+      type: [ReminderType.Custom, Validators.required],
+      recurrence: [ReminderRecurrence.None, Validators.required],
       triggerAt: ['', Validators.required]
     });
   }
 
   toggleAdd() {
     this.isAdding = !this.isAdding;
-    if (!this.isAdding) this.reminderForm.reset({ type: ReminderType.Maintenance });
+    if (!this.isAdding) this.reminderForm.reset({ type: ReminderType.Custom, recurrence: ReminderRecurrence.None });
   }
 
   onSubmit() {
     if (this.reminderForm.invalid) return;
     const dto = {
       itemId: this.itemId,
+      title: this.reminderForm.value.title,
       type: Number(this.reminderForm.value.type),
+      recurrence: Number(this.reminderForm.value.recurrence),
       triggerAt: new Date(this.reminderForm.value.triggerAt).toISOString()
     };
     this.reminderService.createReminder(dto).subscribe(newReminder => {
@@ -92,41 +104,19 @@ export class ItemRemindersComponent implements OnInit {
     });
   }
 
-  // --- ЛОГИКА ПОДТВЕРЖДЕНИЙ ---
+  // --- ЛОГИКА ЧЕРЕЗ ГЛОБАЛЬНЫЙ СЕРВИС ---
 
   requestComplete(id: string) {
-    this.modalMode = 'confirm';
-    this.modalTitle = 'REMINDERS.MODAL.CONFIRM_ACTION';
-    this.modalMessage = 'REMINDERS.MODAL.M_YOU_SURE_DONE';
-    this.modalConfirmText = 'REMINDERS.MODAL.YES';
-    this.modalCancelText = 'REMINDERS.MODAL.CANCEL';
-    this.pendingAction = { type: 'complete', id };
-    this.showConfirm = true;
-    }
-
-  requestDelete(id: string) {
-    this.modalMode = 'delete';
-    this.modalTitle = 'COMMON.DELETE';
-    this.modalMessage = 'REMINDERS.MODAL.M_YOU_SURE_DELETE';
-    this.modalConfirmText = 'REMINDERS.MODAL.DELETE';
-    this.modalCancelText = 'REMINDERS.MODAL.CANCEL';
-    this.pendingAction = { type: 'delete', id };
-    this.showConfirm = true;
+    this.modal.openMoveConfirm('REMINDERS.MODAL.M_YOU_SURE_DONE').subscribe(() => {
+        this.reminderService.completeReminder(id).subscribe(() => this.loadReminders());
+    });
   }
 
-  handleConfirm() {
-    if (!this.pendingAction) return;
-
-    if (this.pendingAction.type === 'complete') {
-      this.reminderService.completeReminder(this.pendingAction.id).subscribe(() => {
-        this.loadReminders();
-        this.showConfirm = false;
-      });
-    } else {
-      this.reminderService.deleteReminder(this.pendingAction.id).subscribe(() => {
-        this.reminders = this.reminders.filter(r => r.id !== this.pendingAction?.id);
-        this.showConfirm = false;
-      });
-    }
+  requestDelete(id: string) {
+    this.modal.openDeleteLocation({ name: '12312312312445' } as any).subscribe(() => {
+        this.reminderService.deleteReminder(id).subscribe(() => {
+            this.reminders = this.reminders.filter(r => r.id !== id);
+        });
+    });
   }
 }

@@ -66,5 +66,14 @@ namespace INest.Services
 
             await SendEmailAsync(toEmail, subject, htmlContent);
         }
+
+        public async Task SendReminderNotificationAsync(string toEmail, string title, DateTime triggerAt)
+        {
+            string subject = _localizer["REMINDER_SUBJECT"].Value;
+            string dateStr = triggerAt.ToString("dd.MM.yyyy");
+            string htmlContent = string.Format(_localizer["REMINDER_BODY"].Value, dateStr, title);
+
+            await SendEmailAsync(toEmail, subject, htmlContent);
+        }
     }
 }

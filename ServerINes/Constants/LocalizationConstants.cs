@@ -113,10 +113,10 @@
 
         public static class REMINDERS
         {
+            public const string CUSTOM = "REMINDERS.CUSTOM";
             public const string WARRANTY = "REMINDERS.WARRANTY";
             public const string MAINTENANCE = "REMINDERS.MAINTENANCE";
             public const string RETURN_ITEM = "REMINDERS.RETURN_ITEM";
-            public const string CUSTOM = "REMINDERS.CUSTOM";
             public const string INSURANCE = "REMINDERS.INSURANCE";
             public const string MEDICAL = "REMINDERS.MEDICAL";
             public const string TAX = "REMINDERS.TAX";

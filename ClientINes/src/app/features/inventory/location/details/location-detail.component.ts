@@ -9,12 +9,12 @@ import { StorageLocation } from '../../../../models/entities/storage-location.en
 import { ItemStatus } from '../../../../models/enums/item-status.enum';
 import { ItemService } from '../../../../shared/services/item.service';
 import { LocationService } from '../../../../shared/services/location.service';
-import { InestModalComponent } from '../../../../shared/components/modal/shared-modal/inest-modal.component';
+import { MainPageModalService } from '../../main/main-page.modal.service';
 
 @Component({
   selector: 'app-location-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, TranslateModule, InestModalComponent],
+  imports: [CommonModule, RouterModule, TranslateModule],
   templateUrl: './location-detail.component.html',
   styleUrl: './location-detail.component.scss'
 })
@@ -23,16 +23,13 @@ export class LocationDetailComponent implements OnInit {
   private itemService = inject(ItemService);
   private locationService = inject(LocationService);
   private ngLocation = inject(NgLocation);
+  private modal = inject(MainPageModalService);
   
   private readonly baseUrl = environment.apiBaseUrl.replace('/api', '');
   private readonly googleColors = ['var(--g-blue)', 'var(--g-red)', 'var(--g-yellow)', 'var(--g-green)'];
 
   location: StorageLocation | null = null;
   isLoading = true;
-
-  showDeleteModal = false;
-  selectedItem: any = null;
-
   breadcrumbs: StorageLocation[] = [];
 
   readonly statusKeys: Record<number, string> = {
@@ -42,7 +39,8 @@ export class LocationDetailComponent implements OnInit {
     [ItemStatus.Broken]: 'STATUS.BROKEN',
     [ItemStatus.Sold]: 'STATUS.SOLD',
     [ItemStatus.Gifted]: 'STATUS.GIFTED',
-    [ItemStatus.Listed]: 'STATUS.LISTED'
+    [ItemStatus.Listed]: 'STATUS.LISTED',
+    [ItemStatus.Borrowed]: 'STATUS.BORROWED'
   };
 
   ngOnInit() {
@@ -72,27 +70,16 @@ export class LocationDetailComponent implements OnInit {
     this.breadcrumbs = path;
   }
 
-  openDeleteModal(item: any) {
-    this.selectedItem = item;
-    this.showDeleteModal = true;
-  }
-
-  confirmDeleteItem() {
-    if (!this.selectedItem) return;
-    
-    this.itemService.delete(this.selectedItem.id).subscribe({
-      next: () => {
-        if (this.location) {
-          this.location.items = this.location.items.filter(i => i.id !== this.selectedItem.id);
+  onDeleteItem(item: any) { 
+    this.modal.openDeleteItem(item).subscribe(() => {
+      this.itemService.delete(item.id).subscribe({
+        next: () => {
+          if (this.location) {
+            this.location.items = this.location.items.filter(i => i.id !== item.id);
+          }
         }
-        this.closeModals();
-      }
+      });
     });
-  }
-
-  closeModals() {
-    this.showDeleteModal = false;
-    this.selectedItem = null;
   }
 
   getAccentColor(id: string): string {

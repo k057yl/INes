@@ -30,7 +30,7 @@
       <div class="location-badge" *ngIf="item.storageLocation" [routerLink]="['/location', item.storageLocationId]">
         <div class="loc-icon"><i class="fa fa-map-marker-alt"></i></div>
         <div class="loc-info">
-          <span>{{ 'ITEM_DETAIL.STORAGE_PLACE' | translate }}</span>
+          <span>{{ 'ITEM_DETAILS.STORAGE_PLACE' | translate }}</span>
           <strong>{{ item.storageLocation.name }}</strong>
         </div>
       </div>
@@ -51,15 +51,15 @@
       </div>
 
       <h1 class="item-name">{{ item.name }}</h1>
-      <p class="item-description">{{ item.description || ('ITEM_DETAIL.NO_DESCRIPTION' | translate) }}</p>
+      <p class="item-description">{{ item.description || ('ITEM_DETAILS.NO_DESCRIPTION' | translate) }}</p>
 
       <div class="finance-grid">
         <div class="finance-card">
-          <label>{{ 'ITEM_DETAIL.PURCHASE_PRICE' | translate }}</label>
+          <label>{{ 'ITEM_DETAILS.PURCHASE_PRICE' | translate }}</label>
           <div class="price-val">{{ item.purchasePrice | price:item.currency }}</div>
         </div>
         <div class="finance-card">
-          <label>{{ 'ITEM_DETAIL.ESTIMATED_VALUE' | translate }}</label>
+          <label>{{ 'ITEM_DETAILS.ESTIMATED_VALUE' | translate }}</label>
           <div class="price-val">{{ item.estimatedValue | price:item.currency }}</div>
         </div>
       </div>

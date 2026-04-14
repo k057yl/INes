@@ -1,6 +1,6 @@
 <div class="reminders-widget">
   <div class="widget-header">
-    <h3><i class="fa fa-bell"></i> {{ 'REMINDERS.UI.TITLE' | translate }}</h3>
+    <h3><i class="fa fa-bell"></i> {{ 'REMINDS_PAGE.OPEN_MENU' | translate }}</h3>
     <button class="add-btn" (click)="toggleAdd()" [title]="'COMMON.ADD' | translate">
       <i class="fa" [ngClass]="isAdding ? 'fa-times' : 'fa-plus'"></i>
     </button>
@@ -9,9 +9,15 @@
   <div class="add-form-container" *ngIf="isAdding">
     <form [formGroup]="reminderForm" (ngSubmit)="onSubmit()">
       <div class="form-fields-stack">
+        
         <div class="field-group">
-          <label>{{ 'REMINDERS.UI.TYPE_LABEL' | translate }}</label>
-          <select formControlName="type">
+          <label>{{ 'REMINDS_PAGE.NAME_LABEL' | translate }}</label>
+          <input type="text" formControlName="title" [placeholder]="'REMINDS_PAGE.NAME_PHL' | translate" class="inest-input-styled">
+        </div>
+
+        <div class="field-group">
+          <label>{{ 'REMINDS_PAGE.TYPE_LABEL' | translate }}</label>
+          <select formControlName="type" class="inest-input-styled">
             <option *ngFor="let type of availableTypes" [value]="type.value">
               {{ type.label | translate }}
             </option>
@@ -19,8 +25,17 @@
         </div>
 
         <div class="field-group">
-          <label>{{ 'REMINDERS.UI.DATE_LABEL' | translate }}</label>
-          <input type="date" formControlName="triggerAt">
+          <label>{{ 'REMINDS_PAGE.RECURRENCE' | translate }}</label>
+          <select formControlName="recurrence" class="inest-input-styled">
+            <option *ngFor="let rec of availableRecurrences" [value]="rec.value">
+              {{ rec.label | translate }}
+            </option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label>{{ 'REMINDS_PAGE.DATE_LABEL' | translate }}</label>
+          <input type="date" formControlName="triggerAt" class="inest-input-styled">
         </div>
 
         <button type="submit" class="save-btn" [disabled]="reminderForm.invalid">
@@ -32,17 +47,22 @@
 
   <div class="reminders-list">
     <div *ngIf="reminders.length === 0" class="empty-state">
-      {{ 'REMINDERS.UI.EMPTY_LABEL' | translate }}
+      {{ 'REMINDS_PAGE.EMPTY_LABEL' | translate }}
     </div>
 
     <div class="reminder-item" *ngFor="let r of reminders" [class.completed]="r.isCompleted">
       <div class="r-info">
-        <div class="r-type-row" [style.color]="getReminderInfo(r.type).color">
-          <i class="fa" [ngClass]="getReminderInfo(r.type).icon"></i>
-          <span>{{ getReminderInfo(r.type).label | translate }}</span>
+        <div class="r-title-row">
+            <strong>{{ r.title }}</strong>
         </div>
-        <div class="r-date">
-          <i class="fa fa-calendar-alt"></i> {{ r.triggerAt | date:'dd.MM.yyyy' }}
+        <div class="r-meta-row">
+          <span [style.color]="getReminderInfo(r.type).color">
+            <i class="fa" [ngClass]="getReminderInfo(r.type).icon"></i>
+            {{ getReminderInfo(r.type).label | translate }}
+          </span>
+          <span class="r-date">
+            <i class="fa fa-calendar-alt"></i> {{ r.triggerAt | date:'dd.MM.yyyy' }}
+          </span>
         </div>
       </div>
       
@@ -57,14 +77,3 @@
     </div>
   </div>
 </div>
-
-<app-inest-modal
-  *ngIf="showConfirm"
-  [mode]="modalMode"
-  [title]="modalTitle | translate"
-  [message]="modalMessage | translate"
-  [confirmText]="modalConfirmText | translate"  
-  [cancelText]="modalCancelText | translate"
-  (confirmed)="handleConfirm()"
-  (cancelled)="showConfirm = false">
-</app-inest-modal>
