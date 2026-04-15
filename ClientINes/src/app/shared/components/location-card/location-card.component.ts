@@ -8,6 +8,7 @@ import { FeatureService } from '../../../core/services/feature.service';
 import { ItemCardComponent } from '../item-card/item-card.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { ColorChromeModule } from 'ngx-color/chrome';
+import { DashboardModalService } from '../../../features/dashboard/dashboard.modal.service';
 
 @Component({
   selector: 'app-location-card',
@@ -19,6 +20,7 @@ import { ColorChromeModule } from 'ngx-color/chrome';
 export class LocationCardComponent {
   private el = inject(ElementRef);
   public featureService = inject(FeatureService);
+  public modalService = inject(DashboardModalService);
 
   @Input({ required: true }) location!: StorageLocation;
   @Input() flatLocations: StorageLocation[] = [];

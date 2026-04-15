@@ -6,30 +6,38 @@
 
 <app-footer></app-footer>
 
-<app-inest-modal *ngIf="modal.config" [mode]="modal.config.mode" [title]="modal.config.title" 
-  [message]="modal.config.message" [name]="modal.config.name || ''" 
-  [confirmText]="modal.config.confirmText" [cancelText]="modal.config.cancelText"
-  (confirmed)="modal.confirm($event)" (cancelled)="modal.close()">
+<app-inest-modal *ngIf="modal.activeModal === 'confirm' && modal.config" 
+  [mode]="modal.config.mode" 
+  [title]="modal.config.title" 
+  [message]="modal.config.message" 
+  [name]="modal.config.name || ''" 
+  [confirmText]="modal.config.confirmText" 
+  [cancelText]="modal.config.cancelText"
+  (confirmed)="modal.confirm($event)" 
+  (cancelled)="modal.close()">
 </app-inest-modal>
 
-<app-sell-modal *ngIf="modal.activeModal === 'sell' && modal.selectedItem" [item]="modal.selectedItem"
-  (close)="modal.close()" (confirm)="modal.confirm($event)">
+<app-sell-modal *ngIf="modal.activeModal === 'sell' && modal.selectedItem" 
+  [item]="modal.selectedItem"
+  (close)="modal.close()" 
+  (confirm)="modal.confirm($event)">
 </app-sell-modal>
 
-<app-lend-item-modal *ngIf="modal.activeModal === 'lend' && modal.selectedItem" [item]="modal.selectedItem"
-  [isOpen]="true" (close)="modal.close()" (confirm)="modal.confirm($event)">
+<app-lend-item-modal *ngIf="modal.activeModal === 'lend' && modal.selectedItem" 
+  [item]="modal.selectedItem"
+  [isOpen]="true" 
+  (close)="modal.close()" 
+  (confirm)="modal.confirm($event)">
 </app-lend-item-modal>
 
-<app-create-item-modal 
-*ngIf="modal.activeModal === 'createItem'"
-  [parentId]="modal.currentParentId"
-  (close)="modal.close()"
-  (created)="modal.confirm($event)">
-</app-create-item-modal>
+<app-item-form-modal 
+  *ngIf="modal.activeModal === 'itemForm'"
+  [item]="modal.selectedItem"
+  [parentId]="modal.currentParentId">
+</app-item-form-modal>
 
-<app-create-location-modal 
-  *ngIf="modal.activeModal === 'createLoc'"
-  [parentId]="modal.currentParentId"
-  (close)="modal.close()"
-  (created)="modal.confirm($event)">
-</app-create-location-modal>
+<app-location-form-modal 
+  *ngIf="modal.activeModal === 'locationForm'"
+  [location]="modal.selectedLocation"
+  [parentId]="modal.currentParentId">
+</app-location-form-modal>

@@ -1,25 +1,27 @@
-<div class="container-overlay">
-  <div class="create-card">
+<div class="container-overlay" (click)="cancel()">
+  <div class="create-card" (click)="$event.stopPropagation()">
+
+    <button type="button" class="close-modal-btn" (click)="cancel()">
+      <i class="fa fa-times"></i>
+    </button>
+
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
       
       <h2 [style.color]="form.controls.color.value || 'var(--accent-color)'">
-        <i class="fa fa-map-marker-alt"></i> {{ 'CREATE_LOCATION_PAGE.TITLE_CREATE' | translate }}
+        <i class="fa" [ngClass]="isEdit ? 'fa-pen' : 'fa-map-marker-alt'"></i> 
+        {{ (isEdit ? 'CREATE_LOCATION_PAGE.TITLE_EDIT' : 'CREATE_LOCATION_PAGE.TITLE_CREATE') | translate }}
       </h2>
 
       <div class="form-group">
         <label>{{ 'CREATE_LOCATION_PAGE.NAME' | translate }}</label>
-        <input type="text"
-               formControlName="name"
-               [placeholder]="'CREATE_LOCATION_PAGE.NAME_PLACEHOLDER' | translate"
-               autofocus>
+        <input type="text" formControlName="name" 
+               [placeholder]="'CREATE_LOCATION_PAGE.NAME_PLACEHOLDER' | translate" autofocus>
       </div>
 
       <div class="form-group picker-wrapper">
         <label>{{ 'CREATE_LOCATION_PAGE.SELECT_COLOR' | translate }}</label>
-        
         <div class="color-selector-container">
           <div class="preset-colors-grid">
-
             <div *ngFor="let color of presetColors" 
                  class="color-tile" 
                  [style.background-color]="color"
@@ -28,37 +30,13 @@
               <i class="fa fa-check" *ngIf="form.controls.color.value === color"></i>
             </div>
 
-            <div class="color-tile custom-picker-tile"
-                 (click)="openColorPicker()"
+            <div class="color-tile custom-picker-tile" (click)="openColorPicker()"
                  [class.active]="showColorPicker"
                  [style.background-color]="form.controls.color.value.startsWith('var') ? '' : form.controls.color.value">
               <i class="fa" [ngClass]="showColorPicker ? 'fa-times' : 'fa-eye-dropper'"></i>
             </div>
-
-            <div class="color-picker-overlay" *ngIf="showColorPicker" (click)="showColorPicker = false">
-              <div class="color-popup" (click)="$event.stopPropagation()">
-                <color-chrome
-                  [color]="tempColor"
-                  (onChangeComplete)="tempColor = $event.color.hex">
-                </color-chrome>
-
-                <div class="color-actions">
-                  <button type="button" class="btn-cancel" (click)="showColorPicker = false">
-                    {{ 'COMMON.CANCEL' | translate }}
-                  </button>
-                  <button type="button" class="btn-confirm" (click)="confirmColor()">
-                    OK
-                  </button>
-                </div>
-              </div>
-            </div>
-
           </div>
         </div>
-
-        <small class="hint-text" *ngIf="!form.controls.color.value">
-          {{ 'CREATE_LOCATION_PAGE.COLOR_HINT_RANDOM' | translate }}
-        </small>
       </div>
 
       <div class="actions">
@@ -69,7 +47,16 @@
           {{ 'COMMON.SAVE' | translate }}
         </button>
       </div>
-
     </form>
+  </div>
+</div>
+
+<div class="color-picker-overlay" *ngIf="showColorPicker" (click)="showColorPicker = false">
+  <div class="color-popup" (click)="$event.stopPropagation()">
+    <color-chrome [color]="tempColor" (onChangeComplete)="tempColor = $event.color.hex"></color-chrome>
+    <div class="color-actions">
+      <button type="button" class="btn-cancel" (click)="showColorPicker = false">{{ 'COMMON.CANCEL' | translate }}</button>
+      <button type="button" class="btn-confirm" (click)="confirmColor()">OK</button>
+    </div>
   </div>
 </div>

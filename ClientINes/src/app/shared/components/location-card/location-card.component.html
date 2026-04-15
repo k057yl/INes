@@ -11,20 +11,12 @@
     </div>
     
     <div class="header-actions">
-      <button class="quick-add-btn item-btn" 
-              [routerLink]="['/create-item']" 
-              [queryParams]="{ locationId: location.id }"
-              [title]="'LOCATION_CARD.BTN.ITEM' | translate">
-        <i class="fa fa-plus-circle"></i>
-        <span class="btn-label">{{'LOCATION_CARD.BTN.ITEM' | translate}}</span>
+      <button (click)="modalService.openItemForm(null, location.id)">
+        <i class="fa fa-plus"></i> {{ 'COMMON.ADD_ITEM' | translate }}
       </button>
 
-      <button class="quick-add-btn loc-btn" 
-              [routerLink]="['/location-create']" 
-              [queryParams]="{ parentId: location.id }"
-              [title]="'LOCATION_CARD.BTN.LOCATION' | translate">
-        <i class="fa fa-folder-plus"></i>
-        <span class="btn-label">{{'LOCATION_CARD.BTN.LOCATION' | translate}}</span>
+      <button (click)="modalService.openLocationForm(null, location.id)">
+        <i class="fa fa-folder-plus"></i> {{ 'COMMON.ADD_SUB_LOCATION' | translate }}
       </button>
 
       <button class="inest-action-btn" (click)="location.showMenu = !location.showMenu" [title]="'COMMON.MORE' | translate">

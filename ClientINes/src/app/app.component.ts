@@ -5,12 +5,13 @@ import { HeaderComponent } from './shared/components/header/header.component';
 import { FooterComponent } from './shared/components/footer/footer.component';
 import { LocalizationService } from './shared/services/localization.service';
 
-import { MainPageModalService } from './features/inventory/main/main-page.modal.service';
-import { InestModalComponent } from './shared/components/modal/shared-modal/inest-modal.component';
+import { DashboardModalService } from './features/dashboard/dashboard.modal.service';
+import { InestModalComponent } from './shared/components/modals/inest-modal/inest-modal.component';
 import { SellModalComponent } from './shared/components/sell-modal/sell-modal.component';
-import { LendItemModalComponent } from './shared/components/modal/lend-modal/lend-item-modal.component';
-import { ItemCreateComponent } from './features/inventory/item/create/item-create.component';
-import { LocationCreateComponent } from './features/inventory/location/create/location-create.component';
+import { LendItemModalComponent } from './shared/components/modals/lend-modal/lend-item-modal.component';
+import { ItemFormModalComponent } from './shared/components/modals/item-form-modal/item-form-modal.component';
+import { LocationFormModalComponent } from './shared/components/modals/location-form-modal/location-form-modal.component';
+
 
 @Component({
   selector: 'app-root',
@@ -23,14 +24,14 @@ import { LocationCreateComponent } from './features/inventory/location/create/lo
     InestModalComponent, 
     SellModalComponent, 
     LendItemModalComponent,
-    ItemCreateComponent, 
-    LocationCreateComponent
+    ItemFormModalComponent, 
+    LocationFormModalComponent
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  public modal = inject(MainPageModalService);
+  public modal = inject(DashboardModalService);
 
   constructor(private loc: LocalizationService) {}
 

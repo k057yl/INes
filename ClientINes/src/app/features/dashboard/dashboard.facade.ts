@@ -2,17 +2,17 @@ import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 
-import { StorageLocation } from '../../../models/entities/storage-location.entity';
-import { Item } from '../../../models/entities/item.entity';
-import { LocationService } from '../../../shared/services/location.service';
-import { ItemService } from '../../../shared/services/item.service';
-import { SalesService } from '../../../shared/services/sales.service';
-import { LendingService } from '../../../shared/services/lending.service';
-import { SellItemRequestDto } from '../../../models/dtos/sale.dto';
-import { LendItemDto } from '../../../models/dtos/lending.dto';
+import { StorageLocation } from '../../models/entities/storage-location.entity';
+import { Item } from '../../models/entities/item.entity';
+import { LocationService } from '../../shared/services/location.service';
+import { ItemService } from '../../shared/services/item.service';
+import { SalesService } from '../../shared/services/sales.service';
+import { LendingService } from '../../shared/services/lending.service';
+import { SellItemRequestDto } from '../../models/dtos/sale.dto';
+import { LendItemDto } from '../../models/dtos/lending.dto';
 
 @Injectable()
-export class MainPageFacade {
+export class DashboardFacade {
   private locationService = inject(LocationService);
   private itemService = inject(ItemService);
   private salesService = inject(SalesService);
@@ -33,7 +33,7 @@ export class MainPageFacade {
           this.refreshState();
           this.isLoading = false;
         },
-        error: () => this.isLoading = false
+        error: () => (this.isLoading = false)
       })
     );
   }
@@ -86,7 +86,6 @@ export class MainPageFacade {
     }
   }
 
-  // --- ОПТИМИСТИЧНОЕ ПЕРЕМЕЩЕНИЕ ЛОКАЦИЙ ---
   moveLocationLocally(locId: string, targetId: string | null) {
     const movedLoc = this.findAndRemoveLocation(this.locations, locId);
     
@@ -108,7 +107,6 @@ export class MainPageFacade {
   private findAndRemoveLocation(tree: StorageLocation[], id: string): StorageLocation | null {
     for (let i = 0; i < tree.length; i++) {
       if (tree[i].id === id) return tree.splice(i, 1)[0];
-      
       const children = tree[i].children;
       if (children && children.length > 0) {
         const found = this.findAndRemoveLocation(children, id);

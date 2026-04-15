@@ -6,7 +6,7 @@ import { Reminder } from '../../../../models/entities/reminder.entity';
 import { ReminderType } from '../../../../models/enums/reminder-type.enum';
 import { ReminderRecurrence } from '../../../../models/enums/reminder-recurrence.enum';
 import { TranslateModule } from '@ngx-translate/core';
-import { MainPageModalService } from '../../main/main-page.modal.service';
+import { DashboardModalService } from '../../../dashboard/dashboard.modal.service';
 
 @Component({
   selector: 'app-item-reminders',
@@ -20,7 +20,7 @@ export class ItemRemindersComponent implements OnInit {
 
   private reminderService = inject(ReminderService);
   private fb = inject(FormBuilder);
-  private modal = inject(MainPageModalService);
+  private modal = inject(DashboardModalService);
 
   reminders: Reminder[] = [];
   isAdding = false;
@@ -107,16 +107,30 @@ export class ItemRemindersComponent implements OnInit {
   // --- ЛОГИКА ЧЕРЕЗ ГЛОБАЛЬНЫЙ СЕРВИС ---
 
   requestComplete(id: string) {
-    this.modal.openMoveConfirm('REMINDERS.MODAL.M_YOU_SURE_DONE').subscribe(() => {
+    this.modal.openConfirm({
+      mode: 'confirm',
+      title: 'REMINDERS.MODAL.TITLE_DONE',
+      message: 'REMINDERS.MODAL.M_YOU_SURE_DONE',
+      confirmText: 'COMMON.YES',
+      cancelText: 'COMMON.NO'
+    }).subscribe((res: any) => {
+      if (res) {
         this.reminderService.completeReminder(id).subscribe(() => this.loadReminders());
+      }
     });
   }
 
   requestDelete(id: string) {
-    this.modal.openDeleteLocation({ name: '12312312312445' } as any).subscribe(() => {
+    this.modal.openConfirm({
+      mode: 'delete',
+      title: 'COMMON.DELETE',
+      message: 'REMINDERS.MODAL.DELETE_CONFIRM_MSG'
+    }).subscribe((res: any) => {
+      if (res) {
         this.reminderService.deleteReminder(id).subscribe(() => {
-            this.reminders = this.reminders.filter(r => r.id !== id);
+          this.reminders = this.reminders.filter(r => r.id !== id);
         });
+      }
     });
   }
 }

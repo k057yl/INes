@@ -9,7 +9,7 @@ import { StorageLocation } from '../../../../models/entities/storage-location.en
 import { ItemStatus } from '../../../../models/enums/item-status.enum';
 import { ItemService } from '../../../../shared/services/item.service';
 import { LocationService } from '../../../../shared/services/location.service';
-import { MainPageModalService } from '../../main/main-page.modal.service';
+import { DashboardModalService } from '../../../dashboard/dashboard.modal.service';
 
 @Component({
   selector: 'app-location-detail',
@@ -23,7 +23,7 @@ export class LocationDetailComponent implements OnInit {
   private itemService = inject(ItemService);
   private locationService = inject(LocationService);
   private ngLocation = inject(NgLocation);
-  private modal = inject(MainPageModalService);
+  private modal = inject(DashboardModalService);
   
   private readonly baseUrl = environment.apiBaseUrl.replace('/api', '');
   private readonly googleColors = ['var(--g-blue)', 'var(--g-red)', 'var(--g-yellow)', 'var(--g-green)'];
@@ -71,14 +71,20 @@ export class LocationDetailComponent implements OnInit {
   }
 
   onDeleteItem(item: any) { 
-    this.modal.openDeleteItem(item).subscribe(() => {
-      this.itemService.delete(item.id).subscribe({
-        next: () => {
-          if (this.location) {
-            this.location.items = this.location.items.filter(i => i.id !== item.id);
+    this.modal.openConfirm({
+      mode: 'delete',
+      title: 'COMMON.DELETE',
+      message: 'ITEM_CARD.MODAL.YOU_SURE_MSG'
+    }).subscribe((res: any) => {
+      if (res) {
+        this.itemService.delete(item.id).subscribe({
+          next: () => {
+            if (this.location) {
+              this.location.items = this.location.items.filter(i => i.id !== item.id);
+            }
           }
-        }
-      });
+        });
+      }
     });
   }
 

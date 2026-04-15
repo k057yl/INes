@@ -14,6 +14,11 @@ export interface CreateItemDto {
   purchasePrice?: number;
   estimatedValue?: number;
   currency: string;
+  personName?: string;
+  contactEmail?: string;
+  expectedReturnDate?: string;
+  sendNotification?: boolean;
+  mainPhotoName?: string;
 }
 
 export interface UpdateItemDto extends Partial<CreateItemDto> {}

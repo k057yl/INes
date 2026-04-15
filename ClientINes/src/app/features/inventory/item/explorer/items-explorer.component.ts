@@ -9,7 +9,7 @@ import { SalesService } from '../../../../shared/services/sales.service';
 import { Item } from '../../../../models/entities/item.entity';
 import { ItemFilterBarComponent } from '../filters/item-filter-bar.component';
 import { StatusNamePipe } from '../../../../shared/pipe/status-name.pipe';
-import { InestModalComponent } from '../../../../shared/components/modal/shared-modal/inest-modal.component';
+import { InestModalComponent } from '../../../../shared/components/modals/inest-modal/inest-modal.component';
 
 @Component({
   selector: 'app-items-explorer',

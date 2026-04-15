@@ -5,8 +5,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { LocalizationService } from '../../services/localization.service';
 import { ThemeService } from '../../../core/services/theme.service';
 import { TranslateModule } from '@ngx-translate/core';
-
-import { MainPageModalService } from '../../../features/inventory/main/main-page.modal.service';//----------------
+import { DashboardModalService } from '../../../features/dashboard/dashboard.modal.service';
 
 @Component({
   selector: 'app-header',
@@ -20,13 +19,11 @@ export class HeaderComponent {
   public loc = inject(LocalizationService);
   public themeService = inject(ThemeService);
   private router = inject(Router);
-
-  public modalService = inject(MainPageModalService);//-----------------
+  public modalService = inject(DashboardModalService);
 
   isMenuOpen = signal(false);
   isLangMenuOpen = signal(false);
-
-  isCreateMenuOpen = signal(false); //---------------
+  isCreateMenuOpen = signal(false);
 
   user$ = this.authService.user$;
 
@@ -61,14 +58,13 @@ export class HeaderComponent {
     this.isCreateMenuOpen.set(false);
   }
 
-  // Методы вызова глобальных модалок
   openCreateItem() {
-    this.modalService.openCreateItem(); // Вызываем без параметров = корень
+    this.modalService.openItemForm(); 
     this.isCreateMenuOpen.set(false);
   }
 
   openCreateLocation() {
-    this.modalService.openCreateLocation(null); // null = создание в корне
+    this.modalService.openLocationForm(); 
     this.isCreateMenuOpen.set(false);
   }
 

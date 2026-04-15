@@ -1,45 +1,79 @@
 .container-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: calc(100vh - 100px);
+  z-index: 2000; 
   padding: 20px;
+  box-sizing: border-box;
+  animation: fadeIn 0.3s ease-out;
 }
 
+/* КАРТОЧКА МОДАЛКИ */
 .create-card {
   width: 100%;
   max-width: 440px;
   background: var(--bg-card);
-  border-radius: 24px;
+  border-radius: 28px;
   border: 1px solid var(--border-color);
   padding: 40px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+  position: relative;
+  animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 
   h2 {
-    margin-bottom: 35px;
+    margin-bottom: 30px;
     font-weight: 850;
-    font-size: 1.6rem;
+    font-size: 1.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 14px;
+    gap: 12px;
     text-transform: uppercase;
     letter-spacing: 1px;
+    text-align: center;
+  }
+
+  .close-modal-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    z-index: 10;
+
+    &:hover {
+      color: var(--accent-color);
+      transform: rotate(90deg);
+    }
   }
 }
 
+/* ГРУППЫ ПОЛЕЙ */
 .form-group {
-  margin-bottom: 28px;
+  margin-bottom: 24px;
   position: relative;
   
   label {
     display: block;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
     font-size: 0.75rem;
     font-weight: 800;
     color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 1px;
+    padding-left: 4px;
   }
 
   input[type="text"] {
@@ -52,6 +86,7 @@
     font-size: 1rem;
     outline: none;
     transition: all 0.2s;
+    box-sizing: border-box;
 
     &:focus {
       border-color: var(--accent-color);
@@ -60,6 +95,7 @@
   }
 }
 
+/* ВЫБОР ЦВЕТА */
 .color-selector-container {
   background: var(--bg-input);
   border: 1px solid var(--border-color);
@@ -97,7 +133,7 @@
 
   .custom-picker-tile {
     border: 2px dashed var(--border-color);
-    background: var(--bg-main);
+    background: var(--bg-card);
     color: var(--text-muted);
 
     &.active {
@@ -107,73 +143,44 @@
   }
 }
 
-/* ФИКС: ВСПЛЫВАШКА ТЕПЕРЬ ПО ЦЕНТРУ ЭКРАНА С РАЗМЫТИЕМ */
+/* ВСПЛЫВАЮЩИЙ ПИКЕР (Chrome Color Picker) */
 .color-picker-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(5px);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 10000;
-  animation: fadeIn 0.2s ease-out;
 }
 
 .color-popup {
   background: var(--bg-card);
-  padding: 24px;
-  border-radius: 28px;
+  padding: 20px;
+  border-radius: 24px;
   border: 1px solid var(--border-color);
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
-  animation: popupShow 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
   
-  ::ng-deep {
-    .chrome-picker {
-      background: transparent !important;
-      border: none !important;
-      box-shadow: none !important;
-      touch-action: none !important; 
-      
-      canvas, .chrome-hue, .chrome-alpha {
-        touch-action: none !important;
-      }
+  .color-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+
+    button {
+      flex: 1;
+      height: 40px;
+      border: none;
+      border-radius: 10px;
+      font-weight: 800;
+      cursor: pointer;
     }
-  }
-}
 
-.color-actions {
-  display: flex;
-  gap: 12px;
-  margin-top: 20px;
-
-  button {
-    flex: 1;
-    height: 44px;
-    border: none;
-    border-radius: 12px;
-    font-weight: 800;
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: 0.2s;
-  }
-
-  .btn-cancel {
-    background: var(--bg-input);
-    color: var(--text-muted);
-    border: 1px solid var(--border-color);
-    &:hover { background: rgba(255,255,255,0.05); }
-  }
-
-  .btn-confirm {
-    background: var(--accent-color);
-    color: var(--bg-main);
-    &:hover { filter: brightness(1.1); }
+    .btn-cancel { background: var(--bg-input); color: var(--text-muted); }
+    .btn-confirm { background: var(--accent-color); color: var(--bg-main); }
   }
 }
 
@@ -182,16 +189,26 @@
   display: block;
   font-size: 0.7rem;
   color: var(--text-muted);
-  margin-top: 12px;
+  margin-top: 10px;
   font-style: italic;
 }
 
+/* КНОПКИ ДЕЙСТВИЙ */
 .actions {
   display: flex;
   gap: 15px;
-  margin-top: 40px;
+  margin-top: 35px;
 
-  button { height: 52px; font-weight: 800; border-radius: 14px; transition: 0.2s; cursor: pointer; }
+  button { 
+    height: 52px; 
+    font-weight: 800; 
+    border-radius: 14px; 
+    transition: 0.2s; 
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
   .inest-btn-cancel { 
     flex: 1; 
     background: transparent; 
@@ -199,22 +216,33 @@
     color: var(--text-muted);
     &:hover { border-color: var(--text-main); color: var(--text-main); }
   }
+
   .inest-btn-primary { 
     flex: 2; 
     background: var(--accent-color); 
     border: none; 
     color: var(--bg-main);
-    &:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(var(--accent-rgb), 0.3); }
+    &:hover { 
+      transform: translateY(-2px); 
+      box-shadow: 0 8px 20px rgba(0, 184, 148, 0.3); 
+    }
     &:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
   }
 }
 
+/* АНИМАЦИИ */
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 
-@keyframes popupShow {
-  from { opacity: 0; transform: scale(0.9) translateY(20px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
+@keyframes slideUp {
+  from { 
+    opacity: 0; 
+    transform: translateY(40px) scale(0.95); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0) scale(1); 
+  }
 }

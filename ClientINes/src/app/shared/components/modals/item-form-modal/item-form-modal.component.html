@@ -1,0 +1,197 @@
+<div class="inest-form-page" (click)="cancel()">
+  <div class="inest-form-card item-card-wide" (click)="$event.stopPropagation()">
+    
+    <button type="button" class="close-modal-btn" (click)="cancel()">
+      <i class="fa fa-times"></i>
+    </button>
+
+    <header class="inest-form-header">
+      <div class="logo-circle">
+        <i class="fa" [ngClass]="isEdit ? 'fa-pen' : 'fa-plus'"></i>
+      </div>
+      <div class="header-text">
+        <h2>{{ (isEdit ? 'COMMON.EDIT' : 'CREATE_ITEM_PAGE.TITLE') | translate }}</h2>
+        <p *ngIf="!isEdit">{{ 'CREATE_ITEM_PAGE.TITLE_SUB' | translate }}</p>
+        <div class="status-badge-inline" *ngIf="isEdit" [class]="(item?.status ?? 0) | statusName">
+            {{ 'STATUS.' + ((item?.status ?? 0) | statusName) | translate }}
+        </div>
+      </div>
+    </header>
+
+    <div class="inest-lending-banner" *ngIf="isEdit && isLendingStatus && item?.lending">
+      <div class="banner-content">
+        <i class="fa fa-handshake"></i>
+        <span>{{ 'EDIT_ITEM_PAGE.LENT_INFO' | translate: { name: item?.lending?.personName } }}
+          <strong>{{ item?.lending?.expectedReturnDate | date:'dd.MM.yyyy' }}</strong>
+        </span>
+      </div>
+      <button type="button" class="inline-action-btn" (click)="returnItem()">
+        <i class="fa fa-undo"></i> {{ 'EDIT_ITEM_PAGE.RETURN_NOW' | translate }}
+      </button>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      
+      <div class="photo-hero-section" *ngIf="!isEdit || form.get('addPhoto')?.value">
+        <div class="photo-upload-canvas" [class.has-photos]="selectedPhotos.length > 0">
+          <div class="upload-placeholder" *ngIf="selectedPhotos.length === 0">
+            <input type="file" accept="image/*" multiple (change)="onFileSelected($event)" id="fileInput" class="hidden-input">
+            <label for="fileInput" class="canvas-label">
+              <i class="fa fa-camera-retro"></i>
+              <span>{{ 'CREATE_ITEM_PAGE.CLICK_TO_UPLOAD' | translate }}</span>
+              <small>{{ selectedPhotos.length }} / {{ MAX_PHOTOS }}</small>
+            </label>
+          </div>
+
+          <div class="photo-grid-inline" *ngIf="selectedPhotos.length > 0">
+            <div class="preview-card" *ngFor="let p of selectedPhotos; let i = index" [class.is-main]="p.isMain" (click)="setMainPhoto(i)">
+              <img [src]="p.preview">
+              <div class="main-badge" *ngIf="p.isMain"><i class="fa fa-star"></i></div>
+              <button type="button" class="btn-del" (click)="removePhoto(i, $event)"><i class="fa fa-times"></i></button>
+            </div>
+            
+            <label class="add-more-card" *ngIf="selectedPhotos.length < MAX_PHOTOS" for="addMoreInput">
+              <input type="file" accept="image/*" multiple (change)="onFileSelected($event)" id="addMoreInput" class="hidden-input">
+              <div class="plus-content">
+                <i class="fa fa-plus"></i>
+                <span>{{ selectedPhotos.length }}/{{ MAX_PHOTOS }}</span>
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="inest-form-group" *ngIf="isEdit">
+        <label class="inest-checkbox-label">
+          <input type="checkbox" formControlName="addPhoto"> 
+          <span>{{ 'EDIT_ITEM_PAGE.ADD_NEW_PHOTO' | translate }}</span>
+        </label>
+      </div>
+
+      <div class="inest-form-group">
+        <label>{{ 'CREATE_ITEM_PAGE.NAME' | translate }} *</label>
+        <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('name')">
+          <i class="fa fa-tag inest-field-icon-left"></i>
+          <input formControlName="name" [placeholder]="'CREATE_ITEM_PAGE.NAME_PHL' | translate" autofocus>
+        </div>
+      </div>
+
+      <div class="inest-form-group">
+        <label>{{ 'CREATE_ITEM_PAGE.DESCRIPTION' | translate }}</label>
+        <div class="inest-input-wrapper">
+          <i class="fa fa-align-left inest-field-icon-left"></i>
+          <textarea formControlName="description" [placeholder]="'CREATE_ITEM_PAGE.FIELD_DESCRIPTION' | translate" rows="2"></textarea>
+        </div>
+      </div>
+
+      <div class="inest-form-group">
+        <label>{{ 'CREATE_ITEM_PAGE.CATEGORY' | translate }} *</label>
+        <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('categoryId')">
+          <i class="fa fa-folder inest-field-icon-left"></i>
+          <select formControlName="categoryId">
+            <option value="" disabled>{{ 'CREATE_ITEM_PAGE.FIELD_CATEGORY' | translate }}</option>
+            <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="inest-form-group" *ngIf="!isLocationPredefined">
+        <label>{{ 'CREATE_ITEM_PAGE.LOCATION' | translate }} *</label>
+        <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('storageLocationId')">
+          <i class="fa fa-map-marker-alt inest-field-icon-left"></i>
+          <select formControlName="storageLocationId">
+            <option value="" disabled>{{ 'CREATE_ITEM_PAGE.SELECT_LOCATION' | translate }}</option>
+            <option *ngFor="let loc of locations" [value]="loc.id">{{ loc.name }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="inest-form-group">
+        <label>{{ 'CREATE_ITEM_PAGE.STATUS' | translate }}</label>
+        <div class="inest-input-wrapper">
+          <i class="fa fa-info-circle inest-field-icon-left"></i>
+          <select formControlName="status">
+            <option *ngFor="let opt of statusOptions" [value]="opt.value">{{ opt.label | translate }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row-multi">
+        <div class="inest-form-group">
+          <label>{{ 'CREATE_ITEM_PAGE.PURCHASE_DATE' | translate }}</label>
+          <div class="inest-input-wrapper">
+            <i class="fa fa-calendar-alt inest-field-icon-left"></i>
+            <input type="date" formControlName="purchaseDate" [max]="todayMax">
+          </div>
+        </div>
+
+        <div class="inest-form-group">
+          <label>{{ 'CREATE_ITEM_PAGE.PRICE' | translate }}</label>
+          <div class="inest-input-wrapper">
+            <i class="fa fa-wallet inest-field-icon-left"></i>
+            <input formControlName="purchasePrice" type="number" placeholder="0.00">
+          </div>
+        </div>
+
+        <div class="inest-form-group">
+          <label>{{ 'CREATE_ITEM_PAGE.CURRENCY' | translate }}</label>
+          <div class="inest-input-wrapper">
+            <i class="fa fa-coins inest-field-icon-left"></i>
+            <select formControlName="currency">
+              <option value="UAH">UAH (₴)</option>
+              <option value="USD">USD ($)</option>
+              <option value="EUR">EUR (€)</option>
+              <option value="USDT">USDT (₮)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="lending-extra-fields" *ngIf="isLendingStatus">
+        <div class="divider-text">
+          <span>{{ (form.get('status')?.value == 7 ? 'CREATE_ITEM_PAGE.BORROWED_INFO' : 'CREATE_ITEM_PAGE.LENT_INFO') | translate }}</span>
+        </div>
+        
+        <div class="inest-form-group">
+          <label>{{ 'CREATE_ITEM_PAGE.PERSON_NAME' | translate }} *</label>
+          <div class="inest-input-wrapper">
+            <i class="fa fa-user inest-field-icon-left"></i>
+            <input formControlName="personName" [placeholder]="'CREATE_ITEM_PAGE.PH_NAME' | translate">
+          </div>
+        </div>
+
+        <div class="inest-form-group">
+          <label>{{ 'CREATE_ITEM_PAGE.CONTACT_EMAIL' | translate }}</label>
+          <div class="inest-input-wrapper">
+            <i class="fa fa-envelope inest-field-icon-left"></i>
+            <input formControlName="contactEmail" type="email" placeholder="email@example.com">
+          </div>
+        </div>
+
+        <div class="inest-form-group">
+          <label>{{ 'CREATE_ITEM_PAGE.RETURN_DATE' | translate }} *</label>
+          <div class="inest-input-wrapper">
+            <i class="fa fa-calendar-check inest-field-icon-left"></i>
+            <input type="date" formControlName="expectedReturnDate">
+          </div>
+        </div>
+
+        <div class="inest-form-group">
+          <label class="inest-checkbox-label">
+            <input type="checkbox" formControlName="sendNotification"> 
+            <span>{{ 'CREATE_ITEM_PAGE.SEND_NOTIFICATION' | translate }}</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-actions-row">
+        <button type="button" class="inest-btn-cancel" (click)="cancel()">
+          <i class="fa fa-times"></i> {{ 'COMMON.CANCEL' | translate }}
+        </button>
+        <button type="submit" class="inest-btn-primary" [disabled]="form.invalid || (isEdit && item?.status !== 0 && !form.get('addPhoto')?.value)">
+          <i class="fa fa-save"></i> {{ 'COMMON.SAVE' | translate }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

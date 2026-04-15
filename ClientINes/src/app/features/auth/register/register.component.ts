@@ -149,7 +149,7 @@ export class RegisterComponent implements OnInit, AfterViewInit {
   private handleGoogleLogin(response: any) {
     this.ngZone.run(() => {
       this.authService.googleLogin(response.credential).subscribe({
-        next: () => this.router.navigate(['/main']),
+        next: () => this.router.navigate(['/dashboard']),
         error: (err) => {
           this.error = err.error?.error || 'AUTH.ERRORS.GOOGLE_AUTH_FAILED';
           this.cdr.detectChanges();

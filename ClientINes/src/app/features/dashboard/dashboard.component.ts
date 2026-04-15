@@ -1,32 +1,30 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { DragDropModule, CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
+import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { TranslateModule } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
 
-import { StorageLocation } from '../../../models/entities/storage-location.entity';
-import { Item } from '../../../models/entities/item.entity';
-import { LocationCardComponent } from '../../../shared/components/location-card/location-card.component';
-import { LocationRibbonComponent } from '../../../shared/components/location-ribbon/location-ribbon.component';
-import { RIBBON_CONFIG, BOARD_CONFIG } from '../../../shared/constants/ui.constants';
-
-import { MainPageFacade } from './main-page.facade';
-import { MainPageModalService } from './main-page.modal.service';
+import { DashboardFacade } from './dashboard.facade';
+import { DashboardModalService } from './dashboard.modal.service';
+import { LocationCardComponent } from '../../shared/components/location-card/location-card.component';
+import { LocationRibbonComponent } from '../../shared/components/location-ribbon/location-ribbon.component';
+import { RIBBON_CONFIG, BOARD_CONFIG } from '../../shared/constants/ui.constants';
+import { StorageLocation } from '../../models/entities/storage-location.entity';
+import { Item } from '../../models/entities/item.entity';
 
 @Component({
-  selector: 'app-main-page',
+  selector: 'app-dashboard',
   standalone: true,
-  imports: [
-    CommonModule, RouterModule, DragDropModule, 
-    LocationCardComponent, LocationRibbonComponent, 
-    TranslateModule ],
-  providers: [MainPageFacade],
-  templateUrl: './main-page.component.html',
-  styleUrl: './main-page.component.scss'
+  imports: [CommonModule, RouterModule, DragDropModule, LocationCardComponent, LocationRibbonComponent, TranslateModule],
+  providers: [DashboardFacade],
+  templateUrl: './dashboard.component.html',
+  styleUrl: './dashboard.component.scss'
 })
-export class MainPageComponent implements OnInit {
-  public facade = inject(MainPageFacade); 
-  public modal = inject(MainPageModalService);
+export class DashboardComponent implements OnInit, OnDestroy {
+  public facade = inject(DashboardFacade); 
+  public modal = inject(DashboardModalService);
+  private sub = new Subscription();
 
   currentPageBoard = 0;
   currentPageRibbon = 0;
@@ -50,7 +48,16 @@ export class MainPageComponent implements OnInit {
     return Math.ceil(this.facade.locations.length / BOARD_CONFIG.PAGE_SIZE); 
   }
 
-  ngOnInit() { this.loadData(); }
+  ngOnInit() { 
+    this.loadData(); 
+    this.sub.add(
+      this.modal.refreshData$.subscribe(() => this.loadData())
+    );
+  }
+
+  ngOnDestroy() { this.sub.unsubscribe(); }
+
+  loadData() { this.facade.loadData().subscribe(); }
 
   changeBoardPage(delta: number) {
     this.currentPageBoard += delta;
@@ -76,22 +83,30 @@ export class MainPageComponent implements OnInit {
     this.currentPageBoard = Math.floor(firstItemIndex / BOARD_CONFIG.PAGE_SIZE);
   }
 
-  loadData() {
-    this.facade.loadData().subscribe();
-  }
+  onEditItem(item: Item) {
+    this.modal.openItemForm(item).subscribe();
+    }
 
-  // --- ЧИСТАЯ ЛОГИКА МОДАЛОК ---
+    onCreateItem(locId?: string) {
+    this.modal.openItemForm(null, locId).subscribe();
+    }
+
+  // --- ЛОГИКА МОДАЛОК ---
 
   onRename(loc: StorageLocation) { 
     loc.showMenu = false;
-    this.modal.openRename(loc).subscribe(newName => {
+    this.modal.openConfirm({
+      mode: 'input', title: 'COMMON.RENAME', message: '', confirmText: 'COMMON.SAVE', name: loc.name
+    }).subscribe(newName => {
       if (newName) this.facade.renameLocation(loc.id, newName).subscribe();
     });
   }
 
   onDeleteLocation(loc: StorageLocation) { 
     loc.showMenu = false;
-    this.modal.openDeleteLocation(loc).subscribe(() => {
+    this.modal.openConfirm({
+      mode: 'delete', title: 'COMMON.DELETE', message: 'LOCATION_CARD.MODAL.YOU_SURE_MSG'
+    }).subscribe(() => {
       this.facade.deleteLocation(loc.id).subscribe(() => {
         if (this.currentPageBoard > 0 && this.pagedBoardLocations.length === 0) this.currentPageBoard--;
         this.syncRibbonWithBoard();
@@ -100,7 +115,9 @@ export class MainPageComponent implements OnInit {
   }
 
   onDeleteItem(item: Item) { 
-    this.modal.openDeleteItem(item).subscribe(() => {
+    this.modal.openConfirm({
+      mode: 'delete', title: 'COMMON.DELETE', message: 'ITEM_CARD.MODAL.YOU_SURE_MSG'
+    }).subscribe(() => {
       this.facade.deleteItem(item.id).subscribe(() => this.loadData());
     });
   }
@@ -117,11 +134,13 @@ export class MainPageComponent implements OnInit {
     });
   }
 
+  // --- DRAG AND DROP & MOVEMENT ---
+  
   onItemMoveManual(data: {item: Item, targetLocationId: string}) {
     const targetLoc = this.facade.flatLocations.find(l => l.id === data.targetLocationId);
-    const targetName = targetLoc ? targetLoc.name : '...';
-
-    this.modal.openMoveConfirm(targetName).subscribe(() => {
+    this.modal.openConfirm({
+      mode: 'confirm', title: 'ITEM_CARD.MODAL.MOVE_TITLE', message: targetLoc?.name || '...', confirmText: 'COMMON.YES'
+    }).subscribe(() => {
       this.facade.moveItemLocally(data.item, data.targetLocationId);
       this.facade.moveItemApi(data.item.id, data.targetLocationId).subscribe({
         next: () => this.jumpToLocation(data.targetLocationId),
@@ -130,7 +149,6 @@ export class MainPageComponent implements OnInit {
     });
   }
 
-  // --- DRAG AND DROP ---
   onRibbonReorder(event: CdkDragDrop<StorageLocation[]>) {
     const offset = this.currentPageRibbon * this.ribbonPageSize;
     moveItemInArray(this.facade.locations, event.previousIndex + offset, event.currentIndex + offset);
@@ -139,33 +157,21 @@ export class MainPageComponent implements OnInit {
 
   onLocationMove(event: { loc: StorageLocation, targetId: string }) {
     const targetId = event.targetId === 'root' ? null : event.targetId;
-
     this.facade.moveLocationLocally(event.loc.id, targetId);
-
-    this.facade.moveLocation(event.loc.id, event.targetId).subscribe({
-      error: () => this.loadData()
-    });
+    this.facade.moveLocation(event.loc.id, event.targetId).subscribe({ error: () => this.loadData() });
   }
 
   onItemDropped(data: {event: CdkDragDrop<Item[]>, loc: StorageLocation}) {
     const { event, loc } = data;
-    
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
       return;
     }
-
     const item = event.previousContainer.data[event.previousIndex];
     this.facade.moveItemLocally(item, loc.id);
-
-    this.facade.moveItemApi(item.id, loc.id).subscribe({
-      error: () => this.loadData()
-    });
+    this.facade.moveItemApi(item.id, loc.id).subscribe({ error: () => this.loadData() });
   }
 
-  isChildOf = (targetId: string, sourceLoc: StorageLocation): boolean => {
-    return this.facade.isChildOf(targetId, sourceLoc);
-  }
-
+  isChildOf = (targetId: string, sourceLoc: StorageLocation) => this.facade.isChildOf(targetId, sourceLoc);
   trackById = (index: number, item: any) => item.id;
 }

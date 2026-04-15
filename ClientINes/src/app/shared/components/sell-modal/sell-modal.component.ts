@@ -6,7 +6,7 @@ import { Item } from '../../../models/entities/item.entity';
 import { SellItemRequestDto } from '../../../models/dtos/sale.dto';
 import { Platform } from '../../../models/entities/platform.entity';
 import { SalesService } from '../../services/sales.service';
-import { InestModalComponent } from '../modal/shared-modal/inest-modal.component';
+import { InestModalComponent } from '../modals/inest-modal/inest-modal.component';
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { FORM_VALIDATION } from '../../constants/form-defaults.constants';
 

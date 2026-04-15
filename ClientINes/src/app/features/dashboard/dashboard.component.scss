@@ -1,3 +1,4 @@
+/* src/app/features/dashboard/dashboard.component.scss */
 :host {
   display: block;
   background: var(--bg-main); 
@@ -5,92 +6,6 @@
   transition: background-color 0.3s ease;
 }
 
-/* --- ЦЕНТРАЛЬНАЯ КНОПКА (ZERO STATE) --- */
-.zero-state-container {
-  grid-column: 1 / -1; // Растягиваем на всю ширину сетки
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 60px 20px;
-  text-align: center;
-  min-height: 300px;
-
-  .zero-icon {
-    font-size: 4rem;
-    color: var(--accent-color);
-    opacity: 0.2;
-    margin-bottom: 20px;
-  }
-
-  h2 {
-    color: var(--text-muted);
-    font-weight: 300;
-    margin-bottom: 30px;
-  }
-}
-
-/* --- ПАГИНАЦИЯ --- */
-.board-pager-row {
-  display: flex;
-  justify-content: center;
-  padding: 30px 0 50px;
-  width: 100%;
-}
-
-.board-pager-nav {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 40px; // Чуть увеличил для солидности
-  width: 240px;
-  gap: 15px;
-  background: rgba(var(--bg-card-rgb), 0.8);
-  padding: 5px 15px;
-  border-radius: 20px;
-  border: 1px solid var(--accent-color);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(10px);
-
-  button {
-    background: var(--bg-input);
-    border: solid 1px var(--accent-color);
-    color: var(--text-muted);
-    cursor: pointer;
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    font-size: 0.8rem;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    outline: none;
-
-    &:hover:not(:disabled) {
-      color: var(--bg-card);
-      background: var(--accent-color);
-      box-shadow: 0 0 10px var(--accent-color);
-    }
-
-    &:active:not(:disabled) { transform: scale(0.9); }
-    &:disabled { 
-      opacity: 0.2; 
-      cursor: not-allowed; 
-      filter: grayscale(1);
-    }
-  }
-}
-
-.page-info {
-  font-size: 0.85rem;
-  color: var(--accent-color);
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-/* --- СЕТКА ЛОКАЦИЙ --- */
 .board-grid-3 {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -113,23 +28,89 @@
   align-items: center;
   color: var(--accent-color);
   z-index: 10;
+  border-radius: 0 0 12px 12px;
 }
 
-/* --- МОБИЛЬНАЯ АДАПТАЦИЯ --- */
-@media (max-width: 1024px) {
-  .board-grid-3 {
-    grid-template-columns: repeat(2, 1fr);
+.zero-state-container {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  min-height: 300px;
+
+  .zero-icon {
+    font-size: 4rem;
+    color: var(--accent-color);
+    opacity: 0.2;
+    margin-bottom: 20px;
+  }
+
+  h2 {
+    color: var(--text-muted);
+    font-weight: 300;
+    margin-bottom: 30px;
   }
 }
 
+.board-pager-row {
+  display: flex;
+  justify-content: center;
+  padding: 30px 0 50px;
+  width: 100%;
+}
+
+.board-pager-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  width: 240px;
+  gap: 15px;
+  background: rgba(var(--bg-card-rgb, 30, 30, 30), 0.8);
+  padding: 5px 15px;
+  border-radius: 20px;
+  border: 1px solid var(--accent-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+
+  button {
+    background: var(--bg-input);
+    border: solid 1px var(--accent-color);
+    color: var(--text-muted);
+    cursor: pointer;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 0.8rem;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    outline: none;
+
+    &:hover:not(:disabled) {
+      color: white;
+      background: var(--accent-color);
+      box-shadow: 0 0 10px var(--accent-color);
+    }
+    &:active:not(:disabled) { transform: scale(0.9); }
+    &:disabled { opacity: 0.2; cursor: not-allowed; filter: grayscale(1); }
+  }
+}
+
+.page-info {
+  font-size: 0.85rem;
+  color: var(--accent-color);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+@media (max-width: 1024px) { .board-grid-3 { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 768px) {
-  .board-grid-3 {
-    grid-template-columns: 1fr;
-    padding: 10px;
-  }
-  
-  .zero-state-container {
-    padding: 30px 10px;
-    .zero-icon { font-size: 3rem; }
-  }
+  .board-grid-3 { grid-template-columns: 1fr; padding: 10px; }
+  .zero-state-container { padding: 30px 10px; .zero-icon { font-size: 3rem; } }
 }

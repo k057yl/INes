@@ -1,11 +1,68 @@
 .inest-form-page {
-  display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; padding: 40px 20px; box-sizing: border-box;
-  @media (max-width: 500px) { padding: 10px 6px; }
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  overflow-y: auto;
+  z-index: 2000; 
+  padding: 40px 20px;
+  box-sizing: border-box;
+  animation: fadeIn 0.3s ease-out;
+
+  &::-webkit-scrollbar { width: 6px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
 }
 
 .inest-form-card {
-  width: 100%; max-width: 500px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 20px; padding: 30px; box-sizing: border-box;
-  @media (max-width: 500px) { padding: 20px 15px; border-radius: 12px; }
+  width: 100%;
+  max-width: 440px;
+  background: var(--bg-card);
+  border-radius: 28px;
+  border: 1px solid var(--border-color);
+  padding: 40px;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+  position: relative;
+  margin-bottom: 40px; 
+  animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  h2 {
+    margin-bottom: 30px;
+    font-weight: 850;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: center;
+  }
+
+  .close-modal-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    z-index: 10;
+
+    &:hover {
+      color: var(--accent-color);
+      transform: rotate(90deg);
+    }
+  }
 }
 
 .photo-hero-section {

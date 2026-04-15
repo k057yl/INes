@@ -13,5 +13,10 @@ namespace INest.Models.DTOs.Item
         public decimal? PurchasePrice { get; set; }
         public decimal? EstimatedValue { get; set; }
         public string? Currency { get; set; }
+
+        public string? PersonName { get; set; }
+        public string? ContactEmail { get; set; }
+        public DateTime? ExpectedReturnDate { get; set; }
+        public bool SendNotification { get; set; }
     }
 }

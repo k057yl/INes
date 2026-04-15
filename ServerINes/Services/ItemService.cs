@@ -232,22 +232,39 @@ namespace INest.Services
             {
                 var item = await _context.Items
                     .Include(i => i.Photos)
+                    .Include(i => i.Lending)
                     .FirstOrDefaultAsync(i => i.Id == itemId && i.UserId == userId);
 
                 if (item == null)
                     throw new KeyNotFoundException(LocalizationConstants.ITEMS.NOT_FOUND);
 
-                if (item.Status != ItemStatus.Active)
-                    throw new InvalidOperationException(LocalizationConstants.SYSTEM.VALIDATION_FAILED);
-
                 item.Name = dto.Name;
                 item.Description = dto.Description;
                 item.CategoryId = dto.CategoryId;
                 item.StorageLocationId = dto.StorageLocationId;
+                item.Status = dto.Status;
                 item.PurchaseDate = dto.PurchaseDate;
                 item.PurchasePrice = dto.PurchasePrice;
                 item.EstimatedValue = dto.EstimatedValue;
                 item.Currency = dto.Currency ?? item.Currency;
+
+                if (item.Status == ItemStatus.Lent || item.Status == ItemStatus.Borrowed)
+                {
+                    if (item.Lending == null)
+                    {
+                        item.Lending = new Lending { Id = Guid.NewGuid(), ItemId = item.Id };
+                    }
+
+                    item.Lending.PersonName = dto.PersonName ?? "Unknown";
+                    item.Lending.ContactEmail = dto.ContactEmail;
+                    item.Lending.ExpectedReturnDate = dto.ExpectedReturnDate;
+                    item.Lending.Direction = item.Status == ItemStatus.Borrowed ? LendingDirection.In : LendingDirection.Out;
+                    item.Lending.SendNotification = dto.SendNotification;
+                }
+                else if (item.Lending != null)
+                {
+                    _context.Lendings.Remove(item.Lending);
+                }
 
                 await HandlePhotos(item, photos);
 
