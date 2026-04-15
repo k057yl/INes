@@ -3,7 +3,7 @@ import { Subject, Observable } from 'rxjs';
 import { StorageLocation } from '../../../models/entities/storage-location.entity';
 import { Item } from '../../../models/entities/item.entity';
 
-export type ModalType = 'deleteItem' | 'deleteLoc' | 'renameLoc' | 'moveConfirm' | 'sell' | 'lend' | null;
+export type ModalType = | 'deleteItem' | 'deleteLoc' | 'renameLoc' | 'moveConfirm' | 'sell' | 'lend' | 'createItem' | 'createLoc' | null;
 
 @Injectable({
   providedIn: 'root'
@@ -11,11 +11,24 @@ export type ModalType = 'deleteItem' | 'deleteLoc' | 'renameLoc' | 'moveConfirm'
 export class MainPageModalService {
   activeModal: ModalType = null;
   config: any = null;
-  
+
+  currentParentId: string | null = null;
   selectedItem: Item | null = null;
   selectedLocation: StorageLocation | null = null;
   
   private confirmSubj = new Subject<any>();
+
+  openCreateItem(locationId: string | null = null): Observable<any> {
+    this.currentParentId = locationId;
+    this.activeModal = 'createItem';
+    return this.resetSubject();
+  }
+
+  openCreateLocation(parentId: string | null = null): Observable<any> {
+    this.currentParentId = parentId;
+    this.activeModal = 'createLoc';
+    return this.resetSubject();
+  }
 
   openRename(loc: StorageLocation): Observable<string> {
     this.selectedLocation = loc;
@@ -68,6 +81,7 @@ export class MainPageModalService {
     this.config = null;
     this.selectedItem = null;
     this.selectedLocation = null;
+    this.currentParentId = null;
     this.confirmSubj.complete();
   }
 

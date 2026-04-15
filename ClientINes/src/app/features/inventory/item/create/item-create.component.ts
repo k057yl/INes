@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
@@ -12,6 +12,8 @@ import { InestModalComponent } from '../../../../shared/components/modal/shared-
 import { LocalizationService } from '../../../../shared/services/localization.service';
 import { TranslateService } from '@ngx-translate/core';
 
+import { MainPageModalService } from '../../main/main-page.modal.service';
+
 interface PhotoSlot {
   file: File;
   preview: string;
@@ -19,13 +21,17 @@ interface PhotoSlot {
 }
 
 @Component({
-  selector: 'app-item-create',
+  selector: 'app-create-item-modal',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, TranslateModule, RouterModule, InestModalComponent],
   templateUrl: './item-create.component.html',
   styleUrl: './item-create.component.scss'
 })
 export class ItemCreateComponent implements OnInit {
+  @Input() parentId: string | null = null; 
+  @Output() close = new EventEmitter<void>();
+  @Output() created = new EventEmitter<any>();
+
   private route = inject(ActivatedRoute);
   private fb = inject(FormBuilder);
   private router = inject(Router);
@@ -36,6 +42,7 @@ export class ItemCreateComponent implements OnInit {
   private authService = inject(AuthService);
   private localizationService = inject(LocalizationService);
   private translate = inject(TranslateService);
+  private modalService = inject(MainPageModalService);
 
   locations: any[] = [];
   categories: any[] = [];
@@ -82,13 +89,10 @@ export class ItemCreateComponent implements OnInit {
       }
     });
 
-    this.route.queryParams.subscribe(params => {
-      const locId = params['locationId'];
-      if (locId) {
-        this.form.patchValue({ storageLocationId: locId });
-        this.isLocationPredefined = true;
-      }
-    });
+    if (this.parentId) {
+      this.form.patchValue({ storageLocationId: this.parentId });
+      this.isLocationPredefined = true;
+    }
 
     this.form.get('addPhoto')?.valueChanges.subscribe(val => {
       if (!val) this.selectedPhotos = [];
@@ -197,11 +201,8 @@ export class ItemCreateComponent implements OnInit {
     }
 
     this.itemService.createWithPhoto(formData).subscribe({
-      next: () => {
-        const target = this.isLocationPredefined 
-          ? ['/location', this.form.get('storageLocationId')?.value] 
-          : ['/main'];
-        this.router.navigate(target);
+      next: (newItem) => {
+        this.modalService.confirm(newItem); 
       },
       error: (err) => console.error('Error:', err)
     });
@@ -243,5 +244,7 @@ export class ItemCreateComponent implements OnInit {
     return !!(control && control.touched && control.invalid);
   }
 
-  cancel() { window.history.back(); }
+  cancel() {
+    this.modalService.close();
+  }
 }

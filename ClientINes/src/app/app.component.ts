@@ -9,6 +9,8 @@ import { MainPageModalService } from './features/inventory/main/main-page.modal.
 import { InestModalComponent } from './shared/components/modal/shared-modal/inest-modal.component';
 import { SellModalComponent } from './shared/components/sell-modal/sell-modal.component';
 import { LendItemModalComponent } from './shared/components/modal/lend-modal/lend-item-modal.component';
+import { ItemCreateComponent } from './features/inventory/item/create/item-create.component';
+import { LocationCreateComponent } from './features/inventory/location/create/location-create.component';
 
 @Component({
   selector: 'app-root',
@@ -20,7 +22,9 @@ import { LendItemModalComponent } from './shared/components/modal/lend-modal/len
     FooterComponent,
     InestModalComponent, 
     SellModalComponent, 
-    LendItemModalComponent 
+    LendItemModalComponent,
+    ItemCreateComponent, 
+    LocationCreateComponent
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']

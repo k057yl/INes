@@ -19,3 +19,17 @@
 <app-lend-item-modal *ngIf="modal.activeModal === 'lend' && modal.selectedItem" [item]="modal.selectedItem"
   [isOpen]="true" (close)="modal.close()" (confirm)="modal.confirm($event)">
 </app-lend-item-modal>
+
+<app-create-item-modal 
+*ngIf="modal.activeModal === 'createItem'"
+  [parentId]="modal.currentParentId"
+  (close)="modal.close()"
+  (created)="modal.confirm($event)">
+</app-create-item-modal>
+
+<app-create-location-modal 
+  *ngIf="modal.activeModal === 'createLoc'"
+  [parentId]="modal.currentParentId"
+  (close)="modal.close()"
+  (created)="modal.confirm($event)">
+</app-create-location-modal>

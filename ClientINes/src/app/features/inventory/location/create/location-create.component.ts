@@ -1,15 +1,15 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject, OnInit } from '@angular/core'; 
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
 import { LocationService } from '../../../../shared/services/location.service';
 import { FeatureService } from '../../../../core/services/feature.service';
 import { CreateLocationDto } from '../../../../models/dtos/location.dto';
 import { TranslateModule } from '@ngx-translate/core';
 import { ColorChromeModule } from 'ngx-color/chrome';
+import { MainPageModalService } from '../../main/main-page.modal.service';
 
 @Component({
-  selector: 'app-location-create',
+  selector: 'app-create-location-modal',
   standalone: true,
   imports: [
     CommonModule,
@@ -21,10 +21,14 @@ import { ColorChromeModule } from 'ngx-color/chrome';
   styleUrl: './location-create.component.scss'
 })
 export class LocationCreateComponent implements OnInit {
+  @Input() parentId: string | null = null; 
+  
+  @Output() close = new EventEmitter<void>();
+  @Output() created = new EventEmitter<any>();
+
   private fb = inject(FormBuilder);
   private locationService = inject(LocationService);
-  private router = inject(Router);
-  private route = inject(ActivatedRoute);
+  private modalService = inject(MainPageModalService);
   public featureService = inject(FeatureService);
 
   public readonly presetColors = [
@@ -47,9 +51,8 @@ export class LocationCreateComponent implements OnInit {
   });
 
   ngOnInit() {
-    const parentId = this.route.snapshot.queryParamMap.get('parentId');
-    if (parentId) {
-      this.form.patchValue({ parentId });
+    if (this.parentId) {
+      this.form.patchValue({ parentId: this.parentId });
     }
   }
 
@@ -79,13 +82,17 @@ export class LocationCreateComponent implements OnInit {
       }
 
       this.locationService.create(rawValue as unknown as CreateLocationDto).subscribe({
-        next: () => this.router.navigate(['/main']),
+        next: (newLoc) => {
+          this.modalService.confirm(newLoc); 
+          this.created.emit(newLoc);
+        },
         error: (err) => console.error('Ошибка сохранения:', err)
       });
     }
   }
 
   cancel() {
-    this.router.navigate(['/main']);
+    this.modalService.close();
+    this.close.emit();
   }
 }
