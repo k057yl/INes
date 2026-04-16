@@ -1,31 +1,15 @@
 <div class="location-view" *ngIf="!isLoading; else loader">
   <div class="container" *ngIf="location">
     
-    <div class="breadcrumb-trail">
-      <ng-container *ngFor="let crumb of breadcrumbs; let last = last">
-        <a [routerLink]="['/location', crumb.id]" [class.active]="last">{{ crumb.name }}</a>
-        <i class="fa fa-chevron-right" *ngIf="!last"></i>
-      </ng-container>
-    </div>
-
-    <header class="header-card main-location-card" [style.border-top-color]="location.color">
-      <div class="header-left">
-        <div class="location-info">
-          <div class="icon-wrapper" [style.background-color]="location.color + '20'">
-            <i [className]="'fa ' + (location.icon || 'fa-folder')" [style.color]="location.color"></i>
-          </div>
-          <div class="title-block">
-            <span class="location-label">{{ 'LOCATION_DETAILS.STORAGE_PLACE' | translate }}</span>
-            <h1>{{ location.name }}</h1>
-          </div>
-        </div>
-      </div>
-
-      <div class="header-actions">
-        <button class="inest-btn-ribbon-add" [routerLink]="['/create-item']" [queryParams]="{locationId: location.id}">
-          <i class="fa fa-plus"></i>
-          <span>{{ 'COMMON.ADD' | translate }}</span>
-        </button>
+    <header class="location-simple-header">
+      <div class="breadcrumb-trail">
+        <ng-container *ngFor="let crumb of breadcrumbs; let last = last">
+          <a [routerLink]="['/location', crumb.id]" [class.active]="last">
+            <i *ngIf="last" [className]="'fa ' + (location.icon || 'fa-folder') + ' icon-start'" [style.color]="location.color"></i>
+            {{ crumb.name }}
+          </a>
+          <i class="fa fa-chevron-right separator" *ngIf="!last"></i>
+        </ng-container>
       </div>
     </header>
 
@@ -39,14 +23,9 @@
           </a>
         </div>
 
-        <div class="panel-section">
+        <div class="panel-section" *ngIf="location.children && location.children.length > 0">
           <h3 class="panel-title">{{ 'LOCATION_DETAILS.NESTED' | translate }}</h3>
           <div class="sub-locations">
-            <div class="sub-loc-card current">
-               <i [className]="'fa ' + (location.icon || 'fa-folder')" [style.color]="location.color"></i>
-               <span class="name">{{ location.name }}</span>
-            </div>
-
             <a *ngFor="let child of location.children" 
                [routerLink]="['/location', child.id]" 
                class="sub-loc-card child-link">
@@ -60,8 +39,9 @@
 
       <main class="items-area">
         <div class="area-header">
-          <h2 class="panel-title">
-            {{ 'LOCATION_DETAILS.ITEMS_COUNT' | translate }} ({{ location.items.length || 0 }})
+          <h2 class="section-title">
+            {{ 'LOCATION_DETAILS.ITEMS_COUNT' | translate }} 
+            <span class="count-badge">{{ location.items.length || 0 }}</span>
           </h2>
         </div>
 
@@ -105,6 +85,7 @@
 
 <ng-template #emptyState>
   <div class="empty-view">
+    <i class="fa fa-box-open"></i>
     <p>{{ 'LOCATION_DETAILS.NO_ITEMS' | translate }}</p>
   </div>
 </ng-template>

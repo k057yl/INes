@@ -90,7 +90,7 @@ export class ItemDetailComponent implements OnInit {
       error: (err) => {
         this.isLoading = false;
         if (err.status === 404) {
-          this.router.navigate(['/main'], { replaceUrl: true });
+          this.router.navigate(['/dashboard'], { replaceUrl: true });
         }
       }
     });
@@ -109,7 +109,7 @@ export class ItemDetailComponent implements OnInit {
     if (window.history.length > 1) {
       window.history.back();
     } else {
-      this.router.navigate(['/main']);
+      this.router.navigate(['/dashboard']);
     }
   }
 }

@@ -9,6 +9,7 @@ import { SettingsComponent } from './features/setting/settings.component';
 import { ItemDetailComponent } from './features/inventory/item/details/item-detail.component';
 import { ItemsExplorerComponent } from './features/inventory/item/explorer/items-explorer.component';
 import { authGuard, guestGuard } from './core/guards/auth.guard';
+import { locationResolver } from './features/inventory/location/location.resolver';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
@@ -17,8 +18,13 @@ export const routes: Routes = [
   { path: 'confirm-register', component: ConfirmRegisterComponent, canActivate: [guestGuard] },
   
   // Защищенные роуты (Inventory & App)
-  { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] }, 
-  { path: 'location/:id', component: LocationDetailComponent, canActivate: [authGuard] },
+  { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },
+  { 
+    path: 'location/:id', 
+    component: LocationDetailComponent, 
+    canActivate: [authGuard],
+    resolve: { locationData: locationResolver }
+  },
   { path: 'sales', component: SalesListComponent, canActivate: [authGuard] },
   { path: 'settings', component: SettingsComponent, canActivate: [authGuard] },
   { path: 'item/:id', component: ItemDetailComponent, canActivate: [authGuard] },

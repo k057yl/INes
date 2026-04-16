@@ -2,13 +2,11 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule, Location as NgLocation } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-import { switchMap } from 'rxjs/operators';
 
 import { environment } from '../../../../../environments/environment';
 import { StorageLocation } from '../../../../models/entities/storage-location.entity';
 import { ItemStatus } from '../../../../models/enums/item-status.enum';
 import { ItemService } from '../../../../shared/services/item.service';
-import { LocationService } from '../../../../shared/services/location.service';
 import { DashboardModalService } from '../../../dashboard/dashboard.modal.service';
 
 @Component({
@@ -21,7 +19,6 @@ import { DashboardModalService } from '../../../dashboard/dashboard.modal.servic
 export class LocationDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private itemService = inject(ItemService);
-  private locationService = inject(LocationService);
   private ngLocation = inject(NgLocation);
   private modal = inject(DashboardModalService);
   
@@ -44,18 +41,19 @@ export class LocationDetailComponent implements OnInit {
   };
 
   ngOnInit() {
-    this.route.params.pipe(
-      switchMap(params => {
-        this.isLoading = true;
-        return this.locationService.getById(params['id']);
-      })
-    ).subscribe({
+    this.route.data.subscribe({
       next: (data) => {
-        this.location = data;
-        this.buildBreadcrumbs(data);
+        this.location = data['locationData'];
+        
+        if (this.location) {
+          this.buildBreadcrumbs(this.location);
+        }
+        
         this.isLoading = false;
       },
-      error: () => this.isLoading = false
+      error: () => {
+        this.isLoading = false;
+      }
     });
   }
 
@@ -80,7 +78,10 @@ export class LocationDetailComponent implements OnInit {
         this.itemService.delete(item.id).subscribe({
           next: () => {
             if (this.location) {
-              this.location.items = this.location.items.filter(i => i.id !== item.id);
+              this.location = {
+                ...this.location,
+                items: this.location.items.filter(i => i.id !== item.id)
+              };
             }
           }
         });

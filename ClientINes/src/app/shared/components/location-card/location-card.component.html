@@ -11,12 +11,12 @@
     </div>
     
     <div class="header-actions">
-      <button (click)="modalService.openItemForm(null, location.id)">
-        <i class="fa fa-plus"></i> {{ 'COMMON.ADD_ITEM' | translate }}
+      <button class="quick-add-btn item-btn" (click)="modalService.openItemForm(null, location.id)">
+        <i class="fa fa-plus"></i> {{ 'LOCATION_CARD.BTN.ITEM' | translate }}
       </button>
 
-      <button (click)="modalService.openLocationForm(null, location.id)">
-        <i class="fa fa-folder-plus"></i> {{ 'COMMON.ADD_SUB_LOCATION' | translate }}
+      <button class="quick-add-btn loc-btn"  (click)="modalService.openLocationForm(null, location.id)">
+        <i class="fa fa-folder-plus"></i> {{ 'LOCATION_CARD.BTN.LOCATION' | translate }}
       </button>
 
       <button class="inest-action-btn" (click)="location.showMenu = !location.showMenu" [title]="'COMMON.MORE' | translate">
