@@ -28,9 +28,15 @@
           <div class="sub-locations">
             <a *ngFor="let child of location.children" 
                [routerLink]="['/location', child.id]" 
-               class="sub-loc-card child-link">
+               class="sub-loc-card child-link"
+               [class.is-empty]="(child.itemsCount || 0) === 0">
               <i [className]="'fa ' + (child.icon || 'fa-folder')" [style.color]="child.color"></i>
               <span class="name">{{ child.name }}</span>
+              
+              <span class="count-pill">
+                {{ child.itemsCount ?? child.items.length }}
+              </span>
+
               <i class="fa fa-chevron-right arrow"></i>
             </a>
           </div>
@@ -48,32 +54,37 @@
         <div class="items-grid" *ngIf="location.items.length; else emptyState">
           <div class="item-tile" 
                *ngFor="let item of location.items"
-               [style.border-left]="'4px solid ' + getAccentColor(item.id)">
+               [style.border-top]="'3px solid ' + getAccentColor(item.id)">
             
             <div class="tile-image" [routerLink]="['/item', item.id]">
               <img *ngIf="item.photoUrl" [src]="getPhotoUrl(item.photoUrl)" loading="lazy">
               <i *ngIf="!item.photoUrl" class="fa fa-archive"></i>
               
-              <div class="status-overlay" [ngClass]="getStatusClass(item.status)">
-                  {{ getStatusKey(item.status) | translate }}
+              <div class="status-badge" [ngClass]="getStatusClass(item.status)">
+                <span class="dot"></span>
+                {{ getStatusKey(item.status) | translate }}
               </div>
             </div>
             
             <div class="tile-content">
-              <h3 [routerLink]="['/item', item.id]">{{ item.name }}</h3>
-              <p>{{ item.description || ('LOCATION_DETAILS.NO_DESCRIPTION' | translate) }}</p>
+              <div class="info-block" [routerLink]="['/item', item.id]">
+                <h3>{{ item.name }}</h3>
+                <p>{{ item.description || ('LOCATION_DETAILS.NO_DESCRIPTION' | translate) }}</p>
+              </div>
               
-              <div class="tile-actions">
-                <button class="inest-action-btn edit" 
-                        [routerLink]="['/item/edit', item.id]"
-                        [title]="'COMMON.EDIT' | translate">
-                  <i class="fa fa-pencil"></i>
-                </button>
-                <button class="inest-action-btn is-danger" 
-                        (click)="onDeleteItem(item)"
-                        [title]="'COMMON.DELETE' | translate">
-                  <i class="fa fa-trash"></i>
-                </button>
+              <div class="tile-footer">
+                <div class="action-group">
+                  <button class="mini-btn edit" 
+                          [routerLink]="['/item/edit', item.id]"
+                          [title]="'COMMON.EDIT' | translate">
+                    <i class="fa fa-pen"></i>
+                  </button>
+                  <button class="mini-btn delete" 
+                          (click)="onDeleteItem(item)"
+                          [title]="'COMMON.DELETE' | translate">
+                    <i class="fa fa-trash"></i>
+                  </button>
+                </div>
               </div>
             </div>
           </div>

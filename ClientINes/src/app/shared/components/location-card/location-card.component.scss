@@ -1,3 +1,22 @@
+// АНИМАЦИИ
+@keyframes pulseBorder {
+  0% { box-shadow: 0 0 0 0 rgba(var(--accent-rgb), 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(var(--accent-rgb), 0); }
+  100% { box-shadow: 0 0 0 0 rgba(var(--accent-rgb), 0); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+// ОСНОВНАЯ КАРТОЧКА
 .location-column {
   background: var(--bg-card);
   border-radius: 20px;
@@ -5,211 +24,194 @@
   flex-direction: column;
   padding: 16px;
   border: 1px solid var(--border-color);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   position: relative;
-  min-width: 300px;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  min-width: 320px;
   border-top: 4px solid transparent;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-  &:hover {
+  // 1. СОСТОЯНИЕ ДРАГА НА ДОСКЕ (ЗАТЕМНЕНИЕ ВСЕГО ГОВНИЩА)
+  // Предполагаем, что .board-dragging-active висит на родителе во время драга
+  .board-dragging-active & {
+    opacity: 0.5;
+    filter: blur(1px) grayscale(0.5);
+    
+    // 2. ПОДСВЕТКА ВАЛИДНОЙ ЦЕЛИ
+    // Если внутри есть список, который готов принять дроп (предикат прошел)
+    &:has(.child-locations.cdk-drop-list-receiving) {
+      opacity: 1;
+      filter: none;
+      border-color: var(--accent-color);
+      transform: scale(1.02);
+      box-shadow: 0 15px 35px rgba(var(--accent-rgb), 0.3);
+      border-top-color: var(--accent-color) !important;
+    }
+
+    // 3. ПОДСВЕТКА ОШИБКИ (СЛИШКОМ ГЛУБОКО / НЕЛЬЗЯ)
+    // Если мы навели на карточку, но она НЕ в состоянии receiving (и это не сама тащимая карта)
+    &:hover:not(:has(.child-locations.cdk-drop-list-receiving)):not(.cdk-drag-dragging) {
+      opacity: 1;
+      filter: none;
+      border-color: var(--error-red) !important;
+      border-top-color: var(--error-red) !important;
+      box-shadow: 0 0 20px rgba(255, 68, 68, 0.4);
+      animation: shake 0.4s ease-in-out;
+      
+      &::after {
+        content: "⛔ TOO DEEP / INVALID";
+        position: absolute; top: -30px; left: 50%; transform: translateX(-50%);
+        background: var(--error-red); color: white; padding: 2px 8px;
+        border-radius: 4px; font-size: 10px; font-weight: bold;
+      }
+    }
+  }
+
+  // ЭФФЕКТ ПРИ НАВЕДЕНИИ НА РУЧКУ
+  &:has(.drag-handle:hover) {
     border-color: var(--accent-color);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    box-shadow: 0 0 20px rgba(var(--accent-rgb), 0.2);
+    animation: pulseBorder 2s infinite;
+  }
+
+  // САМА ТАЩИМАЯ КАРТОЧКА
+  &.cdk-drag-dragging {
+    opacity: 1 !important;
+    filter: none !important;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.4);
+    transform: rotate(2deg) scale(1.05);
+    z-index: 999;
   }
 }
 
-.loc-header {
+// ХЕДЕР
+.loc-header-wrapper {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  background: var(--bg-input);
+  border-radius: 14px;
+  border: 1px solid var(--border-color);
   margin-bottom: 15px;
+  overflow: visible; // Теперь всё заебись
   position: relative;
 }
 
-/* МЕНЮ (Дропдаун) */
-.menu-dropdown {
+.main-actions-area { flex: 1; display: flex; flex-direction: column; }
+
+.header-row {
+  padding: 10px 14px;
+  display: flex; align-items: center; gap: 12px;
+
+  &.top {
+    border-bottom: 1px solid var(--border-color);
+    justify-content: space-between;
+    .title-block {
+      display: flex; align-items: center; gap: 8px;
+      h3 { margin: 0; font-size: 1rem; font-weight: 800; color: var(--text-main); }
+      .count-badge { font-size: 0.7rem; color: var(--text-muted); opacity: 0.6; }
+    }
+    .button-group { display: flex; gap: 6px; }
+  }
+
+  &.bottom {
+    justify-content: flex-start;
+    gap: 15px;
+    background: rgba(0,0,0,0.05);
+  }
+}
+
+// КНОПКИ
+.tool-btn {
+  width: 28px; height: 28px; border-radius: 6px;
+  border: 1px solid var(--border-color); background: var(--bg-card);
+  color: var(--text-muted); cursor: pointer; transition: 0.2s;
+  &:hover { color: var(--accent-color); border-color: var(--accent-color); transform: scale(1.1); }
+  &:disabled { opacity: 0.3; cursor: not-allowed; filter: grayscale(1); }
+}
+
+.link-btn {
+  background: transparent; border: none; font-size: 0.75rem;
+  font-weight: 700; color: var(--text-muted); cursor: pointer;
+  display: flex; align-items: center; gap: 4px; transition: 0.2s;
+  &:hover { color: var(--accent-color); }
+  &.is-danger:hover { color: var(--error-red); }
+}
+
+// РУЧКА
+.drag-handle {
+  width: 32px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(var(--accent-rgb), 0.03);
+  border-left: 1px solid var(--border-color);
+  color: var(--text-muted);
+  cursor: grab;
+  transition: all 0.2s;
+
+  &:hover { background: rgba(var(--accent-rgb), 0.1); color: var(--accent-color); }
+  &:active { cursor: grabbing; }
+}
+
+// ПАНЕЛЬ ПЕРЕНОСА
+.quick-move-panel {
   position: absolute;
-  top: 45px;
-  right: 0;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  z-index: 2000;
-  width: 220px;
-  padding: 8px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-  animation: fadeIn 0.2s ease-out;
-
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: 100%;
-    right: 12px;
-    border: 6px solid transparent;
-    border-bottom-color: var(--bg-card);
-  }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* СЕКЦИЯ ПЕРЕМЕЩЕНИЯ (Label + Select) */
-.menu-section {
-  label {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 14px 6px;
-    font-size: 0.7rem;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-weight: 700;
-
-    i { font-size: 0.8rem; color: var(--accent-color); }
-  }
-}
-
-.select-wrapper {
-  padding: 0 10px 10px;
+  top: 100%; left: 0; right: 0;
+  padding: 8px; background: var(--bg-card);
+  border: 1px solid var(--accent-color);
+  border-radius: 0 0 12px 12px;
+  z-index: 100;
+  animation: slideDown 0.2s ease-out;
 
   select {
-    width: 100%;
-    background: var(--bg-input);
+    width: 100%; padding: 6px; border-radius: 6px;
+    background: var(--bg-input); color: var(--text-main);
     border: 1px solid var(--border-color);
-    color: var(--text-main);
-    padding: 8px 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 0.85rem;
-    outline: none;
-    appearance: none;
-    transition: all 0.2s ease;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23475569'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 10px center;
-    background-size: 14px;
-
-    &:focus {
-      border-color: var(--accent-color);
-      box-shadow: 0 0 0 2px rgba(71, 85, 105, 0.1);
-    }
-
-    option {
-      background: var(--bg-card);
-      color: var(--text-main);
-      padding: 10px;
-    }
   }
 }
 
-/* Кнопки ВНУТРИ меню */
-.menu-item-btn {
-  width: 100%;
-  padding: 10px 14px;
-  background: transparent;
-  border: none;
-  color: var(--text-main);
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 0.85rem;
-  cursor: pointer;
-  border-radius: 8px;
-  transition: 0.2s;
-  text-align: left;
-
-  i { 
-    width: 16px; 
-    color: var(--accent-color); 
-    text-align: center;
-    transition: transform 0.2s;
-  }
-
-  &:hover {
-    background: var(--bg-input);
-    color: var(--accent-color);
-    i { transform: scale(1.1); }
-  }
-
-  &.delete-loc-btn {
-    color: var(--error-red);
-    i { color: var(--error-red); }
-    &:hover { background: rgba(255, 77, 77, 0.1); }
-  }
-}
-
-/* Остальное (заголовки, вложенность) */
-.name-stack h3 {
-  color: var(--text-main);
-  font-size: 1.1rem;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+// КОНТЕЙНЕРЫ ДРОПА
+.items-container { 
+  min-height: 20px; 
+  margin-bottom: 10px;
 }
 
 .child-locations {
-  margin-top: 15px;
+  margin-top: 5px;
   padding-left: 15px;
   border-left: 2px dashed var(--border-color);
   display: flex;
   flex-direction: column;
   gap: 15px;
+  min-height: 44px;
+  position: relative;
+  transition: all 0.2s ease;
+
+  // КУДА МОЖНО БРОСАТЬ
+  &.cdk-drop-list-receiving {
+    background-color: rgba(var(--accent-rgb), 0.05);
+    outline: 2px dashed var(--accent-color);
+    outline-offset: -2px;
+    border-radius: 12px;
+  }
+
+  &:empty::after {
+    content: "📁 Drop sub-locations here";
+    display: block;
+    text-align: center;
+    padding: 15px;
+    font-size: 11px;
+    color: var(--text-muted);
+    opacity: 0.4;
+    border: 1px dashed rgba(255,255,255,0.05);
+    border-radius: 10px;
+  }
 }
 
-.divider {
-  height: 1px;
-  background: var(--border-color);
-  margin: 6px 0;
+// ПЛЕЙСХОЛДЕРЫ
+.location-drag-placeholder {
+  background: rgba(var(--accent-rgb), 0.1);
+  border: 2px dashed var(--accent-color);
+  min-height: 100px;
+  border-radius: 20px;
+  margin-bottom: 15px;
   opacity: 0.5;
 }
 
-.header-actions {
-  display: flex;
-  gap: 8px; // Чуть больше места для маневра
-  align-items: center;
-
-  .quick-add-btn {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    gap: 6px;
-    padding: 4px 10px; // Делаем кнопку шире
-    height: 32px;
-    border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    background: rgba(255, 255, 255, 0.03);
-    color: var(--text-muted);
-    font-size: 0.8rem;
-    font-weight: 500;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-
-    i { font-size: 0.9rem; }
-    
-    .btn-label {
-      margin-left: 4px;
-      @media (max-width: 480px) {
-        display: none;
-      }
-    }
-
-    &:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    }
-
-    &.item-btn:hover {
-      background: rgba(var(--g-blue-rgb, 64, 150, 255), 0.15);
-      color: #4096ff;
-      border-color: rgba(64, 150, 255, 0.3);
-    }
-
-    &.loc-btn:hover {
-      background: rgba(var(--g-green-rgb, 82, 196, 26), 0.15);
-      color: #52c41a;
-      border-color: rgba(82, 196, 26, 0.3);
-    }
-  }
-}
+.cdk-drag-placeholder { opacity: 0; }

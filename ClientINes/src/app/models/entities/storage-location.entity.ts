@@ -8,9 +8,8 @@ export interface StorageLocation {
   icon?: string;
   parentLocation?: StorageLocation;
   sortOrder: number;
-  
-  // UI свойства
   items: Item[];
   children?: StorageLocation[];
   showMenu?: boolean;
+  itemsCount?: number;
 }

@@ -1,10 +1,11 @@
+// Контейнер страницы
 .location-view {
   background-color: var(--bg-main);
   min-height: 100vh;
   padding: 20px;
 }
 
-// Компактный хедер-строка
+// Хедер с крошками (компактная строка)
 .location-simple-header {
   margin-bottom: 25px;
   padding: 5px 0;
@@ -14,7 +15,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 1.1rem; // Чуть крупнее обычной строки
+    font-size: 1.1rem;
 
     a {
       color: var(--text-muted);
@@ -25,13 +26,11 @@
       transition: all 0.2s;
 
       &:hover { color: var(--accent-color); }
-
       &.active { 
         color: var(--text-main); 
         font-weight: 700; 
         pointer-events: none; 
       }
-
       .icon-start { font-size: 0.9rem; }
     }
 
@@ -43,6 +42,7 @@
   }
 }
 
+// Сетка: Сайдбар + Основной контент
 .content-grid {
   display: grid;
   grid-template-columns: 300px 1fr;
@@ -50,31 +50,68 @@
   @media (max-width: 1100px) { grid-template-columns: 1fr; }
 }
 
-// Сайдбар
+// Сайдбар (липкий при скролле)
 .side-panel {
   position: sticky;
   top: 20px;
-  .panel-section {
-    margin-bottom: 30px;
-    .panel-title {
-      font-size: 0.7rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      margin-bottom: 12px;
-      font-weight: 800;
-    }
+
+  .panel-section { margin-bottom: 30px; }
+
+  .panel-title {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    font-weight: 800;
   }
 }
 
+// Карточки локаций в сайдбаре
 .sub-loc-card {
-  display: flex; align-items: center; gap: 10px;
-  padding: 12px; background: var(--bg-card);
-  border: 1px solid var(--border-color); border-radius: 12px;
-  margin-bottom: 8px; text-decoration: none; color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  margin-bottom: 8px;
+  text-decoration: none;
+  color: var(--text-main);
   transition: all 0.2s;
-  &:hover { transform: translateX(5px); border-color: var(--accent-color); }
-  &.parent-link { background: rgba(var(--accent-rgb), 0.03); i { color: var(--accent-color); } }
+
+  &:hover {
+    transform: translateX(5px);
+    border-color: var(--accent-color);
+    background: var(--bg-input);
+    .count-pill { border-color: var(--accent-color); color: var(--accent-color); }
+  }
+
+  &.parent-link {
+    background: rgba(var(--accent-rgb), 0.03);
+    i { color: var(--accent-color); }
+  }
+
+  &.is-empty {
+    opacity: 0.7;
+    .count-pill { opacity: 0.5; }
+  }
+
   .name { flex: 1; font-size: 0.9rem; }
+
+  // Счётчик на кнопке
+  .count-pill {
+    font-size: 0.7rem;
+    font-weight: 700;
+    background: var(--bg-main);
+    color: var(--text-muted);
+    padding: 2px 8px;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    transition: all 0.2s;
+  }
+
+  .arrow { font-size: 0.7rem; opacity: 0.3; }
 }
 
 // Сетка предметов
@@ -82,54 +119,179 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 20px;
+  isolation: isolate; // Важно для корректного z-index при ховере
 }
 
+// --- КАРТОЧКА АЙТЕМА (ПЛИТКА) ---
 .item-tile {
   background: var(--bg-card);
   border-radius: 16px;
   border: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
   position: relative;
-  z-index: 1; // Базовый уровень
-  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-  will-change: transform; // Оптимизация для браузера
+  z-index: 1;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: transform;
 
   &:hover {
-    z-index: 10; // ФИКС: Всплывает над всеми соседями, перекрывая их "фоны"
+    z-index: 10;
     transform: translateY(-8px);
-    box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
     border-color: var(--accent-color);
+    .tile-image img { transform: scale(1.05); }
   }
 
   .tile-image {
-    height: 180px;
+    height: 160px;
     background: #000;
-    display: flex; align-items: center; justify-content: center;
     position: relative;
-    img { width: 100%; height: 100%; object-fit: contain; }
-    
-    .status-overlay {
-      position: absolute; top: 10px; left: 10px;
-      padding: 4px 8px; border-radius: 6px; font-size: 0.6rem; font-weight: 800;
-      background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+    overflow: hidden;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+
+    img { 
+      width: 100%; height: 100%; object-fit: contain; 
+      transition: transform 0.3s ease;
+    }
+
+    // Красивый плавающий статус
+    .status-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.65rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #fff;
+      z-index: 2;
+
+      .dot {
+        width: 6px; height: 6px; border-radius: 50%;
+        background: currentColor;
+        box-shadow: 0 0 8px currentColor;
+      }
+
       &.active { color: var(--g-green); }
       &.lent { color: var(--g-yellow); }
       &.borrowed { color: var(--g-red); }
+      &.broken, &.lost { color: var(--text-muted); }
     }
   }
 
   .tile-content {
     padding: 15px;
-    h3 { margin: 0 0 5px; font-size: 1rem; cursor: pointer; &:hover { color: var(--accent-color); } }
-    p { font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; }
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    .info-block {
+      cursor: pointer;
+      h3 { 
+        margin: 0 0 6px; 
+        font-size: 1.05rem; 
+        font-weight: 700;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      p { 
+        font-size: 0.8rem; 
+        color: var(--text-muted); 
+        line-height: 1.4;
+        margin: 0;
+        display: -webkit-box;
+        line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+    }
+  }
+
+  // Футер карточки с кнопками в ряд
+  .tile-footer {
+    margin-top: 15px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: flex-end;
+
+    .action-group {
+      display: flex;
+      gap: 8px;
+    }
   }
 }
 
-.tile-actions {
-  display: flex; justify-content: flex-end; gap: 8px;
-  padding-top: 10px; margin-top: 10px; border-top: 1px solid var(--border-color);
+// Кнопки управления на плитке
+.mini-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-input);
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.8rem;
+
+  &:hover {
+    transform: scale(1.1);
+    background: var(--bg-card);
+  }
+
+  &.edit:hover { color: var(--g-blue); border-color: var(--g-blue); }
+  &.delete:hover { color: var(--g-red); border-color: var(--g-red); }
 }
 
-// Стандартные статусы
-.loader-state { display: flex; justify-content: center; padding: 100px; .spinner { width: 30px; height: 30px; border: 3px solid var(--border-color); border-top-color: var(--accent-color); border-radius: 50%; animation: spin 0.8s linear infinite; } }
+// Заголовок секции с количеством
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+
+  .count-badge {
+    background: var(--accent-color);
+    color: #fff;
+    padding: 2px 10px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    font-weight: 800;
+  }
+}
+
+// Состояния загрузки и пустоты
+.loader-state {
+  display: flex; justify-content: center; padding: 100px;
+  .spinner {
+    width: 30px; height: 30px;
+    border: 3px solid var(--border-color);
+    border-top-color: var(--accent-color);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+}
+
+.empty-view {
+  text-align: center;
+  padding: 60px;
+  color: var(--text-muted);
+  i { font-size: 3rem; margin-bottom: 10px; opacity: 0.5; }
+}
+
 @keyframes spin { to { transform: rotate(360deg); } }

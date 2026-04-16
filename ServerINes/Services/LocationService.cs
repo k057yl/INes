@@ -5,6 +5,7 @@ using INest.Models.Entities;
 using INest.Models.Enums;
 using INest.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using static INest.Constants.LocalizationConstants;
 
 namespace INest.Services
 {
@@ -58,10 +59,12 @@ namespace INest.Services
                     l.Description,
                     l.Color,
                     l.Icon,
+                    l.ParentLocationId,
+                    ItemsCount = l.Items.Count(i => i.Status != ItemStatus.Sold),
                     items = l.Items
-                    .Where(i => i.Status != ItemStatus.Sold)
-                    .Select(i => new { i.Id, i.Name })
-                    .ToList()
+                        .Where(i => i.Status != ItemStatus.Sold)
+                        .Select(i => new { i.Id, i.Name })
+                        .ToList()
                 })
                 .ToListAsync();
         }
@@ -89,6 +92,12 @@ namespace INest.Services
             if (locationId == newParentId)
                 throw new InvalidOperationException(LocalizationConstants.LOCATIONS.SELF_NESTING);
 
+            int movingSubtreeDepth = await GetSubtreeDepthAsync(userId, locationId);
+            int targetLevel = await GetLocationLevelAsync(userId, newParentId);
+
+            if (targetLevel + movingSubtreeDepth > 3)
+                throw new AppException(ERRORS.MAX_NESTING_REACHED, 400);
+
             if (newParentId.HasValue)
             {
                 var currentParentId = newParentId;
@@ -105,8 +114,52 @@ namespace INest.Services
                 }
             }
 
+            var maxSortOrder = await _context.StorageLocations
+                .Where(l => l.UserId == userId && l.ParentLocationId == newParentId)
+                .MaxAsync(l => (int?)l.SortOrder) ?? -1;
+
             location.ParentLocationId = newParentId;
+            location.SortOrder = maxSortOrder + 1;
+
             await _context.SaveChangesAsync();
+        }
+
+        private async Task<int> GetLocationLevelAsync(Guid userId, Guid? locationId)
+        {
+            if (!locationId.HasValue) return 0;
+            int level = 0;
+            var currentId = locationId;
+
+            while (currentId.HasValue)
+            {
+                level++;
+                currentId = await _context.StorageLocations
+                    .AsNoTracking()
+                    .Where(l => l.Id == currentId && l.UserId == userId)
+                    .Select(l => l.ParentLocationId)
+                    .FirstOrDefaultAsync();
+
+                if (level > 10) break;
+            }
+            return level;
+        }
+
+        private async Task<int> GetSubtreeDepthAsync(Guid userId, Guid locationId)
+        {
+            var allUserLocs = await _context.StorageLocations
+                .Where(l => l.UserId == userId)
+                .AsNoTracking()
+                .Select(l => new { l.Id, l.ParentLocationId })
+                .ToListAsync();
+
+            int GetMaxDepth(Guid id)
+            {
+                var children = allUserLocs.Where(l => l.ParentLocationId == id).ToList();
+                if (!children.Any()) return 1;
+                return 1 + children.Max(c => GetMaxDepth(c.Id));
+            }
+
+            return GetMaxDepth(locationId);
         }
 
         public async Task ReorderLocationsAsync(Guid userId, Guid? parentId, List<Guid> orderedIds)
@@ -174,16 +227,39 @@ namespace INest.Services
 
         public async Task<StorageLocation?> GetLocationByIdAsync(Guid userId, Guid locationId)
         {
-            var location = await _context.StorageLocations
+            var data = await _context.StorageLocations
                 .Where(l => l.UserId == userId && l.Id == locationId)
-                .Include(l => l.Children)
-                .Include(l => l.Items.Where(i => i.Status != ItemStatus.Sold))
-                    .ThenInclude(i => i.Category)
+                .Select(l => new
+                {
+                    Location = l,
+                    CurrentItemsCount = l.Items.Count(i => i.Status != ItemStatus.Sold),
+                    ChildrenData = l.Children.Select(c => new
+                    {
+                        Child = c,
+                        Count = c.Items.Count(i => i.Status != ItemStatus.Sold)
+                    }).ToList()
+                })
                 .FirstOrDefaultAsync();
 
-            if (location == null) return null;
+            if (data == null) return null;
+
+            var location = data.Location;
+            location.ItemsCount = data.CurrentItemsCount;
+
+            location.Children = data.ChildrenData.Select(cd =>
+            {
+                cd.Child.ItemsCount = cd.Count;
+                return cd.Child;
+            }).ToList();
 
             location.ParentLocation = await GetParentChainAsync(userId, location.ParentLocationId);
+
+            await _context.Entry(location)
+                .Collection(l => l.Items)
+                .Query()
+                .Where(i => i.Status != ItemStatus.Sold)
+                .Include(i => i.Category)
+                .LoadAsync();
 
             return location;
         }

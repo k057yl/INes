@@ -1,4 +1,6 @@
-﻿namespace INest.Models.Entities
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace INest.Models.Entities
 {
     public class StorageLocation
     {
@@ -22,5 +24,8 @@
         public ICollection<Item> Items { get; set; } = new List<Item>();
         public bool IsSalesLocation { get; set; } = false;
         public bool IsLendingLocation { get; set; } = false;
+
+        [NotMapped]
+        public int ItemsCount { get; set; }
     }
 }

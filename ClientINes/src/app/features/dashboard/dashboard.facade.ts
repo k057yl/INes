@@ -1,7 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, tap } from 'rxjs';
-
+import { Observable, tap, throwError, of } from 'rxjs';
 import { StorageLocation } from '../../models/entities/storage-location.entity';
 import { Item } from '../../models/entities/item.entity';
 import { LocationService } from '../../shared/services/location.service';
@@ -22,7 +21,22 @@ export class DashboardFacade {
   locations: StorageLocation[] = [];
   flatLocations: StorageLocation[] = [];
   connectedLists: string[] = [];
+  connectedLocationLists: string[] = [];
   isLoading = true;
+
+  private getParentId(locId: string): string | null {
+    const parent = this.flatLocations.find(l => l.children?.some(c => c.id === locId));
+    return parent ? parent.id : null;
+  }
+
+  public getLocationLevel(locId: string | null): number {
+    if (!locId || locId === 'root') return 0;
+    const loc = this.flatLocations.find(l => l.id === locId);
+    if (!loc) return 0;
+
+    const pid = this.getParentId(loc.id);
+    return 1 + (pid ? this.getLocationLevel(pid) : 0);
+  }
 
   loadData(): Observable<StorageLocation[]> {
     this.isLoading = true;
@@ -41,9 +55,10 @@ export class DashboardFacade {
   refreshState() {
     this.flatLocations = this.flattenLocations(this.locations);
     this.connectedLists = this.flatLocations.map(l => l.id);
+    this.connectedLocationLists = this.flatLocations.map(l => 'list-loc-' + l.id);
   }
 
-  private flattenLocations(locs: StorageLocation[]): StorageLocation[] {
+  public flattenLocations(locs: StorageLocation[]): StorageLocation[] {
     return locs.reduce<StorageLocation[]>((acc, l) => {
       acc.push(l);
       if (l.children?.length) acc.push(...this.flattenLocations(l.children));
@@ -120,13 +135,39 @@ export class DashboardFacade {
     return this.itemService.move(itemId, targetLocId);
   }
 
-  reorderLocations(orderedIds: string[]) {
-    return this.locationService.reorder({ parentId: null, orderedIds });
+  reorderLocations(orderedIds: string[], parentId: string | null = null) {
+    return this.locationService.reorder({ parentId, orderedIds });
   }
 
-  moveLocation(locId: string, targetId: string) {
-    const newParentId = targetId === 'root' ? null : targetId;
-    return this.locationService.move(locId, newParentId);
+  moveLocation(locId: string, targetId: string | null): Observable<any> {
+    const normalizedTargetId = (targetId === 'root' || !targetId) ? null : targetId;
+    const currentParentId = this.getParentId(locId);
+
+    if (currentParentId === normalizedTargetId) {
+      return of(null);
+    }
+
+    if (!this.canMoveLocation(locId, normalizedTargetId)) {
+      return throwError(() => 'TOO_DEEP');
+    }
+
+    const previousLocations = JSON.parse(JSON.stringify(this.locations));
+
+    try {
+      this.moveLocationLocally(locId, normalizedTargetId);
+    } catch (e) {
+      this.locations = previousLocations;
+      return throwError(() => 'LOCAL_MOVE_FAILED');
+    }
+
+    return this.locationService.move(locId, normalizedTargetId).pipe(
+      tap({
+        error: () => {
+          this.locations = previousLocations;
+          this.refreshState();
+        }
+      })
+    );
   }
 
   sellItem(dto: SellItemRequestDto) {
@@ -149,5 +190,20 @@ export class DashboardFacade {
       if (tree[i].children?.length && this.removeLocationFromTree(tree[i].children!, id)) return true;
     }
     return false;
+  }
+
+  private getSubtreeDepth(loc: StorageLocation): number {
+    if (!loc.children || loc.children.length === 0) return 1;
+    return 1 + Math.max(...loc.children.map(c => this.getSubtreeDepth(c)));
+  }
+
+  public canMoveLocation(locId: string, targetId: string | null): boolean {
+    const movingLoc = this.flatLocations.find(l => l.id === locId);
+    if (!movingLoc) return false;
+
+    const targetLevel = this.getLocationLevel(targetId);
+    const movingDepth = this.getSubtreeDepth(movingLoc);
+
+    return (targetLevel + movingDepth) <= 3;
   }
 }

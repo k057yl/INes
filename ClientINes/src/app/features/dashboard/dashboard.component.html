@@ -9,26 +9,49 @@
     (jumpTo)="jumpToLocation($event)">
   </app-location-ribbon>
 
-  <div class="board-grid-3">
+  <div class="board-grid-3"
+       cdkDropList
+       id="root-loc-list"
+       [cdkDropListData]="pagedBoardLocations"
+       [cdkDropListConnectedTo]="visibleConnectedLocationLists" 
+       [cdkDropListSortingDisabled]="true"
+       [cdkDropListEnterPredicate]="canDropRootLocation"
+       (cdkDragStarted)="onLocationDragStart()"
+       (cdkDragEnded)="onLocationDragEnd()"
+       (cdkDropListDropped)="onLocationDropped({event: $event, targetId: 'root'})">
+       
+       
     <div class="loader-overlay" *ngIf="facade.isLoading">
       <i class="fa fa-spinner fa-spin"></i> {{'COMMON.LOADING' | translate }}
     </div>
     
-    <app-location-card 
-      *ngFor="let loc of pagedBoardLocations; trackBy: trackById"
-      [location]="loc"
-      [flatLocations]="facade.flatLocations"
-      [connectedLists]="facade.connectedLists"
-      [isChildOf]="isChildOf"
-      (itemDropped)="onItemDropped($event)"
-      (lendItem)="onLendRequest($event)"
-      (sellItem)="onSellRequest($event)" 
-      (move)="onLocationMove($event)"
-      (moveItemManual)="onItemMoveManual($event)"
-      (rename)="onRename($event)"
-      (deleteItem)="onDeleteItem($event)"
-      (delete)="onDeleteLocation($event)">
-    </app-location-card>
+    <div class="root-loc-wrapper" 
+         *ngFor="let loc of pagedBoardLocations; trackBy: trackById"
+         cdkDrag 
+         [cdkDragData]="loc" 
+         [cdkDragDisabled]="isMobile">
+
+      <div class="location-drag-placeholder" *cdkDragPlaceholder></div>
+
+      <app-location-card 
+        [location]="loc"
+        [flatLocations]="facade.flatLocations"
+        
+        [connectedLists]="visibleConnectedLists"
+        [connectedLocationLists]="visibleConnectedLocationLists"
+        
+        [isChildOf]="isChildOf"
+        (itemDropped)="onItemDropped($event)"
+        (locationDropped)="onLocationDropped($event)"
+        (lendItem)="onLendRequest($event)"
+        (sellItem)="onSellRequest($event)" 
+        (move)="onLocationMove($event)"
+        (moveItemManual)="onItemMoveManual($event)"
+        (rename)="onRename($event)"
+        (deleteItem)="onDeleteItem($event)"
+        (delete)="onDeleteLocation($event)">
+      </app-location-card>
+    </div>
 
     <div class="zero-state-container" *ngIf="!facade.isLoading && facade.locations.length === 0">
       <div class="zero-state-content">
