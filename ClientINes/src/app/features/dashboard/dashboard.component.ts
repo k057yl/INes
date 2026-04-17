@@ -41,6 +41,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.isDraggingLoc = false;
   }
 
+  onLocationMoveUp(loc: StorageLocation) { this.facade.moveLocationUpDown(loc.id, 'up'); }
+  onLocationMoveDown(loc: StorageLocation) { this.facade.moveLocationUpDown(loc.id, 'down'); }
+
   get ribbonPageSize(): number { return window.innerWidth <= RIBBON_CONFIG.BREAKPOINT_MOBILE ? RIBBON_CONFIG.PAGE_SIZE_MOBILE : RIBBON_CONFIG.PAGE_SIZE_DESKTOP; }
   get pagedBoardLocations(): StorageLocation[] { const start = this.currentPageBoard * BOARD_CONFIG.PAGE_SIZE; return this.facade.locations.slice(start, start + BOARD_CONFIG.PAGE_SIZE); }
   get activeBoardIds(): string[] { return this.pagedBoardLocations.map(l => l.id); }
@@ -72,12 +75,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   onRibbonReorder(event: CdkDragDrop<StorageLocation[]>) { const offset = this.currentPageRibbon * this.ribbonPageSize; moveItemInArray(this.facade.locations, event.previousIndex + offset, event.currentIndex + offset); this.facade.reorderLocations(this.facade.locations.map(l => l.id)).subscribe(); }
 
   onLocationMove(event: { loc: StorageLocation, targetId: string }) {
-    this.facade.moveLocation(event.loc.id, event.targetId).subscribe({
-      next: () => {
-        this.loadData(); 
-      },
+    const normalizedTargetId = event.targetId === 'root' ? null : event.targetId;
+    this.facade.moveLocationApi(event.loc.id, normalizedTargetId).subscribe({
+      next: () => this.loadData(),
       error: (err) => { 
-        if (err === 'TOO_DEEP') { alert('ERRORS.MAX_NESTING_REACHED'); } 
+        if (err === 'TOO_DEEP') alert('ERRORS.MAX_NESTING_REACHED');
         this.loadData(); 
       }
     });
@@ -92,15 +94,38 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   onLocationDropped(data: {event: CdkDragDrop<StorageLocation[]>, targetId: string | null}) {
     const { event, targetId } = data;
-    if (event.previousContainer === event.container) {
-      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-      const orderedIds = event.container.data.map(l => l.id);
-      const parentId = targetId === 'root' ? null : targetId;
-      this.facade.reorderLocations(orderedIds, parentId).subscribe({ error: () => this.loadData() });
-      return;
-    }
+    const normalizedTargetId = targetId === 'root' ? null : targetId;
     const loc = event.previousContainer.data[event.previousIndex];
-    this.onLocationMove({ loc, targetId: targetId || 'root' });
+
+    // Если дропнули в ту же папку - игнорим, для сортировки есть кнопки
+    if (event.previousContainer === event.container) return;
+
+    // Вырезаем локацию из старого списка
+    if (event.previousContainer.id === 'root-loc-list') {
+      const offset = this.currentPageBoard * BOARD_CONFIG.PAGE_SIZE;
+      this.facade.locations.splice(event.previousIndex + offset, 1);
+      this.facade.locations = [...this.facade.locations];
+    } else {
+      event.previousContainer.data.splice(event.previousIndex, 1);
+    }
+
+    // Просто пушим в конец новой папки (в корень нельзя по ТЗ)
+    event.container.data.push(loc);
+    this.facade.refreshState();
+
+    // API: перемещаем и сохраняем новый порядок
+    this.facade.moveLocationApi(loc.id, normalizedTargetId).subscribe({
+      next: () => {
+        const orderedIds = event.container.data.map(l => l.id);
+        this.facade.reorderLocations(orderedIds, normalizedTargetId).subscribe({
+          error: () => this.loadData()
+        });
+      },
+      error: (err) => {
+        if (err === 'TOO_DEEP') alert('ERRORS.MAX_NESTING_REACHED');
+        this.loadData();
+      }
+    });
   }
 
   onItemDropped(data: {event: CdkDragDrop<Item[]>, loc: StorageLocation}) {

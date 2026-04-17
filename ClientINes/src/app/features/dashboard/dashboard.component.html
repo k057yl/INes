@@ -10,7 +10,7 @@
   </app-location-ribbon>
 
   <div class="board-grid-3"
-       cdkDropList
+       [class.board-dragging-active]="isDraggingLoc" cdkDropList
        id="root-loc-list"
        [cdkDropListData]="pagedBoardLocations"
        [cdkDropListConnectedTo]="visibleConnectedLocationLists" 
@@ -33,6 +33,11 @@
 
       <div class="location-drag-placeholder" *cdkDragPlaceholder></div>
 
+      <div *cdkDragPreview class="custom-drag-preview" [style.border-color]="loc.color">
+        <i [className]="'fa ' + (loc.icon || 'fa-folder')" [style.color]="loc.color"></i>
+        <span class="preview-title">{{ loc.name }}</span>
+      </div>
+
       <app-location-card 
         [location]="loc"
         [flatLocations]="facade.flatLocations"
@@ -49,7 +54,9 @@
         (moveItemManual)="onItemMoveManual($event)"
         (rename)="onRename($event)"
         (deleteItem)="onDeleteItem($event)"
-        (delete)="onDeleteLocation($event)">
+        (delete)="onDeleteLocation($event)"
+        (moveUp)="onLocationMoveUp($event)"     
+        (moveDown)="onLocationMoveDown($event)">
       </app-location-card>
     </div>
 

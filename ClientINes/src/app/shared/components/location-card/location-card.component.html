@@ -26,6 +26,13 @@
           <button class="tool-btn move-select" (click)="location.showMenu = !location.showMenu; $event.stopPropagation()">
             <i class="fa fa-exchange-alt"></i>
           </button>
+
+          <button class="tool-btn" (click)="moveUp.emit(location); $event.stopPropagation()" [title]="'Вверх'">
+            <i class="fa fa-arrow-up"></i>
+          </button>
+          <button class="tool-btn" (click)="moveDown.emit(location); $event.stopPropagation()" [title]="'Вниз'">
+            <i class="fa fa-arrow-down"></i>
+          </button>
         </div>
       </div>
 
@@ -92,14 +99,18 @@
        [cdkDropListConnectedTo]="connectedLocationLists"
        [cdkDropListEnterPredicate]="canDropLocation"
        (cdkDropListDropped)="locationDropped.emit({event: $event, targetId: location.id})"
-       [cdkDropListSortingDisabled]="true">
-  
-    <div class="child-location-wrapper"
+       [cdkDropListSortingDisabled]="true"> <div class="child-location-wrapper"
          *ngFor="let child of location.children; trackBy: trackById"
          cdkDrag
          [cdkDragData]="child"
          [cdkDragDisabled]="isMobile">
+      
       <div class="location-drag-placeholder" *cdkDragPlaceholder></div>
+      <div *cdkDragPreview class="custom-drag-preview" [style.border-color]="child.color">
+        <i [className]="'fa ' + (child.icon || 'fa-folder')" [style.color]="child.color"></i>
+        <span class="preview-title">{{ child.name }}</span>
+      </div>
+
       <app-location-card 
           [location]="child"
           [flatLocations]="flatLocations"
@@ -114,8 +125,8 @@
           (delete)="delete.emit($event)"
           (sellItem)="sellItem.emit($event)"
           (lendItem)="lendItem.emit($event)"
-          (deleteItem)="deleteItem.emit($event)"> 
-      </app-location-card>
+          (deleteItem)="deleteItem.emit($event)"
+          (moveUp)="moveUp.emit($event)"    (moveDown)="moveDown.emit($event)"> </app-location-card>
     </div>
   </div>
 </div>

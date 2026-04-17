@@ -119,6 +119,47 @@ export class DashboardFacade {
     }
   }
 
+  public moveLocationUpDown(locId: string, direction: 'up' | 'down') {
+    const parentId = this.getParentId(locId);
+    let targetArray: StorageLocation[];
+
+    // Находим нужный массив (корень или дети конкретной папки)
+    if (parentId) {
+      const parent = this.flatLocations.find(l => l.id === parentId);
+      if (!parent || !parent.children) return;
+      targetArray = parent.children;
+    } else {
+      targetArray = this.locations;
+    }
+
+    const index = targetArray.findIndex(l => l.id === locId);
+    if (index === -1) return;
+
+    const newIndex = direction === 'up' ? index - 1 : index + 1;
+    
+    // Если пытаются поднять выше крыши или опустить ниже плинтуса - шлем нахер
+    if (newIndex < 0 || newIndex >= targetArray.length) return;
+
+    // Меняем местами
+    const temp = targetArray[index];
+    targetArray[index] = targetArray[newIndex];
+    targetArray[newIndex] = temp;
+
+    // Если это был корень, дергаем ссылку для Angular
+    if (!parentId) {
+      this.locations = [...this.locations];
+    }
+    this.refreshState();
+
+    // Отправляем новый порядок на бэк
+    const orderedIds = targetArray.map(l => l.id);
+    this.reorderLocations(orderedIds, parentId).subscribe();
+  }
+
+  moveLocationApi(locId: string, targetId: string | null): Observable<any> {
+    return this.locationService.move(locId, targetId);
+  }
+
   private findAndRemoveLocation(tree: StorageLocation[], id: string): StorageLocation | null {
     for (let i = 0; i < tree.length; i++) {
       if (tree[i].id === id) return tree.splice(i, 1)[0];
