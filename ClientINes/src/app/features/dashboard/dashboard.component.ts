@@ -31,14 +31,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
   currentPageBoard = 0;
   currentPageRibbon = 0;
 
-  isDraggingLoc = false;
-
-  onLocationDragStart() {
-    this.isDraggingLoc = true;
+  onLocationDragStart(loc: StorageLocation) {
+    this.facade.draggedLocationId = loc.id;
   }
 
   onLocationDragEnd() {
-    this.isDraggingLoc = false;
+    this.facade.draggedLocationId = null;
   }
 
   onLocationMoveUp(loc: StorageLocation) { this.facade.moveLocationUpDown(loc.id, 'up'); }
@@ -97,23 +95,28 @@ export class DashboardComponent implements OnInit, OnDestroy {
     const normalizedTargetId = targetId === 'root' ? null : targetId;
     const loc = event.previousContainer.data[event.previousIndex];
 
-    // Если дропнули в ту же папку - игнорим, для сортировки есть кнопки
     if (event.previousContainer === event.container) return;
 
-    // Вырезаем локацию из старого списка
     if (event.previousContainer.id === 'root-loc-list') {
       const offset = this.currentPageBoard * BOARD_CONFIG.PAGE_SIZE;
       this.facade.locations.splice(event.previousIndex + offset, 1);
       this.facade.locations = [...this.facade.locations];
     } else {
       event.previousContainer.data.splice(event.previousIndex, 1);
+      const sourceParentId = event.previousContainer.id.replace('list-loc-', '');
+      const sourceParent = this.facade.flatLocations.find(l => l.id === sourceParentId);
+      if (sourceParent) sourceParent.children = [...sourceParent.children!];
     }
 
-    // Просто пушим в конец новой папки (в корень нельзя по ТЗ)
     event.container.data.push(loc);
+
+    if (targetId && targetId !== 'root') {
+      const targetParent = this.facade.flatLocations.find(l => l.id === targetId);
+      if (targetParent) targetParent.children = [...targetParent.children!];
+    }
+
     this.facade.refreshState();
 
-    // API: перемещаем и сохраняем новый порядок
     this.facade.moveLocationApi(loc.id, normalizedTargetId).subscribe({
       next: () => {
         const orderedIds = event.container.data.map(l => l.id);

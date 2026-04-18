@@ -1,6 +1,18 @@
 <div class="location-column" 
      [style.border-top-color]="location.color"
-     [class.menu-open]="location.showMenu">
+     [class.menu-open]="location.showMenu"
+     [class.is-valid-target]="isValidDropTarget"
+     [class.is-invalid-target]="isInvalidDropTarget"
+     [class.is-drag-over]="isDragOver" cdkDropList
+     [id]="'list-loc-' + location.id"
+     [cdkDropListData]="location.children!" 
+     [cdkDropListConnectedTo]="connectedLocationLists"
+     [cdkDropListEnterPredicate]="canDropLocation"
+     (cdkDropListEntered)="onDragEntered()" 
+     (cdkDropListExited)="onDragExited()"   
+     (cdkDropListDropped)="onDragExited(); 
+     locationDropped.emit({event: $event, targetId: location.id})" 
+     [cdkDropListSortingDisabled]="true">
 
   <div class="loc-header-wrapper">
     <div class="main-actions-area">
@@ -27,10 +39,10 @@
             <i class="fa fa-exchange-alt"></i>
           </button>
 
-          <button class="tool-btn" (click)="moveUp.emit(location); $event.stopPropagation()" [title]="'Вверх'">
+          <button class="tool-btn" (click)="moveUp.emit(location); $event.stopPropagation()" [title]="'Вверх'" [disabled]="isFirst">
             <i class="fa fa-arrow-up"></i>
           </button>
-          <button class="tool-btn" (click)="moveDown.emit(location); $event.stopPropagation()" [title]="'Вниз'">
+          <button class="tool-btn" (click)="moveDown.emit(location); $event.stopPropagation()" [title]="'Вниз'" [disabled]="isLast">
             <i class="fa fa-arrow-down"></i>
           </button>
         </div>
@@ -92,20 +104,13 @@
     </div>
   </div>
 
-  <div class="child-locations"
-       cdkDropList
-       [id]="'list-loc-' + location.id"
-       [cdkDropListData]="location.children!" 
-       [cdkDropListConnectedTo]="connectedLocationLists"
-       [cdkDropListEnterPredicate]="canDropLocation"
-       (cdkDropListDropped)="locationDropped.emit({event: $event, targetId: location.id})"
-       [cdkDropListSortingDisabled]="true"> <div class="child-location-wrapper"
+  <div class="child-locations">
+    <div class="child-location-wrapper"
          *ngFor="let child of location.children; trackBy: trackById"
          cdkDrag
          [cdkDragData]="child"
-         [cdkDragDisabled]="isMobile">
-      
-      <div class="location-drag-placeholder" *cdkDragPlaceholder></div>
+         [cdkDragDisabled]="isMobile"
+         (cdkDragStarted)="onDragStart(child)"  (cdkDragEnded)="onDragEnd()">          <!--<div class="location-drag-placeholder" *cdkDragPlaceholder></div>-->
       <div *cdkDragPreview class="custom-drag-preview" [style.border-color]="child.color">
         <i [className]="'fa ' + (child.icon || 'fa-folder')" [style.color]="child.color"></i>
         <span class="preview-title">{{ child.name }}</span>

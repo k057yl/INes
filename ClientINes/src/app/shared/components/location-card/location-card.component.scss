@@ -27,46 +27,70 @@
   flex-direction: column;
   padding: 16px;
   border: 1px solid var(--border-color);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  // Дефолтная тень — мягкая (для светлой темы)
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
   position: relative;
   min-width: 320px;
   border-top: 4px solid transparent;
-  transition: opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+  transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease, filter 0.2s ease;
 
-  .board-dragging-active & {
-    opacity: 0.6;
-    filter: grayscale(0.3);
-    
-    &:has(.child-locations.cdk-drop-list-receiving) {
-      opacity: 1;
-      filter: none;
-      border-color: var(--accent-color);
-      transform: scale(1.02) translateY(-4px);
-      box-shadow: 0 15px 35px rgba(var(--accent-rgb), 0.2);
-      border-top-color: var(--accent-color) !important;
+  // === СВЕТЛАЯ ТЕМА (Аккуратные цвета, без грязного неона) ===
+  &.is-valid-target {
+    background-color: rgba(66, 133, 244, 0.05) !important; // --g-blue
+    border-color: var(--g-blue) !important;
+    border-top-color: var(--g-blue) !important;
+    box-shadow: 0 5px 15px rgba(66, 133, 244, 0.1) !important;
+  }
+
+  &.is-invalid-target {
+    background-color: rgba(234, 67, 53, 0.05) !important; // --g-red
+    border-color: var(--g-red) !important;
+    border-top-color: var(--g-red) !important;
+    box-shadow: 0 5px 15px rgba(234, 67, 53, 0.1) !important;
+  }
+
+  &.is-drag-over {
+    background-color: rgba(52, 168, 83, 0.1) !important; // --g-green
+    border-color: var(--g-green) !important;
+    border-top-color: var(--g-green) !important;
+    box-shadow: 0 8px 25px rgba(52, 168, 83, 0.2) !important;
+    transform: scale(1.02);
+    z-index: 10;
+  }
+
+  // === ТЕМНАЯ ТЕМА (Врубаем киберпанк и жесткое свечение) ===
+  :host-context(body.dark-theme) & {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3); // Усиливаем дефолтную тень
+
+    &.is-valid-target {
+      background-color: rgba(0, 123, 255, 0.05) !important;
+      border-color: rgba(0, 123, 255, 0.5) !important;
+      border-top-color: rgba(0, 123, 255, 0.5) !important;
+      box-shadow: 0 0 15px rgba(0, 123, 255, 0.15) !important;
     }
 
-    &:hover:not(:has(.child-locations.cdk-drop-list-receiving)):not(.cdk-drag-dragging) {
-      opacity: 1;
-      filter: none;
-      border-color: var(--error-red) !important;
-      border-top-color: var(--error-red) !important;
-      box-shadow: 0 0 20px rgba(255, 68, 68, 0.3);
-      animation: shake 0.3s ease-in-out;
-      
-      &::after {
-        content: "⛔ НЕ ВЛЕЗЕТ / МАКС. УРОВЕНЬ";
-        position: absolute; top: -30px; left: 50%; transform: translateX(-50%);
-        background: var(--error-red); color: white; padding: 4px 10px;
-        border-radius: 6px; font-size: 11px; font-weight: bold;
-        white-space: nowrap;
-      }
+    &.is-invalid-target {
+      background-color: rgba(255, 50, 50, 0.1) !important;
+      border-color: #ff3333 !important;
+      border-top-color: #ff3333 !important;
+      box-shadow: 0 0 25px rgba(255, 50, 50, 0.4) !important;
+    }
+
+    &.is-drag-over {
+      background-color: rgba(40, 167, 69, 0.15) !important;
+      border-color: #28a745 !important;
+      border-top-color: #28a745 !important;
+      box-shadow: 0 0 30px rgba(40, 167, 69, 0.4) !important;
     }
   }
 
   &:has(.drag-handle:hover) {
     border-color: var(--accent-color);
-    box-shadow: 0 0 20px rgba(var(--accent-rgb), 0.2);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.05); // Тень для светлой
+    
+    :host-context(body.dark-theme) & {
+       box-shadow: 0 0 20px rgba(0, 245, 212, 0.2); // Тень для темной
+    }
   }
 }
 
@@ -161,51 +185,12 @@
   display: flex;
   flex-direction: column;
   gap: 15px;
-  min-height: 44px;
-  position: relative;
-  transition: all 0.2s ease;
-
-  // Интуитивная зона посадки (площадка)
-  &.cdk-drop-list-receiving {
-    background-color: rgba(var(--accent-rgb), 0.08);
-    outline: 2px dashed var(--accent-color);
-    outline-offset: 4px;
-    border-radius: 12px;
-    
-    &::before {
-      content: "👇 БРОСАЙ СЮДА";
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 0.8rem; font-weight: 800;
-      color: var(--accent-color);
-      opacity: 0.4;
-      pointer-events: none;
-      animation: pulseText 1s infinite alternate;
-    }
-
-    &:not(:empty)::before {
-      display: none; // Убираем текст, если внутри уже есть карточки
-    }
-  }
-
-  &:empty::after {
-    content: "📁 Drop sub-locations here";
-    display: block;
-    text-align: center;
-    padding: 15px;
-    font-size: 11px;
-    color: var(--text-muted);
-    opacity: 0.4;
-    border: 1px dashed rgba(255,255,255,0.05);
-    border-radius: 10px;
-  }
 }
 
 .location-drag-placeholder {
   background: rgba(var(--accent-rgb), 0.1);
   border: 2px dashed var(--accent-color);
-  min-height: 100px; // Если будешь юзать 100х100, можно уменьшить до 100px
+  min-height: 100px;
   border-radius: 20px;
   margin-bottom: 15px;
   opacity: 0.5;

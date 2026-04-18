@@ -10,16 +10,13 @@
   </app-location-ribbon>
 
   <div class="board-grid-3"
-       [class.board-dragging-active]="isDraggingLoc" cdkDropList
+       [class.board-dragging-active]="!!facade.draggedLocationId" cdkDropList
        id="root-loc-list"
        [cdkDropListData]="pagedBoardLocations"
        [cdkDropListConnectedTo]="visibleConnectedLocationLists" 
        [cdkDropListSortingDisabled]="true"
        [cdkDropListEnterPredicate]="canDropRootLocation"
-       (cdkDragStarted)="onLocationDragStart()"
-       (cdkDragEnded)="onLocationDragEnd()"
        (cdkDropListDropped)="onLocationDropped({event: $event, targetId: 'root'})">
-       
        
     <div class="loader-overlay" *ngIf="facade.isLoading">
       <i class="fa fa-spinner fa-spin"></i> {{'COMMON.LOADING' | translate }}
@@ -29,9 +26,10 @@
          *ngFor="let loc of pagedBoardLocations; trackBy: trackById"
          cdkDrag 
          [cdkDragData]="loc" 
-         [cdkDragDisabled]="isMobile">
+         [cdkDragDisabled]="isMobile"
+         (cdkDragStarted)="onLocationDragStart(loc)" (cdkDragEnded)="onLocationDragEnd()">
 
-      <div class="location-drag-placeholder" *cdkDragPlaceholder></div>
+      <!--<div class="location-drag-placeholder" *cdkDragPlaceholder></div>-->
 
       <div *cdkDragPreview class="custom-drag-preview" [style.border-color]="loc.color">
         <i [className]="'fa ' + (loc.icon || 'fa-folder')" [style.color]="loc.color"></i>

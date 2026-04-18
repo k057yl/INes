@@ -43,10 +43,34 @@ export class LocationCardComponent {
   openItemMenuId: string | null = null;
   isMobile = window.innerWidth <= 768;
 
+  isDragOver = false;
+
+  onDragEntered() {
+    this.isDragOver = true;
+  }
+  onDragExited() {
+    this.isDragOver = false;
+  }
+
   ngOnInit() {
     if (!this.location.children) {
       this.location.children = [];
     }
+  }
+
+  onDragStart(child: StorageLocation) {
+    this.facade.draggedLocationId = child.id;
+  }
+
+  onDragEnd() {
+    this.facade.draggedLocationId = null;
+  }
+
+  private _checkIfValidTarget(draggedData: any): boolean {
+    if (!draggedData || !('children' in draggedData)) return false;
+    if (draggedData.id === this.location.id) return false;
+    if (this.facade.isChildOf(this.location.id, draggedData)) return false;
+    return this.facade.canMoveLocation(draggedData.id, this.location.id);
   }
 
   @HostListener('window:resize')
@@ -57,14 +81,42 @@ export class LocationCardComponent {
   };
 
   canDropLocation = (drag: CdkDrag): boolean => {
-    const data = drag.data;
-    if (!data || !('children' in data)) return false; 
-    
-    if (data.id === this.location.id) return false;
-    if (this.facade.isChildOf(this.location.id, data)) return false;
-    
-    return this.facade.canMoveLocation(data.id, this.location.id);
+    return this._checkIfValidTarget(drag.data);
   };
+
+  get isValidDropTarget(): boolean {
+    const draggedId = this.facade.draggedLocationId;
+    if (!draggedId) return false;
+    const draggedLoc = this.facade.flatLocations.find(l => l.id === draggedId);
+    if (!draggedLoc) return false;
+    return this._checkIfValidTarget(draggedLoc);
+  }
+
+  get isInvalidDropTarget(): boolean {
+    const draggedId = this.facade.draggedLocationId;
+    if (!draggedId) return false;
+    if (draggedId === this.location.id) return false;
+    
+    const draggedLoc = this.facade.flatLocations.find(l => l.id === draggedId);
+    if (!draggedLoc) return false;
+    
+    return !this._checkIfValidTarget(draggedLoc);
+  }
+
+  private getSiblings(): StorageLocation[] {
+    const parent = this.facade.flatLocations.find(l => l.children?.some(c => c.id === this.location.id));
+    return parent && parent.children ? parent.children : this.facade.locations;
+  }
+
+  get isFirst(): boolean {
+    const siblings = this.getSiblings();
+    return siblings.length > 0 && siblings[0].id === this.location.id;
+  }
+
+  get isLast(): boolean {
+    const siblings = this.getSiblings();
+    return siblings.length > 0 && siblings[siblings.length - 1].id === this.location.id;
+  }
 
   onItemMenuToggled(itemId: string | null) {
     this.openItemMenuId = itemId;

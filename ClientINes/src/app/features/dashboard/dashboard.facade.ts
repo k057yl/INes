@@ -23,6 +23,7 @@ export class DashboardFacade {
   connectedLists: string[] = [];
   connectedLocationLists: string[] = [];
   isLoading = true;
+  draggedLocationId: string | null = null;
 
   private getParentId(locId: string): string | null {
     const parent = this.flatLocations.find(l => l.children?.some(c => c.id === locId));
@@ -123,7 +124,6 @@ export class DashboardFacade {
     const parentId = this.getParentId(locId);
     let targetArray: StorageLocation[];
 
-    // Находим нужный массив (корень или дети конкретной папки)
     if (parentId) {
       const parent = this.flatLocations.find(l => l.id === parentId);
       if (!parent || !parent.children) return;
@@ -136,22 +136,22 @@ export class DashboardFacade {
     if (index === -1) return;
 
     const newIndex = direction === 'up' ? index - 1 : index + 1;
-    
-    // Если пытаются поднять выше крыши или опустить ниже плинтуса - шлем нахер
+
     if (newIndex < 0 || newIndex >= targetArray.length) return;
 
-    // Меняем местами
     const temp = targetArray[index];
     targetArray[index] = targetArray[newIndex];
     targetArray[newIndex] = temp;
 
-    // Если это был корень, дергаем ссылку для Angular
-    if (!parentId) {
+    if (parentId) {
+      const parent = this.flatLocations.find(l => l.id === parentId);
+      if (parent) parent.children = [...targetArray];
+    } else {
       this.locations = [...this.locations];
     }
+    
     this.refreshState();
 
-    // Отправляем новый порядок на бэк
     const orderedIds = targetArray.map(l => l.id);
     this.reorderLocations(orderedIds, parentId).subscribe();
   }
