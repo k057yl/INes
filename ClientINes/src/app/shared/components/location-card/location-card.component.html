@@ -89,13 +89,15 @@
     
     <app-item-card *ngFor="let item of location.items; trackBy: trackById" 
       [item]="item"
+      [accentColor]="location.color"  [flatLocations]="flatLocations"
       [flatLocations]="flatLocations"
       [menuOpenItemId]="openItemMenuId"
       (menuOpenedItemIdChange)="onItemMenuToggled($event)"
       (sell)="sellItem.emit($event)"
       (lend)="lendItem.emit($event)"
       (delete)="deleteItem.emit($event)"
-      (move)="moveItemManual.emit($event)">
+      (move)="moveItemManual.emit($event)"
+      (edit)="editItem.emit($event)">
     </app-item-card>
     
     <div class="empty-placeholder" *ngIf="location.items.length === 0">

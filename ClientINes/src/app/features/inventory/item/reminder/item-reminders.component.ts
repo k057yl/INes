@@ -71,7 +71,7 @@ export class ItemRemindersComponent implements OnInit {
 
   loadReminders() {
     this.reminderService.getItemReminders(this.itemId).subscribe(res => {
-      this.reminders = res;
+      this.reminders = res.sort((a, b) => Number(a.isCompleted) - Number(b.isCompleted));
     });
   }
 
@@ -106,16 +106,25 @@ export class ItemRemindersComponent implements OnInit {
 
   // --- ЛОГИКА ЧЕРЕЗ ГЛОБАЛЬНЫЙ СЕРВИС ---
 
-  requestComplete(id: string) {
+requestComplete(id: string) {
     this.modal.openConfirm({
       mode: 'confirm',
-      title: 'REMINDERS.MODAL.TITLE_DONE',
-      message: 'REMINDERS.MODAL.M_YOU_SURE_DONE',
+      title: 'REMINDS_PAGE.MODAL.TITLE_DONE',
+      message: 'REMINDS_PAGE.MODAL.M_YOU_SURE_DONE',
       confirmText: 'COMMON.YES',
       cancelText: 'COMMON.NO'
     }).subscribe((res: any) => {
-      if (res) {
-        this.reminderService.completeReminder(id).subscribe(() => this.loadReminders());
+      if (res === true || res === 'confirm') {
+        this.reminderService.completeReminder(id).subscribe({
+          next: () => {
+            const reminder = this.reminders.find(r => r.id === id);
+            if (reminder) {
+              reminder.isCompleted = true;
+            }
+            setTimeout(() => this.loadReminders(), 800);
+          },
+          error: (err) => console.error('Ошибка при выполнении:', err)
+        });
       }
     });
   }
@@ -124,11 +133,14 @@ export class ItemRemindersComponent implements OnInit {
     this.modal.openConfirm({
       mode: 'delete',
       title: 'COMMON.DELETE',
-      message: 'REMINDERS.MODAL.DELETE_CONFIRM_MSG'
+      message: 'REMINDS_PAGE.MODAL.DELETE_MSG'
     }).subscribe((res: any) => {
-      if (res) {
-        this.reminderService.deleteReminder(id).subscribe(() => {
-          this.reminders = this.reminders.filter(r => r.id !== id);
+      
+      if (res === true || res === 'delete') {
+        this.reminderService.deleteReminder(id).subscribe({
+          next: () => {
+            this.reminders = this.reminders.filter(r => r.id !== id);
+          },
         });
       }
     });

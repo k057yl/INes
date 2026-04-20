@@ -29,8 +29,6 @@
          [cdkDragDisabled]="isMobile"
          (cdkDragStarted)="onLocationDragStart(loc)" (cdkDragEnded)="onLocationDragEnd()">
 
-      <!--<div class="location-drag-placeholder" *cdkDragPlaceholder></div>-->
-
       <div *cdkDragPreview class="custom-drag-preview" [style.border-color]="loc.color">
         <i [className]="'fa ' + (loc.icon || 'fa-folder')" [style.color]="loc.color"></i>
         <span class="preview-title">{{ loc.name }}</span>
@@ -54,7 +52,8 @@
         (deleteItem)="onDeleteItem($event)"
         (delete)="onDeleteLocation($event)"
         (moveUp)="onLocationMoveUp($event)"     
-        (moveDown)="onLocationMoveDown($event)">
+        (moveDown)="onLocationMoveDown($event)"
+        (editItem)="onEditItem($event)">
       </app-location-card>
     </div>
 

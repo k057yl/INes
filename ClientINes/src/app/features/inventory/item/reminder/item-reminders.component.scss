@@ -55,8 +55,8 @@
 
   .form-fields-stack {
     display: flex;
-    flex-direction: column; // Главный столб
-    gap: 16px; // Немного увеличил зазор для читаемости
+    flex-direction: column;
+    gap: 16px;
 
     .field-group {
       display: flex;
@@ -88,7 +88,6 @@
       }
     }
 
-    // Никаких row-контейнеров, всё просто падает друг под друга
     .save-btn {
       width: 100%;
       background: var(--accent-color);
@@ -111,6 +110,11 @@
   }
 }
 
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .reminders-list {
   display: flex;
   flex-direction: column;
@@ -126,15 +130,19 @@
     border-left: 4px solid var(--accent-color);
     box-sizing: border-box;
     width: 100%;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: slideIn 0.3s ease-out;
 
     &.completed {
       opacity: 0.6;
-      border-left-color: var(--g-green);
-      background: var(--bg-input);
+      border-left-color: var(--g-green) !important;
+      background: var(--bg-input) !important;
+      transform: translateX(5px);
       
       .r-info .r-title {
         text-decoration: line-through;
         color: var(--text-muted);
+        transition: all 0.3s ease;
       }
     }
 
@@ -144,16 +152,36 @@
       gap: 6px;
       overflow: hidden;
 
-      .r-title {
-        font-weight: 700;
-        font-size: 1rem;
-        color: var(--text-main);
-        line-height: 1.2;
+      .r-title-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+
+        .r-title {
+          font-weight: 700;
+          font-size: 1rem;
+          color: var(--text-main);
+          line-height: 1.2;
+        }
+
+        .completed-label {
+          font-size: 0.65rem;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          background: rgba(52, 168, 83, 0.1); // var(--g-green)
+          color: var(--g-green);
+          padding: 2px 8px;
+          border-radius: 4px;
+          font-weight: 800;
+          display: flex;
+          align-items: center;
+          gap: 4px;
+        }
       }
 
-      .r-meta {
+      .r-meta-row {
         display: flex;
-        flex-wrap: wrap; // Чтобы на узких экранах мета-инфа тоже могла перенестись
+        flex-wrap: wrap;
         gap: 12px;
         font-size: 0.75rem;
 

@@ -12,10 +12,6 @@
       <div class="header-right">
         <div class="controls-toolbar">
           <app-item-filter-bar (filterChanged)="loadData($event)"></app-item-filter-bar>
-          <button class="inest-btn-ribbon-add" [routerLink]="['/create-item']" [title]="'EXPLORER_PAGE.CREATE_TOOLTIP' | translate">
-            <i class="fa fa-plus"></i> 
-            <span class="btn-text">{{ 'CREATE_ITEM_PAGE.TITLE' | translate }}</span>
-          </button>
         </div>
       </div>
     </header>
@@ -26,21 +22,17 @@
           <thead>
             <tr>
               <th class="col-photo">{{ 'EXPLORER_PAGE.TABLE.PHOTO' | translate }}</th>
-              
               <th class="col-name sortable" (click)="toggleSort(2, 3)">
                 {{ 'EXPLORER_PAGE.TABLE.NAME' | translate }}
                 <i class="fa" [ngClass]="getSortIcon(2, 3)"></i>
               </th>
-
               <th class="col-cat">{{ 'EXPLORER_PAGE.TABLE.CATEGORY' | translate }}</th>
               <th class="col-loc">{{ 'EXPLORER_PAGE.TABLE.LOCATION' | translate }}</th>
               <th class="col-status">{{ 'EXPLORER_PAGE.TABLE.STATUS' | translate }}</th>
-
               <th class="col-price sortable" (click)="toggleSort(4, 5)">
                 {{ 'EXPLORER_PAGE.TABLE.PRICE' | translate }}
                 <i class="fa" [ngClass]="getSortIcon(4, 5)"></i>
               </th>
-
               <th class="col-actions">{{ 'EXPLORER_PAGE.TABLE.ACTION' | translate }}</th>
             </tr>
           </thead>
@@ -65,7 +57,9 @@
               <td class="col-actions">
                 <div class="actions-group">
                   <button class="icon-btn view-btn" [routerLink]="['/item', item.id]"><i class="fa fa-eye"></i></button>
-                  <button class="icon-btn edit-btn" [routerLink]="['/item/edit', item.id]" [disabled]="item.status !== 0"><i class="fa fa-pen"></i></button>
+                  
+                  <button class="icon-btn edit-btn" (click)="onEditClick(item)"><i class="fa fa-pen"></i></button>
+                  
                   <button class="icon-btn delete-btn" (click)="onDeleteClick(item)"><i class="fa fa-trash"></i></button>
                 </div>
               </td>
@@ -81,13 +75,3 @@
     </div>
   </div>
 </div>
-
-<app-inest-modal 
-  *ngIf="showDeleteModal" 
-  [mode]="itemToDelete?.status === 4 ? 'smart-delete' : 'delete'"
-  [title]="'COMMON.DELETE' | translate"
-  [message]="'COMMON.M_YOU_SURE' | translate"
-  [confirmText]="'COMMON.DELETE'" 
-  (confirmed)="handleDelete($event)"
-  (cancelled)="closeModal()">
-</app-inest-modal>

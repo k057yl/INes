@@ -70,7 +70,7 @@ namespace INest.Services
             _context.ItemHistories.Add(new ItemHistory
             {
                 ItemId = reminder.ItemId,
-                Type = ItemHistoryType.ValueUpdated,
+                Type = ItemHistoryType.ReminderCompleted,
                 NewValue = $"{LocalizationConstants.HISTORY.REMINDER_COMPLETED}|{reminder.Title}",
                 CreatedAt = DateTime.UtcNow
             });

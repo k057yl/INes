@@ -34,7 +34,7 @@
               <span class="name">{{ child.name }}</span>
               
               <span class="count-pill">
-                {{ child.itemsCount ?? child.items.length }}
+                {{ child.itemsCount ?? (child.items.length || 0) }}
               </span>
 
               <i class="fa fa-chevron-right arrow"></i>
@@ -54,7 +54,7 @@
         <div class="items-grid" *ngIf="location.items.length; else emptyState">
           <div class="item-tile" 
                *ngFor="let item of location.items"
-               [style.border-top]="'3px solid ' + getAccentColor(item.id)">
+               [style.border-top]="'3px solid ' + (location.color || getAccentColor(item.id))">
             
             <div class="tile-image" [routerLink]="['/item', item.id]">
               <img *ngIf="item.photoUrl" [src]="getPhotoUrl(item.photoUrl)" loading="lazy">
@@ -75,7 +75,7 @@
               <div class="tile-footer">
                 <div class="action-group">
                   <button class="mini-btn edit" 
-                          [routerLink]="['/item/edit', item.id]"
+                          (click)="onEditItem(item)" 
                           [title]="'COMMON.EDIT' | translate">
                     <i class="fa fa-pen"></i>
                   </button>

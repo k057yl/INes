@@ -5,11 +5,10 @@ import { TranslateModule } from '@ngx-translate/core';
 import { finalize } from 'rxjs';
 
 import { ItemService } from '../../../../shared/services/item.service';
-import { SalesService } from '../../../../shared/services/sales.service';
 import { Item } from '../../../../models/entities/item.entity';
 import { ItemFilterBarComponent } from '../filters/item-filter-bar.component';
 import { StatusNamePipe } from '../../../../shared/pipe/status-name.pipe';
-import { InestModalComponent } from '../../../../shared/components/modals/inest-modal/inest-modal.component';
+import { DashboardModalService } from '../../../dashboard/dashboard.modal.service';
 
 @Component({
   selector: 'app-items-explorer',
@@ -19,24 +18,20 @@ import { InestModalComponent } from '../../../../shared/components/modals/inest-
     RouterModule, 
     TranslateModule, 
     ItemFilterBarComponent, 
-    StatusNamePipe,
-    InestModalComponent
+    StatusNamePipe
   ],
   templateUrl: './items-explorer.component.html',
   styleUrl: './items-explorer.component.scss'
 })
 export class ItemsExplorerComponent implements OnInit {
   private itemService = inject(ItemService);
-  private salesService = inject(SalesService);
+  private modalService = inject(DashboardModalService);
 
   @ViewChild(ItemFilterBarComponent) filterBar!: ItemFilterBarComponent;
 
   items: Item[] = [];
   isLoading = true;
   currentFilters: any = {};
-
-  itemToDelete: any = null;
-  showDeleteModal = false;
 
   trackById = (index: number, item: any) => item.id;
 
@@ -54,12 +49,31 @@ export class ItemsExplorerComponent implements OnInit {
       });
   }
 
-  // --- ЛОГИКА СОРТИРОВКИ ---
+  onEditClick(item: Item) {
+    this.modalService.openItemForm(item).subscribe(res => {
+      if (res) this.loadData(this.currentFilters);
+    });
+  }
+
+  onDeleteClick(item: Item) {
+    this.modalService.openConfirm({
+      mode: 'delete',
+      title: 'COMMON.DELETE',
+      message: 'COMMON.M_YOU_SURE'
+    }).subscribe(res => {
+      if (res) {
+        this.isLoading = true;
+        this.itemService.delete(item.id).subscribe({
+          next: () => this.loadData(this.currentFilters),
+          error: () => this.isLoading = false
+        });
+      }
+    });
+  }
 
   toggleSort(asc: number, desc: number) {
     const currentSort = this.currentFilters.sortBy;
     const nextSort = currentSort === asc ? desc : asc;
-    
     if (this.filterBar) {
       this.filterBar.filterForm.patchValue({ sortBy: nextSort });
     }
@@ -70,37 +84,5 @@ export class ItemsExplorerComponent implements OnInit {
     if (s === asc) return 'fa-sort-amount-up active-sort';
     if (s === desc) return 'fa-sort-amount-down active-sort';
     return 'fa-sort muted-sort';
-  }
-
-  onDeleteClick(item: any) {
-    this.itemToDelete = item;
-    this.showDeleteModal = true;
-  }
-
-  closeModal() {
-    this.itemToDelete = null;
-    this.showDeleteModal = false;
-  }
-
-  handleDelete(eventData?: string) {
-    if (!this.itemToDelete) return;
-
-    this.isLoading = true;
-    const isSold = this.itemToDelete.status === 4;
-    const keepHistory = eventData === 'keep';
-    const deleteObs = (isSold && this.itemToDelete.sale?.id)
-      ? this.salesService.smartDelete(this.itemToDelete.sale.id, keepHistory)
-      : this.itemService.delete(this.itemToDelete.id);
-
-    deleteObs.subscribe({
-      next: () => {
-        this.closeModal();
-        this.loadData(); 
-      },
-      error: () => {
-        this.isLoading = false;
-        this.closeModal();
-      }
-    });
   }
 }

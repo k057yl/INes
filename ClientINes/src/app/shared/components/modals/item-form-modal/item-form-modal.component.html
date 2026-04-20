@@ -134,6 +134,14 @@
         </div>
 
         <div class="inest-form-group">
+          <label>{{ 'CREATE_ITEM_PAGE.ESTIMATED' | translate }}</label>
+          <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('estimatedValue')">
+            <i class="fa fa-chart-line inest-field-icon-left"></i>
+            <input formControlName="estimatedValue" type="number" placeholder="0.00">
+          </div>
+        </div>
+
+        <div class="inest-form-group">
           <label>{{ 'CREATE_ITEM_PAGE.CURRENCY' | translate }}</label>
           <div class="inest-input-wrapper">
             <i class="fa fa-coins inest-field-icon-left"></i>
@@ -161,7 +169,7 @@
         </div>
 
         <div class="inest-form-group">
-          <label>{{ 'CREATE_ITEM_PAGE.CONTACT_EMAIL' | translate }}</label>
+          <label>{{ 'CREATE_ITEM_PAGE.YOUR_EMAIL' | translate }}</label>
           <div class="inest-input-wrapper">
             <i class="fa fa-envelope inest-field-icon-left"></i>
             <input formControlName="contactEmail" type="email" placeholder="email@example.com">

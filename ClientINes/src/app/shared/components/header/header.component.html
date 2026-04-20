@@ -3,25 +3,7 @@
     
     <div class="brand-section">
       <div class="logo" routerLink="/main">
-          <div class="logo-icon"></div>
-      </div>
-    </div>
-
-    <div class="create-dropdown" *ngIf="user$ | async" [class.open]="isCreateMenuOpen()">
-      <button class="create-trigger" (click)="toggleCreateMenu($event)" [title]="'COMMON.ADD' | translate">
-        <i class="fa fa-plus-circle"></i>
-        <span class="desktop-only">{{ 'COMMON.ADD' | translate }}</span>
-      </button>
-
-      <div class="create-menu" *ngIf="isCreateMenuOpen()" (click)="$event.stopPropagation()">
-        <button (click)="openCreateItem()">
-          <i class="fa fa-box"></i>
-          <span>{{ 'LOCATION_CARD.BTN.ITEM' | translate }}</span>
-        </button>
-        <button (click)="openCreateLocation()">
-          <i class="fa fa-folder-plus"></i>
-          <span>{{ 'LOCATION_CARD.BTN.LOCATION' | translate }}</span>
-        </button>
+        <div class="logo-icon"></div>
       </div>
     </div>
 
@@ -48,7 +30,6 @@
         <a routerLink="/login" routerLinkActive="active" (click)="closeMenu()" class="auth-link mobile-only">
           <i class="fa fa-sign-in-alt"></i> {{ 'HEADER.LOGIN' | translate }}
         </a>
-
         <a routerLink="/register" routerLinkActive="active" (click)="closeMenu()" class="auth-link mobile-only">
           <i class="fa fa-sign-in-alt"></i> {{ 'HEADER.REGISTERATION' | translate }}
         </a>
@@ -56,17 +37,35 @@
     </nav>
 
     <div class="actions">
+      <div class="create-dropdown" *ngIf="user$ | async" [class.open]="isCreateMenuOpen()">
+        <button class="create-trigger" (click)="toggleCreateMenu($event)" [title]="'COMMON.CREATE' | translate">
+          <i class="fa fa-plus"></i>
+          <span class="desktop-only">{{ 'COMMON.CREATE' | translate }}</span>
+        </button>
+
+        <div class="create-menu" *ngIf="isCreateMenuOpen()" (click)="$event.stopPropagation()">
+          <button (click)="openCreateItem()">
+            <i class="fa fa-box"></i>
+            <span>{{ 'LOCATION_CARD.BTN.ITEM' | translate }}</span>
+          </button>
+          <button (click)="openCreateLocation()">
+            <i class="fa fa-folder-plus"></i>
+            <span>{{ 'LOCATION_CARD.BTN.LOCATION' | translate }}</span>
+          </button>
+        </div>
+      </div>
+
       <div class="user-box" *ngIf="user$ | async as user" [title]="user.email">
         <i class="fa fa-user-circle"></i>
         <strong>{{ user.email }}</strong>
       </div>
 
-      <button class="theme-toggle" (click)="toggleTheme()" title="Сменить тему">
+      <button class="theme-toggle" (click)="toggleTheme()" [title]="'COMMON.CHANGE_THEME_TOOLTIP' | translate">
         {{ themeService.isDarkTheme() ? '🌙' : '☀️' }}
       </button>
 
       <div class="lang-dropdown" [class.open]="isLangMenuOpen()">
-        <button class="lang-trigger" (click)="toggleLangMenu($event)">
+        <button class="lang-trigger" (click)="toggleLangMenu($event)" [title]="'COMMON.CHANGE_LANGUAGE_TOOLTIP' | translate">
           <i class="fa fa-globe"></i>
           <span class="active-lang">{{ currentLang | uppercase }}</span>
           <i class="fa fa-chevron-down" [class.rotate]="isLangMenuOpen()"></i>
@@ -80,7 +79,7 @@
         </div>
       </div>
 
-      <button class="logout-icon-btn" *ngIf="user$ | async" (click)="onLogout()" title="Выйти">
+      <button class="logout-icon-btn" *ngIf="user$ | async" (click)="onLogout()" [title]="'COMMON.EXIT' | translate">
         <i class="fa fa-sign-out-alt"></i>
       </button>
     </div>

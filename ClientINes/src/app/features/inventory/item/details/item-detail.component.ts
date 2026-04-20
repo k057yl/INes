@@ -9,6 +9,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { StatusNamePipe } from '../../../../shared/pipe/status-name.pipe';
 import { ItemRemindersComponent } from '../reminder/item-reminders.component';
 import { PricePipe } from '../../../../shared/pipe/price-currency.pipe';
+import { DashboardModalService } from '../../../dashboard/dashboard.modal.service';
 
 @Component({
   selector: 'app-item-detail',
@@ -21,6 +22,7 @@ export class ItemDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private http = inject(HttpClient);
+  private modalService = inject(DashboardModalService);
 
   item: Item | null = null;
   isLoading = true;
@@ -92,6 +94,16 @@ export class ItemDetailComponent implements OnInit {
         if (err.status === 404) {
           this.router.navigate(['/dashboard'], { replaceUrl: true });
         }
+      }
+    });
+  }
+
+  onEdit() {
+    if (!this.item) return;
+    
+    this.modalService.openItemForm(this.item).subscribe(res => {
+      if (this.item) {
+        this.loadItem(this.item.id);
       }
     });
   }

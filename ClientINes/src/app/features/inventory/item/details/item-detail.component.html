@@ -5,7 +5,7 @@
       <i class="fa fa-chevron-left"></i> {{ 'COMMON.BACK' | translate }}
     </button>
     <div class="header-actions">
-      <button class="nav-btn edit-btn" [routerLink]="['/item/edit', item.id]">
+      <button class="nav-btn edit-btn" (click)="onEdit()">
         <i class="fa fa-pen"></i> {{ 'COMMON.EDIT' | translate }}
       </button>
     </div>
@@ -88,7 +88,14 @@
                   </span>
                 </ng-container>
 
-                <ng-container *ngIf="h.type !== 1 && h.type !== 0 && h.newValue">
+                <ng-container *ngIf="h.newValue as val">
+                  <span class="status-change" style="color: var(--g-green); font-weight: 600;">
+                    <i class="fa fa-check-circle"></i> 
+                    {{ val.includes('|') ? val.split('|')[1] : val }}
+                  </span>
+                </ng-container>
+
+                <ng-container *ngIf="h.type !== 1 && h.type !== 0 && h.type !== 7 && h.newValue">
                   <span class="status-change">→ {{ h.newValue }}</span>
                 </ng-container>
               </div>

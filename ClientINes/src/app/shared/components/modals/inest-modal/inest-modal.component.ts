@@ -68,7 +68,10 @@ export class InestModalComponent implements AfterViewInit {
   }
 
   submit(result?: string) {
-    const finalValue = result || this.name.trim();
+    const finalValue = result || (this.mode === 'input' ? this.name.trim() : this.mode);
+
+    if (this.mode === 'input' && !finalValue) return;
+
     this.confirmed.emit(finalValue);
   }
 

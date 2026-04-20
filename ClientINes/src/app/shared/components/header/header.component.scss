@@ -31,13 +31,6 @@
   align-items: center;
 }
 
-.logo {
-  cursor: pointer;
-  margin: 0;
-  display: flex;
-  align-items: center;
-}
-
 .logo-icon {
   width: 80px; 
   height: 80px;
@@ -45,11 +38,10 @@
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
+  cursor: pointer;
   transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   
-  &:hover {
-    transform: scale(1.1);
-  }
+  &:hover { transform: scale(1.1); }
 }
 
 /* --- НАВИГАЦИЯ --- */
@@ -85,49 +77,89 @@
 
 .mobile-divider, .mobile-only { display: none; }
 
-/* --- ЮЗЕР-БОКС (ФИКС) --- */
-.user-box {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0 12px;
-  height: 38px;
-  background: var(--bg-input);
-  border: 1px solid var(--border-color);
-  color: var(--accent-color);
-  border-radius: 10px;
-  transition: all 0.3s ease;
-  
-  // Ключевые правки:
-  min-width: fit-content; 
-  flex-shrink: 0; 
-
-  i { font-size: 1.1rem; opacity: 0.8; }
-
-  strong {
-    font-size: 0.85rem;
-    font-weight: 600;
-    max-width: 150px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  &:hover {
-    border-color: var(--accent-color);
-    background: var(--bg-card);
-  }
-}
-
-/* --- КНОПКИ ДЕЙСТВИЙ --- */
+/* --- ДЕЙСТВИЯ (ПРАВАЯ ЧАСТЬ) --- */
 .actions {
   display: flex;
   align-items: center;
   gap: 10px;
-  flex-shrink: 0; // Чтобы кнопки не сжимались
+  flex-shrink: 0;
 }
 
-.theme-toggle, .lang-trigger, .logout-icon-btn {
+/* --- КНОПКА СОЗДАНИЯ (ОБНОВЛЕННАЯ) --- */
+.create-dropdown {
+  position: relative;
+}
+
+.create-trigger {
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  color: var(--accent-color);
+  padding: 0 14px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+
+  i { 
+    font-size: 0.9rem; 
+    transition: transform 0.2s;
+  }
+  
+  &:hover {
+    border-color: var(--accent-color);
+    background: rgba(0, 184, 148, 0.05);
+    transform: translateY(-2px);
+    i { transform: rotate(90deg); }
+  }
+}
+
+.create-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0; // Теперь выравниваем по правому краю
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 6px;
+  min-width: 200px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+  z-index: 1200;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  animation: slideIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+
+  button {
+    width: 100%;
+    padding: 10px 14px;
+    background: transparent;
+    border: none;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+
+    i { width: 20px; color: var(--accent-color); font-size: 1rem; }
+
+    &:hover {
+      background: var(--bg-input);
+      color: var(--accent-color);
+      transform: translateX(4px);
+    }
+  }
+}
+
+/* --- ОБЩИЕ СТИЛИ КНОПОК --- */
+.user-box, .theme-toggle, .lang-trigger, .logout-icon-btn {
   background: var(--bg-input);
   border: 1px solid var(--border-color);
   color: var(--text-main);
@@ -147,8 +179,22 @@
   }
 }
 
-.theme-toggle { width: 38px; font-size: 1rem; }
+.user-box {
+  padding: 0 12px;
+  color: var(--accent-color);
+  min-width: fit-content;
+  i { font-size: 1.1rem; opacity: 0.8; }
+  strong {
+    font-size: 0.85rem;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-left: 8px;
+  }
+}
 
+.theme-toggle { width: 38px; font-size: 1rem; }
 .logout-icon-btn {
   width: 38px;
   color: #ff7675;
@@ -156,176 +202,51 @@
 }
 
 .lang-trigger {
-  padding: 0 12px;
-  gap: 8px;
-  font-size: 0.85rem;
-  font-weight: 800;
-  
-  i:first-child { font-size: 1rem; }
-  .fa-chevron-down { font-size: 0.6rem; transition: 0.3s; }
-  .fa-chevron-down.rotate { transform: rotate(180deg); }
+  padding: 0 12px; gap: 8px; font-size: 0.85rem; font-weight: 800;
+  .fa-chevron-down { font-size: 0.6rem; transition: 0.3s; &.rotate { transform: rotate(180deg); } }
 }
 
+.lang-dropdown { position: relative; }
 .lang-menu {
-  position: absolute;
-  top: calc(100% + 10px);
-  right: 0;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 6px;
-  min-width: 160px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-  z-index: 1100;
-
+  position: absolute; top: calc(100% + 10px); right: 0;
+  background: var(--bg-card); border: 1px solid var(--border-color);
+  border-radius: 12px; padding: 6px; min-width: 160px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4); z-index: 1100;
   button {
-    width: 100%;
-    padding: 10px 12px;
-    background: transparent;
-    border: none;
-    color: var(--text-main);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    border-radius: 8px;
-    font-size: 0.9rem;
-
+    width: 100%; padding: 10px 12px; background: transparent; border: none;
+    color: var(--text-main); display: flex; align-items: center; gap: 10px;
+    border-radius: 8px; font-size: 0.9rem;
     &:hover { background: var(--bg-input); color: var(--accent-color); }
     &.selected { color: var(--accent-color); font-weight: 700; background: rgba(0, 184, 148, 0.05); }
   }
 }
 
-.lang-dropdown { position: relative; }
-
-/* --- МОБИЛКИ --- */
-@media (max-width: 950px) {
-  .header { height: 70px; padding: 0 1rem; }
-  .logo-icon { width: 55px; height: 55px; }
-  
-  .menu-toggle {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    background: transparent;
-    border: none;
-    width: 24px;
-    span { height: 2px; width: 100%; background: var(--accent-color); border-radius: 2px; }
-  }
-
-  .nav-links {
-    position: fixed;
-    top: 0;
-    left: -100%;
-    width: 280px;
-    height: 100vh;
-    background: var(--bg-card);
-    flex-direction: column;
-    justify-content: flex-start;
-    padding: 80px 20px;
-    transition: 0.4s;
-    box-shadow: 15px 0 30px rgba(0,0,0,0.3);
-    
-    &.mobile-open { left: 0; }
-    a { width: 100%; padding: 15px; font-size: 1.1rem; }
-  }
-
-  .mobile-only { display: flex; }
-  .mobile-divider { display: block; width: 100%; border: 0; border-top: 1px solid var(--border-color); margin: 10px 0; }
-  
-  .user-box strong { display: none; } // На мобилках только иконка
-  .user-box { padding: 0 10px; }
-}
-
-/* --- МЕНЮ СОЗДАНИЯ --- */
-.create-dropdown {
-  position: relative;
-  margin-left: 20px;
-}
-
-.create-trigger {
-  background: var(--accent-color); // Сделаем её акцентной!
-  border: none;
-  color: white;
-  padding: 0 16px;
-  height: 42px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-  font-weight: 700;
-  box-shadow: 0 4px 15px rgba(0, 184, 148, 0.3);
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-
-  i { font-size: 1.2rem; }
-  
-  &:hover {
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 6px 20px rgba(0, 184, 148, 0.4);
-    filter: brightness(1.1);
-  }
-
-  &:active { transform: scale(0.95); }
-}
-
-.create-menu {
-  position: absolute;
-  top: calc(100% + 12px);
-  left: 0;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 16px;
-  padding: 8px;
-  min-width: 220px;
-  box-shadow: 0 15px 40px rgba(0,0,0,0.4);
-  z-index: 1200;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  animation: slideIn 0.2s ease-out;
-
-  button {
-    width: 100%;
-    padding: 12px 16px;
-    background: transparent;
-    border: none;
-    color: var(--text-main);
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    cursor: pointer;
-    border-radius: 10px;
-    font-size: 0.95rem;
-    font-weight: 600;
-    transition: 0.2s;
-
-    i { 
-      width: 20px; 
-      text-align: center;
-      color: var(--accent-color);
-      font-size: 1.1rem;
-    }
-
-    &:hover {
-      background: var(--bg-input);
-      transform: translateX(5px);
-    }
-  }
-}
-
+/* --- АНИМАЦИИ И МОБИЛКИ --- */
 @keyframes slideIn {
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Скроем текст на мобилках, оставим только плюс */
+@media (max-width: 950px) {
+  .header { height: 70px; padding: 0 1rem; }
+  .logo-icon { width: 55px; height: 55px; }
+  
+  .nav-links {
+    position: fixed; top: 0; left: -100%; width: 280px; height: 100vh;
+    background: var(--bg-card); flex-direction: column; justify-content: flex-start;
+    padding: 80px 20px; transition: 0.4s; box-shadow: 15px 0 30px rgba(0,0,0,0.3);
+    &.mobile-open { left: 0; }
+    a { width: 100%; padding: 15px; font-size: 1.1rem; }
+  }
+
+  .mobile-only { display: flex; }
+  .mobile-divider { display: block; width: 100%; margin: 10px 0; border-top: 1px solid var(--border-color); }
+  .user-box strong { display: none; }
+}
+
 @media (max-width: 600px) {
   .create-trigger {
-    width: 42px;
-    padding: 0;
-    justify-content: center;
+    width: 38px; padding: 0; justify-content: center;
     .desktop-only { display: none; }
   }
-  .create-dropdown { margin-left: 10px; }
 }

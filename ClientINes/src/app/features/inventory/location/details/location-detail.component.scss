@@ -1,11 +1,9 @@
-// Контейнер страницы
 .location-view {
   background-color: var(--bg-main);
   min-height: 100vh;
   padding: 20px;
 }
 
-// Хедер с крошками (компактная строка)
 .location-simple-header {
   margin-bottom: 25px;
   padding: 5px 0;
@@ -42,7 +40,6 @@
   }
 }
 
-// Сетка: Сайдбар + Основной контент
 .content-grid {
   display: grid;
   grid-template-columns: 300px 1fr;
@@ -50,7 +47,6 @@
   @media (max-width: 1100px) { grid-template-columns: 1fr; }
 }
 
-// Сайдбар (липкий при скролле)
 .side-panel {
   position: sticky;
   top: 20px;
@@ -66,7 +62,6 @@
   }
 }
 
-// Карточки локаций в сайдбаре
 .sub-loc-card {
   display: flex;
   align-items: center;
@@ -99,7 +94,6 @@
 
   .name { flex: 1; font-size: 0.9rem; }
 
-  // Счётчик на кнопке
   .count-pill {
     font-size: 0.7rem;
     font-weight: 700;
@@ -114,26 +108,27 @@
   .arrow { font-size: 0.7rem; opacity: 0.3; }
 }
 
-// Сетка предметов
 .items-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 20px;
-  isolation: isolate; // Важно для корректного z-index при ховере
+  isolation: isolate;
 }
 
-// --- КАРТОЧКА АЙТЕМА (ПЛИТКА) ---
 .item-tile {
   background: var(--bg-card);
   border-radius: 16px;
   border: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: hidden; 
   position: relative;
   z-index: 1;
   transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   will-change: transform;
+  isolation: isolate; 
+  backface-visibility: hidden;
+  transform: translateZ(0); 
 
   &:hover {
     z-index: 10;
@@ -148,48 +143,39 @@
     background: #000;
     position: relative;
     overflow: hidden;
-    cursor: pointer;
     display: flex; align-items: center; justify-content: center;
+    border-top-left-radius: inherit;
+    border-top-right-radius: inherit;
 
     img { 
       width: 100%; height: 100%; object-fit: contain; 
       transition: transform 0.3s ease;
     }
 
-    // Красивый плавающий статус
     .status-badge {
       position: absolute;
-      top: 12px;
-      right: 12px;
+      top: 15px; 
+      right: 15px;
       padding: 4px 10px;
       border-radius: 20px;
       font-size: 0.65rem;
       font-weight: 800;
-      text-transform: uppercase;
-      display: flex;
-      align-items: center;
-      gap: 6px;
       background: rgba(0, 0, 0, 0.6);
       backdrop-filter: blur(8px);
       border: 1px solid rgba(255, 255, 255, 0.1);
       color: #fff;
       z-index: 2;
+      display: flex; align-items: center; gap: 6px;
 
-      .dot {
-        width: 6px; height: 6px; border-radius: 50%;
-        background: currentColor;
-        box-shadow: 0 0 8px currentColor;
-      }
-
+      .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
       &.active { color: var(--g-green); }
       &.lent { color: var(--g-yellow); }
       &.borrowed { color: var(--g-red); }
-      &.broken, &.lost { color: var(--text-muted); }
     }
   }
 
   .tile-content {
-    padding: 15px;
+    padding: 20px 20px 0 20px;
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -198,19 +184,17 @@
     .info-block {
       cursor: pointer;
       h3 { 
-        margin: 0 0 6px; 
-        font-size: 1.05rem; 
-        font-weight: 700;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        margin: 0 0 8px; font-size: 1.1rem; font-weight: 700;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
       }
       p { 
-        font-size: 0.8rem; 
+        font-size: 0.85rem; 
         color: var(--text-muted); 
-        line-height: 1.4;
+        line-height: 1.5;
         margin: 0;
+        
         display: -webkit-box;
+        -webkit-line-clamp: 2;
         line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
@@ -218,22 +202,20 @@
     }
   }
 
-  // Футер карточки с кнопками в ряд
   .tile-footer {
     margin-top: 15px;
-    padding-top: 12px;
+    padding: 15px 20px 20px 20px;
     border-top: 1px solid var(--border-color);
     display: flex;
     justify-content: flex-end;
 
     .action-group {
       display: flex;
-      gap: 8px;
+      gap: 10px;
     }
   }
 }
 
-// Кнопки управления на плитке
 .mini-btn {
   width: 32px;
   height: 32px;
@@ -257,7 +239,6 @@
   &.delete:hover { color: var(--g-red); border-color: var(--g-red); }
 }
 
-// Заголовок секции с количеством
 .section-title {
   display: flex;
   align-items: center;
@@ -275,7 +256,6 @@
   }
 }
 
-// Состояния загрузки и пустоты
 .loader-state {
   display: flex; justify-content: center; padding: 100px;
   .spinner {

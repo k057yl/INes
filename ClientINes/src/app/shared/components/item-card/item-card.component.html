@@ -58,7 +58,7 @@
         <i class="fa fa-info-circle"></i> {{'COMMON.INFO' | translate}}
       </button>
 
-      <button [routerLink]="['/item/edit', item.id]" (click)="menuOpenedItemIdChange.emit(null)">
+      <button (click)="edit.emit(item); menuOpenedItemIdChange.emit(null)">
         <i class="fa fa-pen" style="color: var(--g-yellow) !important;"></i> {{'COMMON.EDIT' | translate}}
       </button>
 

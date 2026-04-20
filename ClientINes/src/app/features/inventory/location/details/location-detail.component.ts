@@ -68,6 +68,20 @@ export class LocationDetailComponent implements OnInit {
     this.breadcrumbs = path;
   }
 
+  onEditItem(item: any) {
+    this.modal.openItemForm(item).subscribe(res => {
+
+      if (res && this.location) {
+        const index = this.location.items.findIndex(i => i.id === item.id);
+        if (index !== -1) {
+          this.location.items[index] = { ...this.location.items[index], ...res };
+          
+          this.location = { ...this.location };
+        }
+      }
+    });
+  }
+
   onDeleteItem(item: any) { 
     this.modal.openConfirm({
       mode: 'delete',

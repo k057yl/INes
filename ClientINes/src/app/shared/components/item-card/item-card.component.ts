@@ -23,14 +23,15 @@ export class ItemCardComponent {
 
   @Input({ required: true }) item!: Item;
   @Input() flatLocations: StorageLocation[] = [];
-  
+  @Input() accentColor?: string;
   @Input() menuOpenItemId: string | null = null;
-  @Output() menuOpenedItemIdChange = new EventEmitter<string | null>();
 
+  @Output() menuOpenedItemIdChange = new EventEmitter<string | null>();
   @Output() sell = new EventEmitter<Item>();
   @Output() delete = new EventEmitter<Item>();
   @Output() lend = new EventEmitter<Item>();
   @Output() move = new EventEmitter<{item: Item, targetLocationId: string}>();
+  @Output() edit = new EventEmitter<Item>();
 
   isMobile = window.innerWidth <= 768;
 
@@ -51,6 +52,7 @@ export class ItemCardComponent {
   private readonly googleColors = ['var(--g-blue)', 'var(--g-red)', 'var(--g-yellow)', 'var(--g-green)'];
 
   getAccentColor(): string {
+    if (this.accentColor) return this.accentColor;
     const sum = this.item.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
     return this.googleColors[sum % this.googleColors.length];
   }

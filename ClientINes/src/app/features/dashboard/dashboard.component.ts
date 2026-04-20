@@ -61,7 +61,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   jumpToLocation(locId: string) { const index = this.facade.locations.findIndex(l => l.id === locId); if (index !== -1) { this.currentPageBoard = Math.floor(index / BOARD_CONFIG.PAGE_SIZE); this.syncRibbonWithBoard(); } }
   onRibbonPageChange(newPage: number) { this.currentPageRibbon = newPage; const firstItemIndex = newPage * this.ribbonPageSize; this.currentPageBoard = Math.floor(firstItemIndex / BOARD_CONFIG.PAGE_SIZE); }
 
-  onEditItem(item: Item) { this.modal.openItemForm(item).subscribe(); }
+  onEditItem(item: Item) {
+    this.modal.openItemForm(item).subscribe();
+  }
   onCreateItem(locId?: string) { this.modal.openItemForm(null, locId).subscribe(); }
   onRename(loc: StorageLocation) { loc.showMenu = false; this.modal.openConfirm({ mode: 'input', title: 'COMMON.RENAME', message: '', confirmText: 'COMMON.SAVE', name: loc.name }).subscribe(newName => { if (newName) this.facade.renameLocation(loc.id, newName).subscribe(); }); }
   onDeleteLocation(loc: StorageLocation) { loc.showMenu = false; this.modal.openConfirm({ mode: 'delete', title: 'COMMON.DELETE', message: 'LOCATION_CARD.MODAL.YOU_SURE_MSG' }).subscribe(() => { this.facade.deleteLocation(loc.id).subscribe(() => { if (this.currentPageBoard > 0 && this.pagedBoardLocations.length === 0) this.currentPageBoard--; this.syncRibbonWithBoard(); }); }); }

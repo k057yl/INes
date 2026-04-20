@@ -53,24 +53,27 @@
     <div class="reminder-item" *ngFor="let r of reminders" [class.completed]="r.isCompleted">
       <div class="r-info">
         <div class="r-title-row">
-            <strong>{{ r.title }}</strong>
+            <strong class="r-title">{{ r.title }}</strong>
+            <span class="completed-label" *ngIf="r.isCompleted">
+              <i class="fa fa-check-double"></i> {{ 'REMINDS_PAGE.STATUS_COMPLETED' | translate }}
+            </span>
         </div>
         <div class="r-meta-row">
-          <span [style.color]="getReminderInfo(r.type).color">
+          <span [style.color]="getReminderInfo(r.type).color" *ngIf="!r.isCompleted">
             <i class="fa" [ngClass]="getReminderInfo(r.type).icon"></i>
             {{ getReminderInfo(r.type).label | translate }}
           </span>
-          <span class="r-date">
+          <span class="r-date" *ngIf="!r.isCompleted">
             <i class="fa fa-calendar-alt"></i> {{ r.triggerAt | date:'dd.MM.yyyy' }}
           </span>
         </div>
       </div>
       
       <div class="r-actions" *ngIf="!r.isCompleted">
-        <button class="icon-btn success" (click)="requestComplete(r.id)" [title]="'COMMON.SAVE' | translate">
+        <button class="icon-btn success" (click)="requestComplete(r.id)">
           <i class="fa fa-check"></i>
         </button>
-        <button class="icon-btn danger" (click)="requestDelete(r.id)" [title]="'COMMON.DELETE' | translate">
+        <button class="icon-btn danger" (click)="requestDelete(r.id)">
           <i class="fa fa-trash"></i>
         </button>
       </div>
