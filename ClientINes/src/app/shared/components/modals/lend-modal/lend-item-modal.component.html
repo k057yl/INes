@@ -2,7 +2,7 @@
   <div class="modal-container" (click)="$event.stopPropagation()">
     
     <div class="modal-header">
-      <h3>🤝 {{ 'LENDING.TITLE' | translate }} "{{ item.name }}"</h3>
+      <h3>🤝 {{ 'LENDING_MODAL.TITLE' | translate }} "{{ item.name }}"</h3>
       <button class="close-btn" (click)="onCancel()">×</button>
     </div>
 
@@ -10,21 +10,21 @@
       <div class="modal-body">
         
         <div class="form-group">
-          <label for="personName">{{ 'LENDING.PERSON_NAME' | translate }} *</label>
+          <label for="personName">{{ 'LENDING_MODAL.PERSON_NAME' | translate }} *</label>
           <input 
             type="text" 
             id="personName" 
             formControlName="personName" 
-            [placeholder]="'LENDING.PLACEHOLDER_NAME' | translate"
+            [placeholder]="'LENDING_MODAL.PLACEHOLDER_NAME' | translate"
             [class.is-invalid]="lendForm.get('personName')?.invalid && lendForm.get('personName')?.touched"
           >
           <span class="error-text" *ngIf="lendForm.get('personName')?.invalid && lendForm.get('personName')?.touched">
-            {{ 'LENDING.ERROR_NAME_REQ' | translate }}
+            {{ 'LENDING_MODAL.ERROR_NAME_REQ' | translate }}
           </span>
         </div>
 
         <div class="form-group">
-          <label for="valueAtLending">{{ 'LENDING.ESTIMATED_VALUE' | translate }} ($)</label>
+          <label for="valueAtLending">{{ 'LENDING_MODAL.ESTIMATED_VALUE' | translate }} ($)</label>
           <input 
             type="number" 
             id="valueAtLending" 
@@ -34,7 +34,7 @@
         </div>
 
         <div class="form-group">
-          <label for="expectedReturnDate">{{ 'LENDING.EXPECTED_RETURN' | translate }}</label>
+          <label for="expectedReturnDate">{{ 'LENDING_MODAL.EXPECTED_RETURN' | translate }}</label>
           <input 
             type="date" 
             id="expectedReturnDate" 
@@ -43,11 +43,11 @@
         </div>
 
         <div class="form-group">
-          <label for="comment">{{ 'LENDING.COMMENT' | translate }}</label>
+          <label for="comment">{{ 'LENDING_MODAL.COMMENT' | translate }}</label>
           <textarea 
             id="comment" 
             formControlName="comment" 
-            [placeholder]="'LENDING.PLACEHOLDER_COMMENT' | translate"
+            [placeholder]="'LENDING_MODAL.PLACEHOLDER_COMMENT' | translate"
             rows="3"
           ></textarea>
         </div>
