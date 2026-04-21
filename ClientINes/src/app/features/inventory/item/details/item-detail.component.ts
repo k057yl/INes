@@ -70,6 +70,10 @@ export class ItemDetailComponent implements OnInit {
   }
 
   getAccentColor(): string {
+    if (this.item?.storageLocation?.color) {
+      return this.item.storageLocation.color;
+    }
+
     if (!this.item) return this.googleColors[0];
     const sum = this.item.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
     return this.googleColors[sum % this.googleColors.length];

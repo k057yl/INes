@@ -1,5 +1,5 @@
 <div class="location-column" 
-     [style.border-top-color]="location.color"
+     [style.border-top-color]="effectiveColor"
      [class.menu-open]="location.showMenu"
      [class.is-valid-target]="isValidDropTarget"
      [class.is-invalid-target]="isInvalidDropTarget"
@@ -89,7 +89,7 @@
     
     <app-item-card *ngFor="let item of location.items; trackBy: trackById" 
       [item]="item"
-      [accentColor]="location.color"  [flatLocations]="flatLocations"
+      [accentColor]="effectiveColor"
       [flatLocations]="flatLocations"
       [menuOpenItemId]="openItemMenuId"
       (menuOpenedItemIdChange)="onItemMenuToggled($event)"
@@ -112,14 +112,16 @@
          cdkDrag
          [cdkDragData]="child"
          [cdkDragDisabled]="isMobile"
-         (cdkDragStarted)="onDragStart(child)"  (cdkDragEnded)="onDragEnd()">          <!--<div class="location-drag-placeholder" *cdkDragPlaceholder></div>-->
-      <div *cdkDragPreview class="custom-drag-preview" [style.border-color]="child.color">
-        <i [className]="'fa ' + (child.icon || 'fa-folder')" [style.color]="child.color"></i>
+         (cdkDragStarted)="onDragStart(child)"  (cdkDragEnded)="onDragEnd()">
+
+      <div *cdkDragPreview class="custom-drag-preview" [style.border-color]="effectiveColor">
+        <i [className]="'fa ' + (child.icon || 'fa-folder')" [style.color]="effectiveColor"></i>
         <span class="preview-title">{{ child.name }}</span>
       </div>
 
       <app-location-card 
           [location]="child"
+          [accentColor]="effectiveColor"
           [flatLocations]="flatLocations"
           [connectedLists]="connectedLists"
           [connectedLocationLists]="connectedLocationLists"

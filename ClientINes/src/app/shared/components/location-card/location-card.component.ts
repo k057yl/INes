@@ -23,6 +23,7 @@ export class LocationCardComponent {
   public facade = inject(DashboardFacade);
 
   @Input({ required: true }) location!: StorageLocation;
+  @Input() accentColor?: string;
   @Input() flatLocations: StorageLocation[] = [];
   @Input() connectedLists: string[] = [];
   @Input() connectedLocationLists: string[] = [];
@@ -45,6 +46,10 @@ export class LocationCardComponent {
   isMobile = window.innerWidth <= 768;
 
   isDragOver = false;
+
+  get effectiveColor(): string {
+    return this.accentColor || this.location.color || 'var(--accent-color)';
+  }
 
   onDragEntered() {
     this.isDragOver = true;
