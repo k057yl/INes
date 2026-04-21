@@ -1,8 +1,9 @@
-import { ApplicationConfig, importProvidersFrom, provideZoneChangeDetection } from '@angular/core';
+import { ApplicationConfig, importProvidersFrom, provideZoneChangeDetection, isDevMode } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
+import { provideServiceWorker } from '@angular/service-worker';
 import { routes } from './app.routes';
 
 import { jwtInterceptor, cultureInterceptor, globalErrorInterceptor } from './core/interceptors/app.interceptors';
@@ -29,8 +30,12 @@ export const appConfig: ApplicationConfig = {
       })
     }),
 
-    importProvidersFrom(FormsModule),
+    provideServiceWorker('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      registrationStrategy: 'registerWhenStable:30000'
+    }),
 
+    importProvidersFrom(FormsModule),
     CurrencyPipe
   ]
 };

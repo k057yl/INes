@@ -95,10 +95,14 @@ namespace INest.Services
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowAngular", policy =>
-                    policy.WithOrigins(SharedConstants.LOCALHOST)
-                          .AllowAnyMethod()
-                          .AllowAnyHeader()
-                          .AllowCredentials());
+                    policy.WithOrigins(
+                        "http://localhost:4200",    // Для разработки (ng serve)
+                        "http://localhost:8080",    // Для тестов PWA
+                        "http://127.0.0.1:8080"     // Для тестов PWA по IP
+                    )
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials());
             });
         }
 
