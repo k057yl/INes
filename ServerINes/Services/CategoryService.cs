@@ -1,27 +1,45 @@
-﻿using INest.Constants;
+﻿using FluentValidation;
+using Ganss.Xss;
+using INest.Constants;
+using INest.Exceptions;
 using INest.Models.DTOs.Category;
 using INest.Models.Entities;
 using INest.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using static INest.Constants.LocalizationConstants;
 
 namespace INest.Services
 {
     public class CategoryService : ICategoryService
     {
         private readonly AppDbContext _context;
+        private readonly IHtmlSanitizer _sanitizer;
+        private readonly IValidator<CreateCategoryDto> _categoryValidator;
 
-        public CategoryService(AppDbContext context)
+        public CategoryService(
+            AppDbContext context,
+            IHtmlSanitizer sanitizer,
+            IValidator<CreateCategoryDto> categoryValidator)
         {
             _context = context;
+            _sanitizer = sanitizer;
+            _categoryValidator = categoryValidator;
         }
 
         public async Task<Category> CreateAsync(Guid userId, CreateCategoryDto dto)
         {
+            var valResult = await _categoryValidator.ValidateAsync(dto);
+            if (!valResult.IsValid) throw new ValidationAppException(valResult.Errors);
+
+            var sanitizedName = _sanitizer.Sanitize(dto.Name);
+            if (string.IsNullOrWhiteSpace(sanitizedName))
+                throw new AppException(CATEGORIES.ERRORS.INVALID_NAME, 400);
+
             var cat = new Category
             {
                 Id = Guid.NewGuid(),
                 UserId = userId,
-                Name = dto.Name,
+                Name = sanitizedName,
                 Color = dto.Color ?? "#007bff",
                 ParentCategoryId = dto.ParentCategoryId
             };
@@ -41,16 +59,23 @@ namespace INest.Services
 
         public async Task<Category> UpdateAsync(Guid userId, Guid categoryId, CreateCategoryDto dto)
         {
+            var valResult = await _categoryValidator.ValidateAsync(dto);
+            if (!valResult.IsValid) throw new ValidationAppException(valResult.Errors);
+
             var category = await _context.Categories
                 .FirstOrDefaultAsync(c => c.Id == categoryId && c.UserId == userId);
 
             if (category == null)
-                throw new KeyNotFoundException(LocalizationConstants.CATEGORIES.NOT_FOUND);
+                throw new KeyNotFoundException(CATEGORIES.ERRORS.NOT_FOUND);
 
             if (dto.ParentCategoryId == categoryId)
-                throw new InvalidOperationException(LocalizationConstants.SYSTEM.VALIDATION_FAILED);
+                throw new AppException(SYSTEM.ERRORS.VALIDATION_FAILED, 400);
 
-            category.Name = dto.Name;
+            var sanitizedName = _sanitizer.Sanitize(dto.Name);
+            if (string.IsNullOrWhiteSpace(sanitizedName))
+                throw new AppException(CATEGORIES.ERRORS.INVALID_NAME, 400);
+
+            category.Name = sanitizedName;
             if (dto.Color != null) category.Color = dto.Color;
             category.ParentCategoryId = dto.ParentCategoryId;
 
@@ -65,10 +90,10 @@ namespace INest.Services
                 .FirstOrDefaultAsync(c => c.Id == categoryId && c.UserId == userId);
 
             if (category == null)
-                throw new KeyNotFoundException(LocalizationConstants.CATEGORIES.NOT_FOUND);
+                throw new KeyNotFoundException(CATEGORIES.ERRORS.NOT_FOUND);
 
             if (category.Name == SharedConstants.CATEGORY_OTHER)
-                throw new InvalidOperationException(LocalizationConstants.CATEGORIES.CANNOT_DELETE_DEFAULT);
+                throw new InvalidOperationException(CATEGORIES.ERRORS.CANNOT_DELETE_DEFAULT);
 
             if (category.Items.Any())
             {

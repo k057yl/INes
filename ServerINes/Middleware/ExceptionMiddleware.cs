@@ -2,6 +2,7 @@
 using INest.Exceptions;
 using System.Net;
 using System.Text.Json;
+using static INest.Constants.LocalizationConstants;
 
 namespace INest.Middleware
 {
@@ -37,9 +38,23 @@ namespace INest.Middleware
 
             var statusCode = (int)HttpStatusCode.InternalServerError;
             var message = LocalizationConstants.SYSTEM.DEFAULT_ERROR;
+            object? details = _env.IsDevelopment() ? ex.StackTrace?.ToString() : null;
+
+            var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
             switch (ex)
             {
+                case ValidationAppException valEx:
+                    statusCode = (int)HttpStatusCode.BadRequest;
+                    message = LocalizationConstants.SYSTEM.VALIDATION_FAILED;
+                    details = valEx.Errors
+                        .GroupBy(e => e.PropertyName)
+                        .ToDictionary(
+                            g => JsonNamingPolicy.CamelCase.ConvertName(g.Key),
+                            g => g.Select(x => x.ErrorMessage).ToArray()
+                        );
+                    break;
+
                 case AppException appEx:
                     statusCode = appEx.StatusCode;
                     message = appEx.Message;
@@ -57,7 +72,7 @@ namespace INest.Middleware
 
                 case UnauthorizedAccessException:
                     statusCode = (int)HttpStatusCode.Unauthorized;
-                    message = LocalizationConstants.AUTH.TOKEN_MISSING;
+                    message = AUTH.ERRORS.TOKEN_MISSING;
                     break;
             }
 
@@ -66,10 +81,9 @@ namespace INest.Middleware
             var response = new
             {
                 error = message,
-                details = _env.IsDevelopment() ? ex.StackTrace?.ToString() : null
+                details = details
             };
 
-            var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
             await context.Response.WriteAsync(JsonSerializer.Serialize(response, options));
         }
     }

@@ -21,7 +21,7 @@ namespace INest.Controllers
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userIdClaim))
             {
-                throw new AppException(LocalizationConstants.AUTH.TOKEN_MISSING, 401);
+                throw new AppException(LocalizationConstants.AUTH.ERRORS.TOKEN_MISSING, 401);
             }
             return Guid.Parse(userIdClaim);
         }

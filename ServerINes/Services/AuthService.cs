@@ -1,4 +1,6 @@
-﻿using Google.Apis.Auth;
+﻿using FluentValidation;
+using Ganss.Xss;
+using Google.Apis.Auth;
 using INest.Constants;
 using INest.Exceptions;
 using INest.Models.DTOs.Auth;
@@ -10,6 +12,7 @@ using Microsoft.Extensions.Localization;
 using System.Collections.Concurrent;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using static INest.Constants.LocalizationConstants;
 
 namespace INest.Services
 {
@@ -20,6 +23,12 @@ namespace INest.Services
         private readonly IEmailService _emailService;
         private readonly IConfiguration _config;
         private readonly IStringLocalizer<SharedResource> _emailT;
+        private readonly IHtmlSanitizer _sanitizer;
+
+        private readonly IValidator<RegisterDto> _registerValidator;
+        private readonly IValidator<LoginDto> _loginValidator;
+        private readonly IValidator<ForgotPasswordDto> _forgotPwdValidator;
+        private readonly IValidator<ResetPasswordDto> _resetPwdValidator;
 
         private static readonly ConcurrentDictionary<string, (string Code, DateTime Expire)> _otpStore = new();
 
@@ -28,40 +37,62 @@ namespace INest.Services
             ITokenService tokenService,
             IEmailService emailService,
             IConfiguration config,
-            IStringLocalizer<SharedResource> emailT)
+            IStringLocalizer<SharedResource> emailT,
+            IHtmlSanitizer sanitizer,
+            IValidator<RegisterDto> registerValidator,
+            IValidator<LoginDto> loginValidator,
+            IValidator<ForgotPasswordDto> forgotPwdValidator,
+            IValidator<ResetPasswordDto> resetPwdValidator)
         {
             _userManager = userManager;
             _tokenService = tokenService;
             _emailService = emailService;
             _config = config;
             _emailT = emailT;
+            _sanitizer = sanitizer;
+            _registerValidator = registerValidator;
+            _loginValidator = loginValidator;
+            _forgotPwdValidator = forgotPwdValidator;
+            _resetPwdValidator = resetPwdValidator;
         }
 
         public async Task SendConfirmationCodeAsync(RegisterDto dto)
         {
+            var valResult = await _registerValidator.ValidateAsync(dto);
+            if (!valResult.IsValid) throw new ValidationAppException(valResult.Errors);
+
             var normalizedEmail = dto.Email.ToLowerInvariant();
+
+            var sanitizedUsername = _sanitizer.Sanitize(dto.Username);
+            if (string.IsNullOrWhiteSpace(sanitizedUsername))
+                throw new AppException(AUTH.ERRORS.INVALID_USERNAME, 400);
+
             var user = await _userManager.FindByEmailAsync(normalizedEmail);
 
             if (user != null && user.EmailConfirmed)
-                throw new AppException(LocalizationConstants.AUTH.EMAIL_ALREADY_EXISTS, 400);
+                throw new AppException(AUTH.ERRORS.EMAIL_ALREADY_EXISTS, 400);
 
             if (user == null)
             {
-                user = new AppUser { Email = normalizedEmail, UserName = dto.Username, EmailConfirmed = false };
+                user = new AppUser
+                {
+                    Email = normalizedEmail,
+                    UserName = sanitizedUsername,
+                    EmailConfirmed = false
+                };
                 var result = await _userManager.CreateAsync(user, dto.Password);
 
                 if (!result.Succeeded)
                 {
-                    var errorMsg = string.Join(", ", result.Errors.Select(e => e.Description));
-                    throw new AppException(errorMsg, 400);
+                    throw new AppException(AUTH.ERRORS.REGISTRATION_FAILED, 400);
                 }
             }
 
             var code = RandomNumberGenerator.GetInt32(100000, 1000000).ToString();
             _otpStore[normalizedEmail] = (code, DateTime.UtcNow.AddMinutes(10));
 
-            var subject = _emailT[LocalizationConstants.EMAILS.CONFIRM_SUBJECT];
-            var body = string.Format(_emailT[LocalizationConstants.EMAILS.CONFIRM_BODY], code);
+            var subject = _emailT[EMAILS.CONFIRM_SUBJECT];
+            var body = string.Format(_emailT[EMAILS.CONFIRM_BODY], code);
 
             await _emailService.SendEmailAsync(normalizedEmail, subject, body);
         }
@@ -71,11 +102,11 @@ namespace INest.Services
             var email = dto.Email.ToLowerInvariant();
 
             if (!_otpStore.TryGetValue(email, out var entry) || entry.Code != dto.Code || entry.Expire < DateTime.UtcNow)
-                throw new AppException(LocalizationConstants.AUTH.INVALID_OR_EXPIRED_CODE, 400);
+                throw new AppException(AUTH.ERRORS.INVALID_OR_EXPIRED_CODE, 400);
 
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
-                throw new AppException(LocalizationConstants.AUTH.USER_NOT_FOUND, 404);
+                throw new AppException(AUTH.ERRORS.USER_NOT_FOUND, 404);
 
             user.EmailConfirmed = true;
             await _userManager.UpdateAsync(user);
@@ -90,19 +121,25 @@ namespace INest.Services
 
         public async Task<AuthResponseDto> LoginAsync(LoginDto dto)
         {
+            var valResult = await _loginValidator.ValidateAsync(dto);
+            if (!valResult.IsValid) throw new ValidationAppException(valResult.Errors);
+
             var user = await _userManager.FindByEmailAsync(dto.Email);
 
             if (user == null || !await _userManager.CheckPasswordAsync(user, dto.Password))
-                throw new AppException(LocalizationConstants.AUTH.INVALID_CREDENTIALS, 401);
+                throw new AppException(AUTH.ERRORS.INVALID_CREDENTIALS, 401);
 
             if (!user.EmailConfirmed)
-                throw new AppException(LocalizationConstants.AUTH.EMAIL_UNCONFIRMED, 401);
+                throw new AppException(AUTH.ERRORS.EMAIL_UNCONFIRMED, 401);
 
             return await GenerateAuthResponse(user);
         }
 
         public async Task ForgotPasswordAsync(ForgotPasswordDto dto)
         {
+            var valResult = await _forgotPwdValidator.ValidateAsync(dto);
+            if (!valResult.IsValid) throw new ValidationAppException(valResult.Errors);
+
             var user = await _userManager.FindByEmailAsync(dto.Email);
             if (user == null) return;
 
@@ -114,14 +151,17 @@ namespace INest.Services
 
             var callbackUrl = string.Format(pathTemplate, baseUrl, dto.Email, Uri.EscapeDataString(token));
 
-            var subject = _emailT[LocalizationConstants.EMAILS.RESET_SUBJECT];
-            var body = string.Format(_emailT[LocalizationConstants.EMAILS.RESET_BODY], callbackUrl);
+            var subject = _emailT[EMAILS.RESET_SUBJECT];
+            var body = string.Format(_emailT[EMAILS.RESET_BODY], callbackUrl);
 
             await _emailService.SendEmailAsync(dto.Email, subject, body);
         }
 
         public async Task<IdentityResult?> ResetPasswordAsync(ResetPasswordDto dto)
         {
+            var valResult = await _resetPwdValidator.ValidateAsync(dto);
+            if (!valResult.IsValid) throw new ValidationAppException(valResult.Errors);
+
             var user = await _userManager.FindByEmailAsync(dto.Email);
             if (user == null) return null;
 
@@ -159,11 +199,11 @@ namespace INest.Services
             }
             catch (InvalidJwtException)
             {
-                throw new AppException(LocalizationConstants.AUTH.GOOGLE_AUTH_FAILED, 400);
+                throw new AppException(AUTH.ERRORS.GOOGLE_AUTH_FAILED, 400);
             }
             catch (Exception)
             {
-                throw new AppException(LocalizationConstants.SYSTEM.DEFAULT_ERROR, 500);
+                throw new AppException(SYSTEM.DEFAULT_ERROR, 500);
             }
         }
 
@@ -192,12 +232,12 @@ namespace INest.Services
 
             var userId = principal.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
-                throw new AppException(LocalizationConstants.AUTH.INVALID_TOKEN, 401);
+                throw new AppException(AUTH.ERRORS.INVALID_TOKEN, 401);
 
             var user = await _userManager.FindByIdAsync(userId);
 
             if (user == null || user.RefreshToken != dto.RefreshToken || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
-                throw new AppException(LocalizationConstants.AUTH.INVALID_OR_EXPIRED_CODE, 401);
+                throw new AppException(AUTH.ERRORS.INVALID_OR_EXPIRED_CODE, 401);
 
             return await GenerateAuthResponse(user);
         }

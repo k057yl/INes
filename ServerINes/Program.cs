@@ -1,3 +1,4 @@
+using INest.Constants;
 using INest.Middleware;
 using INest.Models.Entities;
 using INest.Seeders;
@@ -18,6 +19,13 @@ builder.Services.AddOpenApi();
 var app = builder.Build();
 
 app.UseMiddleware<ExceptionMiddleware>();
+
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.Append("Content-Security-Policy", SharedConstants.CONTENT_SECURITY_POLICY);
+    await next();
+});
+
 app.UseCors("AllowAngular");
 app.UseHttpsRedirection();
 

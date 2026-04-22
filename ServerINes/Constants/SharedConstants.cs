@@ -8,6 +8,16 @@
         public const string PWA_MOBILE = "https://192.168.0.104:8080";
         public const string WSL_IP = "https://172.27.128.1:8080";
 
+        public const string PWA_MOBILE_API = "https://192.168.0.104:7068";
+        public static string CONTENT_SECURITY_POLICY =>
+            "default-src 'self'; " +
+            "script-src 'self'; " +
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
+            "font-src 'self' https://fonts.gstatic.com data:; " +
+            "img-src 'self' data: https://res.cloudinary.com; " +
+            $"connect-src 'self' https://localhost:7068 {PWA_MOBILE_API};";
+
+
         public const string CATEGORY_OTHER = "Other";
 
         public const string DEFAULT_ROLE = "inest_app_user";

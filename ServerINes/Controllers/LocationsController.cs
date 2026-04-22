@@ -1,10 +1,10 @@
-﻿using INest.Constants;
-using INest.Exceptions;
+﻿using INest.Exceptions;
 using INest.Models.DTOs.Location;
 using INest.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using static INest.Constants.LocalizationConstants;
 
 namespace INest.Controllers
 {
@@ -21,7 +21,7 @@ namespace INest.Controllers
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userIdClaim))
             {
-                throw new AppException(LocalizationConstants.AUTH.TOKEN_MISSING, 401);
+                throw new AppException(AUTH.ERRORS.TOKEN_MISSING, 401);
             }
             return Guid.Parse(userIdClaim);
         }
@@ -36,7 +36,7 @@ namespace INest.Controllers
         public async Task<IActionResult> GetById(Guid id)
         {
             var loc = await _locationService.GetLocationByIdAsync(GetUserId(), id);
-            if (loc == null) throw new AppException(LocalizationConstants.LOCATIONS.NOT_FOUND, 404);
+            if (loc == null) throw new AppException(LOCATIONS.ERRORS.NOT_FOUND, 404);
             return Ok(loc);
         }
 

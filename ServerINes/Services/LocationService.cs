@@ -1,4 +1,5 @@
-﻿using INest.Constants;
+﻿using FluentValidation;
+using Ganss.Xss;
 using INest.Exceptions;
 using INest.Models.DTOs.Location;
 using INest.Models.Entities;
@@ -12,26 +13,45 @@ namespace INest.Services
     public class LocationService : ILocationService
     {
         private readonly AppDbContext _context;
+        private readonly IHtmlSanitizer _sanitizer;
+        private readonly IValidator<CreateLocationDto> _locationValidator;
 
-        public LocationService(AppDbContext context) => _context = context;
+        public LocationService(
+            AppDbContext context,
+            IHtmlSanitizer sanitizer,
+            IValidator<CreateLocationDto> locationValidator)
+        {
+            _context = context;
+            _sanitizer = sanitizer;
+            _locationValidator = locationValidator;
+        }
 
         public async Task<StorageLocation> CreateLocationAsync(Guid userId, CreateLocationDto dto)
         {
+            var valResult = await _locationValidator.ValidateAsync(dto);
+            if (!valResult.IsValid) throw new ValidationAppException(valResult.Errors);
+
             if (dto.ParentLocationId.HasValue)
             {
                 var parentExists = await _context.StorageLocations
                     .AnyAsync(l => l.Id == dto.ParentLocationId && l.UserId == userId);
 
                 if (!parentExists)
-                    throw new AppException(LocalizationConstants.LOCATIONS.NOT_FOUND, 404);
+                    throw new AppException(LOCATIONS.ERRORS.NOT_FOUND, 404);
+            }
+
+            var sanitizedName = _sanitizer.Sanitize(dto.Name);
+            if (string.IsNullOrWhiteSpace(sanitizedName))
+            {
+                throw new AppException(LOCATIONS.ERRORS.INVALID_NAME, 400);
             }
 
             var location = new StorageLocation
             {
                 Id = Guid.NewGuid(),
                 UserId = userId,
-                Name = dto.Name,
-                Description = dto.Description,
+                Name = sanitizedName,
+                Description = !string.IsNullOrEmpty(dto.Description) ? _sanitizer.Sanitize(dto.Description) : null,
                 ParentLocationId = dto.ParentLocationId,
                 SortOrder = dto.SortOrder,
                 Color = dto.Color ?? "#007bff",
@@ -87,10 +107,10 @@ namespace INest.Services
                 .FirstOrDefaultAsync(l => l.Id == locationId && l.UserId == userId);
 
             if (location == null)
-                throw new KeyNotFoundException(LocalizationConstants.LOCATIONS.NOT_FOUND);
+                throw new KeyNotFoundException(LOCATIONS.ERRORS.NOT_FOUND);
 
             if (locationId == newParentId)
-                throw new InvalidOperationException(LocalizationConstants.LOCATIONS.SELF_NESTING);
+                throw new InvalidOperationException(LOCATIONS.ERRORS.SELF_NESTING);
 
             int movingSubtreeDepth = await GetSubtreeDepthAsync(userId, locationId);
             int targetLevel = await GetLocationLevelAsync(userId, newParentId);
@@ -104,7 +124,7 @@ namespace INest.Services
                 while (currentParentId.HasValue)
                 {
                     if (currentParentId == locationId)
-                        throw new InvalidOperationException(LocalizationConstants.LOCATIONS.CIRCULAR_DEPENDENCY);
+                        throw new InvalidOperationException(LOCATIONS.ERRORS.CIRCULAR_DEPENDENCY);
 
                     currentParentId = await _context.StorageLocations
                         .AsNoTracking()
@@ -207,9 +227,15 @@ namespace INest.Services
                 .FirstOrDefaultAsync(l => l.Id == locationId && l.UserId == userId);
 
             if (location == null)
-                throw new KeyNotFoundException(LocalizationConstants.LOCATIONS.NOT_FOUND);
+                throw new KeyNotFoundException(LOCATIONS.ERRORS.NOT_FOUND);
 
-            location.Name = newName;
+            var sanitizedName = _sanitizer.Sanitize(newName);
+            if (string.IsNullOrWhiteSpace(sanitizedName))
+            {
+                throw new AppException(LOCATIONS.ERRORS.INVALID_NAME, 400);
+            }
+
+            location.Name = sanitizedName;
             await _context.SaveChangesAsync();
         }
 
@@ -219,7 +245,7 @@ namespace INest.Services
                 .FirstOrDefaultAsync(l => l.Id == locationId && l.UserId == userId);
 
             if (location == null)
-                throw new KeyNotFoundException(LocalizationConstants.LOCATIONS.NOT_FOUND);
+                throw new KeyNotFoundException(LOCATIONS.ERRORS.NOT_FOUND);
 
             _context.StorageLocations.Remove(location);
             await _context.SaveChangesAsync();

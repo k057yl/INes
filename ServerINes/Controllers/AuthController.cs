@@ -1,10 +1,10 @@
-﻿using INest.Constants;
-using INest.Models.DTOs.Auth;
+﻿using INest.Models.DTOs.Auth;
 using INest.Models.DTOs.Token;
 using INest.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using static INest.Constants.LocalizationConstants;
 
 namespace INest.Controllers
 {
@@ -37,7 +37,7 @@ namespace INest.Controllers
             try
             {
                 await _authService.SendConfirmationCodeAsync(dto);
-                return Ok(new { message = LocalizationConstants.AUTH.OTP_SENT });
+                return Ok(new { message = AUTH.SUCCESS.OTP_SENT });
             }
             catch (Exception ex)
             {
@@ -66,17 +66,17 @@ namespace INest.Controllers
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto dto)
         {
             await _authService.ForgotPasswordAsync(dto);
-            return Ok(new { message = LocalizationConstants.AUTH.RESET_EMAIL_SENT });
+            return Ok(new { message = AUTH.SUCCESS.RESET_EMAIL_SENT });
         }
 
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
         {
             var result = await _authService.ResetPasswordAsync(dto);
-            if (result == null) return NotFound(new { error = LocalizationConstants.AUTH.USER_NOT_FOUND });
+            if (result == null) return NotFound(new { error = AUTH.ERRORS.USER_NOT_FOUND });
             if (!result.Succeeded) return BadRequest(new { errors = result.Errors });
 
-            return Ok(new { message = LocalizationConstants.AUTH.PASSWORD_CHANGED });
+            return Ok(new { message = AUTH.SUCCESS.PASSWORD_CHANGED });
         }
 
         [Authorize]
@@ -103,7 +103,7 @@ namespace INest.Controllers
         public async Task<IActionResult> GoogleLogin([FromBody] ExternalAuthDto dto)
         {
             var result = await _authService.GoogleLoginAsync(dto.IdToken);
-            if (result == null) return Unauthorized(new { error = LocalizationConstants.AUTH.GOOGLE_AUTH_FAILED });
+            if (result == null) return Unauthorized(new { error = AUTH.ERRORS.GOOGLE_AUTH_FAILED });
 
             SetTokenCookies(result);
             return Ok();
@@ -111,8 +111,14 @@ namespace INest.Controllers
 
         [Authorize]
         [HttpPost("logout")]
-        public IActionResult Logout()
+        public async Task<IActionResult> Logout()
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId != null)
+            {
+                await _authService.LogoutAsync(userId);
+            }
+
             Response.Cookies.Delete("X-Access-Token");
             Response.Cookies.Delete("X-Refresh-Token");
             return Ok();

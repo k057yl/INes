@@ -1,32 +1,47 @@
-﻿using INest.Constants;
+﻿using FluentValidation;
+using Ganss.Xss;
+using INest.Exceptions;
 using INest.Models.DTOs.Sale;
 using INest.Models.Entities;
 using INest.Models.Enums;
 using INest.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using static INest.Constants.LocalizationConstants;
 
 namespace INest.Services
 {
     public class SalesService : ISalesService
     {
         private readonly AppDbContext _context;
+        private readonly IHtmlSanitizer _sanitizer;
+        private readonly IValidator<SellItemRequestDto> _saleValidator;
 
-        public SalesService(AppDbContext context)
+        public SalesService(
+            AppDbContext context,
+            IHtmlSanitizer sanitizer,
+            IValidator<SellItemRequestDto> saleValidator)
         {
             _context = context;
+            _sanitizer = sanitizer;
+            _saleValidator = saleValidator;
         }
 
         public async Task<SaleResponseDto> SellItemAsync(Guid userId, SellItemRequestDto request)
         {
+            var valResult = await _saleValidator.ValidateAsync(request);
+            if (!valResult.IsValid) throw new ValidationAppException(valResult.Errors);
+
             var item = await _context.Items
                 .Include(i => i.Category)
                 .FirstOrDefaultAsync(i => i.Id == request.ItemId && i.UserId == userId);
 
             if (item == null)
-                throw new KeyNotFoundException(LocalizationConstants.ITEMS.NOT_FOUND);
+                throw new KeyNotFoundException(ITEMS.ERRORS.NOT_FOUND);
 
             if (item.Status == ItemStatus.Sold)
-                throw new InvalidOperationException(LocalizationConstants.SALES.ALREADY_SOLD);
+                throw new InvalidOperationException(SALES.ERRORS.ALREADY_SOLD);
+
+            var safeComment = !string.IsNullOrEmpty(request.Comment) ? _sanitizer.Sanitize(request.Comment) : null;
 
             decimal purchasePrice = item.PurchasePrice ?? 0;
             decimal profit = request.SalePrice - purchasePrice;
@@ -34,6 +49,7 @@ namespace INest.Services
             var sale = new Sale
             {
                 Id = Guid.NewGuid(),
+                UserId = userId,
                 ItemId = item.Id,
                 ItemNameSnapshot = item.Name,
                 CategoryNameSnapshot = item.Category?.Name,
@@ -41,7 +57,7 @@ namespace INest.Services
                 Profit = profit,
                 SoldDate = request.SoldDate,
                 PlatformId = request.PlatformId,
-                Comment = request.Comment,
+                Comment = safeComment,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -89,7 +105,7 @@ namespace INest.Services
             return await _context.Sales
                 .Include(s => s.Platform)
                 .AsNoTracking()
-                .Where(s => _context.Items.Any(i => i.Id == s.ItemId && i.UserId == userId) || s.ItemId == null)
+                .Where(s => s.UserId == userId)
                 .OrderByDescending(s => s.SoldDate)
                 .Select(s => new SaleResponseDto
                 {
@@ -111,7 +127,7 @@ namespace INest.Services
                 .FirstOrDefaultAsync(i => i.Id == itemId && i.UserId == userId);
 
             if (item == null || item.Sale == null)
-                throw new KeyNotFoundException(LocalizationConstants.SALES.NOT_FOUND);
+                throw new KeyNotFoundException(SALES.ERRORS.NOT_FOUND);
 
             var oldStatus = item.Status;
             _context.Sales.Remove(item.Sale);
@@ -139,7 +155,7 @@ namespace INest.Services
                 .FirstOrDefaultAsync(s => s.Id == saleId && (s.Item == null || s.Item.UserId == userId));
 
             if (sale == null)
-                throw new KeyNotFoundException(LocalizationConstants.SALES.NOT_FOUND);
+                throw new KeyNotFoundException(SALES.ERRORS.NOT_FOUND);
 
             _context.Sales.Remove(sale);
             await _context.SaveChangesAsync();
@@ -153,7 +169,7 @@ namespace INest.Services
                 .FirstOrDefaultAsync(s => s.Id == saleId && (s.Item == null || s.Item.UserId == userId));
 
             if (sale == null)
-                throw new KeyNotFoundException(LocalizationConstants.SALES.NOT_FOUND);
+                throw new KeyNotFoundException(SALES.ERRORS.NOT_FOUND);
 
             if (sale.ItemId.HasValue)
             {

@@ -1,9 +1,13 @@
-﻿using INest.Models.DTOs.Item;
+﻿using FluentValidation;
+using Ganss.Xss;
+using INest.Constants;
+using INest.Exceptions;
+using INest.Models.DTOs.Item;
 using INest.Models.Entities;
 using INest.Models.Enums;
 using INest.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using INest.Constants;
+using static INest.Constants.LocalizationConstants;
 
 namespace INest.Services
 {
@@ -12,12 +16,28 @@ namespace INest.Services
         private readonly AppDbContext _context;
         private readonly IPhotoService _photoService;
         private readonly IEmailService _emailService;
+        private readonly IHtmlSanitizer _sanitizer;
 
-        public ItemService(AppDbContext context, IPhotoService photoService, IEmailService emailService)
+        private readonly IValidator<CreateItemDto> _createValidator;
+        private readonly IValidator<UpdateItemFullDto> _updateFullValidator;
+        private readonly IValidator<UpdateItemPartialDto> _updatePartialValidator;
+
+        public ItemService(
+            AppDbContext context,
+            IPhotoService photoService,
+            IEmailService emailService,
+            IHtmlSanitizer sanitizer,
+            IValidator<CreateItemDto> createValidator,
+            IValidator<UpdateItemFullDto> updateFullValidator,
+            IValidator<UpdateItemPartialDto> updatePartialValidator)
         {
             _context = context;
             _photoService = photoService;
             _emailService = emailService;
+            _sanitizer = sanitizer;
+            _createValidator = createValidator;
+            _updateFullValidator = updateFullValidator;
+            _updatePartialValidator = updatePartialValidator;
         }
 
         private void AddHistoryEntry(Guid itemId, ItemHistoryType type, string? oldValue = null, string? newValue = null, string? comment = null)
@@ -36,6 +56,15 @@ namespace INest.Services
 
         public async Task<Item> CreateItemAsync(Guid userId, CreateItemDto dto, List<IFormFile> photos)
         {
+            var valResult = await _createValidator.ValidateAsync(dto);
+            if (!valResult.IsValid) throw new ValidationAppException(valResult.Errors);
+
+            var safeName = _sanitizer.Sanitize(dto.Name);
+            if (string.IsNullOrWhiteSpace(safeName)) throw new AppException(SYSTEM.ERRORS.VALIDATION_FAILED, 400);
+
+            var safeDesc = !string.IsNullOrEmpty(dto.Description) ? _sanitizer.Sanitize(dto.Description) : null;
+            var safePerson = !string.IsNullOrEmpty(dto.PersonName) ? _sanitizer.Sanitize(dto.PersonName) : "Unknown";
+
             using var transaction = await _context.Database.BeginTransactionAsync();
 
             try
@@ -44,8 +73,8 @@ namespace INest.Services
                 {
                     Id = Guid.NewGuid(),
                     UserId = userId,
-                    Name = dto.Name,
-                    Description = dto.Description,
+                    Name = safeName,
+                    Description = safeDesc,
                     CategoryId = dto.CategoryId,
                     StorageLocationId = dto.StorageLocationId,
                     Status = dto.Status,
@@ -67,7 +96,7 @@ namespace INest.Services
                     {
                         Id = Guid.NewGuid(),
                         ItemId = item.Id,
-                        PersonName = dto.PersonName ?? "Unknown",
+                        PersonName = safePerson,
                         ContactEmail = dto.ContactEmail,
                         ExpectedReturnDate = dto.ExpectedReturnDate,
                         DateGiven = DateTime.UtcNow,
@@ -220,13 +249,22 @@ namespace INest.Services
                 .FirstOrDefaultAsync();
 
             if (item == null)
-                throw new KeyNotFoundException(LocalizationConstants.ITEMS.NOT_FOUND);
+                throw new KeyNotFoundException(ITEMS.ERRORS.NOT_FOUND);
 
             return item;
         }
 
         public async Task<bool> UpdateFullAsync(Guid userId, Guid itemId, UpdateItemFullDto dto, List<IFormFile>? photos)
         {
+            var valResult = await _updateFullValidator.ValidateAsync(dto);
+            if (!valResult.IsValid) throw new ValidationAppException(valResult.Errors);
+
+            var safeName = _sanitizer.Sanitize(dto.Name);
+            if (string.IsNullOrWhiteSpace(safeName)) throw new AppException(SYSTEM.ERRORS.VALIDATION_FAILED, 400);
+
+            var safeDesc = !string.IsNullOrEmpty(dto.Description) ? _sanitizer.Sanitize(dto.Description) : null;
+            var safePerson = !string.IsNullOrEmpty(dto.PersonName) ? _sanitizer.Sanitize(dto.PersonName) : "Unknown";
+
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
@@ -236,10 +274,10 @@ namespace INest.Services
                     .FirstOrDefaultAsync(i => i.Id == itemId && i.UserId == userId);
 
                 if (item == null)
-                    throw new KeyNotFoundException(LocalizationConstants.ITEMS.NOT_FOUND);
+                    throw new KeyNotFoundException(ITEMS.ERRORS.NOT_FOUND);
 
-                item.Name = dto.Name;
-                item.Description = dto.Description;
+                item.Name = safeName;
+                item.Description = safeDesc;
                 item.CategoryId = dto.CategoryId;
                 item.StorageLocationId = dto.StorageLocationId;
                 item.Status = dto.Status;
@@ -255,7 +293,7 @@ namespace INest.Services
                         item.Lending = new Lending { Id = Guid.NewGuid(), ItemId = item.Id };
                     }
 
-                    item.Lending.PersonName = dto.PersonName ?? "Unknown";
+                    item.Lending.PersonName = safePerson;
                     item.Lending.ContactEmail = dto.ContactEmail;
                     item.Lending.ExpectedReturnDate = dto.ExpectedReturnDate;
                     item.Lending.Direction = item.Status == ItemStatus.Borrowed ? LendingDirection.In : LendingDirection.Out;
@@ -281,6 +319,9 @@ namespace INest.Services
 
         public async Task<bool> UpdatePartialAsync(Guid userId, Guid itemId, UpdateItemPartialDto dto, List<IFormFile>? photos)
         {
+            var valResult = await _updatePartialValidator.ValidateAsync(dto);
+            if (!valResult.IsValid) throw new ValidationAppException(valResult.Errors);
+
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
@@ -288,11 +329,8 @@ namespace INest.Services
                     .Include(i => i.Photos)
                     .FirstOrDefaultAsync(i => i.Id == itemId && i.UserId == userId);
 
-                if (item == null)
-                    throw new KeyNotFoundException(LocalizationConstants.ITEMS.NOT_FOUND);
-
-                if (item.Status != ItemStatus.Active)
-                    throw new InvalidOperationException(LocalizationConstants.ITEMS.ONLY_ACTIVE_CAN_BE_EDITED);
+                if (item == null) throw new KeyNotFoundException(ITEMS.ERRORS.NOT_FOUND);
+                if (item.Status != ItemStatus.Active) throw new InvalidOperationException(ITEMS.ERRORS.ONLY_ACTIVE_CAN_BE_EDITED);
 
                 void LogChange(ItemHistoryType type, string? oldValue, string? newValue)
                 {
@@ -300,16 +338,26 @@ namespace INest.Services
                     AddHistoryEntry(item.Id, type, oldValue, newValue);
                 }
 
-                if (dto.Name != null && dto.Name != item.Name)
+                if (dto.Name != null)
                 {
-                    LogChange(ItemHistoryType.ValueUpdated, item.Name, dto.Name);
-                    item.Name = dto.Name;
+                    var safeName = _sanitizer.Sanitize(dto.Name);
+                    if (string.IsNullOrWhiteSpace(safeName)) throw new AppException(SYSTEM.ERRORS.VALIDATION_FAILED, 400);
+
+                    if (safeName != item.Name)
+                    {
+                        LogChange(ItemHistoryType.ValueUpdated, item.Name, safeName);
+                        item.Name = safeName;
+                    }
                 }
 
-                if (dto.Description != null && dto.Description != item.Description)
+                if (dto.Description != null)
                 {
-                    LogChange(ItemHistoryType.ValueUpdated, item.Description, dto.Description);
-                    item.Description = dto.Description;
+                    var safeDesc = _sanitizer.Sanitize(dto.Description);
+                    if (safeDesc != item.Description)
+                    {
+                        LogChange(ItemHistoryType.ValueUpdated, item.Description, safeDesc);
+                        item.Description = safeDesc;
+                    }
                 }
 
                 if (dto.CategoryId.HasValue && dto.CategoryId.Value != item.CategoryId)
@@ -348,7 +396,7 @@ namespace INest.Services
                 if (photos != null && photos.Count > 0)
                 {
                     await HandlePhotos(item, photos);
-                    LogChange(ItemHistoryType.ValueUpdated, null, $"{LocalizationConstants.HISTORY.PHOTOS_ADDED_COUNT}|{photos.Count}");
+                    LogChange(ItemHistoryType.ValueUpdated, null, $"{HISTORY.PHOTOS_ADDED_COUNT}|{photos.Count}");
                 }
 
                 await _context.SaveChangesAsync();
@@ -368,7 +416,7 @@ namespace INest.Services
                 .Include(i => i.StorageLocation)
                 .FirstOrDefaultAsync(i => i.Id == itemId && i.UserId == userId);
 
-            if (item == null) throw new KeyNotFoundException(LocalizationConstants.ITEMS.NOT_FOUND);
+            if (item == null) throw new KeyNotFoundException(ITEMS.ERRORS.NOT_FOUND);
 
             if (item.StorageLocationId != targetLocationId)
             {
@@ -415,7 +463,7 @@ namespace INest.Services
         public async Task<bool> ChangeStatusAsync(Guid userId, Guid itemId, ItemStatus newStatus)
         {
             var item = await _context.Items.FirstOrDefaultAsync(i => i.Id == itemId && i.UserId == userId);
-            if (item == null) throw new KeyNotFoundException(LocalizationConstants.ITEMS.NOT_FOUND);
+            if (item == null) throw new KeyNotFoundException(ITEMS.ERRORS.NOT_FOUND);
 
             if (item.Status != newStatus)
             {
@@ -432,7 +480,7 @@ namespace INest.Services
         public async Task<IEnumerable<ItemHistory>> GetItemHistoryAsync(Guid userId, Guid itemId)
         {
             var exists = await _context.Items.AnyAsync(i => i.Id == itemId && i.UserId == userId);
-            if (!exists) throw new KeyNotFoundException(LocalizationConstants.ITEMS.NOT_FOUND);
+            if (!exists) throw new KeyNotFoundException(ITEMS.ERRORS.NOT_FOUND);
 
             return await _context.ItemHistories
                 .Where(h => h.ItemId == itemId)
@@ -446,7 +494,7 @@ namespace INest.Services
                 .Include(i => i.Sale)
                 .FirstOrDefaultAsync(i => i.Id == itemId && i.UserId == userId);
 
-            if (item == null || item.Sale == null) throw new KeyNotFoundException(LocalizationConstants.SALES.NOT_FOUND);
+            if (item == null || item.Sale == null) throw new KeyNotFoundException(SALES.ERRORS.NOT_FOUND);
 
             _context.Sales.Remove(item.Sale);
             item.Status = ItemStatus.Active;
@@ -468,7 +516,7 @@ namespace INest.Services
                     .Include(i => i.Reminders)
                     .FirstOrDefaultAsync(i => i.Id == itemId && i.UserId == userId);
 
-                if (item == null) throw new KeyNotFoundException(LocalizationConstants.ITEMS.NOT_FOUND);
+                if (item == null) throw new KeyNotFoundException(ITEMS.ERRORS.NOT_FOUND);
 
                 foreach (var photo in item.Photos)
                 {

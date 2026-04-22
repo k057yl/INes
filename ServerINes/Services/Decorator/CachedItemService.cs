@@ -23,8 +23,13 @@ namespace INest.Services.Decorator
 
         public async Task<IEnumerable<Item>> GetUserItemsAsync(Guid userId, ItemFilterDto filters)
         {
+            if (!string.IsNullOrWhiteSpace(filters.SearchQuery))
+            {
+                return await _inner.GetUserItemsAsync(userId, filters);
+            }
+
             string baseKey = CacheConstants.GET_ITEMS_KEY(userId);
-            string cacheKey = $"{baseKey}_{filters.SearchQuery}_{filters.CategoryId}_{filters.Status}_{filters.SortBy}_{filters.MinPrice}_{filters.MaxPrice}";
+            string cacheKey = $"{baseKey}_Cat:{filters.CategoryId}_Stat:{filters.Status}_Sort:{filters.SortBy}_Min:{filters.MinPrice}_Max:{filters.MaxPrice}";
 
             return await _cache.GetOrCreateAsync(cacheKey, async entry =>
             {

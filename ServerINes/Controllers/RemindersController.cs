@@ -1,10 +1,10 @@
-﻿using INest.Constants;
-using INest.Exceptions;
+﻿using INest.Exceptions;
 using INest.Models.DTOs.Reminder;
 using INest.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using static INest.Constants.LocalizationConstants;
 
 namespace INest.Controllers
 {
@@ -23,7 +23,7 @@ namespace INest.Controllers
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userIdClaim))
             {
-                throw new AppException(LocalizationConstants.AUTH.TOKEN_MISSING, 401);
+                throw new AppException(AUTH.ERRORS.TOKEN_MISSING, 401);
             }
             return Guid.Parse(userIdClaim);
         }

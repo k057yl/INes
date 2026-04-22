@@ -1,12 +1,18 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace INest.Models.Entities
 {
+    [Index(nameof(UserId))]
     public class Sale
     {
         [Key]
         public Guid Id { get; set; }
+
+        [Required]
+        public Guid UserId { get; set; }
+
         public Guid? ItemId { get; set; }
         public Item? Item { get; set; }
 

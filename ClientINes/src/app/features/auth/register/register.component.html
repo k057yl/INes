@@ -47,7 +47,7 @@
           <i class="fa fa-lock inest-field-icon-left"></i>
           <input [type]="showPassword ? 'text' : 'password'" 
                  formControlName="password" 
-                 [placeholder]="'AUTH_PAGE.PASSWORD_PHL' | translate">
+                 [placeholder]="'AUTH_PAGE.PASSWORD_CREATE_PHL' | translate">
           
           <button type="button" class="input-action" (click)="togglePassword()">
             <i class="fa" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
@@ -86,7 +86,7 @@
           <i class="fa fa-lock inest-field-icon-left"></i>
           <input [type]="showPassword ? 'text' : 'password'" 
                  formControlName="confirmPassword" 
-                 [placeholder]="'AUTH_PAGE.PASSWORD_PHL' | translate">
+                 [placeholder]="'AUTH_PAGE.PASSWORD_CONFIRM_PHL' | translate">
           
           <button type="button" class="input-action" (click)="togglePassword()">
             <i class="fa" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>

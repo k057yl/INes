@@ -80,7 +80,7 @@ namespace INest.Services
 
             if (securityToken is not JwtSecurityToken jwtSecurityToken || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
             {
-                throw new SecurityTokenException(LocalizationConstants.AUTH.INVALID_TOKEN);
+                throw new SecurityTokenException(LocalizationConstants.AUTH.ERRORS.INVALID_TOKEN);
             }
 
             return principal;

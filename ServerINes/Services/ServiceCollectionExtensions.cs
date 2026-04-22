@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using FluentValidation.AspNetCore;
+using Ganss.Xss;
 using INest.Constants;
 using INest.Models.Entities;
 using INest.Models.Validators;
@@ -41,7 +41,6 @@ namespace INest.Services
                     options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
                 });
 
-            services.AddFluentValidationAutoValidation();
             services.AddValidatorsFromAssemblyContaining<CategoryRules>();
         }
 
@@ -124,13 +123,19 @@ namespace INest.Services
 
         public static IServiceCollection AddBusinessServices(this IServiceCollection services)
         {
-            services.AddSingleton<ICacheTracker, CacheTracker>();
+            services.AddValidatorsFromAssemblyContaining<CategoryRules>();
 
+            // Singleton
+            services.AddSingleton<ICacheTracker, CacheTracker>();
+            services.AddSingleton<IHtmlSanitizer, HtmlSanitizer>();
+
+            // Scoped
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IPhotoService, PhotoService>();
             services.AddScoped<IAuthService, AuthService>();
 
+            // Decor
             services.AddDecoratedService<ICategoryService, CategoryService, CachedCategoryService>();
             services.AddDecoratedService<ILocationService, LocationService, CachedLocationService>();
             services.AddDecoratedService<IPlatformService, PlatformService, CachedPlatformService>();

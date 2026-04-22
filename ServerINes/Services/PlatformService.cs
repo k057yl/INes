@@ -1,18 +1,22 @@
-﻿using INest.Constants;
+﻿using Ganss.Xss;
+using INest.Exceptions;
 using INest.Models.DTOs.Platform;
 using INest.Models.Entities;
 using INest.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using static INest.Constants.LocalizationConstants;
 
 namespace INest.Services
 {
     public class PlatformService : IPlatformService
     {
         private readonly AppDbContext _context;
+        private readonly IHtmlSanitizer _sanitizer;
 
-        public PlatformService(AppDbContext context)
+        public PlatformService(AppDbContext context, IHtmlSanitizer sanitizer)
         {
             _context = context;
+            _sanitizer = sanitizer;
         }
 
         public async Task<IEnumerable<Platform>> GetAllAsync(Guid userId)
@@ -26,10 +30,14 @@ namespace INest.Services
 
         public async Task<Platform> CreateAsync(Guid userId, PlatformDto dto)
         {
+            var sanitizedName = _sanitizer.Sanitize(dto.Name);
+            if (string.IsNullOrWhiteSpace(sanitizedName))
+                throw new AppException(PLATFORMS.ERRORS.INVALID_NAME, 400);
+
             var platform = new Platform
             {
                 Id = Guid.NewGuid(),
-                Name = dto.Name,
+                Name = sanitizedName,
                 UserId = userId
             };
 
@@ -44,9 +52,13 @@ namespace INest.Services
                 .FirstOrDefaultAsync(p => p.Id == id && p.UserId == userId);
 
             if (platform == null)
-                throw new KeyNotFoundException(LocalizationConstants.PLATFORMS.NOT_FOUND);
+                throw new KeyNotFoundException(PLATFORMS.ERRORS.NOT_FOUND);
 
-            platform.Name = dto.Name;
+            var sanitizedName = _sanitizer.Sanitize(dto.Name);
+            if (string.IsNullOrWhiteSpace(sanitizedName))
+                throw new AppException(PLATFORMS.ERRORS.INVALID_NAME, 400);
+
+            platform.Name = sanitizedName;
             await _context.SaveChangesAsync();
             return platform;
         }
@@ -57,7 +69,7 @@ namespace INest.Services
                 .FirstOrDefaultAsync(p => p.Id == id && p.UserId == userId);
 
             if (platform == null)
-                throw new KeyNotFoundException(LocalizationConstants.PLATFORMS.NOT_FOUND);
+                throw new KeyNotFoundException(PLATFORMS.ERRORS.NOT_FOUND);
 
             _context.Platforms.Remove(platform);
             await _context.SaveChangesAsync();

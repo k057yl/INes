@@ -1,27 +1,49 @@
-﻿using INest.Constants;
+﻿using FluentValidation;
+using Ganss.Xss;
+using INest.Constants;
+using INest.Exceptions;
 using INest.Models.DTOs.Reminder;
 using INest.Models.Entities;
 using INest.Models.Enums;
 using INest.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using static INest.Constants.LocalizationConstants;
 
 namespace INest.Services
 {
     public class ReminderService : IReminderService
     {
         private readonly AppDbContext _context;
-        public ReminderService(AppDbContext context) => _context = context;
+        private readonly IHtmlSanitizer _sanitizer;
+        private readonly IValidator<CreateReminderDto> _reminderValidator;
+
+        public ReminderService(
+            AppDbContext context,
+            IHtmlSanitizer sanitizer,
+            IValidator<CreateReminderDto> reminderValidator)
+        {
+            _context = context;
+            _sanitizer = sanitizer;
+            _reminderValidator = reminderValidator;
+        }
 
         public async Task<Reminder> AddReminderAsync(Guid userId, CreateReminderDto dto)
         {
+            var valResult = await _reminderValidator.ValidateAsync(dto);
+            if (!valResult.IsValid) throw new ValidationAppException(valResult.Errors);
+
             var itemExists = await _context.Items.AnyAsync(i => i.Id == dto.ItemId && i.UserId == userId);
-            if (!itemExists) throw new KeyNotFoundException(LocalizationConstants.ITEMS.NOT_FOUND);
+            if (!itemExists) throw new KeyNotFoundException(ITEMS.ERRORS.NOT_FOUND);
+
+            var safeTitle = _sanitizer.Sanitize(dto.Title);
+            if (string.IsNullOrWhiteSpace(safeTitle))
+                throw new AppException(SYSTEM.ERRORS.VALIDATION_FAILED, 400);
 
             var reminder = new Reminder
             {
                 Id = Guid.NewGuid(),
                 ItemId = dto.ItemId,
-                Title = dto.Title,
+                Title = safeTitle,
                 Type = dto.Type,
                 Recurrence = dto.Recurrence,
                 TriggerAt = dto.TriggerAt,
@@ -71,7 +93,7 @@ namespace INest.Services
             {
                 ItemId = reminder.ItemId,
                 Type = ItemHistoryType.ReminderCompleted,
-                NewValue = $"{LocalizationConstants.HISTORY.REMINDER_COMPLETED}|{reminder.Title}",
+                NewValue = $"{HISTORY.REMINDER.COMPLETED}|{reminder.Title}",
                 CreatedAt = DateTime.UtcNow
             });
 

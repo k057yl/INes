@@ -27,8 +27,8 @@ namespace INest.Exceptions
             ItemHistoryType.Lent => LocalizationConstants.HISTORY.LENT,
             ItemHistoryType.Returned => LocalizationConstants.HISTORY.RETURNED,
             ItemHistoryType.ValueUpdated => LocalizationConstants.HISTORY.VALUE_UPDATED,
-            ItemHistoryType.ReminderCompleted => LocalizationConstants.HISTORY.REMINDER_COMPLETED,
-            ItemHistoryType.ReminderScheduled => LocalizationConstants.HISTORY.REMINDER_SCHEDULED,
+            ItemHistoryType.ReminderCompleted => LocalizationConstants.HISTORY.REMINDER.COMPLETED,
+            ItemHistoryType.ReminderScheduled => LocalizationConstants.HISTORY.REMINDER.SCHEDULED,
             _ => LocalizationConstants.SYSTEM.DEFAULT_ERROR
         };
 

@@ -1,5 +1,6 @@
 ﻿using brevo_csharp.Api;
 using brevo_csharp.Model;
+using Ganss.Xss;
 using INest.Constants;
 using INest.Exceptions;
 using INest.Services.Interfaces;
@@ -17,14 +18,16 @@ namespace INest.Services
         private readonly string _fromEmail;
         private readonly string _fromName;
         private readonly Configuration _brevoConfig;
+        private readonly IHtmlSanitizer _sanitizer;
 
-        public EmailService(IConfiguration config, ILogger<EmailService> logger, IStringLocalizer<SharedResource> localizer)
+        public EmailService(IConfiguration config, ILogger<EmailService> logger, IStringLocalizer<SharedResource> localizer, IHtmlSanitizer sanitizer)
         {
             _logger = logger;
             _localizer = localizer;
             _apiKey = config["Brevo:ApiKey"] ?? throw new ArgumentNullException("Brevo ApiKey missing");
             _fromEmail = config["Brevo:FromEmail"] ?? throw new ArgumentNullException("Brevo FromEmail missing");
             _fromName = config["Brevo:FromName"] ?? throw new ArgumentNullException("Brevo FromName missing");
+            _sanitizer = sanitizer;
 
             _brevoConfig = new Configuration();
             _brevoConfig.ApiKey.Add("api-key", _apiKey);
@@ -62,7 +65,11 @@ namespace INest.Services
 
             string subject = _localizer[subjectKey].Value;
             string dateStr = returnDate?.ToString("dd.MM.yyyy") ?? _localizer["COMMON_NOT_SPECIFIED"].Value;
-            string htmlContent = string.Format(_localizer[bodyKey].Value, itemName, personName, dateStr);
+
+            var safeItemName = _sanitizer.Sanitize(itemName);
+            var safePersonName = _sanitizer.Sanitize(personName);
+
+            string htmlContent = string.Format(_localizer[bodyKey].Value, safeItemName, safePersonName, dateStr);
 
             await SendEmailAsync(toEmail, subject, htmlContent);
         }

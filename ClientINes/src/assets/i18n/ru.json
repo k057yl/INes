@@ -1,40 +1,49 @@
 {
-  "//--- BACKEND MIRROR (Синхронизировано с LocalizationConstants.cs) ---//": "",
   "SYSTEM": {
     "DEFAULT_ERROR": "Произошла непредвиденная ошибка",
     "VALIDATION_FAILED": "Ошибка валидации данных",
-    "EMAIL_SEND_FAILED": "Не удалось отправить письмо",
-    "CONFIG_ERROR": "Ошибка конфигурации сервера"
+    "EMAIL_SEND_FAILED": "Не удалось отправить электронное письмо",
+    "CONFIG_ERROR": "Ошибка конфигурации сервера",
+    "ERRORS": {
+      "VALIDATION_FAILED": "Данные не прошли проверку"
+    }
   },
-
   "ERRORS": {
-    "REQUIRED_FIELD": "Поле обязательно для заполнения",
-    "INVALID_EMAIL_FORMAT": "Некорректный формат почты",
-    "INVALID_COLOR_HEX": "Некорректный формат цвета",
-    "MAX_LENGTH_50": "Максимум 50 символов",
-    "PWD_MIN_LENGTH": "Минимум 6 символов",
-    "PWD_UPPER": "Заглавная буква (A-Z)",
-    "PWD_DIGIT": "Хотя бы одна цифра (0-9)",
-    "PWD_SPEC": "Спецсимвол (!@#$%...)",
-    "PWD_LATIN": "Только латиница и символы",
-    "USERNAME_LATIN_ONLY": "Только латиница и цифры",
-    "NEGATIVE_NUMBER": "Значение должно быть больше нуля",
+    "REQUIRED_FIELD": "Это поле обязательно для заполнения",
+    "INVALID_EMAIL_FORMAT": "Неверный формат почты",
+    "INVALID_COLOR_HEX": "Неверный формат цвета (HEX)",
+    "MAX_LENGTH_50": "Максимальная длина — 50 символов",
+    "PWD_MIN_LENGTH": "Пароль должен быть не менее 6 символов",
+    "PWD_UPPER": "Пароль должен содержать заглавную букву",
+    "PWD_DIGIT": "Пароль должен содержать цифру",
+    "PWD_SPEC": "Пароль должен содержать спецсимвол",
+    "PWD_LATIN": "Пароль должен содержать только латиницу",
+    "USERNAME_LATIN_ONLY": "Имя пользователя должно быть на латинице",
+    "NEGATIVE_NUMBER": "Значение не может быть отрицательным",
     "FUTURE_DATE": "Дата не может быть в будущем",
-    "FILE_TOO_LARGE": "Файл слишком велик",
-    "IMAGE_PROCESSING_FAILED": "Ошибка при обработке изображения"
+    "FILE_TOO_LARGE": "Файл слишком большой",
+    "IMAGE_PROCESSING_FAILED": "Ошибка обработки изображения",
+    "MAX_NESTING_REACHED": "Достигнут предел вложенности"
   },
-
+  "EMAILS": {
+    "CONFIRM_SUBJECT": "Подтверждение регистрации INest",
+    "CONFIRM_BODY": "Ваш код подтверждения: {0}",
+    "RESET_SUBJECT": "Сброс пароля INest",
+    "RESET_BODY": "Для сброса пароля перейдите по ссылке: {0}"
+  },
   "AUTH": {
     "ERRORS": {
-      "EMAIL_ALREADY_EXISTS": "Пользователь с такой почтой уже зарегистрирован",
-      "INVALID_CREDENTIALS": "Неверный логин или пароль",
-      "EMAIL_UNCONFIRMED": "Почта не подтверждена. Пожалуйста, введите код.",
-      "INVALID_OR_EXPIRED_CODE": "Код неверный или его срок истек",
+      "EMAIL_ALREADY_EXISTS": "Пользователь с такой почтой уже существует",
+      "INVALID_CREDENTIALS": "Неверная почта или пароль",
+      "EMAIL_UNCONFIRMED": "Почта не подтверждена",
+      "INVALID_OR_EXPIRED_CODE": "Неверный или просроченный код",
       "USER_NOT_FOUND": "Пользователь не найден",
       "GOOGLE_AUTH_FAILED": "Ошибка авторизации через Google",
-      "TOKEN_MISSING": "Токен авторизации отсутствует",
+      "TOKEN_MISSING": "Токен доступа отсутствует",
       "INVALID_TOKEN": "Неверный токен",
-      "REFRESH_TOKEN_EXPIRED": "Сессия истекла, войдите заново"
+      "REFRESH_TOKEN_EXPIRED": "Сессия истекла, войдите заново",
+      "INVALID_USERNAME": "Недопустимое имя пользователя",
+      "REGISTRATION_FAILED": "Ошибка при регистрации"
     },
     "SUCCESS": {
       "OTP_SENT": "Код подтверждения отправлен на почту",
@@ -42,69 +51,82 @@
       "PASSWORD_CHANGED": "Пароль успешно изменен"
     }
   },
-
+  "CATEGORIES": {
+    "ERRORS": {
+      "NOT_FOUND": "Категория не найдена",
+      "CANNOT_DELETE_DEFAULT": "Нельзя удалить категорию по умолчанию",
+      "INVALID_NAME": "Недопустимое название категории"
+    }
+  },
   "ITEMS": {
     "ERRORS": {
       "NOT_FOUND": "Предмет не найден",
-      "ONLY_ACTIVE_CAN_BE_EDITED": "Редактирование доступно только для активных предметов"
+      "ONLY_ACTIVE_CAN_BE_EDITED": "Редактировать можно только активные предметы"
     },
     "SUCCESS": {
       "DELETE": "Предмет успешно удален"
     }
   },
-
   "LOCATIONS": {
     "ERRORS": {
       "NOT_FOUND": "Локация не найдена",
-      "SELF_NESTING": "Нельзя вложить локацию в саму себя",
-      "CIRCULAR_DEPENDENCY": "Обнаружена циклическая зависимость вложений"
+      "SELF_NESTING": "Локация не может быть вложена в саму себя",
+      "CIRCULAR_DEPENDENCY": "Обнаружена циклическая зависимость",
+      "INVALID_NAME": "Недопустимое название локации"
     }
   },
-
+  "PLATFORMS": {
+    "ERRORS": {
+      "NOT_FOUND": "Платформа не найдена",
+      "INVALID_NAME": "Недопустимое название платформы"
+    }
+  },
+  "SALES": {
+    "ERRORS": {
+      "ITEM_NOT_FOUND": "Продаваемый предмет не найден",
+      "ALREADY_SOLD": "Предмет уже продан",
+      "NOT_FOUND": "Запись о продаже не найдена"
+    }
+  },
   "STATUS": {
     "ACTIVE": "Активен",
-    "LENT": "Одолжен",
-    "LOST": "Потерян",
+    "LENT": "Дано в долг",
+    "LOST": "Утерян",
     "BROKEN": "Сломан",
     "SOLD": "Продан",
     "GIFTED": "Подарен",
-    "LISTED": "Выставлен",
-    "BORROWED": "Заимствован"
+    "LISTED": "Выставлен на продажу",
+    "BORROWED": "Взято в долг"
   },
-
   "HISTORY": {
-    "CREATED": "Предмет добавлен в систему",
-    "MOVED": "Перемещён в другую локацию",
-    "STATUS_CHANGED": "Статус изменён на: {{status}}",
+    "CREATED": "Предмет создан",
+    "MOVED": "Перемещен: {0} -> {1}",
+    "STATUS_CHANGED": "Статус изменен на: {0}",
     "REPAIRED": "Предмет отремонтирован",
-    "RETURNED": "Предмет вернулся на базу",
-    "VALUE_UPDATED": "Цена переоценена",
-    "PHOTOS_ADDED_COUNT": "Добавлено фото: {{count}}"
+    "LENT": "Передан пользователю: {0}",
+    "RETURNED": "Возвращен в хранилище",
+    "VALUE_UPDATED": "Цена обновлена: {0}",
+    "PHOTOS_ADDED_COUNT": "Добавлено фото: {0}",
+    "REMINDER": {
+      "COMPLETED": "Напоминание выполнено: {0}",
+      "SCHEDULED": "Запланировано напоминание: {0}"
+    }
   },
-
   "REMINDERS": {
     "CUSTOM": "Напоминание",
-    "WARRANTY": "Истекает срок гарантии",
-    "MAINTENANCE": "Техническое обслуживание",
-    "RETURN_ITEM": "Пора вернуть предмет",
+    "WARRANTY": "Гарантия",
+    "MAINTENANCE": "Обслуживание",
+    "RETURN_ITEM": "Возврат предмета",
     "INSURANCE": "Страховка",
-    "MEDICAL": "Пройти осмотр",
-    "TAX": "Оплата налогов",
+    "MEDICAL": "Медицина",
+    "TAX": "Налоги",
     "SUBSCRIPTION": "Подписка"
   },
-
-  "RECURRENCE": {
-    "NONE": "Разово",
-    "DAILY": "Ежедневно",
-    "WEEKLY": "Раз в неделю",
-    "MONTHLY": "Раз в месяц",
-    "YEARLY": "Раз в год"
-  },
-
   "LENDING": {
     "ERRORS": {
-      "ALREADY_LENT": "Предмет уже передан",
-      "NOT_LENT": "Предмет не находится в прокате"
+      "NOT_FOUND": "Запись об аренде не найдена",
+      "ALREADY_LENT": "Предмет уже отдан в долг",
+      "NOT_LENT": "Предмет не числится в долгах"
     }
   },
 
@@ -190,7 +212,9 @@
     "EMAIL_PHL": "Введите email",
     "CHECKING_MAIL": "Проверяем email",
     "PASSWORD": "Пароль",
-    "PASSWORD_PHL": "Придумайте пароль",
+    "PASSWORD_CREATE_PHL": "Придумайте пароль",
+    "PASSWORD_ENTER_PHL": "Введите пароль",
+    "PASSWORD_CONFIRM_PHL": "Повторите пароль",
     "CONFIRM_PASSWORD": "Подтверждение",
     "CONFIRM_PASSWORD_PHL": "Повторите пароль",
     "PASSWORD_MISMATCH": "Пароли не совпадают",

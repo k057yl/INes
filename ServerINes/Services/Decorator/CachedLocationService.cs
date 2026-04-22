@@ -42,8 +42,17 @@ namespace INest.Services.Decorator
             }) ?? Enumerable.Empty<object>();
         }
 
-        public Task<StorageLocation?> GetLocationByIdAsync(Guid userId, Guid locationId) =>
-            _inner.GetLocationByIdAsync(userId, locationId);
+        public async Task<StorageLocation?> GetLocationByIdAsync(Guid userId, Guid locationId)
+        {
+            var key = $"location_{userId}_{locationId}";
+
+            return await _cache.GetOrCreateAsync(key, async entry =>
+            {
+                entry.AddExpirationToken(_tracker.GetToken(userId));
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
+                return await _inner.GetLocationByIdAsync(userId, locationId);
+            });
+        }
 
         public async Task<StorageLocation> CreateLocationAsync(Guid userId, CreateLocationDto dto)
         {
