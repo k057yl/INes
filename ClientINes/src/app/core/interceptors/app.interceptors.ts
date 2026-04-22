@@ -2,31 +2,27 @@ import { HttpInterceptorFn, HttpErrorResponse, HttpRequest, HttpHandlerFn } from
 import { inject, Injector } from '@angular/core';
 import { BehaviorSubject, catchError, filter, switchMap, take, throwError, Observable } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
-import { AuthService, AuthResponse } from '../services/auth.service';
+import { AuthService } from '../services/auth.service';
 
 let isRefreshing = false;
-const refreshTokenSubject = new BehaviorSubject<string | null>(null);
+const refreshTokenSubject = new BehaviorSubject<boolean | null>(null);
 
 export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
-  const injector = inject(Injector);
+  const authService = inject(AuthService);
 
   if (req.url.includes('.json') || req.url.includes('/assets/i18n/')) {
     return next(req);
   }
 
-  const token = localStorage.getItem('jwt');
+  const clonedReq = req.clone({
+    withCredentials: true,
+    setHeaders: { 'X-Requested-With': 'XMLHttpRequest' }
+  });
 
-  if (token) {
-    req = req.clone({
-      setHeaders: { Authorization: `Bearer ${token}` }
-    });
-  }
-
-  return next(req).pipe(
+  return next(clonedReq).pipe(
     catchError((error: HttpErrorResponse) => {
-      if (error.status === 401 && !req.url.includes('/auth/')) {
-        const authService = injector.get(AuthService);
-        return handle401Error(req, next, authService);
+      if (error.status === 401 && !req.url.includes('/auth/login') && !req.url.includes('/auth/refresh')) {
+        return handle401Error(clonedReq, next, authService);
       }
       return throwError(() => error);
     })
@@ -39,12 +35,10 @@ function handle401Error(req: HttpRequest<any>, next: HttpHandlerFn, authService:
     refreshTokenSubject.next(null);
 
     return authService.refreshToken().pipe(
-      switchMap((res: AuthResponse) => {
+      switchMap(() => {
         isRefreshing = false;
-        refreshTokenSubject.next(res.token);
-        return next(req.clone({
-          setHeaders: { Authorization: `Bearer ${res.token}` }
-        }));
+        refreshTokenSubject.next(true);
+        return next(req);
       }),
       catchError((err) => {
         isRefreshing = false;
@@ -54,11 +48,9 @@ function handle401Error(req: HttpRequest<any>, next: HttpHandlerFn, authService:
     );
   } else {
     return refreshTokenSubject.pipe(
-      filter(token => token !== null),
+      filter(done => done !== null),
       take(1),
-      switchMap(token => next(req.clone({
-        setHeaders: { Authorization: `Bearer ${token}` }
-      })))
+      switchMap(() => next(req))
     );
   }
 }
@@ -79,6 +71,10 @@ export const globalErrorInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
+      if (error.status === 401 && (req.url.includes('/auth/me') || req.url.includes('/auth/login'))) {
+        return throwError(() => error);
+      }
+
       const translate = injector.get(TranslateService);
       const errorKey = error.error?.error || 'SYSTEM.DEFAULT_ERROR';
       const translatedMessage = translate.instant(errorKey);

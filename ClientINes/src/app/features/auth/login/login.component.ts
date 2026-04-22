@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
-import { AuthService, AuthResponse } from '../../../core/services/auth.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { ThemeService } from '../../../core/services/theme.service';
 import { environment } from '../../../../environments/environment';
 
@@ -92,7 +92,7 @@ export class LoginComponent implements OnInit {
     this.error = undefined;
     
     this.authService.login(this.email, this.password).subscribe({
-      next: (res: AuthResponse) => {
+      next: () => {
         this.router.navigate(["/dashboard"]);
       },
       error: (err) => {

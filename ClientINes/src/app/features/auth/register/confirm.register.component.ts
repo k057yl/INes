@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TranslateModule } from '@ngx-translate/core';
-import { AuthService, AuthResponse } from '../../../core/services/auth.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-confirm-register',
@@ -19,8 +19,7 @@ export class ConfirmRegisterComponent implements OnInit {
 
   email = '';
   password = ''; 
-  
-  codeArray: string[] = ['', '', '', '', '', ''];
+  otpCode = ''; 
   
   message?: string;
   error?: string;
@@ -35,51 +34,25 @@ export class ConfirmRegisterComponent implements OnInit {
     }
   }
 
-  onInput(event: any, index: number) {
-    const input = event.target;
-    const value = input.value;
+  onOtpChange(value: string) {
+    this.otpCode = value.replace(/\D/g, '').slice(0, 6);
     
-    this.codeArray[index] = value.slice(-1);
-
-    if (value && index < 5) {
-      const nextInput = input.parentElement.children[index + 1] as HTMLInputElement;
-      if (nextInput) nextInput.focus();
-    }
-
-    if (this.codeArray.every(v => v !== '')) {
-      this.confirm();
-    }
-  }
-
-  onKeyDown(event: KeyboardEvent, index: number) {
-    if (event.key === 'Backspace' && !this.codeArray[index] && index > 0) {
-      const prevInput = (event.target as HTMLElement).parentElement?.children[index - 1] as HTMLInputElement;
-      if (prevInput) prevInput.focus();
-    }
-  }
-
-  onPaste(event: ClipboardEvent) {
-    const data = event.clipboardData?.getData('text');
-    if (data && data.length === 6 && /^\d+$/.test(data)) {
-      this.codeArray = data.split('');
-      event.preventDefault();
+    if (this.otpCode.length === 6) {
       this.confirm();
     }
   }
 
   confirm() {
+    if (this.otpCode.length < 6) return;
     this.error = undefined;
-    const fullCode = this.codeArray.join('');
-    
-    if (fullCode.length < 6) return;
 
-    this.authService.confirmRegistration(this.email, fullCode).subscribe({
-      next: (res: AuthResponse) => {
-        this.message = 'AUTH.SUCCESS.PASSWORD_CHANGED';
-        setTimeout(() => this.router.navigate(['/main']), 1000);
+    this.authService.confirmRegistration(this.email, this.otpCode).subscribe({
+      next: () => {
+        this.message = 'CONFIRM_REGISTRATION_PAGE.SUCCESS';
+        setTimeout(() => this.router.navigate(['/dashboard']), 1000);
       },
       error: (err: HttpErrorResponse) => {
-        this.error = err.error?.error || 'AUTH.ERRORS.INVALID_OR_EXPIRED_CODE';
+        this.error = err.error?.error || 'CONFIRM_REGISTRATION_PAGE.ERROR';
       }
     });
   }
@@ -87,7 +60,11 @@ export class ConfirmRegisterComponent implements OnInit {
   resendCode() {
     this.error = undefined;
     this.message = undefined;
-    this.authService.register({ email: this.email, username: '...', password: this.password }).subscribe({
+    this.authService.register({ 
+      email: this.email, 
+      username: '...', 
+      password: this.password 
+    }).subscribe({
       next: () => this.message = 'AUTH.SUCCESS.OTP_SENT',
       error: (err: HttpErrorResponse) => this.error = err.error?.error || 'SYSTEM.EMAIL_SEND_FAILED'
     });

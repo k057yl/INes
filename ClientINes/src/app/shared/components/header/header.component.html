@@ -1,6 +1,10 @@
 <header class="header">
   <div class="header-main">
     
+    <button class="menu-toggle" (click)="toggleMenu($event)" [class.active]="isMenuOpen()">
+      <i class="fa" [class.fa-bars]="!isMenuOpen()" [class.fa-times]="isMenuOpen()"></i>
+    </button>
+
     <div class="brand-section">
       <div class="logo" routerLink="/main">
         <div class="logo-icon"></div>

@@ -74,7 +74,12 @@ export class HeaderComponent {
   }
 
   toggleTheme() { this.themeService.toggleTheme(); }
-  toggleMenu() { this.isMenuOpen.set(!this.isMenuOpen()); }
+
+  toggleMenu(event?: Event): void {
+    if (event) event.stopPropagation();
+    this.isMenuOpen.update(v => !v);
+  }
+  
   closeMenu() { this.isMenuOpen.set(false); }
 
   languages = [

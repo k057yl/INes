@@ -18,6 +18,8 @@ builder.Services.AddOpenApi();
 var app = builder.Build();
 
 app.UseMiddleware<ExceptionMiddleware>();
+app.UseCors("AllowAngular");
+app.UseHttpsRedirection();
 
 // ---------- Миграции + сидирование ----------
 using (var scope = app.Services.CreateScope())
@@ -33,8 +35,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-app.UseHttpsRedirection();
-app.UseCors("AllowAngular");
+app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();

@@ -2,27 +2,35 @@
   <div class="inest-form-card">
     <header class="inest-form-header">
       <div class="logo-circle"><i class="fa fa-envelope-open-text"></i></div>
-      <h2>{{ 'AUTH.CONFIRM.TITLE' | translate }}</h2>
-      <p>{{ 'AUTH.CONFIRM.SUBTITLE' | translate }}</p>
-      <small class="target-email" style="color: var(--accent-color); font-weight: 600;" *ngIf="email">
+      <h2>{{ 'CONFIRM_REGISTRATION_PAGE.TITLE' | translate }}</h2>
+      <p>{{ 'CONFIRM_REGISTRATION_PAGE.SUBTITLE' | translate }}</p>
+      <small class="target-email" *ngIf="email">
         {{ email }}
       </small>
     </header>
 
     <div class="otp-wrapper">
+      <input 
+        type="text" 
+        inputmode="numeric" 
+        pattern="\d*" 
+        maxlength="6" 
+        class="real-otp-input"
+        [(ngModel)]="otpCode"
+        (ngModelChange)="onOtpChange($event)"
+        autocomplete="one-time-code"
+        autofocus
+      >
+      
       <div class="otp-container">
-        <input 
-          *ngFor="let digit of codeArray; let i = index"
-          type="text"
-          inputmode="numeric"
-          maxlength="1"
-          class="otp-input"
-          [(ngModel)]="codeArray[i]"
-          (input)="onInput($event, i)"
-          (keydown)="onKeyDown($event, i)"
-          (paste)="onPaste($event)"
-          [class.filled]="codeArray[i]"
+        <div 
+          *ngFor="let i of [0,1,2,3,4,5]" 
+          class="otp-input" 
+          [class.filled]="otpCode.length > i"
+          [class.active]="otpCode.length === i"
         >
+          {{ otpCode[i] || '' }}
+        </div>
       </div>
     </div>
 
@@ -34,14 +42,14 @@
       <i class="fa fa-check-double"></i> {{ message | translate }}
     </div>
 
-    <button class="inest-btn-primary" (click)="confirm()" [disabled]="codeArray.join('').length < 6">
-      {{ 'AUTH.CONFIRM.SUBMIT_BTN' | translate }}
+    <button class="inest-btn-primary" (click)="confirm()" [disabled]="otpCode.length < 6">
+      {{ 'CONFIRM_REGISTRATION_PAGE.SUBMIT_BTN' | translate }}
       <i class="fa fa-check" style="margin-left: 8px;"></i>
     </button>
 
     <footer class="inest-form-footer">
-      <span>{{ 'AUTH.CONFIRM.RESEND_TEXT' | translate }}</span>
-      <a href="javascript:void(0)" (click)="resendCode()">{{ 'AUTH.CONFIRM.RESEND_LINK' | translate }}</a>
+      <span>{{ 'CONFIRM_REGISTRATION_PAGE.RESEND_TEXT' | translate }}</span>
+      <a href="javascript:void(0)" (click)="resendCode()">{{ 'CONFIRM_REGISTRATION_PAGE.RESEND_LINK' | translate }}</a>
     </footer>
   </div>
 </div>

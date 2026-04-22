@@ -1,9 +1,10 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HeaderComponent } from './shared/components/header/header.component';
 import { FooterComponent } from './shared/components/footer/footer.component';
 import { LocalizationService } from './shared/services/localization.service';
+import { AuthService } from './core/services/auth.service';
 
 import { DashboardModalService } from './features/dashboard/dashboard.modal.service';
 import { InestModalComponent } from './shared/components/modals/inest-modal/inest-modal.component';
@@ -30,10 +31,24 @@ import { LocationFormModalComponent } from './shared/components/modals/location-
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   public modal = inject(DashboardModalService);
+  private authService = inject(AuthService);
 
   constructor(private loc: LocalizationService) {}
+
+  ngOnInit() {
+    this.authService.checkAuth().subscribe({
+      next: (user) => {
+        if (user) {
+          console.log('Сессия восстановлена, добро пожаловать обратно, кожаный мешок:', user.email);
+        } else {
+          console.log('Сессии нет, ты никто и звать тебя никак (гость)');
+        }
+      },
+      error: () => console.log('Бэкенд послал нас нахер, куки протухли')
+    });
+  }
 
   changeLang(lang: string) {
     this.loc.setLanguage(lang);

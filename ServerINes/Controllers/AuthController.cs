@@ -16,6 +16,20 @@ namespace INest.Controllers
 
         public AuthController(IAuthService authService) => _authService = authService;
 
+        private void SetTokenCookies(AuthResponseDto authResponse)
+        {
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None,
+                Expires = DateTime.UtcNow.AddDays(7)
+            };
+
+            Response.Cookies.Append("X-Access-Token", authResponse.Token, cookieOptions);
+            Response.Cookies.Append("X-Refresh-Token", authResponse.RefreshToken, cookieOptions);
+        }
+
         [AllowAnonymous]
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto dto)
@@ -35,6 +49,7 @@ namespace INest.Controllers
         public async Task<IActionResult> ConfirmRegister([FromBody] ConfirmRegisterDto dto)
         {
             var result = await _authService.ConfirmRegistrationAsync(dto);
+            SetTokenCookies(result);
             return Ok(result);
         }
 
@@ -43,7 +58,8 @@ namespace INest.Controllers
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
             var result = await _authService.LoginAsync(dto);
-            return Ok(result);
+            SetTokenCookies(result);
+            return Ok();
         }
 
         [HttpPost("forgot-password")]
@@ -87,18 +103,35 @@ namespace INest.Controllers
         public async Task<IActionResult> GoogleLogin([FromBody] ExternalAuthDto dto)
         {
             var result = await _authService.GoogleLoginAsync(dto.IdToken);
-            return result != null ? Ok(result) : Unauthorized(new { error = LocalizationConstants.AUTH.GOOGLE_AUTH_FAILED });
+            if (result == null) return Unauthorized(new { error = LocalizationConstants.AUTH.GOOGLE_AUTH_FAILED });
+
+            SetTokenCookies(result);
+            return Ok();
         }
 
         [Authorize]
         [HttpPost("logout")]
-        public IActionResult Logout() => Ok();
+        public IActionResult Logout()
+        {
+            Response.Cookies.Delete("X-Access-Token");
+            Response.Cookies.Delete("X-Refresh-Token");
+            return Ok();
+        }
 
         [HttpPost("refresh")]
-        public async Task<IActionResult> Refresh([FromBody] TokenRequestDto dto)
+        public async Task<IActionResult> Refresh()
         {
+            var accessToken = Request.Cookies["X-Access-Token"];
+            var refreshToken = Request.Cookies["X-Refresh-Token"];
+
+            if (string.IsNullOrEmpty(accessToken) || string.IsNullOrEmpty(refreshToken))
+                return Unauthorized();
+
+            var dto = new TokenRequestDto { AccessToken = accessToken, RefreshToken = refreshToken };
             var response = await _authService.RefreshTokenAsync(dto);
-            return Ok(response);
+
+            SetTokenCookies(response);
+            return Ok();
         }
     }
 }

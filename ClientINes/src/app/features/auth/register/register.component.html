@@ -45,7 +45,10 @@
         <label>{{ 'AUTH_PAGE.PASSWORD' | translate }}</label>
         <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('password')">
           <i class="fa fa-lock inest-field-icon-left"></i>
-          <input [type]="showPassword ? 'text' : 'password'" formControlName="password" [placeholder]="'AUTH_PAGE.PASSWORD_PHL' | translate">
+          <input [type]="showPassword ? 'text' : 'password'" 
+                 formControlName="password" 
+                 [placeholder]="'AUTH_PAGE.PASSWORD_PHL' | translate">
+          
           <button type="button" class="input-action" (click)="togglePassword()">
             <i class="fa" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
           </button>
@@ -81,10 +84,13 @@
         <label>{{ 'AUTH_PAGE.CONFIRM_PASSWORD' | translate }}</label>
         <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('confirmPassword') || (registerForm.errors?.['mismatch'] && registerForm.get('confirmPassword')?.touched)">
           <i class="fa fa-lock inest-field-icon-left"></i>
-          <input [type]="showPassword ? 'text' : 'password'" formControlName="password" [placeholder]="'AUTH_PAGE.PASSWORD_PHL' | translate">
-            <button type="button" class="input-action" (click)="togglePassword()">
-              <i class="fa" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
-            </button>
+          <input [type]="showPassword ? 'text' : 'password'" 
+                 formControlName="confirmPassword" 
+                 [placeholder]="'AUTH_PAGE.PASSWORD_PHL' | translate">
+          
+          <button type="button" class="input-action" (click)="togglePassword()">
+            <i class="fa" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+          </button>
         </div>
         <div class="inest-error-container">
           <small class="inest-error-text" *ngIf="registerForm.errors?.['mismatch'] && registerForm.get('confirmPassword')?.touched">
@@ -95,10 +101,6 @@
 
       <div class="inest-status-box error" *ngIf="error">
         <i class="fa fa-exclamation-triangle"></i> {{ error | translate }}
-      </div>
-
-      <div class="inest-status-box success" *ngIf="message">
-        <i class="fa fa-check"></i> {{ message | translate }}
       </div>
 
       <button type="submit" class="inest-btn-primary" [disabled]="registerForm.invalid">

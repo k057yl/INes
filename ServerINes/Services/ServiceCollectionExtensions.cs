@@ -35,6 +35,7 @@ namespace INest.Services
         private static void AddCustomControllers(this IServiceCollection services)
         {
             services.AddControllers()
+                .AddApplicationPart(typeof(INest.Controllers.AuthController).Assembly)
                 .AddJsonOptions(options => {
                     options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
                     options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
@@ -85,7 +86,20 @@ namespace INest.Services
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = jwt["Issuer"],
                     ValidAudience = jwt["Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(keyBytes)
+                    IssuerSigningKey = new SymmetricSecurityKey(keyBytes),
+                    ClockSkew = TimeSpan.Zero
+                };
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        if (context.Request.Cookies.ContainsKey("X-Access-Token"))
+                        {
+                            context.Token = context.Request.Cookies["X-Access-Token"];
+                        }
+                        return Task.CompletedTask;
+                    }
                 };
             });
         }
@@ -96,9 +110,11 @@ namespace INest.Services
             {
                 options.AddPolicy("AllowAngular", policy =>
                     policy.WithOrigins(
-                        "http://localhost:4200",    // Для разработки (ng serve)
-                        "http://localhost:8080",    // Для тестов PWA
-                        "http://127.0.0.1:8080"     // Для тестов PWA по IP
+                        SharedConstants.LOCALHOST,
+                        SharedConstants.PWA,
+                        SharedConstants.PWA_FROM_IP,
+                        SharedConstants.PWA_MOBILE,
+                        SharedConstants.WSL_IP
                     )
                     .AllowAnyMethod()
                     .AllowAnyHeader()
@@ -108,16 +124,13 @@ namespace INest.Services
 
         public static IServiceCollection AddBusinessServices(this IServiceCollection services)
         {
-            // Регистрация трекера для инвалидации кэша
             services.AddSingleton<ICacheTracker, CacheTracker>();
 
-            // Базовые сервисы
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IPhotoService, PhotoService>();
             services.AddScoped<IAuthService, AuthService>();
 
-            // Регистрация декораторов
             services.AddDecoratedService<ICategoryService, CategoryService, CachedCategoryService>();
             services.AddDecoratedService<ILocationService, LocationService, CachedLocationService>();
             services.AddDecoratedService<IPlatformService, PlatformService, CachedPlatformService>();
@@ -126,13 +139,11 @@ namespace INest.Services
             services.AddDecoratedService<IReminderService, ReminderService, CachedReminderService>();
             services.AddDecoratedService<ILendingService, LendingService, CachedLendingService>();
 
-            // Старт вместе с приложением
             services.AddHostedService<ReminderWorker>();
 
             return services;
         }
 
-        // Хелпер для регистрации декораторов
         private static void AddDecoratedService<TInterface, TService, TDecorator>(this IServiceCollection services)
             where TInterface : class
             where TService : class, TInterface

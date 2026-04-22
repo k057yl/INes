@@ -2,7 +2,14 @@
   display: block;
   background: var(--bg-main); 
   min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden; /* ФИКС ОТ ВЫЛЕЗАНИЯ ЗА ЭКРАН */
   transition: background-color 0.3s ease;
+}
+
+.main-page-container {
+  width: 100%;
+  box-sizing: border-box; /* ФИКС ОТ ВЫЛЕЗАНИЯ ЗА ЭКРАН */
 }
 
 .board-grid-3 {
@@ -15,6 +22,8 @@
   background: var(--bg-main-card);
   border-bottom-left-radius: 12px;
   border-bottom-right-radius: 12px;
+  width: 100%; /* ФИКС ОТ ВЫЛЕЗАНИЯ ЗА ЭКРАН */
+  box-sizing: border-box; /* ФИКС ОТ ВЫЛЕЗАНИЯ ЗА ЭКРАН */
 }
 
 .loader-overlay {
@@ -108,9 +117,21 @@
   letter-spacing: 1px;
 }
 
-@media (max-width: 1024px) { .board-grid-3 { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 1024px) { 
+  .board-grid-3 { grid-template-columns: repeat(2, 1fr); } 
+}
+
+/* --- МОБИЛКА: СТРОГО ОДНА КОЛОНКА --- */
 @media (max-width: 768px) {
-  .board-grid-3 { grid-template-columns: 1fr; padding: 10px; }
+  .board-grid-3 { 
+    grid-template-columns: 1fr; /* ТЕПЕРЬ ОДНА ПОД ОДНОЙ */
+    gap: 12px; 
+    padding: 10px; 
+  }
+  .root-loc-wrapper { 
+    width: 100%; /* КАРТОЧКА НА ВСЮ ШИРИНУ */
+    box-sizing: border-box; 
+  }
   .zero-state-container { padding: 30px 10px; .zero-icon { font-size: 3rem; } }
 }
 
@@ -140,7 +161,7 @@
       font-size: 0.75rem; font-weight: 800; color: var(--text-main);
       line-height: 1.1; overflow: hidden; display: -webkit-box;
       -webkit-line-clamp: 2;
-      line-clamp: 2; /* <-- ИСПРАВЛЕН ВАРНИНГ VS CODE */
+      line-clamp: 2;
       -webkit-box-orient: vertical;
     }
   }
@@ -152,8 +173,6 @@
     cursor: grabbing !important;
   }
 
-  /* ЛЕЧИМ ПОЛЕТ В ЛЕВЫЙ ВЕРХНИЙ УГОЛ И РАМКИ */
-  /* Делаем так, чтобы он был в DOM (для координат анимации), но невидимым и без размера */
   .cdk-drag-placeholder {
     opacity: 0 !important;
     min-height: 0 !important;
