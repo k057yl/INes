@@ -74,6 +74,10 @@
           <i class="fa fa-tag inest-field-icon-left"></i>
           <input formControlName="name" [placeholder]="'CREATE_ITEM_PAGE.NAME_PHL' | translate" autofocus>
         </div>
+        <div class="error-hint-msg" *ngIf="isControlInvalid('name')">
+          <i class="fa fa-exclamation-circle"></i>
+          <span>{{ (form.get('name')?.errors?.['serverError'] || 'ERRORS.REQUIRED_FIELD') | translate }}</span>
+        </div>
       </div>
 
       <div class="inest-form-group">
@@ -93,6 +97,10 @@
             <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</option>
           </select>
         </div>
+        <div class="error-hint-msg" *ngIf="isControlInvalid('categoryId')">
+          <i class="fa fa-exclamation-circle"></i>
+          <span>{{ (form.get('categoryId')?.errors?.['serverError'] || 'ERRORS.REQUIRED_FIELD') | translate }}</span>
+        </div>
       </div>
 
       <div class="inest-form-group" *ngIf="!isLocationPredefined">
@@ -103,6 +111,10 @@
             <option value="" disabled>{{ 'CREATE_ITEM_PAGE.SELECT_LOCATION' | translate }}</option>
             <option *ngFor="let loc of locations" [value]="loc.id">{{ loc.name }}</option>
           </select>
+        </div>
+        <div class="error-hint-msg" *ngIf="isControlInvalid('storageLocationId')">
+          <i class="fa fa-exclamation-circle"></i>
+          <span>{{ (form.get('storageLocationId')?.errors?.['serverError'] || 'ERRORS.REQUIRED_FIELD') | translate }}</span>
         </div>
       </div>
 
@@ -119,17 +131,25 @@
       <div class="form-row-multi">
         <div class="inest-form-group">
           <label>{{ 'CREATE_ITEM_PAGE.PURCHASE_DATE' | translate }}</label>
-          <div class="inest-input-wrapper">
+          <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('purchaseDate')">
             <i class="fa fa-calendar-alt inest-field-icon-left"></i>
             <input type="date" formControlName="purchaseDate" [max]="todayMax">
+          </div>
+          <div class="error-hint-msg" *ngIf="isControlInvalid('purchaseDate')">
+            <i class="fa fa-exclamation-circle"></i>
+            <span>{{ (form.get('purchaseDate')?.errors?.['serverError'] || 'ERRORS.FUTURE_DATE') | translate }}</span>
           </div>
         </div>
 
         <div class="inest-form-group">
           <label>{{ 'CREATE_ITEM_PAGE.PRICE' | translate }}</label>
-          <div class="inest-input-wrapper">
+          <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('purchasePrice')">
             <i class="fa fa-wallet inest-field-icon-left"></i>
             <input formControlName="purchasePrice" type="number" placeholder="0.00">
+          </div>
+          <div class="error-hint-msg" *ngIf="isControlInvalid('purchasePrice')">
+            <i class="fa fa-exclamation-circle"></i>
+            <span>{{ (form.get('purchasePrice')?.errors?.['serverError'] || 'ERRORS.NEGATIVE_NUMBER') | translate }}</span>
           </div>
         </div>
 
@@ -138,6 +158,10 @@
           <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('estimatedValue')">
             <i class="fa fa-chart-line inest-field-icon-left"></i>
             <input formControlName="estimatedValue" type="number" placeholder="0.00">
+          </div>
+          <div class="error-hint-msg" *ngIf="isControlInvalid('estimatedValue')">
+            <i class="fa fa-exclamation-circle"></i>
+            <span>{{ (form.get('estimatedValue')?.errors?.['serverError'] || 'ERRORS.NEGATIVE_NUMBER') | translate }}</span>
           </div>
         </div>
 
@@ -162,25 +186,37 @@
         
         <div class="inest-form-group">
           <label>{{ 'CREATE_ITEM_PAGE.PERSON_NAME' | translate }} *</label>
-          <div class="inest-input-wrapper">
+          <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('personName')">
             <i class="fa fa-user inest-field-icon-left"></i>
             <input formControlName="personName" [placeholder]="'CREATE_ITEM_PAGE.PH_NAME' | translate">
+          </div>
+          <div class="error-hint-msg" *ngIf="isControlInvalid('personName')">
+            <i class="fa fa-exclamation-circle"></i>
+            <span>{{ (form.get('personName')?.errors?.['serverError'] || 'ERRORS.REQUIRED_FIELD') | translate }}</span>
           </div>
         </div>
 
         <div class="inest-form-group">
           <label>{{ 'CREATE_ITEM_PAGE.YOUR_EMAIL' | translate }}</label>
-          <div class="inest-input-wrapper">
+          <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('contactEmail')">
             <i class="fa fa-envelope inest-field-icon-left"></i>
             <input formControlName="contactEmail" type="email" placeholder="email@example.com">
+          </div>
+          <div class="error-hint-msg" *ngIf="isControlInvalid('contactEmail')">
+            <i class="fa fa-exclamation-circle"></i>
+            <span>{{ (form.get('contactEmail')?.errors?.['serverError'] || 'ERRORS.INVALID_EMAIL_FORMAT') | translate }}</span>
           </div>
         </div>
 
         <div class="inest-form-group">
           <label>{{ 'CREATE_ITEM_PAGE.RETURN_DATE' | translate }} *</label>
-          <div class="inest-input-wrapper">
+          <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('expectedReturnDate')">
             <i class="fa fa-calendar-check inest-field-icon-left"></i>
             <input type="date" formControlName="expectedReturnDate">
+          </div>
+          <div class="error-hint-msg" *ngIf="isControlInvalid('expectedReturnDate')">
+            <i class="fa fa-exclamation-circle"></i>
+            <span>{{ (form.get('expectedReturnDate')?.errors?.['serverError'] || 'ERRORS.REQUIRED_FIELD') | translate }}</span>
           </div>
         </div>
 

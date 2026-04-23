@@ -29,7 +29,7 @@ namespace INest.Services.Decorator
             }
 
             string baseKey = CacheConstants.GET_ITEMS_KEY(userId);
-            string cacheKey = $"{baseKey}_Cat:{filters.CategoryId}_Stat:{filters.Status}_Sort:{filters.SortBy}_Min:{filters.MinPrice}_Max:{filters.MaxPrice}";
+            string cacheKey = $"{baseKey}_Cat:{filters.CategoryId}_Loc:{filters.StorageLocationId}_Stat:{filters.Status}_Sort:{filters.SortBy}_Min:{filters.MinPrice}_Max:{filters.MaxPrice}";
 
             return await _cache.GetOrCreateAsync(cacheKey, async entry =>
             {
@@ -84,6 +84,13 @@ namespace INest.Services.Decorator
         public async Task<bool> DeleteAsync(Guid userId, Guid itemId)
         {
             var result = await _inner.DeleteAsync(userId, itemId);
+            if (result) InvalidateCache(userId);
+            return result;
+        }
+
+        public async Task<bool> DeleteBatchAsync(Guid userId, List<Guid> itemIds)
+        {
+            var result = await _inner.DeleteBatchAsync(userId, itemIds);
             if (result) InvalidateCache(userId);
             return result;
         }

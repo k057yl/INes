@@ -18,23 +18,35 @@ export class ItemFilterBarComponent implements OnInit {
   private eRef = inject(ElementRef);
 
   @Output() filterChanged = new EventEmitter<any>();
+  @Output() bulkModeToggled = new EventEmitter<boolean>();
 
-  showPanel = false;
+  showFilters = false;
+  showSort = false;
+  isBulkMode = false;
   categories$ = this.categoryService.getAll();
 
   filterForm = this.fb.group({
     searchQuery: [''],
     categoryId: [null],
-    status: [null],
+    status: [null as number | null],
     sortBy: [0],
     minPrice: [null],
     maxPrice: [null]
   });
 
+  quickStatuses = [
+    { value: null, label: 'FILTERS.SHOW_ALL' },
+    { value: 0, label: 'STATUS.ACTIVE' },
+    { value: 1, label: 'STATUS.LENT' },
+    { value: 6, label: 'STATUS.LISTED' },
+    { value: 4, label: 'STATUS.SOLD' }
+  ];
+
   @HostListener('document:click', ['$event'])
   clickout(event: any) {
     if (!this.eRef.nativeElement.contains(event.target)) {
-      this.showPanel = false;
+      this.showFilters = false;
+      this.showSort = false;
     }
   }
 
@@ -47,18 +59,26 @@ export class ItemFilterBarComponent implements OnInit {
     });
   }
 
-  toggle() {
-    this.showPanel = !this.showPanel;
+  toggleFilters() { this.showFilters = !this.showFilters; this.showSort = false; }
+  toggleSort() { this.showSort = !this.showSort; this.showFilters = false; }
+  
+  toggleBulkMode() {
+    this.isBulkMode = !this.isBulkMode;
+    this.bulkModeToggled.emit(this.isBulkMode);
+  }
+
+  setStatus(status: number | null) {
+    this.filterForm.patchValue({ status });
+  }
+
+  setSort(sortBy: number) {
+    this.filterForm.patchValue({ sortBy });
+    this.showSort = false;
   }
 
   reset() {
     this.filterForm.reset({
-      searchQuery: '',
-      categoryId: null,
-      status: null,
-      sortBy: 0,
-      minPrice: null,
-      maxPrice: null
+      searchQuery: '', categoryId: null, status: null, sortBy: 0, minPrice: null, maxPrice: null
     });
   }
 }

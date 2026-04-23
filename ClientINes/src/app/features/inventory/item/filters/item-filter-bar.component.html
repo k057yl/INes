@@ -1,79 +1,70 @@
-<div class="filter-wrapper">
-  <button class="inest-filter-btn" [class.active]="showPanel" (click)="toggle()">
-    <i class="fa fa-sliders-h"></i>
-  </button>
-
-  <div class="filter-panel" *ngIf="showPanel">
-    <div class="panel-header"> <div class="header-left">
-        <i class="fa fa-filter"></i>
-        <span>{{ 'FILTERS.TITLE' | translate }}</span>
-      </div>
-      
-      <div class="header-actions">
-        <button type="button" class="text-reset-btn" 
-                (click)="reset()" 
-                [title]="'FILTERS.RESET' | translate">
-          <i class="fa fa-sync-alt"></i>
-          <span>{{ 'FILTERS.RESET_SHORT' | translate }}</span>
-        </button>
-
-        <button type="button" class="panel-close-btn" 
-                (click)="toggle()" 
-                [title]="'COMMON.CLOSE' | translate">
-          <i class="fa fa-times"></i>
-        </button>
-      </div>
+<div class="smart-filter-container">
+  <div class="top-action-bar">
+    <div class="search-box" [formGroup]="filterForm">
+      <i class="fa fa-search search-icon"></i>
+      <input type="text" formControlName="searchQuery" [placeholder]="'FILTERS.SEARCH_PHL' | translate">
+      <button class="clear-btn" *ngIf="filterForm.get('searchQuery')?.value" (click)="filterForm.patchValue({searchQuery: ''})">
+        <i class="fa fa-times"></i>
+      </button>
     </div>
 
-    <form [formGroup]="filterForm" class="filter-grid">
-      <div class="search-row">
-        <div class="input-icon-wrapper">
-          <input type="text" formControlName="searchQuery" [placeholder]="'FILTERS.SEARCH_PHL' | translate">
-          <i class="fa fa-search"></i>
+    <div class="action-buttons">
+      <button class="icon-btn bulk-btn" [class.active]="isBulkMode" (click)="toggleBulkMode()" title="Режим выделения">
+        <i class="fa fa-check-square"></i>
+      </button>
+
+      <div class="dropdown-wrapper">
+        <button class="icon-btn sort-btn" [class.active]="showSort" (click)="toggleSort()">
+          <i class="fa fa-sort-amount-down"></i>
+        </button>
+        <div class="dropdown-panel sort-panel" *ngIf="showSort">
+          <button (click)="setSort(0)" [class.active]="filterForm.get('sortBy')?.value === 0">{{ 'FILTERS.SORT.NEWEST' | translate }}</button>
+          <button (click)="setSort(2)" [class.active]="filterForm.get('sortBy')?.value === 2">{{ 'FILTERS.SORT.NAME_ASC' | translate }}</button>
+          <button (click)="setSort(4)" [class.active]="filterForm.get('sortBy')?.value === 4">{{ 'FILTERS.SORT.PRICE_ASC' | translate }}</button>
+          <button (click)="setSort(5)" [class.active]="filterForm.get('sortBy')?.value === 5">{{ 'FILTERS.SORT.PRICE_DESC' | translate }}</button>
         </div>
       </div>
 
-      <div class="main-filters">
-        <div class="field-group">
-          <label>{{ 'FILTERS.CATEGORY' | translate }}</label>
-          <select formControlName="categoryId">
-            <option [ngValue]="null">{{ 'FILTERS.CATEGORY_PHL' | translate }}</option>
-            <option *ngFor="let cat of categories$ | async" [value]="cat.id">{{ cat.name }}</option>
-          </select>
-        </div>
+      <div class="dropdown-wrapper">
+        <button class="icon-btn filter-btn" [class.active]="showFilters" (click)="toggleFilters()">
+          <i class="fa fa-sliders-h"></i>
+          <span class="badge" *ngIf="filterForm.get('categoryId')?.value || filterForm.get('minPrice')?.value"></span>
+        </button>
+        
+        <div class="dropdown-panel filters-panel" *ngIf="showFilters" [formGroup]="filterForm">
+          <div class="panel-header">
+            <span>{{ 'FILTERS.TITLE' | translate }}</span>
+            <button class="text-reset" (click)="reset()">{{ 'FILTERS.RESET_SHORT' | translate }}</button>
+          </div>
+          
+          <div class="inest-form-group">
+            <label>{{ 'FILTERS.CATEGORY' | translate }}</label>
+            <div class="inest-input-wrapper">
+              <select formControlName="categoryId">
+                <option [ngValue]="null">{{ 'FILTERS.CATEGORY_PHL' | translate }}</option>
+                <option *ngFor="let cat of categories$ | async" [value]="cat.id">{{ cat.name }}</option>
+              </select>
+            </div>
+          </div>
 
-        <div class="field-group">
-          <label>{{ 'FILTERS.STATUS' | translate }}</label>
-          <select formControlName="status">
-            <option [ngValue]="null">{{ 'FILTERS.SHOW_ALL' | translate }}</option>
-            <option [ngValue]="0">{{ 'STATUS.ACTIVE' | translate }}</option>
-            <option [ngValue]="6">{{ 'STATUS.LISTED' | translate }}</option>
-            <option [ngValue]="1">{{ 'STATUS.LENT' | translate }}</option>
-            <option [ngValue]="4">{{ 'STATUS.SOLD' | translate }}</option>
-          </select>
-        </div>
-
-        <div class="field-group">
-          <label>{{ 'FILTERS.SORT_BY' | translate }}</label>
-          <select formControlName="sortBy">
-            <option [ngValue]="0">{{ 'FILTERS.SORT.NEWEST' | translate }}</option>
-            <option [ngValue]="1">{{ 'FILTERS.SORT.OLDEST' | translate }}</option>
-            <option [ngValue]="2">{{ 'FILTERS.SORT.NAME_ASC' | translate }}</option>
-            <option [ngValue]="3">{{ 'FILTERS.SORT.NAME_DESC' | translate }}</option>
-            <option [ngValue]="4">{{ 'FILTERS.SORT.PRICE_ASC' | translate }}</option>
-            <option [ngValue]="5">{{ 'FILTERS.SORT.PRICE_DESC' | translate }}</option>
-          </select>
-        </div>
-
-        <div class="field-group">
-          <label>{{ 'FILTERS.PRICE' | translate }}</label>
-          <div class="price-range">
-            <input type="number" formControlName="minPrice" [placeholder]="'FILTERS.PRICE_FROM' | translate">
-            <span class="sep">-</span>
-            <input type="number" formControlName="maxPrice" [placeholder]="'FILTERS.PRICE_TO' | translate">
+          <div class="inest-form-group">
+            <label>{{ 'FILTERS.PRICE' | translate }}</label>
+            <div class="price-range">
+              <div class="inest-input-wrapper"><input type="number" formControlName="minPrice" placeholder="От"></div>
+              <div class="inest-input-wrapper"><input type="number" formControlName="maxPrice" placeholder="До"></div>
+            </div>
           </div>
         </div>
       </div>
-    </form>
+    </div>
+  </div>
+
+  <div class="status-chips-scroll">
+    <button *ngFor="let s of quickStatuses" 
+            class="chip" 
+            [class.active]="filterForm.get('status')?.value === s.value"
+            (click)="setStatus(s.value)">
+      {{ s.label | translate }}
+    </button>
   </div>
 </div>

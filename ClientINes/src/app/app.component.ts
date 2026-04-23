@@ -41,12 +41,12 @@ export class AppComponent implements OnInit {
     this.authService.checkAuth().subscribe({
       next: (user) => {
         if (user) {
-          console.log('Сессия восстановлена, добро пожаловать обратно, кожаный мешок:', user.email);
+          console.log('Сессия восстановлена, добро пожаловать обратно', user.email);
         } else {
-          console.log('Сессии нет, ты никто и звать тебя никак (гость)');
+          console.log('Сессии нет, ты гость');
         }
       },
-      error: () => console.log('Бэкенд послал нас нахер, куки протухли')
+      error: () => console.log('Бэкенд послал нас')
     });
   }
 

@@ -88,5 +88,13 @@ namespace INest.Controllers
             await _itemService.DeleteAsync(GetUserId(), id);
             return NoContent();
         }
+
+        [HttpDelete("batch")]
+        public async Task<IActionResult> DeleteBatch([FromBody] List<Guid> ids)
+        {
+            if (ids == null || !ids.Any()) return BadRequest();
+            await _itemService.DeleteBatchAsync(GetUserId(), ids);
+            return NoContent();
+        }
     }
 }

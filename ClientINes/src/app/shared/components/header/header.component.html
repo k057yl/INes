@@ -17,7 +17,7 @@
       </a>
 
       <ng-container *ngIf="user$ | async">
-        <a routerLink="/explorer" routerLinkActive="active" (click)="closeMenu()">
+        <a routerLink="/items-list" routerLinkActive="active" (click)="closeMenu()">
           <i class="fa fa-boxes"></i> {{ 'HEADER.ITEMS' | translate }}
         </a>
         <a routerLink="/sales" routerLinkActive="active" (click)="closeMenu()">

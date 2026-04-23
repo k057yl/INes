@@ -1,9 +1,11 @@
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes errorPop { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
 .inest-form-page {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
   background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
@@ -63,6 +65,19 @@
       transform: rotate(90deg);
     }
   }
+}
+
+// Блок ошибки (использует твою переменную --error-red)
+.error-hint-msg {
+  color: var(--error-red);
+  font-size: 0.7rem;
+  font-weight: 700;
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  animation: errorPop 0.2s ease-out;
+  i { font-size: 0.8rem; }
 }
 
 .photo-hero-section {

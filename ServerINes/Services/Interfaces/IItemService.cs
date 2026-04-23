@@ -16,5 +16,6 @@ namespace INest.Services.Interfaces
         Task<bool> ChangeStatusAsync(Guid userId, Guid itemId, ItemStatus newStatus);
         Task<IEnumerable<ItemHistory>> GetItemHistoryAsync(Guid userId, Guid itemId);
         Task<bool> CancelSaleAsync(Guid userId, Guid itemId);
+        Task<bool> DeleteBatchAsync(Guid userId, List<Guid> itemIds);
     }
 }

@@ -406,10 +406,8 @@
     "CREATE": "Создать платформу"
   },
 
-  "EXPLORER_PAGE": {
+  "ITEMS_LIST": {
     "TITLE": "Управление предметами",
-    "FILTER_TOOLTIP": "Фильтры",
-    "CREATE_TOOLTIP": "Создать предмет",
     "EMPTY_RESULT": "Ничего не найдено",
     "TABLE": {
       "PHOTO": "Фото",

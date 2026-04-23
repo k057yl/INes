@@ -218,6 +218,7 @@ namespace INest.Services
             }
 
             if (filters.CategoryId.HasValue) query = query.Where(i => i.CategoryId == filters.CategoryId);
+            if (filters.StorageLocationId.HasValue)query = query.Where(i => i.StorageLocationId == filters.StorageLocationId.Value);
             if (filters.Status.HasValue) query = query.Where(i => i.Status == filters.Status);
             if (filters.MinPrice.HasValue) query = query.Where(i => i.PurchasePrice >= filters.MinPrice);
             if (filters.MaxPrice.HasValue) query = query.Where(i => i.PurchasePrice <= filters.MaxPrice);
@@ -531,6 +532,55 @@ namespace INest.Services
                 if (item.Reminders != null && item.Reminders.Any()) _context.Reminders.RemoveRange(item.Reminders);
 
                 _context.Items.Remove(item);
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
+
+        public async Task<bool> DeleteBatchAsync(Guid userId, List<Guid> itemIds)
+        {
+            if (itemIds == null || !itemIds.Any()) return false;
+
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                var items = await _context.Items
+                    .Include(i => i.Photos)
+                    .Include(i => i.Sale)
+                    .Include(i => i.Reminders)
+                    .Where(i => i.UserId == userId && itemIds.Contains(i.Id))
+                    .ToListAsync();
+
+                if (!items.Any()) return true;
+
+                foreach (var item in items)
+                {
+                    foreach (var photo in item.Photos)
+                    {
+                        if (!string.IsNullOrEmpty(photo.PublicId))
+                            await _photoService.DeletePhotoAsync(photo.PublicId);
+                    }
+                }
+
+                var fetchedIds = items.Select(i => i.Id).ToList();
+
+                var history = await _context.ItemHistories.Where(h => fetchedIds.Contains(h.ItemId)).ToListAsync();
+                _context.ItemHistories.RemoveRange(history);
+
+                var sales = items.Where(i => i.Sale != null).Select(i => i.Sale!).ToList();
+                if (sales.Any()) _context.Sales.RemoveRange(sales);
+
+                var reminders = items.Where(i => i.Reminders != null).SelectMany(i => i.Reminders!).ToList();
+                if (reminders.Any()) _context.Reminders.RemoveRange(reminders);
+
+                _context.Items.RemoveRange(items);
+
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
                 return true;

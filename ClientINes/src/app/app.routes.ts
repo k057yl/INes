@@ -7,7 +7,7 @@ import { LocationDetailComponent } from './features/inventory/location/details/l
 import { SalesListComponent } from './features/sales/sales-list.component';
 import { SettingsComponent } from './features/setting/settings.component';
 import { ItemDetailComponent } from './features/inventory/item/details/item-detail.component';
-import { ItemsExplorerComponent } from './features/inventory/item/explorer/items-explorer.component';
+import { ItemsListComponent } from './features/inventory/item/items-list/items-list.component';
 import { authGuard, guestGuard } from './core/guards/auth.guard';
 import { locationResolver } from './features/inventory/location/location.resolver';
 
@@ -28,6 +28,6 @@ export const routes: Routes = [
   { path: 'sales', component: SalesListComponent, canActivate: [authGuard] },
   { path: 'settings', component: SettingsComponent, canActivate: [authGuard] },
   { path: 'item/:id', component: ItemDetailComponent, canActivate: [authGuard] },
-  { path: 'explorer', component: ItemsExplorerComponent, canActivate: [authGuard] },
+  { path: 'items-list', component: ItemsListComponent, canActivate: [authGuard] },
   { path: '**', redirectTo: 'dashboard' }
 ];

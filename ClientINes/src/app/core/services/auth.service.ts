@@ -14,7 +14,7 @@ export interface AppUser {
 export class AuthService {
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiBaseUrl}/auth`;
-  private userSubject = new BehaviorSubject<AppUser | null>(null);
+  private userSubject = new BehaviorSubject<AppUser | null | undefined>(undefined);
   user$ = this.userSubject.asObservable();
 
   // ================= АВТОРИЗАЦИЯ =================

@@ -18,6 +18,7 @@ import { ITEM_STATUS_OPTIONS } from '../../../../models/constants/item-status.co
 import { Item } from '../../../../models/entities/item.entity';
 
 import { take, filter } from 'rxjs/operators';
+import { FormErrorService } from '../../../../core/services/form-error.service';
 
 interface PhotoSlot {
   file?: File;
@@ -44,6 +45,7 @@ export class ItemFormModalComponent implements OnInit {
   private authService = inject(AuthService);
   private localizationService = inject(LocalizationService);
   private modalService = inject(DashboardModalService);
+  private formErrorService = inject(FormErrorService);
 
   locations: any[] = [];
   categories: any[] = [];
@@ -247,24 +249,83 @@ export class ItemFormModalComponent implements OnInit {
 
     request$.subscribe({
       next: (res: any) => this.modalService.confirm(res),
-      error: (err: any) => console.error('Ошибка сохранения:', err)
+      error: (err: any) => {
+        if (err.details) {
+          this.formErrorService.mapServerErrorsToForm(this.form, err.details);
+        }
+        console.error('Ошибка сохранения:', err);
+      }
     });
   }
 
-  onFileSelected(event: Event) {
+  private async compressImage(file: File, maxWidth: number, quality: number): Promise<{ file: File, preview: string }> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target?.result as string;
+        
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          if (!ctx) return reject('Canvas context is null');
+          
+          ctx.drawImage(img, 0, 0, width, height);
+          const preview = canvas.toDataURL('image/jpeg', quality);
+
+          canvas.toBlob((blob) => {
+            if (blob) {
+              const newFileName = file.name.replace(/\.[^/.]+$/, ".jpg");
+              const compressedFile = new File([blob], newFileName, {
+                type: 'image/jpeg',
+                lastModified: Date.now()
+              });
+              resolve({ file: compressedFile, preview });
+            } else {
+              reject('Blob creation failed');
+            }
+          }, 'image/jpeg', quality);
+        };
+      };
+    });
+  }
+
+  async onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     if (!input.files?.length) return;
-    Array.from(input.files).slice(0, this.MAX_PHOTOS - this.selectedPhotos.length).forEach(file => {
-      const reader = new FileReader();
-      reader.onload = (e: any) => this.selectedPhotos.push({ file, preview: e.target.result, isMain: this.selectedPhotos.length === 0 });
-      reader.readAsDataURL(file);
-    });
+
+    const filesToProcess = Array.from(input.files).slice(0, this.MAX_PHOTOS - this.selectedPhotos.length);
+
+    for (const file of filesToProcess) {
+      try {
+        const compressed = await this.compressImage(file, 1024, 0.75);
+        this.selectedPhotos.push({ 
+          file: compressed.file, 
+          preview: compressed.preview, 
+          isMain: this.selectedPhotos.length === 0 
+        });
+      } catch (err) {
+        console.error('Ошибка при обработке фото:', err);
+      }
+    }
     input.value = '';
   }
 
   isControlInvalid(name: string): boolean {
     const c = this.form.get(name);
-    return !!(c && c.touched && c.invalid);
+    return !!(c && (c.touched || c.errors?.['serverError']) && c.invalid);
   }
 
   returnItem() {

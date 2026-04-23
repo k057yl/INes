@@ -1,0 +1,150 @@
+.items-list-page {
+  padding: 5px 0 20px 0; // Подняли Управление предметами выше
+  
+  .items-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 15px;
+
+    .header-left { 
+      display: flex; align-items: center; gap: 12px;
+      h1 { font-size: 1.8rem; font-weight: 800; color: var(--text-main); margin: 0; line-height: 1; }
+    }
+
+    .badge { 
+      background: rgba(var(--accent-rgb), 0.1); color: var(--accent-color); 
+      border: 1px solid rgba(var(--accent-rgb), 0.3); padding: 4px 10px; 
+      border-radius: 20px; font-size: 0.8rem; font-weight: 800; display: flex; align-items: center; gap: 6px;
+    }
+
+    .header-right { 
+      display: flex; align-items: center; gap: 15px;
+
+      // Новая кнопка массового удаления
+      .bulk-delete-btn {
+        background: rgba(var(--error-red-rgb, 255, 77, 77), 0.15);
+        color: var(--error-red);
+        border: 1px solid var(--error-red);
+        padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 0.85rem;
+        cursor: pointer; display: flex; align-items: center; gap: 8px;
+        transition: 0.2s;
+        animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        &:hover { background: var(--error-red); color: #fff; }
+      }
+
+      .controls-toolbar {
+        display: flex; align-items: center; gap: 10px;
+
+        .search-box {
+          position: relative; display: flex; align-items: center;
+          background: var(--bg-card); border: 1px solid var(--border-color);
+          border-radius: 12px; padding: 0 15px; height: 42px; width: 280px; transition: 0.2s;
+          &:focus-within { border-color: var(--accent-color); }
+          .search-icon { color: var(--text-muted); margin-right: 10px; }
+          input { flex: 1; background: transparent; border: none; color: var(--text-main); outline: none; font-size: 0.9rem; }
+          .clear-btn { background: transparent; border: none; color: var(--text-muted); cursor: pointer; &:hover { color: var(--error-red); } }
+        }
+
+        .th-dropdown-wrapper { position: relative; }
+        .icon-btn {
+          width: 42px; height: 42px; border-radius: 12px; background: var(--bg-card);
+          border: 1px solid var(--border-color); color: var(--text-main); cursor: pointer;
+          display: flex; align-items: center; justify-content: center; transition: 0.2s;
+          &:hover, &.active { border-color: var(--accent-color); color: var(--accent-color); }
+        }
+      }
+    }
+  }
+}
+
+// --- Кастомные желтые чекбоксы ---
+.col-check { width: 40px; text-align: center; }
+.custom-checkbox {
+  display: inline-block; position: relative; width: 20px; height: 20px; cursor: pointer; user-select: none;
+  input { position: absolute; opacity: 0; cursor: pointer; height: 0; width: 0; }
+  .checkmark {
+    position: absolute; top: 0; left: 0; height: 20px; width: 20px;
+    background-color: transparent; border: 2px solid var(--border-color); border-radius: 6px; transition: 0.2s;
+    &:after { content: ""; position: absolute; display: none; left: 6px; top: 2px; width: 5px; height: 10px; border: solid #000; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+  }
+  input:checked ~ .checkmark { background-color: #ffd700; border-color: #ffd700; &:after { display: block; } } // Желтый цвет
+  &:hover input ~ .checkmark { border-color: #ffd700; }
+}
+
+// --- Таблица ---
+.inest-table {
+  width: 100%; border-collapse: separate; border-spacing: 0 8px;
+  
+  thead {
+    tr { background: rgba(255,255,255,0.03); }
+    th { 
+      padding: 16px; color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase; 
+      letter-spacing: 1px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); position: relative;
+
+      &:first-child { border-radius: 12px 0 0 12px; }
+      &:last-child { border-radius: 0 12px 12px 0; text-align: right; }
+
+      // Фильтруемые заголовки (с дропдауном)
+      &.filterable {
+        cursor: pointer; transition: 0.2s; user-select: none;
+        i { margin-left: 5px; opacity: 0.5; transition: 0.2s; }
+        &:hover { color: var(--text-main); i { opacity: 1; color: var(--accent-color); } }
+      }
+    }
+  }
+
+  tbody tr {
+    background: var(--bg-card); transition: transform 0.2s ease, background 0.2s ease;
+    &.selected-row { background: rgba(255, 215, 0, 0.05); border-left: 2px solid #ffd700; } // Подсветка выбранной строки
+    
+    td { padding: 12px 16px; color: var(--text-main); vertical-align: middle; 
+      &:first-child { border-radius: 12px 0 0 12px; }
+      &:last-child { border-radius: 0 12px 12px 0; }
+    }
+    &:hover { transform: translateX(4px); box-shadow: -4px 0 0 var(--accent-color); }
+  }
+
+  .mini-thumb { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; border: 1px solid rgba(255,255,255,0.05); }
+  .cat-tag { background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; color: var(--text-muted); }
+}
+
+// --- Выпадающие панели фильтров (из заголовков) ---
+.th-dropdown-panel {
+  position: absolute; top: calc(100% + 5px); left: 0; min-width: 200px;
+  background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px;
+  padding: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); z-index: 100;
+  animation: dropIn 0.2s ease; text-transform: none; font-size: 0.85rem; letter-spacing: normal;
+  
+  &.right-aligned { left: auto; right: 0; }
+
+  .filter-item {
+    padding: 10px 12px; color: var(--text-main); cursor: pointer; border-radius: 8px; transition: 0.2s;
+    &:hover { background: rgba(255,255,255,0.05); }
+    &.active { color: #000; background: var(--accent-color); font-weight: bold; }
+  }
+}
+
+.actions-group {
+  display: flex; gap: 8px; justify-content: flex-end;
+  .icon-btn {
+    width: 34px; height: 34px; border-radius: 8px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+    color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;
+    &:hover { background: var(--accent-color); color: #000; border-color: var(--accent-color); }
+  }
+}
+
+.status-wrapper { display: flex; align-items: center; gap: 8px; .status-text { font-size: 0.85rem; font-weight: 500; } }
+.status-dot { width: 7px; height: 7px; border-radius: 50%; &[data-status="0"] { background: var(--g-green); box-shadow: 0 0 10px rgba(var(--g-green-rgb), 0.5); } &[data-status="4"] { background: var(--error-red); } }
+
+@keyframes popIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+@keyframes dropIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+// Для мобилок (скрываем лишнее)
+@media (max-width: 768px) {
+  .items-list-header { flex-direction: column; align-items: stretch !important; gap: 10px; }
+  .header-right { flex-direction: column; align-items: stretch; }
+  .controls-toolbar .search-box { width: 100% !important; }
+  .inest-table .col-cat, .inest-table .col-loc, .inest-table .col-price, .inest-table .col-status { display: none !important; }
+}
