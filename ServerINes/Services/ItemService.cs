@@ -15,8 +15,9 @@ namespace INest.Services
     {
         private readonly AppDbContext _context;
         private readonly IPhotoService _photoService;
-        private readonly IEmailService _emailService;
+        private readonly ILendingService _lendingService;
         private readonly IHtmlSanitizer _sanitizer;
+        private readonly ILogger<ItemService> _logger;
 
         private readonly IValidator<CreateItemDto> _createValidator;
         private readonly IValidator<UpdateItemFullDto> _updateFullValidator;
@@ -25,19 +26,21 @@ namespace INest.Services
         public ItemService(
             AppDbContext context,
             IPhotoService photoService,
-            IEmailService emailService,
+            ILendingService lendingService,
             IHtmlSanitizer sanitizer,
+            ILogger<ItemService> logger,
             IValidator<CreateItemDto> createValidator,
             IValidator<UpdateItemFullDto> updateFullValidator,
             IValidator<UpdateItemPartialDto> updatePartialValidator)
         {
             _context = context;
             _photoService = photoService;
-            _emailService = emailService;
+            _lendingService = lendingService;
             _sanitizer = sanitizer;
             _createValidator = createValidator;
             _updateFullValidator = updateFullValidator;
             _updatePartialValidator = updatePartialValidator;
+            _logger = logger;
         }
 
         private void AddHistoryEntry(Guid itemId, ItemHistoryType type, string? oldValue = null, string? newValue = null, string? comment = null)
@@ -87,58 +90,10 @@ namespace INest.Services
                 };
 
                 _context.Items.Add(item);
-
                 AddHistoryEntry(item.Id, ItemHistoryType.Created, null, item.Name);
 
-                if (dto.Status == ItemStatus.Lent || dto.Status == ItemStatus.Borrowed)
-                {
-                    item.Lending = new Lending
-                    {
-                        Id = Guid.NewGuid(),
-                        ItemId = item.Id,
-                        PersonName = safePerson,
-                        ContactEmail = dto.ContactEmail,
-                        ExpectedReturnDate = dto.ExpectedReturnDate,
-                        DateGiven = DateTime.UtcNow,
-                        Direction = dto.Status == ItemStatus.Borrowed ? LendingDirection.In : LendingDirection.Out,
-                        SendNotification = dto.SendNotification,
-                        ValueAtLending = item.EstimatedValue
-                    };
-
-                    AddHistoryEntry(item.Id,
-                        dto.Status == ItemStatus.Lent ? ItemHistoryType.Lent : ItemHistoryType.Borrowed,
-                        null,
-                        item.Lending.PersonName);
-
-                    if (dto.SendNotification && dto.ExpectedReturnDate.HasValue)
-                    {
-                        var reminderDate = dto.ExpectedReturnDate.Value.AddDays(-1);
-                        if (reminderDate > DateTime.UtcNow)
-                        {
-                            var reminder = new Reminder
-                            {
-                                Id = Guid.NewGuid(),
-                                ItemId = item.Id,
-                                TriggerAt = reminderDate,
-                                Type = ReminderType.ReturnItem,
-                                IsCompleted = false
-                            };
-                            _context.Reminders.Add(reminder);
-
-                            AddHistoryEntry(item.Id, ItemHistoryType.ReminderScheduled, null, reminderDate.ToString("dd.MM.yyyy"));
-                        }
-                    }
-
-                    if (dto.SendNotification && !string.IsNullOrEmpty(dto.ContactEmail))
-                    {
-                        _ = _emailService.SendLendingNotificationAsync(
-                            dto.ContactEmail,
-                            item.Name,
-                            item.Lending.PersonName,
-                            item.Lending.ExpectedReturnDate,
-                            dto.Status == ItemStatus.Borrowed);
-                    }
-                }
+                await _lendingService.SyncLendingStateAsync(
+                    item, dto.Status, safePerson, dto.ContactEmail, dto.ExpectedReturnDate, dto.SendNotification);
 
                 if (photos != null && photos.Count > 0)
                 {
@@ -150,9 +105,10 @@ namespace INest.Services
 
                 return item;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 await transaction.RollbackAsync();
+                _logger.LogError(ex, "Критическая ошибка при создании предмета");
                 throw;
             }
         }
@@ -193,9 +149,10 @@ namespace INest.Services
                 }
 
                 item.Photos.Add(itemPhoto);
+
                 if (_context.Entry(item).State != EntityState.Detached)
                 {
-                    await _context.ItemPhotos.AddAsync(itemPhoto);
+                    _context.ItemPhotos.Add(itemPhoto);
                 }
             }
         }
@@ -271,11 +228,9 @@ namespace INest.Services
             {
                 var item = await _context.Items
                     .Include(i => i.Photos)
-                    .Include(i => i.Lending)
                     .FirstOrDefaultAsync(i => i.Id == itemId && i.UserId == userId);
 
-                if (item == null)
-                    throw new KeyNotFoundException(ITEMS.ERRORS.NOT_FOUND);
+                if (item == null) throw new KeyNotFoundException(ITEMS.ERRORS.NOT_FOUND);
 
                 item.Name = safeName;
                 item.Description = safeDesc;
@@ -287,33 +242,15 @@ namespace INest.Services
                 item.EstimatedValue = dto.EstimatedValue;
                 item.Currency = dto.Currency ?? item.Currency;
 
-                if (item.Status == ItemStatus.Lent || item.Status == ItemStatus.Borrowed)
-                {
-                    if (item.Lending == null)
-                    {
-                        item.Lending = new Lending { Id = Guid.NewGuid(), ItemId = item.Id };
-                    }
-
-                    item.Lending.PersonName = safePerson;
-                    item.Lending.ContactEmail = dto.ContactEmail;
-                    item.Lending.ExpectedReturnDate = dto.ExpectedReturnDate;
-                    item.Lending.Direction = item.Status == ItemStatus.Borrowed ? LendingDirection.In : LendingDirection.Out;
-                    item.Lending.SendNotification = dto.SendNotification;
-                }
-                else if (item.Lending != null)
-                {
-                    _context.Lendings.Remove(item.Lending);
-                }
-
                 await HandlePhotos(item, photos);
-
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 await transaction.RollbackAsync();
+                _logger.LogError(ex, "Ошибка при обновлении предмета {ItemId}", itemId);
                 throw;
             }
         }

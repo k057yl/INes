@@ -22,37 +22,52 @@ namespace INest.Services.BackgroundServices
             {
                 try
                 {
-                    using (var scope = _services.CreateScope())
+                    var now = DateTime.UtcNow;
+
+                    if (now.Hour == 9)
                     {
-                        var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-                        var emailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
+                        _logger.LogInformation("Наступило время рассылки (9:00 UTC). Проверяем напоминания...");
 
-                        var now = DateTime.UtcNow;
-                        var targetDate = now.AddDays(1).Date;
-
-                        if (now.Hour >= 9)
+                        using (var scope = _services.CreateScope())
                         {
+                            var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                            var emailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
+
+                            var targetDate = now.AddDays(1).Date;
+
                             var pendingReminders = await context.Reminders
                                 .Include(r => r.Item)
                                 .ThenInclude(i => i.User)
                                 .Where(r => !r.IsCompleted && !r.IsNotificationSent)
-                                .Where(r => r.TriggerAt.Date == targetDate)
+                                .Where(r => r.TriggerAt.Date <= targetDate)
                                 .ToListAsync(stoppingToken);
-
-                            foreach (var reminder in pendingReminders)
-                            {
-                                await emailService.SendReminderNotificationAsync(
-                                    reminder.Item.User.Email,
-                                    reminder.Title,
-                                    reminder.TriggerAt);
-
-                                reminder.IsNotificationSent = true;
-                                _logger.LogInformation("Уведомление отправлено для: {Title}", reminder.Title);
-                            }
 
                             if (pendingReminders.Any())
                             {
+                                foreach (var reminder in pendingReminders)
+                                {
+                                    var toEmail = reminder.Item?.User?.Email;
+
+                                    if (string.IsNullOrEmpty(toEmail))
+                                    {
+                                        _logger.LogWarning("Пропуск: Email владельца не найден для напоминания {Id}", reminder.Id);
+                                        continue;
+                                    }
+
+                                    await emailService.SendReminderNotificationAsync(
+                                        toEmail,
+                                        reminder.Title,
+                                        reminder.TriggerAt);
+
+                                    reminder.IsNotificationSent = true;
+                                    _logger.LogInformation("Уведомление отправлено на {Email}: {Title}", toEmail, reminder.Title);
+                                }
+
                                 await context.SaveChangesAsync(stoppingToken);
+                            }
+                            else
+                            {
+                                _logger.LogInformation("На сегодня новых напоминаний нет.");
                             }
                         }
                     }

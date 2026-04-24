@@ -1,5 +1,6 @@
 ﻿using INest.Models.DTOs.Lending;
 using INest.Models.Entities;
+using INest.Models.Enums;
 using INest.Services.Interfaces;
 using INest.Services.Tracker;
 
@@ -28,6 +29,11 @@ namespace INest.Services.Decorator
             var result = await _inner.ReturnItemAsync(userId, itemId, dto);
             if (result) _tracker.InvalidateUserCache(userId);
             return result;
+        }
+
+        public Task SyncLendingStateAsync(Item item, ItemStatus newStatus, string personName, string? contactEmail, DateTime? expectedReturnDate, bool sendNotification)
+        {
+            return _inner.SyncLendingStateAsync(item, newStatus, personName, contactEmail, expectedReturnDate, sendNotification);
         }
     }
 }

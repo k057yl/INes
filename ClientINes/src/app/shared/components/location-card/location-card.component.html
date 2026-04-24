@@ -24,25 +24,27 @@
         </div>
 
         <div class="button-group">
-          <button class="tool-btn add-item" (click)="modalService.openItemForm(null, location.id); $event.stopPropagation()" [title]="'LOCATION_CARD.BTN.ITEM' | translate">
+          <button class="tool-btn add-item" 
+                  (click)="onAddItem($event)" 
+                  [title]="'LOCATION_CARD.BTN.ITEM' | translate">
             <i class="fa fa-plus"></i>
           </button>
           
           <button class="tool-btn add-loc" 
                   [disabled]="facade.getLocationLevel(location.id) >= 3"
-                  (click)="modalService.openLocationForm(null, location.id); $event.stopPropagation()" 
+                  (click)="onAddLocation($event)" 
                   [title]="'LOCATION_CARD.BTN.LOCATION' | translate">
             <i class="fa fa-folder-plus"></i>
           </button>
 
-          <button class="tool-btn move-select" (click)="location.showMenu = !location.showMenu; $event.stopPropagation()">
+          <button class="tool-btn move-select" (click)="location.showMenu = !location.showMenu; $event.stopPropagation()" [title]="'LOCATION_CARD.BTN.CHANGE_LOC_TOOLTIP' | translate">
             <i class="fa fa-exchange-alt"></i>
           </button>
 
-          <button class="tool-btn" (click)="moveUp.emit(location); $event.stopPropagation()" [title]="'Вверх'" [disabled]="isFirst">
+          <button class="tool-btn" (click)="moveUp.emit(location); $event.stopPropagation()" [title]="'LOCATION_CARD.BTN.UP_TOOLTIP' | translate" [disabled]="isFirst">
             <i class="fa fa-arrow-up"></i>
           </button>
-          <button class="tool-btn" (click)="moveDown.emit(location); $event.stopPropagation()" [title]="'Вниз'" [disabled]="isLast">
+          <button class="tool-btn" (click)="moveDown.emit(location); $event.stopPropagation()" [title]="'LOCATION_CARD.BTN.DOWN_TOOLTIP' | translate" [disabled]="isLast">
             <i class="fa fa-arrow-down"></i>
           </button>
         </div>

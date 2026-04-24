@@ -160,6 +160,24 @@ export class LocationCardComponent {
     select.value = "";
   }
 
+  onAddLocation(event: Event) {
+    event.stopPropagation();
+    this.modalService.openLocationForm(null, this.location.id).subscribe(result => {
+      if (result) {
+        this.facade.loadData().subscribe(); 
+      }
+    });
+  }
+
+  onAddItem(event: Event) {
+    event.stopPropagation();
+    this.modalService.openItemForm(null, this.location.id).subscribe(result => {
+      if (result) {
+        this.facade.loadData().subscribe();
+      }
+    });
+  }
+
   trackById(index: number, item: any): string {
     return item.id;
   }

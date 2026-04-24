@@ -156,6 +156,10 @@ export class ItemFormModalComponent implements OnInit {
       });
     }
 
+    if (this.isEdit) {
+      this.form.get('status')?.disable({ emitEvent: false });
+    }
+
     if (item.status !== 0) {
       this.form.disable();
       this.form.get('addPhoto')?.enable();

@@ -13,6 +13,12 @@ import { provideTranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 import { CurrencyPipe } from '@angular/common';
 
+import { LOCALE_ID, APP_INITIALIZER } from '@angular/core';
+import { registerLocaleData } from '@angular/common';
+import localeRu from '@angular/common/locales/ru';
+
+registerLocaleData(localeRu, 'ru');
+
 export function initializeApp(authService: AuthService) {
   return () => authService.checkAuth();
 }
@@ -26,6 +32,8 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(
       withInterceptors([cultureInterceptor, jwtInterceptor, globalErrorInterceptor])
     ),
+
+    { provide: LOCALE_ID, useValue: 'ru' },
 
     provideAppInitializer(() => {
       const authService = inject(AuthService);

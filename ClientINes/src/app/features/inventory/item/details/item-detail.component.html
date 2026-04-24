@@ -124,11 +124,11 @@
           </div>
           <div class="lending-dates">
             <div class="date-row">
-              <label>{{ 'LENDING.DATE_GIVEN' | translate }}</label>
+              <label>{{ 'LENDING_MODAL.DATE_GIVEN' | translate }}</label>
               <span>{{ item.lending.dateGiven | date:'dd.MM.yyyy' }}</span>
             </div>
             <div class="date-row" *ngIf="item.lending.expectedReturnDate">
-              <label>{{ 'LENDING.EXPECTED_RETURN' | translate }}</label>
+              <label>{{ 'LENDING_MODAL.EXPECTED_RETURN' | translate }}</label>
               <span class="return-deadline">{{ item.lending.expectedReturnDate | date:'dd.MM.yyyy' }}</span>
             </div>
           </div>

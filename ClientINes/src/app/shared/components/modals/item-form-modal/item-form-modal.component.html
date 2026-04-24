@@ -120,10 +120,12 @@
 
       <div class="inest-form-group">
         <label>{{ 'CREATE_ITEM_PAGE.STATUS' | translate }}</label>
-        <div class="inest-input-wrapper">
+        <div class="inest-input-wrapper" [class.is-readonly]="isEdit">
           <i class="fa fa-info-circle inest-field-icon-left"></i>
           <select formControlName="status">
-            <option *ngFor="let opt of statusOptions" [value]="opt.value">{{ opt.label | translate }}</option>
+            <option *ngFor="let opt of statusOptions" [value]="opt.value">
+              {{ opt.label | translate }}
+            </option>
           </select>
         </div>
       </div>

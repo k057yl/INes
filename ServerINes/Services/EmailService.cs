@@ -53,8 +53,7 @@ namespace INest.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to send email to {Email}", toEmail);
-
-                throw new AppException(LocalizationConstants.SYSTEM.EMAIL_SEND_FAILED, 500);
+                return false;
             }
         }
 
