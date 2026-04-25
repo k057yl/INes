@@ -29,10 +29,16 @@ namespace INest.Controllers
 
         [HttpPost("lend")]
         public async Task<IActionResult> Lend([FromBody] LendItemDto dto)
-            => Ok(await _lendingService.LendItemAsync(GetUserId(), dto));
+        {
+            var result = await _lendingService.LendItemAsync(GetUserId(), dto);
+            return Ok(new { data = result, message = LENDING.SUCCESS.LEND });
+        }
 
         [HttpPost("{itemId}/return")]
         public async Task<IActionResult> Return(Guid itemId, [FromBody] ReturnItemDto dto)
-            => Ok(await _lendingService.ReturnItemAsync(GetUserId(), itemId, dto));
+        {
+            var result = await _lendingService.ReturnItemAsync(GetUserId(), itemId, dto);
+            return Ok(new { data = result, message = LENDING.SUCCESS.RETURN });
+        }
     }
 }

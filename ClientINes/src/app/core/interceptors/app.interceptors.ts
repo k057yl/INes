@@ -2,6 +2,7 @@ import { HttpInterceptorFn, HttpErrorResponse, HttpRequest, HttpHandlerFn } from
 import { inject, Injector } from '@angular/core';
 import { BehaviorSubject, catchError, filter, switchMap, take, throwError, Observable } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
+import { ToastrService } from 'ngx-toastr';
 import { AuthService } from '../services/auth.service';
 
 let isRefreshing = false;
@@ -64,6 +65,7 @@ export const cultureInterceptor: HttpInterceptorFn = (req, next) => {
 
 export const globalErrorInterceptor: HttpInterceptorFn = (req, next) => {
   const injector = inject(Injector);
+  const toastr = inject(ToastrService);
 
   if (req.url.includes('.json') || req.url.includes('/assets/i18n/')) {
     return next(req);
@@ -78,8 +80,16 @@ export const globalErrorInterceptor: HttpInterceptorFn = (req, next) => {
       const translate = injector.get(TranslateService);
       const errorKey = error.error?.error || 'SYSTEM.DEFAULT_ERROR';
       const translatedMessage = translate.instant(errorKey);
+      const translatedTitle = translate.instant('SYSTEM.DEFAULT_ERROR');
+
+      toastr.error(translatedMessage, translatedTitle, {
+        enableHtml: true,
+        closeButton: true,
+        timeOut: 5000
+      });
 
       console.error(`[API Error] ${errorKey}: ${translatedMessage}`);
+      
       return throwError(() => error);
     })
   );

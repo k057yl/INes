@@ -40,21 +40,21 @@ namespace INest.Controllers
         public async Task<IActionResult> Create([FromBody] CreateReminderDto dto)
         {
             var reminder = await _reminderService.AddReminderAsync(GetUserId(), dto);
-            return CreatedAtAction(nameof(GetByItem), new { itemId = reminder.ItemId }, reminder);
+            return Ok(new { data = reminder, message = REMINDERS.SUCCESS.CREATE });
         }
 
         [HttpPatch("{id}/complete")]
         public async Task<IActionResult> Complete(Guid id)
         {
             await _reminderService.CompleteReminderAsync(GetUserId(), id);
-            return Ok();
+            return Ok(new { message = REMINDERS.SUCCESS.COMPLETE });
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             await _reminderService.DeleteReminderAsync(GetUserId(), id);
-            return NoContent();
+            return Ok(new { message = REMINDERS.SUCCESS.DELETE });
         }
     }
 }

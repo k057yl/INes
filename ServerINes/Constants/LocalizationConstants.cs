@@ -64,6 +64,7 @@
                 public const string OTP_SENT = "AUTH.SUCCESS.OTP_SENT";
                 public const string RESET_EMAIL_SENT = "AUTH.SUCCESS.RESET_EMAIL_SENT";
                 public const string PASSWORD_CHANGED = "AUTH.SUCCESS.PASSWORD_CHANGED";
+                public const string LOGIN = "AUTH.SUCCESS.LOGIN";
             }
         }
 
@@ -74,6 +75,13 @@
                 public const string NOT_FOUND = "CATEGORIES.ERRORS.NOT_FOUND";
                 public const string CANNOT_DELETE_DEFAULT = "CATEGORIES.ERRORS.CANNOT_DELETE_DEFAULT";
                 public const string INVALID_NAME = "CATEGORIES.ERRORS.INVALID_NAME";
+            }
+
+            public static class SUCCESS
+            {
+                public const string CREATE = "CATEGORIES.SUCCESS.CREATE";
+                public const string UPDATE = "CATEGORIES.SUCCESS.UPDATE";
+                public const string DELETE = "CATEGORIES.SUCCESS.DELETE";
             }
         }
 
@@ -88,6 +96,8 @@
             public static class SUCCESS
             {
                 public const string DELETE = "ITEMS.SUCCESS.DELETE";
+                public const string CREATE = "ITEMS.SUCCESS.CREATE";
+                public const string UPDATE = "ITEMS.SUCCESS.UPDATE";
             }
         }
 
@@ -100,6 +110,15 @@
                 public const string CIRCULAR_DEPENDENCY = "LOCATIONS.ERRORS.CIRCULAR_DEPENDENCY";
                 public const string INVALID_NAME = "LOCATIONS.ERRORS.INVALID_NAME";
             }
+
+            public static class SUCCESS
+            {
+                public const string CREATE = "LOCATIONS.SUCCESS.CREATE";
+                public const string MOVE = "LOCATIONS.SUCCESS.MOVE";
+                public const string REORDER = "LOCATIONS.SUCCESS.REORDER";
+                public const string RENAME = "LOCATIONS.SUCCESS.RENAME";
+                public const string DELETE = "LOCATIONS.SUCCESS.DELETE";
+            }
         }
 
         public static class PLATFORMS
@@ -108,6 +127,13 @@
             {
                 public const string NOT_FOUND = "PLATFORMS.ERRORS.NOT_FOUND";
                 public const string INVALID_NAME = "PLATFORMS.ERRORS.INVALID_NAME";
+            }
+
+            public static class SUCCESS
+            {
+                public const string CREATE = "PLATFORMS.SUCCESS.CREATE";
+                public const string UPDATE = "PLATFORMS.SUCCESS.UPDATE";
+                public const string DELETE = "PLATFORMS.SUCCESS.DELETE";
             }
         }
 
@@ -118,6 +144,13 @@
                 public const string ITEM_NOT_FOUND = "SALES.ERRORS.ITEM_NOT_FOUND";
                 public const string ALREADY_SOLD = "SALES.ERRORS.ALREADY_SOLD";
                 public const string NOT_FOUND = "SALES.ERRORS.NOT_FOUND";
+            }
+
+            public static class SUCCESS
+            {
+                public const string SELL = "SALES.SUCCESS.SELL";
+                public const string CANCEL = "SALES.SUCCESS.CANCEL";
+                public const string DELETE = "SALES.SUCCESS.DELETE";
             }
         }
 
@@ -143,6 +176,8 @@
             public const string RETURNED = "HISTORY.RETURNED";
             public const string VALUE_UPDATED = "HISTORY.VALUE_UPDATED";
             public const string PHOTOS_ADDED_COUNT = "HISTORY.PHOTOS_ADDED_COUNT";
+            public const string SALES_CANCELED = "HISTORY.SALES_CANCELED";
+            public const string SOLD_FOR = "HISTORY.SOLD_FOR";
 
             public static class REMINDER
             {
@@ -161,6 +196,13 @@
             public const string MEDICAL = "REMINDERS.MEDICAL";
             public const string TAX = "REMINDERS.TAX";
             public const string SUBSCRIPTION = "REMINDERS.SUBSCRIPTION";
+
+            public static class SUCCESS
+            {
+                public const string CREATE = "REMINDERS.SUCCESS.CREATE";
+                public const string COMPLETE = "REMINDERS.SUCCESS.COMPLETE";
+                public const string DELETE = "REMINDERS.SUCCESS.DELETE";
+            }
         }
 
         public static class LENDING
@@ -170,6 +212,12 @@
                 public const string NOT_FOUND = "LENDING.ERRORS.NOT_FOUND";
                 public const string ALREADY_LENT = "LENDING.ERRORS.ALREADY_LENT";
                 public const string NOT_LENT = "LENDING.ERRORS.NOT_LENT";
+            }
+
+            public static class SUCCESS
+            {
+                public const string LEND = "LENDING.SUCCESS.LEND";
+                public const string RETURN = "LENDING.SUCCESS.RETURN";
             }
         }
     }

@@ -1,6 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { ToastrService } from 'ngx-toastr';
 import { SalesService } from '../../shared/services/sales.service';
 import { SaleResponseDto } from '../../models/dtos/sale.dto';
 import { SaleCardComponent } from '../../shared/components/sale-card/sale-card.component';
@@ -23,6 +24,8 @@ export type SalesAction = 'undo' | 'delete' | null;
 })
 export class SalesListComponent implements OnInit {
   private salesService = inject(SalesService);
+  private toastr = inject(ToastrService);
+  private translate = inject(TranslateService);
 
   sales: SaleResponseDto[] = [];
   isLoading = true;
@@ -49,7 +52,7 @@ export class SalesListComponent implements OnInit {
       .pipe(finalize(() => this.isLoading = false))
       .subscribe({
         next: (data: SaleResponseDto[]) => this.sales = data,
-        error: (err) => console.error('Error fetching sales', err)
+        error: (err) => this.toastr.error(this.translate.instant('SYSTEM.DEFAULT_ERROR'))
       });
   }
 
@@ -81,10 +84,11 @@ export class SalesListComponent implements OnInit {
       .pipe(finalize(() => this.isLoading = false))
       .subscribe({
         next: () => {
+          this.toastr.success(this.translate.instant('SALES.SUCCESS.CANCEL'));
           this.sales = this.sales.filter(s => s.saleId !== sale.saleId);
         },
         error: (err) => {
-          console.error('Undo failed', err);
+          this.toastr.error(this.translate.instant('SYSTEM.DEFAULT_ERROR'));
           if (err.status === 404) {
             this.sales = this.sales.filter(s => s.saleId !== sale.saleId);
           }
@@ -98,6 +102,7 @@ export class SalesListComponent implements OnInit {
       .pipe(finalize(() => this.isLoading = false))
       .subscribe({
         next: () => {
+          this.toastr.success(this.translate.instant('SALES.SUCCESS.DELETE'));
           if (keepHistory) {
             this.sales = this.sales.map(s => 
               s.saleId === sale.saleId 
@@ -109,7 +114,7 @@ export class SalesListComponent implements OnInit {
           }
         },
         error: (err) => {
-          console.error('Delete failed', err);
+          this.toastr.error(this.translate.instant('SYSTEM.DEFAULT_ERROR'));
           if (err.status === 404) {
             this.sales = this.sales.filter(s => s.saleId !== sale.saleId);
           }

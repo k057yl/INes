@@ -10,6 +10,7 @@ import { StatusNamePipe } from '../../../../shared/pipe/status-name.pipe';
 import { ItemRemindersComponent } from '../reminder/item-reminders.component';
 import { PricePipe } from '../../../../shared/pipe/price-currency.pipe';
 import { DashboardModalService } from '../../../dashboard/dashboard.modal.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-item-detail',
@@ -23,6 +24,7 @@ export class ItemDetailComponent implements OnInit {
   private router = inject(Router);
   private http = inject(HttpClient);
   private modalService = inject(DashboardModalService);
+  private translate = inject(TranslateService);
 
   item: Item | null = null;
   isLoading = true;

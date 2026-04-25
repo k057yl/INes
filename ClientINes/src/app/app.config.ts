@@ -2,6 +2,7 @@ import { ApplicationConfig, importProvidersFrom, provideZoneChangeDetection, isD
 import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideToastr } from 'ngx-toastr';
 import { FormsModule } from '@angular/forms';
 import { provideServiceWorker } from '@angular/service-worker';
 import { routes } from './app.routes';
@@ -13,9 +14,10 @@ import { provideTranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 import { CurrencyPipe } from '@angular/common';
 
-import { LOCALE_ID, APP_INITIALIZER } from '@angular/core';
+import { LOCALE_ID} from '@angular/core';
 import { registerLocaleData } from '@angular/common';
 import localeRu from '@angular/common/locales/ru';
+
 
 registerLocaleData(localeRu, 'ru');
 
@@ -28,6 +30,15 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideAnimations(),
+
+    provideToastr({
+      timeOut: 3500,
+      positionClass: 'toast-bottom-right',
+      preventDuplicates: true,
+      progressBar: true,
+      closeButton: true,
+      newestOnTop: true
+    }),
 
     provideHttpClient(
       withInterceptors([cultureInterceptor, jwtInterceptor, globalErrorInterceptor])

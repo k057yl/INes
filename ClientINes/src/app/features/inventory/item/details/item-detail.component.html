@@ -68,7 +68,7 @@
             <div class="history-list">
               @for (h of item.history; track h; let first = $first) {
                 <div class="history-record">
-                  <div class="history-icon" [style.color]="getAccentColor()">
+                  <div class="history-icon">
                     <i class="fa" [ngClass]="historyIcons[h.type] || 'fa-history'"></i>
                   </div>
                   <div class="history-content">
@@ -76,7 +76,8 @@
                       {{ 'ITEM_HISTORY.RECORD' + h.type | translate }}
                       <span class="history-date">({{ h.createdAt | date:'dd.MM.yyyy HH:mm' }})</span>
                     </span>
-                    <div class="history-meta">
+                    <div class="history-meta" style="color: var(--g-green); font-weight: 600;">
+
                       @if (h.type === 1) {
                         <span class="loc-path">
                           {{ h.oldValue || '???' }}
@@ -84,18 +85,41 @@
                           {{ h.newValue || '???' }}
                         </span>
                       }
-                      @if (h.newValue; as val) {
-                        <span class="status-change" style="color: var(--g-green); font-weight: 600;">
+
+                      @else if (h.type === 2 && h.newValue; as val) {
+                        <span class="status-change">
+                          <i class="fa fa-check-circle"></i>
+
+                          @if (h.oldValue) {
+                            <span class="status-old">
+                              {{ ('STATUS.' + h.oldValue.toUpperCase()) | translate }}
+                            </span>
+
+                            <i class="fa fa-arrow-right"></i>
+                          }
+
+                          <span class="status-new">
+                            {{ ('STATUS.' + val.toUpperCase()) | translate }}
+                          </span>
+                        </span>
+                      }
+
+                      @else if (h.type === 7 && h.newValue; as val) {
+                        <span class="status-change">
                           <i class="fa fa-check-circle"></i>
                           {{ val.includes('|') ? val.split('|')[1] : val }}
                         </span>
                       }
-                      @if (h.type !== 1 && h.type !== 0 && h.type !== 7 && h.newValue) {
-                        <span class="status-change">→ {{ h.newValue }}</span>
+
+                      @else if (h.newValue; as val) {
+                        <span class="status-change">
+                          {{ val }}
+                        </span>
                       }
                     </div>
+
                     @if (h.comment) {
-                      <p class="history-comment">{{ h.comment }}</p>
+                      <p class="history-comment">{{ h.comment | translate }}</p>
                     }
                   </div>
                 </div>

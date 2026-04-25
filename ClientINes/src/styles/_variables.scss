@@ -33,6 +33,12 @@
 
   --border-color: #94a3b8;
   --accent-color: #06b6d4;
+
+  /*toast*/
+  --bg-toast: #1e293b; 
+  --text-toast: #ffffff;
+  --border-toast: #334155;
+  --toast-shadow: rgba(0, 0, 0, 0.3);
   
   /* Константы */
   --dark-blue: #0b132b;
@@ -82,4 +88,10 @@ body.dark-theme {
 
   --border-color: #3a506b;
   --accent-color: #00f5d4;
+
+  /*toast*/
+  --bg-toast: #020617;
+  --text-toast: #ffffff;
+  --border-toast: #1e293b;
+  --toast-shadow: rgba(0, 0, 0, 0.8);
 }

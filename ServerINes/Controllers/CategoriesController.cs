@@ -5,6 +5,7 @@ using INest.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using static INest.Constants.LocalizationConstants;
 
 namespace INest.Controllers
 {
@@ -33,20 +34,21 @@ namespace INest.Controllers
         public async Task<IActionResult> Create([FromBody] CreateCategoryDto dto)
         {
             var cat = await _service.CreateAsync(GetUserId(), dto);
-            return CreatedAtAction(nameof(GetAll), new { }, cat);
+            return Ok(new { data = cat, message = CATEGORIES.SUCCESS.CREATE });
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, [FromBody] CreateCategoryDto dto)
         {
-            return Ok(await _service.UpdateAsync(GetUserId(), id, dto));
+            var updated = await _service.UpdateAsync(GetUserId(), id, dto);
+            return Ok(new { data = updated, message = CATEGORIES.SUCCESS.UPDATE });
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id, [FromQuery] Guid? targetCategoryId = null)
         {
             await _service.DeleteAsync(GetUserId(), id, targetCategoryId);
-            return NoContent();
+            return Ok(new { message = CATEGORIES.SUCCESS.DELETE });
         }
     }
 }

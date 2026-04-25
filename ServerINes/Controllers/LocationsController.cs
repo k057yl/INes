@@ -44,14 +44,14 @@ namespace INest.Controllers
         public async Task<IActionResult> Create([FromBody] CreateLocationDto dto)
         {
             var location = await _locationService.CreateLocationAsync(GetUserId(), dto);
-            return CreatedAtAction(nameof(GetById), new { id = location.Id }, location);
+            return Ok(new { data = location, message = LOCATIONS.SUCCESS.CREATE });
         }
 
         [HttpPatch("{id}/move")]
         public async Task<IActionResult> Move(Guid id, [FromBody] MoveLocationDto dto)
         {
             await _locationService.MoveLocationAsync(GetUserId(), id, dto.NewParentId);
-            return Ok();
+            return Ok(new { message = LOCATIONS.SUCCESS.MOVE });
         }
 
         [HttpPut("reorder")]
@@ -65,14 +65,14 @@ namespace INest.Controllers
         public async Task<IActionResult> Rename(Guid id, [FromBody] RenameLocationDto dto)
         {
             await _locationService.RenameLocationAsync(GetUserId(), id, dto.Name);
-            return Ok();
+            return Ok(new { message = LOCATIONS.SUCCESS.RENAME });
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             await _locationService.DeleteLocationAsync(GetUserId(), id);
-            return NoContent();
+            return Ok(new { message = LOCATIONS.SUCCESS.DELETE });
         }
     }
 }

@@ -232,6 +232,9 @@ namespace INest.Services
 
                 if (item == null) throw new KeyNotFoundException(ITEMS.ERRORS.NOT_FOUND);
 
+                if (item.Status != ItemStatus.Active)
+                    throw new InvalidOperationException(ITEMS.ERRORS.ONLY_ACTIVE_CAN_BE_EDITED);
+
                 item.Name = safeName;
                 item.Description = safeDesc;
                 item.CategoryId = dto.CategoryId;
@@ -437,7 +440,7 @@ namespace INest.Services
             _context.Sales.Remove(item.Sale);
             item.Status = ItemStatus.Active;
 
-            AddHistoryEntry(item.Id, ItemHistoryType.Returned, SharedConstants.OLD_VALUE, SharedConstants.NEW_VALUE, "Sale canceled");
+            AddHistoryEntry(item.Id, ItemHistoryType.Returned, SharedConstants.OLD_VALUE, SharedConstants.NEW_VALUE, HISTORY.SALES_CANCELED);
 
             await _context.SaveChangesAsync();
             return true;

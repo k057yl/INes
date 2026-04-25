@@ -1,9 +1,10 @@
 import { Component, inject, OnInit, HostListener, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, finalize } from 'rxjs';
+import { ToastrService } from 'ngx-toastr';
 
 import { ItemService } from '../../../../shared/services/item.service';
 import { CategoryService } from '../../../../shared/services/category.service';
@@ -26,6 +27,8 @@ export class ItemsListComponent implements OnInit {
   private modalService = inject(DashboardModalService);
   private fb = inject(FormBuilder);
   private eRef = inject(ElementRef);
+  private toastr = inject(ToastrService);
+  private translate = inject(TranslateService);
 
   items: Item[] = [];
   categories: any[] = [];
@@ -132,23 +135,47 @@ export class ItemsListComponent implements OnInit {
   bulkDelete() {
     if (this.selectedIds.size === 0) return;
 
+    const hasSoldItems = this.items
+      .filter(i => this.selectedIds.has(i.id))
+      .some(i => i.status === 4); // 4 — SOLD
+
+    if (hasSoldItems) {
+      this.toastr.error(this.translate.instant('ITEMS.ERRORS.CANNOT_DELETE_SOLD'));
+      return;
+    }
+
+    const message = this.translate.instant('ITEMS_LIST.BULK_DELETE_COUNT_CONFIRM', { 0: this.selectedIds.size });
+
     this.modalService.openConfirm({
       mode: 'delete',
       title: 'COMMON.DELETE',
-      message: `Удалить выбранные предметы (${this.selectedIds.size} шт.)?`
+      message: message
     }).subscribe(res => {
       if (res) {
         this.isLoading = true;
         this.itemService.deleteBatch(Array.from(this.selectedIds)).subscribe({
-          next: () => this.loadData(),
-          error: () => this.isLoading = false
+          next: () => {
+            this.toastr.success(this.translate.instant('ITEMS.SUCCESS.DELETE'));
+            this.loadData();
+          },
+          error: () => {
+            this.toastr.error(this.translate.instant('SYSTEM.DEFAULT_ERROR'));
+            this.isLoading = false;
+          }
         });
       }
     });
   }
 
   onEditClick(item: Item) {
-    this.modalService.openItemForm(item).subscribe(res => { if (res) this.loadData(); });
+    if (item.status !== 0) {
+      this.toastr.warning(this.translate.instant('ITEMS.ERRORS.ONLY_ACTIVE_CAN_BE_EDITED'));
+      return;
+    }
+    
+    this.modalService.openItemForm(item).subscribe(res => { 
+      if (res) this.loadData(); 
+    });
   }
 
   onDeleteClick(item: Item) {

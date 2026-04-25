@@ -70,9 +70,9 @@ namespace INest.Services
                 ItemId = item.Id,
                 Type = ItemHistoryType.StatusChanged,
                 CreatedAt = DateTime.UtcNow,
-                Comment = $"Sold for {request.SalePrice}",
+                Comment = HISTORY.SOLD_FOR,
                 OldValue = oldStatus.ToString(),
-                NewValue = ItemStatus.Sold.ToString()
+                NewValue = request.SalePrice.ToString()
             });
 
             _context.Sales.Add(sale);
@@ -139,7 +139,7 @@ namespace INest.Services
                 ItemId = item.Id,
                 Type = ItemHistoryType.StatusChanged,
                 CreatedAt = DateTime.UtcNow,
-                Comment = "Sale cancelled",
+                Comment = HISTORY.SALES_CANCELED,
                 OldValue = oldStatus.ToString(),
                 NewValue = ItemStatus.Active.ToString()
             });

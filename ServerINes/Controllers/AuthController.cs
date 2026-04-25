@@ -59,7 +59,7 @@ namespace INest.Controllers
         {
             var result = await _authService.LoginAsync(dto);
             SetTokenCookies(result);
-            return Ok();
+            return Ok(new { data = result, message = "AUTH.SUCCESS.LOGIN" });
         }
 
         [HttpPost("forgot-password")]

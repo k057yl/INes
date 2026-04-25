@@ -5,6 +5,7 @@ using INest.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using static INest.Constants.LocalizationConstants;
 
 namespace INest.Controllers
 {
@@ -31,7 +32,7 @@ namespace INest.Controllers
         public async Task<IActionResult> SellItem([FromBody] SellItemRequestDto request)
         {
             var result = await _salesService.SellItemAsync(GetUserId(), request);
-            return Ok(result);
+            return Ok(new { data = result, message = SALES.SUCCESS.SELL });
         }
 
         [HttpGet]
@@ -40,8 +41,8 @@ namespace INest.Controllers
         [HttpDelete("cancel/{itemId}")]
         public async Task<IActionResult> CancelSale(Guid itemId)
         {
-            var result = await _salesService.CancelSaleAsync(GetUserId(), itemId);
-            return result ? Ok() : NotFound();
+            await _salesService.CancelSaleAsync(GetUserId(), itemId);
+            return Ok(new { message = SALES.SUCCESS.CANCEL });
         }
 
         [HttpDelete("smart-delete/{saleId}")]
@@ -53,7 +54,7 @@ namespace INest.Controllers
             else
                 await _salesService.DeleteSaleRecordAsync(userId, saleId);
 
-            return NoContent();
+            return Ok(new { message = SALES.SUCCESS.DELETE });
         }
     }
 }

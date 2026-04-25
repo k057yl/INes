@@ -6,6 +6,7 @@ using INest.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using static INest.Constants.LocalizationConstants;
 
 namespace INest.Controllers
 {
@@ -31,7 +32,11 @@ namespace INest.Controllers
         public async Task<IActionResult> Create([FromForm] CreateItemDto dto, List<IFormFile> photos)
         {
             var item = await _itemService.CreateItemAsync(GetUserId(), dto, photos);
-            return CreatedAtAction(nameof(GetById), new { id = item.Id }, item);
+            return CreatedAtAction(nameof(GetById), new { id = item.Id }, new
+            {
+                data = item,
+                message = ITEMS.SUCCESS.CREATE
+            });
         }
 
         [HttpGet]
@@ -51,7 +56,7 @@ namespace INest.Controllers
         public async Task<IActionResult> UpdateFull(Guid id, [FromForm] UpdateItemFullDto dto, List<IFormFile>? photos)
         {
             await _itemService.UpdateFullAsync(GetUserId(), id, dto, photos);
-            return Ok();
+            return Ok(new { message = ITEMS.SUCCESS.UPDATE });
         }
 
         [HttpPatch("{id}")]
@@ -65,7 +70,7 @@ namespace INest.Controllers
         public async Task<IActionResult> Move(Guid id, [FromBody] MoveItemDto dto)
         {
             await _itemService.MoveItemAsync(GetUserId(), id, dto.TargetLocationId);
-            return Ok();
+            return Ok(new { message = HISTORY.MOVED });
         }
 
         [HttpPatch("{id}/status")]
@@ -86,7 +91,7 @@ namespace INest.Controllers
         public async Task<IActionResult> Delete(Guid id)
         {
             await _itemService.DeleteAsync(GetUserId(), id);
-            return NoContent();
+            return Ok(new { message = ITEMS.SUCCESS.DELETE });
         }
 
         [HttpDelete("batch")]

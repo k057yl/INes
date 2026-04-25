@@ -1,14 +1,14 @@
 import { Component, Input, inject, OnInit } from '@angular/core'; 
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ColorChromeModule } from 'ngx-color/chrome';
+import { ToastrService } from 'ngx-toastr';
 
 import { LocationService } from '../../../../shared/services/location.service';
 import { FeatureService } from '../../../../core/services/feature.service';
 import { DashboardModalService } from '../../../../features/dashboard/dashboard.modal.service';
 import { StorageLocation } from '../../../../models/entities/storage-location.entity';
-import { CreateLocationDto } from '../../../../models/dtos/location.dto';
 
 @Component({
   selector: 'app-location-form-modal',
@@ -24,14 +24,11 @@ export class LocationFormModalComponent implements OnInit {
   private fb = inject(FormBuilder);
   private locationService = inject(LocationService);
   private modalService = inject(DashboardModalService);
+  private translate = inject(TranslateService);
+  private toastr = inject(ToastrService);
   public featureService = inject(FeatureService);
 
-  public readonly presetColors = [
-    'var(--g-blue)',
-    'var(--g-red)',
-    'var(--g-yellow)',
-    'var(--g-green)'
-  ];
+  public readonly presetColors = ['var(--g-blue)', 'var(--g-red)', 'var(--g-yellow)', 'var(--g-green)'];
 
   showColorPicker = false;
   tempColor = '#ffffff';
@@ -50,7 +47,6 @@ export class LocationFormModalComponent implements OnInit {
   ngOnInit() {
     if (this.isEdit && this.location) {
       const loc = this.location as any;
-      
       this.form.patchValue({
         name: loc.name,
         color: loc.color,
@@ -93,8 +89,13 @@ export class LocationFormModalComponent implements OnInit {
       : this.locationService.create(rawValue as any);
 
     request$.subscribe({
-      next: (res: any) => this.modalService.confirm(res),
-      error: (err: any) => console.error('Ошибка при сохранении локации:', err)
+      next: (res: any) => {
+        this.toastr.success(this.translate.instant(this.isEdit ? 'LOCATIONS.SUCCESS.RENAME' : 'LOCATIONS.SUCCESS.CREATE'));
+        this.modalService.confirm(res);
+      },
+      error: (err: any) => {
+        this.toastr.error(this.translate.instant('SYSTEM.DEFAULT_ERROR'));
+      }
     });
   }
 

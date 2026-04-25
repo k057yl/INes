@@ -126,20 +126,19 @@
 .inline-add-btn { background: rgba(var(--accent-rgb), 0.1); border: 1px solid var(--accent-color); color: var(--accent-color); padding: 4px 10px; border-radius: 6px; font-size: 0.65rem; font-weight: 700; cursor: pointer; }
 .divider-text { display: flex; align-items: center; margin: 2rem 0 1.5rem; color: var(--text-muted); font-size: 0.7rem; font-weight: 800; text-transform: uppercase; &::after { content: ""; flex: 1; height: 1px; background: var(--border-color); margin-left: 10px; } }
 .inest-input-wrapper.is-readonly {
-  pointer-events: none; // Полностью отключаем клики
-  background-color: rgba(0, 0, 0, 0.1); // Слегка притеняем фон (по желанию)
+  pointer-events: none;
+  background-color: rgba(0, 0, 0, 0.1);
 
   select {
-    color: #888888; // Вот твой серый текст
+    color: #888888;
     opacity: 0.8;
     cursor: default;
-    /* Убираем стрелочку селекта, чтобы он был похож на обычный инпут */
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
   }
 
   i.inest-field-icon-left {
-    color: #666666; // Иконку тоже чуть приглушим
+    color: #666666;
   }
 }

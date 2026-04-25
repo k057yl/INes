@@ -19,6 +19,7 @@ import { Item } from '../../../../models/entities/item.entity';
 
 import { take, filter } from 'rxjs/operators';
 import { FormErrorService } from '../../../../core/services/form-error.service';
+import { ToastrService } from 'ngx-toastr';
 
 interface PhotoSlot {
   file?: File;
@@ -46,6 +47,8 @@ export class ItemFormModalComponent implements OnInit {
   private localizationService = inject(LocalizationService);
   private modalService = inject(DashboardModalService);
   private formErrorService = inject(FormErrorService);
+  private toastr = inject(ToastrService);
+  private translateService = inject(TranslateService);
 
   locations: any[] = [];
   categories: any[] = [];
@@ -252,7 +255,14 @@ export class ItemFormModalComponent implements OnInit {
       : this.itemService.createWithPhoto(formData);
 
     request$.subscribe({
-      next: (res: any) => this.modalService.confirm(res),
+      next: (res: any) => {
+        const successKey = res?.message || (this.isEdit ? 'ITEMS.SUCCESS.UPDATE' : 'ITEMS.SUCCESS.CREATE');
+
+        const translatedMsg = this.translateService.instant(successKey);
+
+        this.toastr.success(translatedMsg);
+        this.modalService.confirm(res);
+      },
       error: (err: any) => {
         if (err.details) {
           this.formErrorService.mapServerErrorsToForm(this.form, err.details);
