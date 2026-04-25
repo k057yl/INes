@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter, HostListener, ElementRef, inject, ViewChild } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { DragDropModule, CdkDragDrop } from '@angular/cdk/drag-drop';
 import { TranslateModule } from '@ngx-translate/core';
 import { StorageLocation } from '../../../models/entities/storage-location.entity';
@@ -9,7 +9,7 @@ import { RIBBON_CONFIG } from '../../constants/ui.constants';
 @Component({
   selector: 'app-location-ribbon',
   standalone: true,
-  imports: [CommonModule, DragDropModule, TranslateModule, RouterModule],
+  imports: [DragDropModule, TranslateModule, RouterModule],
   templateUrl: './location-ribbon.component.html',
   styleUrl: './location-ribbon.component.scss'
 })

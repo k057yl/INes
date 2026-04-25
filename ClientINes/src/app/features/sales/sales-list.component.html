@@ -1,6 +1,6 @@
 <div class="sales-page" [class.is-loading]="isLoading">
   <div class="container">
-    
+
     <header class="sales-header">
       <div class="title-group">
         <h1>{{ 'SALES_PAGE.TITLE' | translate }}</h1>
@@ -31,52 +31,59 @@
     </header>
 
     <div class="sales-content">
-      <div class="list-header" *ngIf="sales.length > 0">
-        <span class="count">{{ 'SALES_PAGE.COUNT_LABEL' | translate }}: {{ sales.length }}</span>
-      </div>
-
-      <div class="sales-grid" *ngIf="!isLoading; else loader">
-        <app-sale-card 
-          *ngFor="let s of sales" 
-          [sale]="s"
-          (undo)="handleUndo($event)"
-          (delete)="handleDelete($event)">
-        </app-sale-card>
-
-        <div class="empty-state" *ngIf="sales.length === 0">
-          <div class="empty-icon"><i class="fa fa-shopping-bag"></i></div>
-          <h3>{{ 'SALES_PAGE.NO_SALES' | translate }}</h3>
-          <p>{{ 'SALES_PAGE.NO_SALES_SUB' | translate }}</p>
+      @if (sales.length > 0) {
+        <div class="list-header">
+          <span class="count">{{ 'SALES_PAGE.COUNT_LABEL' | translate }}: {{ sales.length }}</span>
         </div>
-      </div>
+      }
+
+      @if (!isLoading) {
+        <div class="sales-grid">
+          @for (s of sales; track s) {
+            <app-sale-card
+              [sale]="s"
+              (undo)="handleUndo($event)"
+              (delete)="handleDelete($event)">
+            </app-sale-card>
+          }
+          @if (sales.length === 0) {
+            <div class="empty-state">
+              <div class="empty-icon"><i class="fa fa-shopping-bag"></i></div>
+              <h3>{{ 'SALES_PAGE.NO_SALES' | translate }}</h3>
+              <p>{{ 'SALES_PAGE.NO_SALES_SUB' | translate }}</p>
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="loading-wrapper">
+          <div class="inest-spinner"></div>
+          <span>{{ 'AUTH.CHECKING_MAIL' | translate }}</span>
+        </div>
+      }
     </div>
   </div>
 </div>
 
-<ng-template #loader>
-  <div class="loading-wrapper">
-    <div class="inest-spinner"></div>
-    <span>{{ 'AUTH.CHECKING_MAIL' | translate }}</span>
-  </div>
-</ng-template>
 
-<app-inest-modal 
-  *ngIf="activeAction === 'undo'"
-  mode="confirm"
-  [title]="'SALES_PAGE.MODALS.RETURN_TITLE' | translate" 
-  [message]="'SALES_PAGE.MODALS.RETURN_MESSAGE' | translate"
-  [confirmText]="'COMMON.RETURN' | translate"
-  [cancelText]="'COMMON.CANCEL' | translate"
-  (confirmed)="onConfirm()"
-  (cancelled)="closeModal()">
-</app-inest-modal>
+@if (activeAction === 'undo') {
+  <app-inest-modal
+    mode="confirm"
+    [title]="'SALES_PAGE.MODALS.RETURN_TITLE' | translate"
+    [message]="'SALES_PAGE.MODALS.RETURN_MESSAGE' | translate"
+    [confirmText]="'COMMON.RETURN' | translate"
+    [cancelText]="'COMMON.CANCEL' | translate"
+    (confirmed)="onConfirm()"
+    (cancelled)="closeModal()">
+  </app-inest-modal>
+}
 
-<app-inest-modal 
-  *ngIf="activeAction === 'delete'" 
-  mode="smart-delete"
-  [showSmartOption]="!!selectedSale && selectedSale.itemId !== EMPTY_GUID"
-  [title]="'SALES_PAGE.MODALS.DELETE_TITLE' | translate"
-  [message]="'SALES_PAGE.MODALS.DELETE_MESSAGE' | translate"
-  (confirmed)="onConfirm($event)"
-  (cancelled)="closeModal()">
-</app-inest-modal>
+@if (activeAction === 'delete') {
+  <app-inest-modal
+    mode="smart-delete"
+    [showSmartOption]="!!selectedSale && selectedSale.itemId !== EMPTY_GUID"
+    [title]="'SALES_PAGE.MODALS.DELETE_TITLE' | translate"
+    [message]="'SALES_PAGE.MODALS.DELETE_MESSAGE' | translate"
+    (confirmed)="onConfirm($event)"
+    (cancelled)="closeModal()">
+  </app-inest-modal>
+}

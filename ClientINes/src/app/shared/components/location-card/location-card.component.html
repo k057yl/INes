@@ -1,18 +1,18 @@
-<div class="location-column" 
-     [style.border-top-color]="effectiveColor"
-     [class.menu-open]="location.showMenu"
-     [class.is-valid-target]="isValidDropTarget"
-     [class.is-invalid-target]="isInvalidDropTarget"
-     [class.is-drag-over]="isDragOver" cdkDropList
-     [id]="'list-loc-' + location.id"
-     [cdkDropListData]="location.children!" 
-     [cdkDropListConnectedTo]="connectedLocationLists"
-     [cdkDropListEnterPredicate]="canDropLocation"
-     (cdkDropListEntered)="onDragEntered()" 
-     (cdkDropListExited)="onDragExited()"   
+<div class="location-column"
+  [style.border-top-color]="effectiveColor"
+  [class.menu-open]="location.showMenu"
+  [class.is-valid-target]="isValidDropTarget"
+  [class.is-invalid-target]="isInvalidDropTarget"
+  [class.is-drag-over]="isDragOver" cdkDropList
+  [id]="'list-loc-' + location.id"
+  [cdkDropListData]="location.children!"
+  [cdkDropListConnectedTo]="connectedLocationLists"
+  [cdkDropListEnterPredicate]="canDropLocation"
+  (cdkDropListEntered)="onDragEntered()"
+  (cdkDropListExited)="onDragExited()"
      (cdkDropListDropped)="onDragExited(); 
      locationDropped.emit({event: $event, targetId: location.id})" 
-     [cdkDropListSortingDisabled]="true">
+  [cdkDropListSortingDisabled]="true">
 
   <div class="loc-header-wrapper">
     <div class="main-actions-area">
@@ -24,16 +24,16 @@
         </div>
 
         <div class="button-group">
-          <button class="tool-btn add-item" 
-                  (click)="onAddItem($event)" 
-                  [title]="'LOCATION_CARD.BTN.ITEM' | translate">
+          <button class="tool-btn add-item"
+            (click)="onAddItem($event)"
+            [title]="'LOCATION_CARD.BTN.ITEM' | translate">
             <i class="fa fa-plus"></i>
           </button>
-          
-          <button class="tool-btn add-loc" 
-                  [disabled]="facade.getLocationLevel(location.id) >= 3"
-                  (click)="onAddLocation($event)" 
-                  [title]="'LOCATION_CARD.BTN.LOCATION' | translate">
+
+          <button class="tool-btn add-loc"
+            [disabled]="facade.getLocationLevel(location.id) >= 3"
+            (click)="onAddLocation($event)"
+            [title]="'LOCATION_CARD.BTN.LOCATION' | translate">
             <i class="fa fa-folder-plus"></i>
           </button>
 
@@ -67,61 +67,67 @@
       <i class="fa fa-grip-vertical"></i>
     </div>
 
-    <div class="quick-move-panel" *ngIf="location.showMenu" (click)="$event.stopPropagation()">
-      <select (change)="onMove($event)">
-        <option value="" disabled selected>{{'DROP_MENU.SELECT_LOCATION' | translate}}</option>
-        <option value="root"
-        [disabled]="!facade.canMoveLocation(location.id, null)">
-          📁 {{'DROP_MENU.HIGHER_LEVEL' | translate}}
-        </option>
-        <option *ngFor="let target of flatLocations" 
-                [value]="target.id" 
-                [disabled]="target.id === location.id || isChildOf(target.id, location) || !facade.canMoveLocation(location.id, target.id)">
-          {{ target.name }}
-        </option>
-      </select>
-    </div>
+    @if (location.showMenu) {
+      <div class="quick-move-panel" (click)="$event.stopPropagation()">
+        <select (change)="onMove($event)">
+          <option value="" disabled selected>{{'DROP_MENU.SELECT_LOCATION' | translate}}</option>
+          <option value="root"
+            [disabled]="!facade.canMoveLocation(location.id, null)">
+            📁 {{'DROP_MENU.HIGHER_LEVEL' | translate}}
+          </option>
+          @for (target of flatLocations; track target) {
+            <option
+              [value]="target.id"
+              [disabled]="target.id === location.id || isChildOf(target.id, location) || !facade.canMoveLocation(location.id, target.id)">
+              {{ target.name }}
+            </option>
+          }
+        </select>
+      </div>
+    }
   </div>
 
   <div cdkDropList [id]="location.id" [cdkDropListData]="location.items"
-       [cdkDropListConnectedTo]="connectedLists" 
-       [cdkDropListEnterPredicate]="canDropItem"
-       (cdkDropListDropped)="onItemDrop($event)"
-       class="items-container">
-    
-    <app-item-card *ngFor="let item of location.items; trackBy: trackById" 
-      [item]="item"
-      [accentColor]="effectiveColor"
-      [flatLocations]="flatLocations"
-      [menuOpenItemId]="openItemMenuId"
-      (menuOpenedItemIdChange)="onItemMenuToggled($event)"
-      (sell)="sellItem.emit($event)"
-      (lend)="lendItem.emit($event)"
-      (delete)="deleteItem.emit($event)"
-      (move)="moveItemManual.emit($event)"
-      (edit)="editItem.emit($event)">
-    </app-item-card>
-    
-    <div class="empty-placeholder" *ngIf="location.items.length === 0">
-      <i class="fa fa-box-open"></i>
-      <p>{{'LOCATION_CARD.EMPTY' | translate}}</p>
-    </div>
+    [cdkDropListConnectedTo]="connectedLists"
+    [cdkDropListEnterPredicate]="canDropItem"
+    (cdkDropListDropped)="onItemDrop($event)"
+    class="items-container">
+
+    @for (item of location.items; track trackById($index, item)) {
+      <app-item-card
+        [item]="item"
+        [accentColor]="effectiveColor"
+        [flatLocations]="flatLocations"
+        [menuOpenItemId]="openItemMenuId"
+        (menuOpenedItemIdChange)="onItemMenuToggled($event)"
+        (sell)="sellItem.emit($event)"
+        (lend)="lendItem.emit($event)"
+        (delete)="deleteItem.emit($event)"
+        (move)="moveItemManual.emit($event)"
+        (edit)="editItem.emit($event)">
+      </app-item-card>
+    }
+
+    @if (location.items.length === 0) {
+      <div class="empty-placeholder">
+        <i class="fa fa-box-open"></i>
+        <p>{{'LOCATION_CARD.EMPTY' | translate}}</p>
+      </div>
+    }
   </div>
 
   <div class="child-locations">
-    <div class="child-location-wrapper"
-         *ngFor="let child of location.children; trackBy: trackById"
-         cdkDrag
-         [cdkDragData]="child"
-         [cdkDragDisabled]="isMobile"
-         (cdkDragStarted)="onDragStart(child)"  (cdkDragEnded)="onDragEnd()">
-
-      <div *cdkDragPreview class="custom-drag-preview" [style.border-color]="effectiveColor">
-        <i [className]="'fa ' + (child.icon || 'fa-folder')" [style.color]="effectiveColor"></i>
-        <span class="preview-title">{{ child.name }}</span>
-      </div>
-
-      <app-location-card 
+    @for (child of location.children; track trackById($index, child)) {
+      <div class="child-location-wrapper"
+        cdkDrag
+        [cdkDragData]="child"
+        [cdkDragDisabled]="isMobile"
+        (cdkDragStarted)="onDragStart(child)"  (cdkDragEnded)="onDragEnd()">
+        <div *cdkDragPreview class="custom-drag-preview" [style.border-color]="effectiveColor">
+          <i [className]="'fa ' + (child.icon || 'fa-folder')" [style.color]="effectiveColor"></i>
+          <span class="preview-title">{{ child.name }}</span>
+        </div>
+        <app-location-card
           [location]="child"
           [accentColor]="effectiveColor"
           [flatLocations]="flatLocations"
@@ -131,13 +137,14 @@
           (itemDropped)="itemDropped.emit($event)"
           (locationDropped)="locationDropped.emit($event)"
           (move)="move.emit($event)"
-          (moveItemManual)="moveItemManual.emit($event)" 
+          (moveItemManual)="moveItemManual.emit($event)"
           (rename)="rename.emit($event)"
           (delete)="delete.emit($event)"
           (sellItem)="sellItem.emit($event)"
           (lendItem)="lendItem.emit($event)"
           (deleteItem)="deleteItem.emit($event)"
-          (moveUp)="moveUp.emit($event)"    (moveDown)="moveDown.emit($event)"> </app-location-card>
-    </div>
+        (moveUp)="moveUp.emit($event)"    (moveDown)="moveDown.emit($event)"> </app-location-card>
+      </div>
+    }
   </div>
 </div>

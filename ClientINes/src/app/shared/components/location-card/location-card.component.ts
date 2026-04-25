@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter, inject, ElementRef, HostListener, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { DragDropModule, CdkDragDrop, CdkDrag } from '@angular/cdk/drag-drop'; 
 import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
@@ -13,7 +13,7 @@ import { ItemCardComponent } from '../item-card/item-card.component';
 @Component({
   selector: 'app-location-card',
   standalone: true,
-  imports: [CommonModule, DragDropModule, RouterModule, ItemCardComponent, TranslateModule],
+  imports: [DragDropModule, RouterModule, ItemCardComponent, TranslateModule],
   templateUrl: './location-card.component.html',
   styleUrl: './location-card.component.scss'
 })

@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Item } from '../../../models/entities/item.entity';
@@ -13,7 +13,7 @@ import { FORM_VALIDATION } from '../../constants/form-defaults.constants';
 @Component({
   selector: 'app-sell-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslateModule, InestModalComponent],
+  imports: [ReactiveFormsModule, TranslateModule, InestModalComponent],
   templateUrl: './sell-modal.component.html',
   styleUrls: ['./sell-modal.component.scss']
 })

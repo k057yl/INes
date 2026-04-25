@@ -1,15 +1,19 @@
-<div class="item-card" 
-     cdkDrag 
-     [cdkDragData]="item" 
-     [cdkDragDisabled]="isMobile"
-     [class.menu-open]="showMenu"
-     [style.border-left-color]="getAccentColor()"> 
+<div class="item-card"
+  cdkDrag
+  [cdkDragData]="item"
+  [cdkDragDisabled]="isMobile"
+  [class.menu-open]="showMenu"
+  [style.border-left-color]="getAccentColor()">
 
   <div class="item-thumb" [routerLink]="['/item', item.id]">
-    <img *ngIf="item.photoUrl" [src]="getPhotoUrl(item.photoUrl)" alt="item">
-    <div *ngIf="!item.photoUrl" class="no-image">
-      <i class="fa fa-box-open"></i>
-    </div>
+    @if (item.photoUrl) {
+      <img [src]="getPhotoUrl(item.photoUrl)" alt="item">
+    }
+    @if (!item.photoUrl) {
+      <div class="no-image">
+        <i class="fa fa-box-open"></i>
+      </div>
+    }
   </div>
 
   <div class="item-content" [routerLink]="['/item', item.id]" style="cursor: pointer;">
@@ -17,67 +21,77 @@
       <span class="item-name" [title]="item.name">{{ item.name }}</span>
     </div>
     <div class="item-details">
-      <span class="price-tag" *ngIf="featureService.isSalesModeEnabled() && item.estimatedValue">
-        {{ item.estimatedValue | number:'1.0-0' }} <i class="fa fa-coins" style="font-size: 0.7rem; margin-left: 2px;"></i>
-      </span>
+      @if (featureService.isSalesModeEnabled() && item.estimatedValue) {
+        <span class="price-tag">
+          {{ item.estimatedValue | number:'1.0-0' }} <i class="fa fa-coins" style="font-size: 0.7rem; margin-left: 2px;"></i>
+        </span>
+      }
       <span class="status-badges" style="margin-left: 10px;">
-        <i *ngIf="item.status === 6" class="fa fa-shopping-cart" style="color: var(--g-blue);" [title]="'STATUS.LISTED' | translate"></i>
-        <i *ngIf="item.status === 1" class="fa fa-share-square" style="color: var(--g-yellow);" [title]="'STATUS.LENT' | translate"></i>
-        <i *ngIf="item.status === 7" class="fa fa-reply-all" style="color: var(--g-green); transform: scaleX(-1);" [title]="'STATUS.BORROWED' | translate"></i>
+        @if (item.status === 6) {
+          <i class="fa fa-shopping-cart" style="color: var(--g-blue);" [title]="'STATUS.LISTED' | translate"></i>
+        }
+        @if (item.status === 1) {
+          <i class="fa fa-share-square" style="color: var(--g-yellow);" [title]="'STATUS.LENT' | translate"></i>
+        }
+        @if (item.status === 7) {
+          <i class="fa fa-reply-all" style="color: var(--g-green); transform: scaleX(-1);" [title]="'STATUS.BORROWED' | translate"></i>
+        }
       </span>
     </div>
   </div>
 
   <div class="item-actions">
-      <button *ngIf="!isMobile && featureService.isSalesModeEnabled()" 
-              class="inest-action-btn" 
-              [disabled]="!canSell"
-              (click)="canSell && sell.emit(item); $event.stopPropagation()"
-              [title]="(canSell ? 'COMMON.SELL' : 'STATUS.ERRORS.CANT_SELL_LENT') | translate">
+    @if (!isMobile && featureService.isSalesModeEnabled()) {
+      <button
+        class="inest-action-btn"
+        [disabled]="!canSell"
+        (click)="canSell && sell.emit(item); $event.stopPropagation()"
+        [title]="(canSell ? 'COMMON.SELL' : 'STATUS.ERRORS.CANT_SELL_LENT') | translate">
         <i class="fa fa-dollar-sign"></i>
       </button>
+    }
 
-      <button class="inest-action-btn" (click)="toggleMenu($event)" [class.active]="showMenu" [title]="'COMMON.MORE' | translate">
-        <i class="fa fa-ellipsis-v"></i>
-      </button>
+    <button class="inest-action-btn" (click)="toggleMenu($event)" [class.active]="showMenu" [title]="'COMMON.MORE' | translate">
+      <i class="fa fa-ellipsis-v"></i>
+    </button>
 
-    <div class="menu-dropdown item-menu" *ngIf="showMenu">
-      <div class="menu-section">
-        <label><i class="fa fa-exchange-alt"></i> {{'DROP_MENU.MOVE_MSG' | translate}}</label>
-        <div class="select-wrapper">
-          <select (change)="onMove($event)">
-            <option value="" disabled selected>{{'DROP_MENU.SELECT_LOCATION' | translate}}</option>
-            <option *ngFor="let loc of availableLocations" [value]="loc.id">{{ loc.name }}</option>
-          </select>
+    @if (showMenu) {
+      <div class="menu-dropdown item-menu">
+        <div class="menu-section">
+          <label><i class="fa fa-exchange-alt"></i> {{'DROP_MENU.MOVE_MSG' | translate}}</label>
+          <div class="select-wrapper">
+            <select (change)="onMove($event)">
+              <option value="" disabled selected>{{'DROP_MENU.SELECT_LOCATION' | translate}}</option>
+              @for (loc of availableLocations; track loc) {
+                <option [value]="loc.id">{{ loc.name }}</option>
+              }
+            </select>
+          </div>
         </div>
+        <div class="divider"></div>
+        <button [routerLink]="['/item', item.id]" (click)="menuOpenedItemIdChange.emit(null)">
+          <i class="fa fa-info-circle"></i> {{'COMMON.INFO' | translate}}
+        </button>
+        <button (click)="edit.emit(item); menuOpenedItemIdChange.emit(null)">
+          <i class="fa fa-pen" style="color: var(--g-yellow) !important;"></i> {{'COMMON.EDIT' | translate}}
+        </button>
+        <button [disabled]="!canLend"
+          (click)="canLend && lend.emit(item); menuOpenedItemIdChange.emit(null)">
+          <i class="fa fa-handshake" [style.color]="canLend ? 'var(--g-yellow)' : 'var(--text-muted)'"></i>
+          {{'COMMON.LEND' | translate}}
+        </button>
+        @if (isMobile && featureService.isSalesModeEnabled()) {
+          <button
+            [disabled]="!canSell"
+            (click)="canSell && sell.emit(item); menuOpenedItemIdChange.emit(null)">
+            <i class="fa fa-dollar-sign"></i> {{'COMMON.SELL' | translate}}
+          </button>
+        }
+        <button (click)="requestDelete($event)" class="delete-btn">
+          <i class="fa fa-trash-alt"></i> {{'COMMON.DELETE' | translate}}
+        </button>
       </div>
-
-      <div class="divider"></div>
-
-      <button [routerLink]="['/item', item.id]" (click)="menuOpenedItemIdChange.emit(null)">
-        <i class="fa fa-info-circle"></i> {{'COMMON.INFO' | translate}}
-      </button>
-
-      <button (click)="edit.emit(item); menuOpenedItemIdChange.emit(null)">
-        <i class="fa fa-pen" style="color: var(--g-yellow) !important;"></i> {{'COMMON.EDIT' | translate}}
-      </button>
-
-      <button [disabled]="!canLend" 
-              (click)="canLend && lend.emit(item); menuOpenedItemIdChange.emit(null)">
-        <i class="fa fa-handshake" [style.color]="canLend ? 'var(--g-yellow)' : 'var(--text-muted)'"></i> 
-        {{'COMMON.LEND' | translate}}
-      </button>
-
-      <button *ngIf="isMobile && featureService.isSalesModeEnabled()" 
-              [disabled]="!canSell"
-              (click)="canSell && sell.emit(item); menuOpenedItemIdChange.emit(null)">
-        <i class="fa fa-dollar-sign"></i> {{'COMMON.SELL' | translate}}
-      </button>
-
-      <button (click)="requestDelete($event)" class="delete-btn">
-        <i class="fa fa-trash-alt"></i> {{'COMMON.DELETE' | translate}}
-      </button>
-    </div>
+    }
   </div>
 
   <div class="item-drag-placeholder" *cdkDragPlaceholder></div>

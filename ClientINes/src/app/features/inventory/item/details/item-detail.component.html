@@ -1,148 +1,149 @@
-<div class="detail-container" *ngIf="item; else loader">
-  
-  <header class="detail-header">
-    <button class="nav-btn" (click)="goBack()">
-      <i class="fa fa-chevron-left"></i> {{ 'COMMON.BACK' | translate }}
-    </button>
-    <div class="header-actions">
-      <button class="nav-btn edit-btn" (click)="onEdit()">
-        <i class="fa fa-pen"></i> {{ 'COMMON.EDIT' | translate }}
+@if (item) {
+  <div class="detail-container">
+    <header class="detail-header">
+      <button class="nav-btn" (click)="goBack()">
+        <i class="fa fa-chevron-left"></i> {{ 'COMMON.BACK' | translate }}
       </button>
-    </div>
-  </header>
-
-  <div class="content-layout">
-    
-    <div class="column visual-col">
-      <div class="main-image-wrapper">
-        <img [src]="getPhotoUrl(activePhotoUrl)" class="main-img">
+      <div class="header-actions">
+        <button class="nav-btn edit-btn" (click)="onEdit()">
+          <i class="fa fa-pen"></i> {{ 'COMMON.EDIT' | translate }}
+        </button>
       </div>
-
-      <div class="thumbs-gallery" *ngIf="item.photos && item.photos.length > 0">
-        <div class="thumb-item" 
-             *ngFor="let p of item.photos" 
-             [class.active]="activePhotoUrl === p.filePath"
-             (click)="setMainPhoto(p.filePath)">
-          <img [src]="getPhotoUrl(p.filePath)">
+    </header>
+    <div class="content-layout">
+      <div class="column visual-col">
+        <div class="main-image-wrapper">
+          <img [src]="getPhotoUrl(activePhotoUrl)" class="main-img">
         </div>
-      </div>
-
-      <div class="location-badge" *ngIf="item.storageLocation" [routerLink]="['/location', item.storageLocationId]">
-        <div class="loc-icon"><i class="fa fa-map-marker-alt"></i></div>
-        <div class="loc-info">
-          <span>{{ 'ITEM_DETAILS.STORAGE_PLACE' | translate }}</span>
-          <strong>{{ item.storageLocation.name }}</strong>
-        </div>
-      </div>
-    </div>
-
-    <div class="column info-col">
-      <div class="accent-line" [style.background-color]="getAccentColor()"></div>
-      
-      <div class="tags-row">
-        <span class="badge category" *ngIf="item.category" 
-              [style.background-color]="item.category.color + '20'" 
-              [style.color]="item.category.color">
-          {{ item.category.name }}
-        </span>
-        <span class="status-value">
-          {{ 'STATUS.' + (item.status | statusName) | translate }}
-        </span>
-      </div>
-
-      <h1 class="item-name">{{ item.name }}</h1>
-      <p class="item-description">{{ item.description || ('ITEM_DETAILS.NO_DESCRIPTION' | translate) }}</p>
-
-      <div class="finance-grid">
-        <div class="finance-card">
-          <label>{{ 'ITEM_DETAILS.PURCHASE_PRICE' | translate }}</label>
-          <div class="price-val">{{ item.purchasePrice | price:item.currency }}</div>
-        </div>
-        <div class="finance-card">
-          <label>{{ 'ITEM_DETAILS.ESTIMATED_VALUE' | translate }}</label>
-          <div class="price-val">{{ item.estimatedValue | price:item.currency }}</div>
-        </div>
-      </div>
-
-      <div class="history-section">
-        <h3>{{ 'ITEM_HISTORY.TITLE' | translate }}</h3>
-        <div class="history-list" *ngIf="item.history">
-          <div class="history-record" *ngFor="let h of item.history; let first = first">
-            
-            <div class="history-icon" [style.color]="getAccentColor()">
-              <i class="fa" [ngClass]="historyIcons[h.type] || 'fa-history'"></i>
-            </div>
-
-            <div class="history-content">
-              <span class="history-action">
-                {{ 'ITEM_HISTORY.RECORD' + h.type | translate }}
-                <span class="history-date">({{ h.createdAt | date:'dd.MM.yyyy HH:mm' }})</span>
-              </span>
-
-              <div class="history-meta">
-                <ng-container *ngIf="h.type === 1">
-                  <span class="loc-path">
-                    {{ h.oldValue || '???' }} 
-                    <i class="fa fa-long-arrow-alt-right"></i> 
-                    {{ h.newValue || '???' }}
-                  </span>
-                </ng-container>
-
-                <ng-container *ngIf="h.newValue as val">
-                  <span class="status-change" style="color: var(--g-green); font-weight: 600;">
-                    <i class="fa fa-check-circle"></i> 
-                    {{ val.includes('|') ? val.split('|')[1] : val }}
-                  </span>
-                </ng-container>
-
-                <ng-container *ngIf="h.type !== 1 && h.type !== 0 && h.type !== 7 && h.newValue">
-                  <span class="status-change">→ {{ h.newValue }}</span>
-                </ng-container>
+        @if (item.photos && item.photos.length > 0) {
+          <div class="thumbs-gallery">
+            @for (p of item.photos; track p) {
+              <div class="thumb-item"
+                [class.active]="activePhotoUrl === p.filePath"
+                (click)="setMainPhoto(p.filePath)">
+                <img [src]="getPhotoUrl(p.filePath)">
               </div>
-
-              <p class="history-comment" *ngIf="h.comment">{{ h.comment }}</p>
+            }
+          </div>
+        }
+        @if (item.storageLocation) {
+          <div class="location-badge" [routerLink]="['/location', item.storageLocationId]">
+            <div class="loc-icon"><i class="fa fa-map-marker-alt"></i></div>
+            <div class="loc-info">
+              <span>{{ 'ITEM_DETAILS.STORAGE_PLACE' | translate }}</span>
+              <strong>{{ item.storageLocation.name }}</strong>
             </div>
           </div>
+        }
+      </div>
+      <div class="column info-col">
+        <div class="accent-line" [style.background-color]="getAccentColor()"></div>
+        <div class="tags-row">
+          @if (item.category) {
+            <span class="badge category"
+              [style.background-color]="item.category.color + '20'"
+              [style.color]="item.category.color">
+              {{ item.category.name }}
+            </span>
+          }
+          <span class="status-value">
+            {{ 'STATUS.' + (item.status | statusName) | translate }}
+          </span>
         </div>
+        <h1 class="item-name">{{ item.name }}</h1>
+        <p class="item-description">{{ item.description || ('ITEM_DETAILS.NO_DESCRIPTION' | translate) }}</p>
+        <div class="finance-grid">
+          <div class="finance-card">
+            <label>{{ 'ITEM_DETAILS.PURCHASE_PRICE' | translate }}</label>
+            <div class="price-val">{{ item.purchasePrice | price:item.currency }}</div>
+          </div>
+          <div class="finance-card">
+            <label>{{ 'ITEM_DETAILS.ESTIMATED_VALUE' | translate }}</label>
+            <div class="price-val">{{ item.estimatedValue | price:item.currency }}</div>
+          </div>
+        </div>
+        <div class="history-section">
+          <h3>{{ 'ITEM_HISTORY.TITLE' | translate }}</h3>
+          @if (item.history) {
+            <div class="history-list">
+              @for (h of item.history; track h; let first = $first) {
+                <div class="history-record">
+                  <div class="history-icon" [style.color]="getAccentColor()">
+                    <i class="fa" [ngClass]="historyIcons[h.type] || 'fa-history'"></i>
+                  </div>
+                  <div class="history-content">
+                    <span class="history-action">
+                      {{ 'ITEM_HISTORY.RECORD' + h.type | translate }}
+                      <span class="history-date">({{ h.createdAt | date:'dd.MM.yyyy HH:mm' }})</span>
+                    </span>
+                    <div class="history-meta">
+                      @if (h.type === 1) {
+                        <span class="loc-path">
+                          {{ h.oldValue || '???' }}
+                          <i class="fa fa-long-arrow-alt-right"></i>
+                          {{ h.newValue || '???' }}
+                        </span>
+                      }
+                      @if (h.newValue; as val) {
+                        <span class="status-change" style="color: var(--g-green); font-weight: 600;">
+                          <i class="fa fa-check-circle"></i>
+                          {{ val.includes('|') ? val.split('|')[1] : val }}
+                        </span>
+                      }
+                      @if (h.type !== 1 && h.type !== 0 && h.type !== 7 && h.newValue) {
+                        <span class="status-change">→ {{ h.newValue }}</span>
+                      }
+                    </div>
+                    @if (h.comment) {
+                      <p class="history-comment">{{ h.comment }}</p>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+      <div class="column widget-col">
+        <div class="widget-wrapper">
+          <app-item-reminders [itemId]="item.id"></app-item-reminders>
+        </div>
+        @if ((isLent || isBorrowed) && item.lending) {
+          <div class="lending-info-card">
+            <div class="card-header" [class.borrowed-header]="isBorrowed">
+              <i class="fa" [ngClass]="isLent ? 'fa-handshake' : 'fa-reply-all'"></i>
+              <span>{{ (isLent ? 'STATUS.LENT' : 'STATUS.BORROWED') | translate }}</span>
+            </div>
+            <div class="card-body">
+              <div class="lending-main-info">
+                <strong class="person-name">{{ item.lending.personName }}</strong>
+                <div class="lending-value">{{ item.lending.valueAtLending }} $</div>
+              </div>
+              <div class="lending-dates">
+                <div class="date-row">
+                  <label>{{ 'LENDING_MODAL.DATE_GIVEN' | translate }}</label>
+                  <span>{{ item.lending.dateGiven | date:'dd.MM.yyyy' }}</span>
+                </div>
+                @if (item.lending.expectedReturnDate) {
+                  <div class="date-row">
+                    <label>{{ 'LENDING_MODAL.EXPECTED_RETURN' | translate }}</label>
+                    <span class="return-deadline">{{ item.lending.expectedReturnDate | date:'dd.MM.yyyy' }}</span>
+                  </div>
+                }
+              </div>
+              @if (item.lending.comment) {
+                <div class="lending-comment-box">
+                  <i class="fa fa-quote-left"></i>
+                  <p>{{ item.lending.comment }}</p>
+                </div>
+              }
+            </div>
+          </div>
+        }
       </div>
     </div>
-
-    <div class="column widget-col">
-      <div class="widget-wrapper">
-        <app-item-reminders [itemId]="item.id"></app-item-reminders>
-      </div>
-
-      <div class="lending-info-card" *ngIf="(isLent || isBorrowed) && item.lending">
-        <div class="card-header" [class.borrowed-header]="isBorrowed">
-          <i class="fa" [ngClass]="isLent ? 'fa-handshake' : 'fa-reply-all'"></i>
-          <span>{{ (isLent ? 'STATUS.LENT' : 'STATUS.BORROWED') | translate }}</span>
-        </div>
-        <div class="card-body">
-          <div class="lending-main-info">
-            <strong class="person-name">{{ item.lending.personName }}</strong>
-            <div class="lending-value">{{ item.lending.valueAtLending }} $</div>
-          </div>
-          <div class="lending-dates">
-            <div class="date-row">
-              <label>{{ 'LENDING_MODAL.DATE_GIVEN' | translate }}</label>
-              <span>{{ item.lending.dateGiven | date:'dd.MM.yyyy' }}</span>
-            </div>
-            <div class="date-row" *ngIf="item.lending.expectedReturnDate">
-              <label>{{ 'LENDING_MODAL.EXPECTED_RETURN' | translate }}</label>
-              <span class="return-deadline">{{ item.lending.expectedReturnDate | date:'dd.MM.yyyy' }}</span>
-            </div>
-          </div>
-          <div class="lending-comment-box" *ngIf="item.lending.comment">
-            <i class="fa fa-quote-left"></i>
-            <p>{{ item.lending.comment }}</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
   </div>
-</div>
-
-<ng-template #loader>
+} @else {
   <div class="loader-overlay"><i class="fa fa-spinner fa-spin"></i></div>
-</ng-template>
+}
+

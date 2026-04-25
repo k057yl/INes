@@ -4,52 +4,59 @@
       <div class="logo-circle"><i class="fa fa-envelope-open-text"></i></div>
       <h2>{{ 'CONFIRM_REGISTRATION_PAGE.TITLE' | translate }}</h2>
       <p>{{ 'CONFIRM_REGISTRATION_PAGE.SUBTITLE' | translate }}</p>
-      <small class="target-email" *ngIf="email">
-        {{ email }}
-      </small>
+      @if (email) {
+        <small class="target-email">
+          {{ email }}
+        </small>
+      }
     </header>
 
     <div class="otp-wrapper">
-      <input 
-        type="text" 
-        inputmode="numeric" 
-        pattern="\d*" 
-        maxlength="6" 
+      <input
+        type="text"
+        inputmode="numeric"
+        pattern="\d*"
+        maxlength="6"
         class="real-otp-input"
         [(ngModel)]="otpCode"
         (ngModelChange)="onOtpChange($event)"
         autocomplete="one-time-code"
         autofocus
-      >
-      
-      <div class="otp-container">
-        <div 
-          *ngFor="let i of [0,1,2,3,4,5]" 
-          class="otp-input" 
-          [class.filled]="otpCode.length > i"
-          [class.active]="otpCode.length === i"
         >
-          {{ otpCode[i] || '' }}
+
+        <div class="otp-container">
+          @for (i of [0,1,2,3,4,5]; track i) {
+            <div
+              class="otp-input"
+              [class.filled]="otpCode.length > i"
+              [class.active]="otpCode.length === i"
+              >
+              {{ otpCode[i] || '' }}
+            </div>
+          }
         </div>
       </div>
+
+      @if (error) {
+        <div class="inest-status-box error">
+          <i class="fa fa-exclamation-circle"></i> {{ error | translate }}
+        </div>
+      }
+
+      @if (message) {
+        <div class="inest-status-box success">
+          <i class="fa fa-check-double"></i> {{ message | translate }}
+        </div>
+      }
+
+      <button class="inest-btn-primary" (click)="confirm()" [disabled]="otpCode.length < 6">
+        {{ 'CONFIRM_REGISTRATION_PAGE.SUBMIT_BTN' | translate }}
+        <i class="fa fa-check" style="margin-left: 8px;"></i>
+      </button>
+
+      <footer class="inest-form-footer">
+        <span>{{ 'CONFIRM_REGISTRATION_PAGE.RESEND_TEXT' | translate }}</span>
+        <a href="javascript:void(0)" (click)="resendCode()">{{ 'CONFIRM_REGISTRATION_PAGE.RESEND_LINK' | translate }}</a>
+      </footer>
     </div>
-
-    <div class="inest-status-box error" *ngIf="error">
-      <i class="fa fa-exclamation-circle"></i> {{ error | translate }}
-    </div>
-
-    <div class="inest-status-box success" *ngIf="message">
-      <i class="fa fa-check-double"></i> {{ message | translate }}
-    </div>
-
-    <button class="inest-btn-primary" (click)="confirm()" [disabled]="otpCode.length < 6">
-      {{ 'CONFIRM_REGISTRATION_PAGE.SUBMIT_BTN' | translate }}
-      <i class="fa fa-check" style="margin-left: 8px;"></i>
-    </button>
-
-    <footer class="inest-form-footer">
-      <span>{{ 'CONFIRM_REGISTRATION_PAGE.RESEND_TEXT' | translate }}</span>
-      <a href="javascript:void(0)" (click)="resendCode()">{{ 'CONFIRM_REGISTRATION_PAGE.RESEND_LINK' | translate }}</a>
-    </footer>
   </div>
-</div>

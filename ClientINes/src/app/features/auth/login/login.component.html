@@ -1,6 +1,6 @@
 <div class="inest-form-page">
   <div class="inest-form-card">
-    
+
     <header class="inest-form-header">
       <div class="logo-circle">
         <i class="fa fa-sign-in-alt"></i>
@@ -10,63 +10,67 @@
     </header>
 
     <form (ngSubmit)="login()" #loginForm="ngForm">
-      
+
       <div class="inest-form-group">
         <label>{{ 'AUTH_PAGE.EMAIL' | translate }}</label>
         <div class="inest-input-wrapper">
           <i class="fa fa-envelope inest-field-icon-left"></i>
-          <input [(ngModel)]="email" 
-                 name="email" 
-                 required 
-                 autocomplete="email"
-                 [placeholder]="'AUTH_PAGE.EMAIL_PHL' | translate">
+          <input [(ngModel)]="email"
+            name="email"
+            required
+            autocomplete="email"
+            [placeholder]="'AUTH_PAGE.EMAIL_PHL' | translate">
+          </div>
         </div>
-      </div>
 
-      <div class="inest-form-group">
-        <label>{{ 'AUTH_PAGE.PASSWORD' | translate }}</label>
-        <div class="inest-input-wrapper">
-          <i class="fa fa-lock inest-field-icon-left"></i>
-          <input [type]="showPassword ? 'text' : 'password'" 
-                 [(ngModel)]="password" 
-                 name="password" 
-                 required 
-                 autocomplete="current-password"
-                 [placeholder]="'AUTH_PAGE.PASSWORD_ENTER_PHL' | translate">
-          
-            <button type="button" class="input-action" (click)="togglePassword()">
-              <i class="fa" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
-            </button>
+        <div class="inest-form-group">
+          <label>{{ 'AUTH_PAGE.PASSWORD' | translate }}</label>
+          <div class="inest-input-wrapper">
+            <i class="fa fa-lock inest-field-icon-left"></i>
+            <input [type]="showPassword ? 'text' : 'password'"
+              [(ngModel)]="password"
+              name="password"
+              required
+              autocomplete="current-password"
+              [placeholder]="'AUTH_PAGE.PASSWORD_ENTER_PHL' | translate">
+
+              <button type="button" class="input-action" (click)="togglePassword()">
+                <i class="fa" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+              </button>
+            </div>
+          </div>
+
+          @if (error) {
+            <div class="inest-status-box error">
+              <i class="fa fa-exclamation-triangle"></i>
+              {{ error | translate }}
+            </div>
+          }
+
+          <button type="submit"
+            class="inest-btn-primary"
+            [disabled]="!loginForm.valid">
+            {{ 'AUTH_PAGE.LOGIN_BTN' | translate }}
+          </button>
+        </form>
+
+        <div class="inest-form-divider">
+          <span>{{ 'AUTH_PAGE.OR' | translate }}</span>
         </div>
+
+        <button type="button" class="inest-btn-outline" (click)="toggleGoogle()">
+          <i class="fab fa-google"></i>
+          {{ (showGoogle ? 'AUTH_PAGE.HIDE_GOOGLE_BTN' : 'AUTH_PAGE.SHOW_GOOGLE_BTN') | translate }}
+        </button>
+
+        @if (showGoogle) {
+          <div id="googleBtn" class="google-btn-container"></div>
+        }
+
+        <footer class="inest-form-footer">
+          <span>{{ 'AUTH_PAGE.NO_ACC_YET' | translate }}</span>
+          <a routerLink="/register">{{ 'AUTH_PAGE.GO_TO_REGISTER' | translate }}</a>
+        </footer>
+
       </div>
-
-      <div class="inest-status-box error" *ngIf="error">
-        <i class="fa fa-exclamation-triangle"></i> 
-        {{ error | translate }}
-      </div>
-
-      <button type="submit" 
-              class="inest-btn-primary" 
-              [disabled]="!loginForm.valid">
-        {{ 'AUTH_PAGE.LOGIN_BTN' | translate }}
-      </button>
-    </form>
-
-    <div class="inest-form-divider">
-      <span>{{ 'AUTH_PAGE.OR' | translate }}</span>
     </div>
-
-    <button type="button" class="inest-btn-outline" (click)="toggleGoogle()">
-      <i class="fab fa-google"></i>
-      {{ (showGoogle ? 'AUTH_PAGE.HIDE_GOOGLE_BTN' : 'AUTH_PAGE.SHOW_GOOGLE_BTN') | translate }}
-    </button>
-
-    <div id="googleBtn" *ngIf="showGoogle" class="google-btn-container"></div>
-
-    <footer class="inest-form-footer">
-      <span>{{ 'AUTH_PAGE.NO_ACC_YET' | translate }}</span>
-      <a routerLink="/register">{{ 'AUTH_PAGE.GO_TO_REGISTER' | translate }}</a>
-    </footer>
-
-  </div>
-</div>

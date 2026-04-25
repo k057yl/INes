@@ -1,6 +1,6 @@
 <header class="header">
   <div class="header-main">
-    
+
     <button class="menu-toggle" (click)="toggleMenu($event)" [class.active]="isMenuOpen()">
       <i class="fa" [class.fa-bars]="!isMenuOpen()" [class.fa-times]="isMenuOpen()"></i>
     </button>
@@ -16,7 +16,7 @@
         <i class="fa fa-th-large"></i> {{ 'HEADER.HOME' | translate }}
       </a>
 
-      <ng-container *ngIf="user$ | async">
+      @if (user$ | async) {
         <a routerLink="/items-list" routerLinkActive="active" (click)="closeMenu()">
           <i class="fa fa-boxes"></i> {{ 'HEADER.ITEMS' | translate }}
         </a>
@@ -26,43 +26,48 @@
         <a routerLink="/settings" routerLinkActive="active" (click)="closeMenu()">
           <i class="fa fa-cog"></i> {{ 'HEADER.SETTINGS' | translate }}
         </a>
-      </ng-container>
-      
+      }
+
       <hr class="mobile-divider">
 
-      <ng-container *ngIf="!(user$ | async);">
+      @if (!(user$ | async);) {
         <a routerLink="/login" routerLinkActive="active" (click)="closeMenu()" class="auth-link mobile-only">
           <i class="fa fa-sign-in-alt"></i> {{ 'HEADER.LOGIN' | translate }}
         </a>
         <a routerLink="/register" routerLinkActive="active" (click)="closeMenu()" class="auth-link mobile-only">
           <i class="fa fa-sign-in-alt"></i> {{ 'HEADER.REGISTERATION' | translate }}
         </a>
-      </ng-container>
+      }
     </nav>
 
     <div class="actions">
-      <div class="create-dropdown" *ngIf="user$ | async" [class.open]="isCreateMenuOpen()">
-        <button class="create-trigger" (click)="toggleCreateMenu($event)" [title]="'COMMON.CREATE' | translate">
-          <i class="fa fa-plus"></i>
-          <span class="desktop-only">{{ 'COMMON.CREATE' | translate }}</span>
-        </button>
-
-        <div class="create-menu" *ngIf="isCreateMenuOpen()" (click)="$event.stopPropagation()">
-          <button (click)="openCreateItem()">
-            <i class="fa fa-box"></i>
-            <span>{{ 'LOCATION_CARD.BTN.ITEM' | translate }}</span>
+      @if (user$ | async) {
+        <div class="create-dropdown" [class.open]="isCreateMenuOpen()">
+          <button class="create-trigger" (click)="toggleCreateMenu($event)" [title]="'COMMON.CREATE' | translate">
+            <i class="fa fa-plus"></i>
+            <span class="desktop-only">{{ 'COMMON.CREATE' | translate }}</span>
           </button>
-          <button (click)="openCreateLocation()">
-            <i class="fa fa-folder-plus"></i>
-            <span>{{ 'LOCATION_CARD.BTN.LOCATION' | translate }}</span>
-          </button>
+          @if (isCreateMenuOpen()) {
+            <div class="create-menu" (click)="$event.stopPropagation()">
+              <button (click)="openCreateItem()">
+                <i class="fa fa-box"></i>
+                <span>{{ 'LOCATION_CARD.BTN.ITEM' | translate }}</span>
+              </button>
+              <button (click)="openCreateLocation()">
+                <i class="fa fa-folder-plus"></i>
+                <span>{{ 'LOCATION_CARD.BTN.LOCATION' | translate }}</span>
+              </button>
+            </div>
+          }
         </div>
-      </div>
+      }
 
-      <div class="user-box" *ngIf="user$ | async as user" [title]="user.email">
-        <i class="fa fa-user-circle"></i>
-        <strong>{{ user.email }}</strong>
-      </div>
+      @if (user$ | async; as user) {
+        <div class="user-box" [title]="user.email">
+          <i class="fa fa-user-circle"></i>
+          <strong>{{ user.email }}</strong>
+        </div>
+      }
 
       <button class="theme-toggle" (click)="toggleTheme()" [title]="'COMMON.CHANGE_THEME_TOOLTIP' | translate">
         {{ themeService.isDarkTheme() ? '🌙' : '☀️' }}
@@ -75,19 +80,27 @@
           <i class="fa fa-chevron-down" [class.rotate]="isLangMenuOpen()"></i>
         </button>
 
-        <div class="lang-menu" *ngIf="isLangMenuOpen()" (click)="$event.stopPropagation()">
-          <button *ngFor="let lang of languages" (click)="changeLang(lang.code)" [class.selected]="currentLang === lang.code">
-            <span class="flag">{{ lang.flag }}</span>
-            {{ lang.label }}
-          </button>
-        </div>
+        @if (isLangMenuOpen()) {
+          <div class="lang-menu" (click)="$event.stopPropagation()">
+            @for (lang of languages; track lang) {
+              <button (click)="changeLang(lang.code)" [class.selected]="currentLang === lang.code">
+                <span class="flag">{{ lang.flag }}</span>
+                {{ lang.label }}
+              </button>
+            }
+          </div>
+        }
       </div>
 
-      <button class="logout-icon-btn" *ngIf="user$ | async" (click)="onLogout()" [title]="'COMMON.EXIT' | translate">
-        <i class="fa fa-sign-out-alt"></i>
-      </button>
+      @if (user$ | async) {
+        <button class="logout-icon-btn" (click)="onLogout()" [title]="'COMMON.EXIT' | translate">
+          <i class="fa fa-sign-out-alt"></i>
+        </button>
+      }
     </div>
   </div>
 </header>
 
-<div class="overlay" *ngIf="isMenuOpen()" (click)="closeMenu()"></div>
+@if (isMenuOpen()) {
+  <div class="overlay" (click)="closeMenu()"></div>
+}

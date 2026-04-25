@@ -6,57 +6,63 @@
     </button>
 
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
-      
+
       <h2 [style.color]="form.controls.color.value || 'var(--accent-color)'">
-        <i class="fa" [ngClass]="isEdit ? 'fa-pen' : 'fa-map-marker-alt'"></i> 
+        <i class="fa" [ngClass]="isEdit ? 'fa-pen' : 'fa-map-marker-alt'"></i>
         {{ (isEdit ? 'CREATE_LOCATION_PAGE.TITLE_EDIT' : 'CREATE_LOCATION_PAGE.TITLE_CREATE') | translate }}
       </h2>
 
       <div class="form-group">
         <label>{{ 'CREATE_LOCATION_PAGE.NAME' | translate }}</label>
-        <input type="text" formControlName="name" 
-               [placeholder]="'CREATE_LOCATION_PAGE.NAME_PLACEHOLDER' | translate" autofocus>
-      </div>
+        <input type="text" formControlName="name"
+          [placeholder]="'CREATE_LOCATION_PAGE.NAME_PLACEHOLDER' | translate" autofocus>
+        </div>
 
-      <div class="form-group picker-wrapper">
-        <label>{{ 'CREATE_LOCATION_PAGE.SELECT_COLOR' | translate }}</label>
-        <div class="color-selector-container">
-          <div class="preset-colors-grid">
-            <div *ngFor="let color of presetColors" 
-                 class="color-tile" 
-                 [style.background-color]="color"
-                 [class.active]="form.controls.color.value === color"
-                 (click)="selectPresetColor(color)">
-              <i class="fa fa-check" *ngIf="form.controls.color.value === color"></i>
-            </div>
+        <div class="form-group picker-wrapper">
+          <label>{{ 'CREATE_LOCATION_PAGE.SELECT_COLOR' | translate }}</label>
+          <div class="color-selector-container">
+            <div class="preset-colors-grid">
+              @for (color of presetColors; track color) {
+                <div
+                  class="color-tile"
+                  [style.background-color]="color"
+                  [class.active]="form.controls.color.value === color"
+                  (click)="selectPresetColor(color)">
+                  @if (form.controls.color.value === color) {
+                    <i class="fa fa-check"></i>
+                  }
+                </div>
+              }
 
-            <div class="color-tile custom-picker-tile" (click)="openColorPicker()"
-                 [class.active]="showColorPicker"
-                 [style.background-color]="form.controls.color.value.startsWith('var') ? '' : form.controls.color.value">
-              <i class="fa" [ngClass]="showColorPicker ? 'fa-times' : 'fa-eye-dropper'"></i>
+              <div class="color-tile custom-picker-tile" (click)="openColorPicker()"
+                [class.active]="showColorPicker"
+                [style.background-color]="form.controls.color.value.startsWith('var') ? '' : form.controls.color.value">
+                <i class="fa" [ngClass]="showColorPicker ? 'fa-times' : 'fa-eye-dropper'"></i>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="actions">
-        <button type="button" class="inest-btn-cancel" (click)="cancel()">
-          {{ 'COMMON.CANCEL' | translate }}
-        </button>
-        <button type="submit" class="inest-btn-primary" [disabled]="form.invalid">
-          {{ 'COMMON.SAVE' | translate }}
-        </button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<div class="color-picker-overlay" *ngIf="showColorPicker" (click)="showColorPicker = false">
-  <div class="color-popup" (click)="$event.stopPropagation()">
-    <color-chrome [color]="tempColor" (onChangeComplete)="tempColor = $event.color.hex"></color-chrome>
-    <div class="color-actions">
-      <button type="button" class="btn-cancel" (click)="showColorPicker = false">{{ 'COMMON.CANCEL' | translate }}</button>
-      <button type="button" class="btn-confirm" (click)="confirmColor()">OK</button>
+        <div class="actions">
+          <button type="button" class="inest-btn-cancel" (click)="cancel()">
+            {{ 'COMMON.CANCEL' | translate }}
+          </button>
+          <button type="submit" class="inest-btn-primary" [disabled]="form.invalid">
+            {{ 'COMMON.SAVE' | translate }}
+          </button>
+        </div>
+      </form>
     </div>
   </div>
-</div>
+
+  @if (showColorPicker) {
+    <div class="color-picker-overlay" (click)="showColorPicker = false">
+      <div class="color-popup" (click)="$event.stopPropagation()">
+        <color-chrome [color]="tempColor" (onChangeComplete)="tempColor = $event.color.hex"></color-chrome>
+        <div class="color-actions">
+          <button type="button" class="btn-cancel" (click)="showColorPicker = false">{{ 'COMMON.CANCEL' | translate }}</button>
+          <button type="button" class="btn-confirm" (click)="confirmColor()">OK</button>
+        </div>
+      </div>
+    </div>
+  }

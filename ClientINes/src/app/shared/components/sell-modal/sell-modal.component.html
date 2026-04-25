@@ -8,69 +8,76 @@
     <form [formGroup]="sellForm" (ngSubmit)="onSubmit()">
       <div class="form-group">
         <label>{{ 'SELL_PAGE.PRICE' | translate }}</label>
-        <input type="number" 
-               formControlName="salePrice" 
-               step="0.01" 
-               placeholder="0.00"
-               [class.is-invalid]="isControlInvalid('salePrice', 'min')">
-        
-        <div class="error-container">
-          <small class="error-text" *ngIf="isControlInvalid('salePrice', 'min')">
-            {{ 'ERRORS.NEGATIVE_NUMBER' | translate }}
-          </small>
+        <input type="number"
+          formControlName="salePrice"
+          step="0.01"
+          placeholder="0.00"
+          [class.is-invalid]="isControlInvalid('salePrice', 'min')">
+
+          <div class="error-container">
+            @if (isControlInvalid('salePrice', 'min')) {
+              <small class="error-text">
+                {{ 'ERRORS.NEGATIVE_NUMBER' | translate }}
+              </small>
+            }
+          </div>
         </div>
+
+        <div class="form-group">
+          <label>{{ 'SELL_PAGE.DATE' | translate }}</label>
+          <input type="date"
+            formControlName="soldDate"
+            [class.is-invalid]="isControlInvalid('soldDate', 'futureDate')">
+
+            <div class="error-container">
+              @if (isControlInvalid('soldDate', 'futureDate')) {
+                <small class="error-text">
+                  {{ 'ERRORS.FUTURE_DATE' | translate }}
+                </small>
+              }
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="label-row">
+              <label>{{ 'SELL_PAGE.SOLD_ON' | translate }}</label>
+              <button type="button" class="add-platform-btn" (click)="addPlatform()">
+                <i class="fa fa-plus"></i> {{ 'SELL_PAGE.CREATE' | translate }}
+              </button>
+            </div>
+            <div class="select-wrapper">
+              <select formControlName="platformId">
+                <option [value]="null">-- {{ 'SELL_PAGE.SELECT_PLATFORM' | translate }} --</option>
+                @for (p of platforms; track p) {
+                  <option [value]="p.id">{{ p.name }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>{{ 'SELL_PAGE.COMMENT' | translate }}</label>
+            <textarea formControlName="comment" rows="3"></textarea>
+          </div>
+
+          <footer class="modal-actions">
+            <button type="button" class="btn-cancel" (click)="onCancel()">
+              {{ 'COMMON.CANCEL' | translate }}
+            </button>
+            <button type="submit" class="btn-confirm" [disabled]="sellForm.invalid">
+              {{ 'COMMON.SELL' | translate }}
+            </button>
+          </footer>
+        </form>
       </div>
+    </div>
 
-      <div class="form-group">
-        <label>{{ 'SELL_PAGE.DATE' | translate }}</label>
-        <input type="date" 
-               formControlName="soldDate"
-               [class.is-invalid]="isControlInvalid('soldDate', 'futureDate')">
-        
-        <div class="error-container">
-          <small class="error-text" *ngIf="isControlInvalid('soldDate', 'futureDate')">
-            {{ 'ERRORS.FUTURE_DATE' | translate }}
-          </small>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <div class="label-row">
-          <label>{{ 'SELL_PAGE.SOLD_ON' | translate }}</label>
-          <button type="button" class="add-platform-btn" (click)="addPlatform()">
-            <i class="fa fa-plus"></i> {{ 'SELL_PAGE.CREATE' | translate }}
-          </button>
-        </div>
-        <div class="select-wrapper">
-          <select formControlName="platformId">
-            <option [value]="null">-- {{ 'SELL_PAGE.SELECT_PLATFORM' | translate }} --</option>
-            <option *ngFor="let p of platforms" [value]="p.id">{{ p.name }}</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>{{ 'SELL_PAGE.COMMENT' | translate }}</label>
-        <textarea formControlName="comment" rows="3"></textarea>
-      </div>
-
-      <footer class="modal-actions">
-        <button type="button" class="btn-cancel" (click)="onCancel()">
-          {{ 'COMMON.CANCEL' | translate }}
-        </button>
-        <button type="submit" class="btn-confirm" [disabled]="sellForm.invalid">
-          {{ 'COMMON.SELL' | translate }}
-        </button>
-      </footer>
-    </form>
-  </div>
-</div>
-
-<app-inest-modal 
-  *ngIf="showPlatformModal"
-  mode="input"
-  [title]="'PLATFORM_PAGE.CREATE'"
-  [confirmText]="'COMMON.SAVE'"
-  (confirmed)="onPlatformConfirmed($event)"
-  (cancelled)="showPlatformModal = false">
-</app-inest-modal>
+    @if (showPlatformModal) {
+      <app-inest-modal
+        mode="input"
+        [title]="'PLATFORM_PAGE.CREATE'"
+        [confirmText]="'COMMON.SAVE'"
+        (confirmed)="onPlatformConfirmed($event)"
+        (cancelled)="showPlatformModal = false">
+      </app-inest-modal>
+    }

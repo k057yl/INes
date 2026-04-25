@@ -1,6 +1,6 @@
 <div class="settings-page" [class.is-loading]="isLoading">
   <div class="settings-container">
-    
+
     <aside class="settings-sidebar">
       <header class="sidebar-header hide-on-mobile">
         <div class="logo-box"><i class="fa fa-terminal"></i></div>
@@ -9,15 +9,15 @@
 
       <nav class="nav-menu">
         <button [class.active]="activeTab === 'general'" (click)="switchTab('general')">
-          <i class="fa fa-sliders-h"></i> 
+          <i class="fa fa-sliders-h"></i>
           <span class="btn-text">{{ 'SETTINGS_PAGE.GENERAL_TAB' | translate }}</span>
         </button>
         <button [class.active]="activeTab === 'categories'" (click)="switchTab('categories')">
-          <i class="fa fa-tags"></i> 
+          <i class="fa fa-tags"></i>
           <span class="btn-text">{{ 'SETTINGS_PAGE.CATEGORIES_TAB' | translate }}</span>
         </button>
         <button [class.active]="activeTab === 'platforms'" (click)="switchTab('platforms')">
-          <i class="fa fa-share-alt"></i> 
+          <i class="fa fa-share-alt"></i>
           <span class="btn-text">{{ 'SETTINGS_PAGE.PLATFORMS_TAB' | translate }}</span>
         </button>
       </nav>
@@ -31,114 +31,122 @@
 
     <main class="settings-content">
       <div class="mobile-top-bar show-on-mobile">
-         <button class="back-link" routerLink="/main">
-           <i class="fa fa-chevron-left"></i> {{ 'COMMON.BACK' | translate }}
-         </button>
+        <button class="back-link" routerLink="/main">
+          <i class="fa fa-chevron-left"></i> {{ 'COMMON.BACK' | translate }}
+        </button>
       </div>
 
-      <section *ngIf="activeTab === 'general'" class="content-section animate-fade">
-        <h2 class="section-title">{{ 'SETTINGS_PAGE.TITLE' | translate }}</h2>
-        <div class="settings-grid">
-          <div class="config-card">
-            <div class="card-info">
-              <i class="fa fa-shopping-cart"></i>
-              <div class="text">
-                <span class="label">{{ 'SETTINGS_PAGE.SALES_MODULE' | translate }}</span>
-                <p>{{ 'SETTINGS_PAGE.SALES_SUB' | translate }}</p>
+      @if (activeTab === 'general') {
+        <section class="content-section animate-fade">
+          <h2 class="section-title">{{ 'SETTINGS_PAGE.TITLE' | translate }}</h2>
+          <div class="settings-grid">
+            <div class="config-card">
+              <div class="card-info">
+                <i class="fa fa-shopping-cart"></i>
+                <div class="text">
+                  <span class="label">{{ 'SETTINGS_PAGE.SALES_MODULE' | translate }}</span>
+                  <p>{{ 'SETTINGS_PAGE.SALES_SUB' | translate }}</p>
+                </div>
               </div>
+              <label class="inest-switch">
+                <input type="checkbox" [checked]="featureService.isSalesModeEnabled()" (change)="featureService.toggleSalesMode(s.checked)" #s>
+                <span class="inest-slider"></span>
+              </label>
             </div>
-            <label class="inest-switch">
-              <input type="checkbox" [checked]="featureService.isSalesModeEnabled()" (change)="featureService.toggleSalesMode(s.checked)" #s>
-              <span class="inest-slider"></span>
-            </label>
-          </div>
-
-          <div class="config-card">
-            <div class="card-info">
-              <i class="fa fa-handshake"></i>
-              <div class="text">
-                <span class="label">{{ 'SETTINGS_PAGE.LENDING_MODULE' | translate }}</span>
-                <p>{{ 'SETTINGS_PAGE.LENDING_SUB' | translate }}</p>
+            <div class="config-card">
+              <div class="card-info">
+                <i class="fa fa-handshake"></i>
+                <div class="text">
+                  <span class="label">{{ 'SETTINGS_PAGE.LENDING_MODULE' | translate }}</span>
+                  <p>{{ 'SETTINGS_PAGE.LENDING_SUB' | translate }}</p>
+                </div>
               </div>
-            </div>
-            <label class="inest-switch">
-              <input type="checkbox" [checked]="featureService.isLendingModeEnabled()" (change)="featureService.toggleLendingMode(l.checked)" #l>
-              <span class="inest-slider"></span>
-            </label>
-          </div>
-        </div>
-      </section>
-
-      <section *ngIf="activeTab === 'categories'" class="content-section animate-fade">
-        <div class="section-header">
-          <h2 class="section-title">{{ 'SETTINGS_PAGE.CATEGORIES_TAB' | translate }}</h2>
-          <button class="inest-btn-ribbon-add admin-add-btn" (click)="addCategory()">
-            <i class="fa fa-plus"></i>
-            <span>{{ 'COMMON.ADD' | translate }}</span>
-          </button>
-        </div>
-
-        <div class="entities-grid">
-          <div class="entity-item" *ngFor="let cat of categories">
-            <div class="item-main">
-              <span class="color-dot" [style.background]="cat.color || 'var(--turquoise)'"></span>
-              <span class="name">{{ cat.name }}</span>
-            </div>
-            <div class="item-actions">
-              <button class="inest-action-btn" (click)="renameCategory(cat)" [title]="'COMMON.RENAME' | translate">
-                <i class="fa-solid fa-pen"></i>
-              </button>
-
-              <button class="inest-action-btn is-danger" (click)="deleteCategory(cat)" [title]="'COMMON.DELETE' | translate">
-                <i class="fa-solid fa-trash"></i>
-              </button>
+              <label class="inest-switch">
+                <input type="checkbox" [checked]="featureService.isLendingModeEnabled()" (change)="featureService.toggleLendingMode(l.checked)" #l>
+                <span class="inest-slider"></span>
+              </label>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      }
 
-      <section *ngIf="activeTab === 'platforms'" class="content-section animate-fade">
-        <div class="section-header">
-          <h2 class="section-title">{{ 'SETTINGS_PAGE.PLATFORMS_TAB' | translate }}</h2>
-          <button class="inest-btn-ribbon-add admin-add-btn" (click)="addPlatform()">
-            <i class="fa fa-plus"></i>
-            <span>{{ 'COMMON.ADD' | translate }}</span>
-          </button>
-        </div>
-
-        <div class="entities-grid">
-          <div class="entity-item" *ngFor="let plat of platforms">
-            <div class="item-main"><span class="name">{{ plat.name }}</span></div>
-            <div class="item-actions">
-              <button class="inest-action-btn" (click)="renamePlatform(plat)" [title]="'COMMON.RENAME' | translate">
-                <i class="fa-solid fa-pen"></i>
-              </button>
-              <button class="inest-action-btn is-danger" (click)="deletePlatform(plat)" [title]="'COMMON.DELETE' | translate">
-                <i class="fa-solid fa-trash"></i>
-              </button>
-            </div>
+      @if (activeTab === 'categories') {
+        <section class="content-section animate-fade">
+          <div class="section-header">
+            <h2 class="section-title">{{ 'SETTINGS_PAGE.CATEGORIES_TAB' | translate }}</h2>
+            <button class="inest-btn-ribbon-add admin-add-btn" (click)="addCategory()">
+              <i class="fa fa-plus"></i>
+              <span>{{ 'COMMON.ADD' | translate }}</span>
+            </button>
           </div>
-        </div>
-      </section>
+          <div class="entities-grid">
+            @for (cat of categories; track cat) {
+              <div class="entity-item">
+                <div class="item-main">
+                  <span class="color-dot" [style.background]="cat.color || 'var(--turquoise)'"></span>
+                  <span class="name">{{ cat.name }}</span>
+                </div>
+                <div class="item-actions">
+                  <button class="inest-action-btn" (click)="renameCategory(cat)" [title]="'COMMON.RENAME' | translate">
+                    <i class="fa-solid fa-pen"></i>
+                  </button>
+                  <button class="inest-action-btn is-danger" (click)="deleteCategory(cat)" [title]="'COMMON.DELETE' | translate">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+        </section>
+      }
+
+      @if (activeTab === 'platforms') {
+        <section class="content-section animate-fade">
+          <div class="section-header">
+            <h2 class="section-title">{{ 'SETTINGS_PAGE.PLATFORMS_TAB' | translate }}</h2>
+            <button class="inest-btn-ribbon-add admin-add-btn" (click)="addPlatform()">
+              <i class="fa fa-plus"></i>
+              <span>{{ 'COMMON.ADD' | translate }}</span>
+            </button>
+          </div>
+          <div class="entities-grid">
+            @for (plat of platforms; track plat) {
+              <div class="entity-item">
+                <div class="item-main"><span class="name">{{ plat.name }}</span></div>
+                <div class="item-actions">
+                  <button class="inest-action-btn" (click)="renamePlatform(plat)" [title]="'COMMON.RENAME' | translate">
+                    <i class="fa-solid fa-pen"></i>
+                  </button>
+                  <button class="inest-action-btn is-danger" (click)="deletePlatform(plat)" [title]="'COMMON.DELETE' | translate">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+        </section>
+      }
     </main>
   </div>
 </div>
 
-<app-inest-modal
-  *ngIf="showEntityModal"
-  mode="input"
-  [title]="(modalMode === 'create' ? 'COMMON.CREATE' : 'COMMON.EDIT')"
-  [name]="selectedEntity?.name || ''"
-  (confirmed)="handleEntityConfirm($event)"
-  (cancelled)="closeModals()">
-</app-inest-modal>
+@if (showEntityModal) {
+  <app-inest-modal
+    mode="input"
+    [title]="(modalMode === 'create' ? 'COMMON.CREATE' : 'COMMON.EDIT')"
+    [name]="selectedEntity?.name || ''"
+    (confirmed)="handleEntityConfirm($event)"
+    (cancelled)="closeModals()">
+  </app-inest-modal>
+}
 
-<app-inest-modal
-  *ngIf="showDeleteModal"
-  mode="delete"
-  [title]="'COMMON.DELETE'"
-  [message]="(modalType === 'category' ? 'SETTINGS_PAGE.MODAL.DELETE_CATEGORY' : 'SETTINGS_PAGE.MODAL.DELETE_PLATFORM')"
-  [confirmText]="'COMMON.DELETE'"
-  (confirmed)="handleDeleteConfirm()" 
-  (cancelled)="closeModals()">
-</app-inest-modal>
+@if (showDeleteModal) {
+  <app-inest-modal
+    mode="delete"
+    [title]="'COMMON.DELETE'"
+    [message]="(modalType === 'category' ? 'SETTINGS_PAGE.MODAL.DELETE_CATEGORY' : 'SETTINGS_PAGE.MODAL.DELETE_PLATFORM')"
+    [confirmText]="'COMMON.DELETE'"
+    (confirmed)="handleDeleteConfirm()"
+    (cancelled)="closeModals()">
+  </app-inest-modal>
+}

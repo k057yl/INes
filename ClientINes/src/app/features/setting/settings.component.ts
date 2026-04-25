@@ -1,5 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { TranslateModule } from '@ngx-translate/core';
 import { RouterModule } from '@angular/router';
 import { finalize } from 'rxjs';
@@ -20,7 +20,7 @@ type SettingsTab = 'general' | 'categories' | 'platforms';
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [CommonModule, TranslateModule, RouterModule, InestModalComponent],
+  imports: [TranslateModule, RouterModule, InestModalComponent],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.scss'
 })

@@ -6,38 +6,46 @@
 
 <app-footer></app-footer>
 
-<app-inest-modal *ngIf="modal.activeModal === 'confirm' && modal.config" 
-  [mode]="modal.config.mode" 
-  [title]="modal.config.title" 
-  [message]="modal.config.message" 
-  [name]="modal.config.name || ''" 
-  [confirmText]="modal.config.confirmText" 
-  [cancelText]="modal.config.cancelText"
-  (confirmed)="modal.confirm($event)" 
-  (cancelled)="modal.close()">
-</app-inest-modal>
+@if (modal.activeModal === 'confirm' && modal.config) {
+  <app-inest-modal
+    [mode]="modal.config.mode"
+    [title]="modal.config.title"
+    [message]="modal.config.message"
+    [name]="modal.config.name || ''"
+    [confirmText]="modal.config.confirmText"
+    [cancelText]="modal.config.cancelText"
+    (confirmed)="modal.confirm($event)"
+    (cancelled)="modal.close()">
+  </app-inest-modal>
+}
 
-<app-sell-modal *ngIf="modal.activeModal === 'sell' && modal.selectedItem" 
-  [item]="modal.selectedItem"
-  (close)="modal.close()" 
-  (confirm)="modal.confirm($event)">
-</app-sell-modal>
+@if (modal.activeModal === 'sell' && modal.selectedItem) {
+  <app-sell-modal
+    [item]="modal.selectedItem"
+    (close)="modal.close()"
+    (confirm)="modal.confirm($event)">
+  </app-sell-modal>
+}
 
-<app-lend-item-modal *ngIf="modal.activeModal === 'lend' && modal.selectedItem" 
-  [item]="modal.selectedItem"
-  [isOpen]="true" 
-  (close)="modal.close()" 
-  (confirm)="modal.confirm($event)">
-</app-lend-item-modal>
+@if (modal.activeModal === 'lend' && modal.selectedItem) {
+  <app-lend-item-modal
+    [item]="modal.selectedItem"
+    [isOpen]="true"
+    (close)="modal.close()"
+    (confirm)="modal.confirm($event)">
+  </app-lend-item-modal>
+}
 
-<app-item-form-modal 
-  *ngIf="modal.activeModal === 'itemForm'"
-  [item]="modal.selectedItem"
-  [parentId]="modal.currentParentId">
-</app-item-form-modal>
+@if (modal.activeModal === 'itemForm') {
+  <app-item-form-modal
+    [item]="modal.selectedItem"
+    [parentId]="modal.currentParentId">
+  </app-item-form-modal>
+}
 
-<app-location-form-modal 
-  *ngIf="modal.activeModal === 'locationForm'"
-  [location]="modal.selectedLocation"
-  [parentId]="modal.currentParentId">
-</app-location-form-modal>
+@if (modal.activeModal === 'locationForm') {
+  <app-location-form-modal
+    [location]="modal.selectedLocation"
+    [parentId]="modal.currentParentId">
+  </app-location-form-modal>
+}

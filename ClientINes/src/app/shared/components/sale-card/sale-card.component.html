@@ -2,9 +2,11 @@
   <div class="sale-main-info">
     <div class="item-details">
       <span class="name">{{ sale.itemName }}</span>
-      <span class="platform" *ngIf="sale.platformName">
-        <i class="fa fa-shopping-cart"></i> {{ sale.platformName }}
-      </span>
+      @if (sale.platformName) {
+        <span class="platform">
+          <i class="fa fa-shopping-cart"></i> {{ sale.platformName }}
+        </span>
+      }
     </div>
     <div class="date">{{ sale.soldDate | date:'dd.MM.yyyy' }}</div>
   </div>
@@ -17,19 +19,22 @@
   </div>
 
   <div class="sale-actions">
-    <button class="inest-action-btn" 
-            *ngIf="isItemExists" 
-            (click)="onUndo()"
-            [title]="'SHARED.TOOLTIP_RENAME' | translate"> <i class="fa fa-undo-alt"></i>
-    </button>
+    @if (isItemExists) {
+      <button class="inest-action-btn"
+        (click)="onUndo()"
+        [title]="'SHARED.TOOLTIP_RENAME' | translate"> <i class="fa fa-undo-alt"></i>
+      </button>
+    }
 
-    <span class="archived-label" *ngIf="!isItemExists" [title]="'ITEMS.ERRORS.NOT_FOUND' | translate">
-      <i class="fa fa-archive"></i>
-    </span>
+    @if (!isItemExists) {
+      <span class="archived-label" [title]="'ITEMS.ERRORS.NOT_FOUND' | translate">
+        <i class="fa fa-archive"></i>
+      </span>
+    }
 
-    <button class="inest-action-btn is-danger" 
-            (click)="onDelete()" 
-            [title]="'SHARED.TOOLTIP_DELETE' | translate">
+    <button class="inest-action-btn is-danger"
+      (click)="onDelete()"
+      [title]="'SHARED.TOOLTIP_DELETE' | translate">
       <i class="fa fa-trash-alt"></i>
     </button>
   </div>

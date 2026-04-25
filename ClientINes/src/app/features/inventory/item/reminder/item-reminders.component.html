@@ -6,77 +6,89 @@
     </button>
   </div>
 
-  <div class="add-form-container" *ngIf="isAdding">
-    <form [formGroup]="reminderForm" (ngSubmit)="onSubmit()">
-      <div class="form-fields-stack">
-        
-        <div class="field-group">
-          <label>{{ 'REMINDS_PAGE.NAME_LABEL' | translate }}</label>
-          <input type="text" formControlName="title" [placeholder]="'REMINDS_PAGE.NAME_PHL' | translate" class="inest-input-styled">
+  @if (isAdding) {
+    <div class="add-form-container">
+      <form [formGroup]="reminderForm" (ngSubmit)="onSubmit()">
+        <div class="form-fields-stack">
+          <div class="field-group">
+            <label>{{ 'REMINDS_PAGE.NAME_LABEL' | translate }}</label>
+            <input type="text" formControlName="title" [placeholder]="'REMINDS_PAGE.NAME_PHL' | translate" class="inest-input-styled">
+          </div>
+          <div class="field-group">
+            <label>{{ 'REMINDS_PAGE.TYPE_LABEL' | translate }}</label>
+            <select formControlName="type" class="inest-input-styled">
+              @for (type of availableTypes; track type) {
+                <option [value]="type.value">
+                  {{ type.label | translate }}
+                </option>
+              }
+            </select>
+          </div>
+          <div class="field-group">
+            <label>{{ 'REMINDS_PAGE.RECURRENCE' | translate }}</label>
+            <select formControlName="recurrence" class="inest-input-styled">
+              @for (rec of availableRecurrences; track rec) {
+                <option [value]="rec.value">
+                  {{ rec.label | translate }}
+                </option>
+              }
+            </select>
+          </div>
+          <div class="field-group">
+            <label>{{ 'REMINDS_PAGE.DATE_LABEL' | translate }}</label>
+            <input type="date" formControlName="triggerAt" class="inest-input-styled">
+          </div>
+          <button type="submit" class="save-btn" [disabled]="reminderForm.invalid">
+            <i class="fa fa-save"></i> {{ 'COMMON.SAVE' | translate }}
+          </button>
         </div>
-
-        <div class="field-group">
-          <label>{{ 'REMINDS_PAGE.TYPE_LABEL' | translate }}</label>
-          <select formControlName="type" class="inest-input-styled">
-            <option *ngFor="let type of availableTypes" [value]="type.value">
-              {{ type.label | translate }}
-            </option>
-          </select>
-        </div>
-
-        <div class="field-group">
-          <label>{{ 'REMINDS_PAGE.RECURRENCE' | translate }}</label>
-          <select formControlName="recurrence" class="inest-input-styled">
-            <option *ngFor="let rec of availableRecurrences" [value]="rec.value">
-              {{ rec.label | translate }}
-            </option>
-          </select>
-        </div>
-
-        <div class="field-group">
-          <label>{{ 'REMINDS_PAGE.DATE_LABEL' | translate }}</label>
-          <input type="date" formControlName="triggerAt" class="inest-input-styled">
-        </div>
-
-        <button type="submit" class="save-btn" [disabled]="reminderForm.invalid">
-          <i class="fa fa-save"></i> {{ 'COMMON.SAVE' | translate }}
-        </button>
-      </div>
-    </form>
-  </div>
+      </form>
+    </div>
+  }
 
   <div class="reminders-list">
-    <div *ngIf="reminders.length === 0" class="empty-state">
-      {{ 'REMINDS_PAGE.EMPTY_LABEL' | translate }}
-    </div>
+    @if (reminders.length === 0) {
+      <div class="empty-state">
+        {{ 'REMINDS_PAGE.EMPTY_LABEL' | translate }}
+      </div>
+    }
 
-    <div class="reminder-item" *ngFor="let r of reminders" [class.completed]="r.isCompleted">
-      <div class="r-info">
-        <div class="r-title-row">
+    @for (r of reminders; track r) {
+      <div class="reminder-item" [class.completed]="r.isCompleted">
+        <div class="r-info">
+          <div class="r-title-row">
             <strong class="r-title">{{ r.title }}</strong>
-            <span class="completed-label" *ngIf="r.isCompleted">
-              <i class="fa fa-check-double"></i> {{ 'REMINDS_PAGE.STATUS_COMPLETED' | translate }}
-            </span>
+            @if (r.isCompleted) {
+              <span class="completed-label">
+                <i class="fa fa-check-double"></i> {{ 'REMINDS_PAGE.STATUS_COMPLETED' | translate }}
+              </span>
+            }
+          </div>
+          <div class="r-meta-row">
+            @if (!r.isCompleted) {
+              <span [style.color]="getReminderInfo(r.type).color">
+                <i class="fa" [ngClass]="getReminderInfo(r.type).icon"></i>
+                {{ getReminderInfo(r.type).label | translate }}
+              </span>
+            }
+            @if (!r.isCompleted) {
+              <span class="r-date">
+                <i class="fa fa-calendar-alt"></i> {{ r.triggerAt | date:'dd.MM.yyyy' }}
+              </span>
+            }
+          </div>
         </div>
-        <div class="r-meta-row">
-          <span [style.color]="getReminderInfo(r.type).color" *ngIf="!r.isCompleted">
-            <i class="fa" [ngClass]="getReminderInfo(r.type).icon"></i>
-            {{ getReminderInfo(r.type).label | translate }}
-          </span>
-          <span class="r-date" *ngIf="!r.isCompleted">
-            <i class="fa fa-calendar-alt"></i> {{ r.triggerAt | date:'dd.MM.yyyy' }}
-          </span>
-        </div>
+        @if (!r.isCompleted) {
+          <div class="r-actions">
+            <button class="icon-btn success" (click)="requestComplete(r.id)">
+              <i class="fa fa-check"></i>
+            </button>
+            <button class="icon-btn danger" (click)="requestDelete(r.id)">
+              <i class="fa fa-trash"></i>
+            </button>
+          </div>
+        }
       </div>
-      
-      <div class="r-actions" *ngIf="!r.isCompleted">
-        <button class="icon-btn success" (click)="requestComplete(r.id)">
-          <i class="fa fa-check"></i>
-        </button>
-        <button class="icon-btn danger" (click)="requestDelete(r.id)">
-          <i class="fa fa-trash"></i>
-        </button>
-      </div>
-    </div>
+    }
   </div>
 </div>

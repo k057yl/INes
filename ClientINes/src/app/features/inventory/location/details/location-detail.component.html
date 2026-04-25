@@ -1,108 +1,116 @@
-<div class="location-view" *ngIf="!isLoading; else loader">
-  <div class="container" *ngIf="location">
-    
-    <header class="location-simple-header">
-      <div class="breadcrumb-trail">
-        <ng-container *ngFor="let crumb of breadcrumbs; let last = last">
-          <a [routerLink]="['/location', crumb.id]" [class.active]="last">
-            <i *ngIf="last" [className]="'fa ' + (location.icon || 'fa-folder') + ' icon-start'" [style.color]="location.color"></i>
-            {{ crumb.name }}
-          </a>
-          <i class="fa fa-chevron-right separator" *ngIf="!last"></i>
-        </ng-container>
-      </div>
-    </header>
-
-    <div class="content-grid">
-      <aside class="side-panel">
-        <div class="panel-section" *ngIf="location.parentLocation">
-          <h3 class="panel-title">{{ 'LOCATION_DETAILS.UPPER_LEVEL' | translate }}</h3>
-          <a [routerLink]="['/location', location.parentLocation.id]" class="sub-loc-card parent-link">
-            <i class="fa fa-level-up-alt"></i>
-            <span class="name">{{ location.parentLocation.name }}</span>
-          </a>
-        </div>
-
-        <div class="panel-section" *ngIf="location.children && location.children.length > 0">
-          <h3 class="panel-title">{{ 'LOCATION_DETAILS.NESTED' | translate }}</h3>
-          <div class="sub-locations">
-            <a *ngFor="let child of location.children" 
-               [routerLink]="['/location', child.id]" 
-               class="sub-loc-card child-link"
-               [class.is-empty]="(child.itemsCount || 0) === 0">
-              <i [className]="'fa ' + (child.icon || 'fa-folder')" [style.color]="child.color"></i>
-              <span class="name">{{ child.name }}</span>
-              
-              <span class="count-pill">
-                {{ child.itemsCount ?? (child.items.length || 0) }}
-              </span>
-
-              <i class="fa fa-chevron-right arrow"></i>
-            </a>
+@if (!isLoading) {
+  <div class="location-view">
+    @if (location) {
+      <div class="container">
+        <header class="location-simple-header">
+          <div class="breadcrumb-trail">
+            @for (crumb of breadcrumbs; track crumb; let last = $last) {
+              <a [routerLink]="['/location', crumb.id]" [class.active]="last">
+                @if (last) {
+                  <i [className]="'fa ' + (location.icon || 'fa-folder') + ' icon-start'" [style.color]="location.color"></i>
+                }
+                {{ crumb.name }}
+              </a>
+              @if (!last) {
+                <i class="fa fa-chevron-right separator"></i>
+              }
+            }
           </div>
-        </div>
-      </aside>
-
-      <main class="items-area">
-        <div class="area-header">
-          <h2 class="section-title">
-            {{ 'LOCATION_DETAILS.ITEMS_COUNT' | translate }} 
-            <span class="count-badge">{{ location.items.length || 0 }}</span>
-          </h2>
-        </div>
-
-        <div class="items-grid" *ngIf="location.items.length; else emptyState">
-          <div class="item-tile" 
-               *ngFor="let item of location.items"
-               [style.border-top]="'3px solid ' + (location.color || getAccentColor(item.id))">
-            
-            <div class="tile-image" [routerLink]="['/item', item.id]">
-              <img *ngIf="item.photoUrl" [src]="getPhotoUrl(item.photoUrl)" loading="lazy">
-              <i *ngIf="!item.photoUrl" class="fa fa-archive"></i>
-              
-              <div class="status-badge" [ngClass]="getStatusClass(item.status)">
-                <span class="dot"></span>
-                {{ getStatusKey(item.status) | translate }}
+        </header>
+        <div class="content-grid">
+          <aside class="side-panel">
+            @if (location.parentLocation) {
+              <div class="panel-section">
+                <h3 class="panel-title">{{ 'LOCATION_DETAILS.UPPER_LEVEL' | translate }}</h3>
+                <a [routerLink]="['/location', location.parentLocation.id]" class="sub-loc-card parent-link">
+                  <i class="fa fa-level-up-alt"></i>
+                  <span class="name">{{ location.parentLocation.name }}</span>
+                </a>
               </div>
-            </div>
-            
-            <div class="tile-content">
-              <div class="info-block" [routerLink]="['/item', item.id]">
-                <h3>{{ item.name }}</h3>
-                <p>{{ item.description || ('LOCATION_DETAILS.NO_DESCRIPTION' | translate) }}</p>
-              </div>
-              
-              <div class="tile-footer">
-                <div class="action-group">
-                  <button class="mini-btn edit" 
-                          (click)="onEditItem(item)" 
-                          [title]="'COMMON.EDIT' | translate">
-                    <i class="fa fa-pen"></i>
-                  </button>
-                  <button class="mini-btn delete" 
-                          (click)="onDeleteItem(item)"
-                          [title]="'COMMON.DELETE' | translate">
-                    <i class="fa fa-trash"></i>
-                  </button>
+            }
+            @if (location.children && location.children.length > 0) {
+              <div class="panel-section">
+                <h3 class="panel-title">{{ 'LOCATION_DETAILS.NESTED' | translate }}</h3>
+                <div class="sub-locations">
+                  @for (child of location.children; track child) {
+                    <a
+                      [routerLink]="['/location', child.id]"
+                      class="sub-loc-card child-link"
+                      [class.is-empty]="(child.itemsCount || 0) === 0">
+                      <i [className]="'fa ' + (child.icon || 'fa-folder')" [style.color]="child.color"></i>
+                      <span class="name">{{ child.name }}</span>
+                      <span class="count-pill">
+                        {{ child.itemsCount ?? (child.items.length || 0) }}
+                      </span>
+                      <i class="fa fa-chevron-right arrow"></i>
+                    </a>
+                  }
                 </div>
               </div>
+            }
+          </aside>
+          <main class="items-area">
+            <div class="area-header">
+              <h2 class="section-title">
+                {{ 'LOCATION_DETAILS.ITEMS_COUNT' | translate }}
+                <span class="count-badge">{{ location.items.length || 0 }}</span>
+              </h2>
             </div>
-          </div>
+            @if (location.items.length) {
+              <div class="items-grid">
+                @for (item of location.items; track item) {
+                  <div class="item-tile"
+                    [style.border-top]="'3px solid ' + (location.color || getAccentColor(item.id))">
+                    <div class="tile-image" [routerLink]="['/item', item.id]">
+                      @if (item.photoUrl) {
+                        <img [src]="getPhotoUrl(item.photoUrl)" loading="lazy">
+                      }
+                      @if (!item.photoUrl) {
+                        <i class="fa fa-archive"></i>
+                      }
+                      <div class="status-badge" [ngClass]="getStatusClass(item.status)">
+                        <span class="dot"></span>
+                        {{ getStatusKey(item.status) | translate }}
+                      </div>
+                    </div>
+                    <div class="tile-content">
+                      <div class="info-block" [routerLink]="['/item', item.id]">
+                        <h3>{{ item.name }}</h3>
+                        <p>{{ item.description || ('LOCATION_DETAILS.NO_DESCRIPTION' | translate) }}</p>
+                      </div>
+                      <div class="tile-footer">
+                        <div class="action-group">
+                          <button class="mini-btn edit"
+                            (click)="onEditItem(item)"
+                            [title]="'COMMON.EDIT' | translate">
+                            <i class="fa fa-pen"></i>
+                          </button>
+                          <button class="mini-btn delete"
+                            (click)="onDeleteItem(item)"
+                            [title]="'COMMON.DELETE' | translate">
+                            <i class="fa fa-trash"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="empty-view">
+                <i class="fa fa-box-open"></i>
+                <p>{{ 'LOCATION_DETAILS.NO_ITEMS' | translate }}</p>
+              </div>
+            }
+          </main>
         </div>
-      </main>
-    </div>
+      </div>
+    }
   </div>
-</div>
-
-<ng-template #emptyState>
-  <div class="empty-view">
-    <i class="fa fa-box-open"></i>
-    <p>{{ 'LOCATION_DETAILS.NO_ITEMS' | translate }}</p>
-  </div>
-</ng-template>
-
-<ng-template #loader>
+} @else {
   <div class="loader-state">
     <div class="spinner"></div>
   </div>
-</ng-template>
+}
+
+

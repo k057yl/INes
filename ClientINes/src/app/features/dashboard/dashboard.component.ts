@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, inject, HostListener } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { RouterModule } from '@angular/router';
 import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { TranslateModule } from '@ngx-translate/core';
@@ -16,7 +16,7 @@ import { CdkDrag } from '@angular/cdk/drag-drop';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, DragDropModule, LocationCardComponent, LocationRibbonComponent, TranslateModule],
+  imports: [RouterModule, DragDropModule, LocationCardComponent, LocationRibbonComponent, TranslateModule],
   providers: [DashboardFacade],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'

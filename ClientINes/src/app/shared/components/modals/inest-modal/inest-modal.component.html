@@ -1,9 +1,9 @@
 <div class="modal-backdrop" (click)="close()">
-  <div class="modal-card" 
-       [class.is-danger]="mode === 'delete' || mode === 'smart-delete'"
-       [class.is-confirm]="mode === 'confirm'" 
-       (click)="$event.stopPropagation()">
-    
+  <div class="modal-card"
+    [class.is-danger]="mode === 'delete' || mode === 'smart-delete'"
+    [class.is-confirm]="mode === 'confirm'"
+    (click)="$event.stopPropagation()">
+
     <div class="modal-top-line"></div>
 
     <div class="modal-icon">
@@ -11,42 +11,53 @@
     </div>
 
     <h3>{{ title | translate }}</h3>
-    <p class="message" *ngIf="message">{{ message | translate }}</p>
+    @if (message) {
+      <p class="message">{{ message | translate }}</p>
+    }
 
-    <div class="modal-options" *ngIf="mode === 'smart-delete'">
-      <button *ngIf="showSmartOption" class="opt-btn smart" (click)="submit('smart')">
-        <div class="opt-icon"><i class="fa fa-broom"></i></div>
-        <div class="text">
-          <span class="title">{{'COMMON.SMART_DELETE' | translate}}</span>
-          <span class="desc">{{'COMMON.SMART_DELETE_TEXT' | translate}}</span>
+    @if (mode === 'smart-delete') {
+      <div class="modal-options">
+        @if (showSmartOption) {
+          <button class="opt-btn smart" (click)="submit('smart')">
+            <div class="opt-icon"><i class="fa fa-broom"></i></div>
+            <div class="text">
+              <span class="title">{{'COMMON.SMART_DELETE' | translate}}</span>
+              <span class="desc">{{'COMMON.SMART_DELETE_TEXT' | translate}}</span>
+            </div>
+          </button>
+        }
+        <button class="opt-btn hard" (click)="submit('hard')">
+          <div class="opt-icon"><i class="fa fa-fire-alt"></i></div>
+          <div class="text">
+            <span class="title">{{'COMMON.HARD_DELETE' | translate}}</span>
+            <span class="desc">{{'COMMON.HARD_DELETE_TEXT' | translate}}</span>
+          </div>
+        </button>
+      </div>
+    }
+
+    @if (mode === 'input') {
+      <div class="inest-form-group">
+        <input [(ngModel)]="name" #inputElement class="inest-input-styled"
+          [placeholder]="placeholder | translate" (keyup.enter)="submit()">
         </div>
-      </button>
+      }
 
-      <button class="opt-btn hard" (click)="submit('hard')">
-        <div class="opt-icon"><i class="fa fa-fire-alt"></i></div>
-        <div class="text">
-          <span class="title">{{'COMMON.HARD_DELETE' | translate}}</span>
-          <span class="desc">{{'COMMON.HARD_DELETE_TEXT' | translate}}</span>
+      @if (mode !== 'smart-delete') {
+        <div class="modal-actions">
+          <button class="inest-btn-cancel" (click)="close()">{{ cancelText | translate }}</button>
+          <button [ngClass]="getButtonClass()" (click)="submit()" [disabled]="mode === 'input' && !name.trim()">
+            {{ getConfirmText() | translate }}
+          </button>
         </div>
-      </button>
-    </div>
+      }
 
-    <div class="inest-form-group" *ngIf="mode === 'input'">
-      <input [(ngModel)]="name" #inputElement class="inest-input-styled" 
-             [placeholder]="placeholder | translate" (keyup.enter)="submit()">
-    </div>
-
-    <div class="modal-actions" *ngIf="mode !== 'smart-delete'">
-      <button class="inest-btn-cancel" (click)="close()">{{ cancelText | translate }}</button>
-      <button [ngClass]="getButtonClass()" (click)="submit()" [disabled]="mode === 'input' && !name.trim()">
-        {{ getConfirmText() | translate }}
-      </button>
-    </div>
-
-    <div class="modal-actions" *ngIf="mode === 'smart-delete'">
-      <button class="inest-btn-cancel" (click)="close()">
-        {{ getCancelText() | translate }}
-      </button>
+      @if (mode === 'smart-delete') {
+        <div class="modal-actions">
+          <button class="inest-btn-cancel" (click)="close()">
+            {{ getCancelText() | translate }}
+          </button>
+        </div>
+      }
     </div>
   </div>
-</div>

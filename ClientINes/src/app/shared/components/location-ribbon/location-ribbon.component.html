@@ -4,40 +4,42 @@
       <i class="fa fa-sort-amount-down"></i> {{ 'COMMON.PAGE' | translate }}
       <span class="count-badge">{{ currentPage + 1 }}/{{ totalPages }}</span>
     </div>
-    
-    <div class="pagination-ctrl" *ngIf="totalPages > 1">
-      <button (click)="pageChange.emit(currentPage - 1)" [disabled]="currentPage === 0">
-        <i class="fa fa-chevron-left"></i>
-      </button>
-      <button (click)="pageChange.emit(currentPage + 1)" [disabled]="currentPage === totalPages - 1">
-        <i class="fa fa-chevron-right"></i>
-      </button>
-    </div>
+
+    @if (totalPages > 1) {
+      <div class="pagination-ctrl">
+        <button (click)="pageChange.emit(currentPage - 1)" [disabled]="currentPage === 0">
+          <i class="fa fa-chevron-left"></i>
+        </button>
+        <button (click)="pageChange.emit(currentPage + 1)" [disabled]="currentPage === totalPages - 1">
+          <i class="fa fa-chevron-right"></i>
+        </button>
+      </div>
+    }
   </div>
 
-  <div class="root-ribbon-grid" 
-      cdkDropList 
-      cdkDropListOrientation="mixed" 
-      [cdkDropListData]="pagedLocations"
-      (cdkDropListDropped)="reorder.emit($event)">
-    
-    <div class="root-chip" 
-        *ngFor="let loc of pagedLocations" 
+  <div class="root-ribbon-grid"
+    cdkDropList
+    cdkDropListOrientation="mixed"
+    [cdkDropListData]="pagedLocations"
+    (cdkDropListDropped)="reorder.emit($event)">
+
+    @for (loc of pagedLocations; track loc) {
+      <div class="root-chip"
         cdkDrag
         [class.active-on-board]="isLocActiveOnBoard(loc.id)"
         (click)="jumpTo.emit(loc.id)">
-      
-      <div class="chip-content">
-        <i [className]="'fa ' + (loc.icon || 'fa-folder')" [style.color]="loc.color"></i>
-        <span class="loc-name">{{ loc.name }}</span>
-        
-        <div class="nested-info" *ngIf="loc.children && loc.children.length > 0" [title]="'LOCATION_CARD.RIBBON.HAVE_TOOLTIP' | translate">
-          <span class="child-count">{{ loc.children.length }}</span>
-          <i class="fa fa-layer-group"></i>
+        <div class="chip-content">
+          <i [className]="'fa ' + (loc.icon || 'fa-folder')" [style.color]="loc.color"></i>
+          <span class="loc-name">{{ loc.name }}</span>
+          @if (loc.children && loc.children.length > 0) {
+            <div class="nested-info" [title]="'LOCATION_CARD.RIBBON.HAVE_TOOLTIP' | translate">
+              <span class="child-count">{{ loc.children.length }}</span>
+              <i class="fa fa-layer-group"></i>
+            </div>
+          }
         </div>
+        <div class="chip-placeholder" *cdkDragPlaceholder></div>
       </div>
-
-      <div class="chip-placeholder" *cdkDragPlaceholder></div>
-    </div>
+    }
   </div>
 </div>

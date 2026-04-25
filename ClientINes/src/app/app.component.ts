@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { CommonModule } from '@angular/common';
+
 import { HeaderComponent } from './shared/components/header/header.component';
 import { FooterComponent } from './shared/components/footer/footer.component';
 import { LocalizationService } from './shared/services/localization.service';
@@ -18,16 +18,15 @@ import { LocationFormModalComponent } from './shared/components/modals/location-
   selector: 'app-root',
   standalone: true,
   imports: [
-    RouterOutlet, 
-    CommonModule, 
-    HeaderComponent, 
+    RouterOutlet,
+    HeaderComponent,
     FooterComponent,
-    InestModalComponent, 
-    SellModalComponent, 
+    InestModalComponent,
+    SellModalComponent,
     LendItemModalComponent,
-    ItemFormModalComponent, 
+    ItemFormModalComponent,
     LocationFormModalComponent
-  ],
+],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
