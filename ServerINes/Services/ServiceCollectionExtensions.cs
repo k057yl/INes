@@ -1,12 +1,13 @@
 ﻿using FluentValidation;
 using Ganss.Xss;
-using MediatR;
 using INest.Constants;
 using INest.Models.Entities;
 using INest.Services.BackgroundServices;
 using INest.Services.Behaviors;
+using INest.Services.DomainHelpers;
 using INest.Services.Interfaces;
 using INest.Services.Tracker;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -130,10 +131,7 @@ namespace INest.Services
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IPhotoService, PhotoService>();
             services.AddScoped<IAuthService, AuthService>();
-
-            // Эти малыши ждут своей очереди на распил
-            services.AddScoped<ILendingService, LendingService>();
-            services.AddScoped<IReminderService, ReminderService>();
+            services.AddScoped<LendingStateHelper>();
 
             services.AddMediatR(cfg =>
             {

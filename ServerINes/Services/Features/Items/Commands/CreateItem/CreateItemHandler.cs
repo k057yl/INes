@@ -2,6 +2,7 @@
 using INest.Exceptions;
 using INest.Models.Entities;
 using INest.Models.Enums;
+using INest.Services.DomainHelpers;
 using INest.Services.Interfaces;
 using INest.Services.Tracker;
 using MediatR;
@@ -14,7 +15,7 @@ namespace INest.Services.Features.Items.Commands.CreateItem
     {
         private readonly AppDbContext _context;
         private readonly IPhotoService _photoService;
-        private readonly ILendingService _lendingService;
+        private readonly LendingStateHelper _lendingStateHelper;
         private readonly IHtmlSanitizer _sanitizer;
         private readonly ILogger<CreateItemHandler> _logger;
         private readonly ICacheTracker _tracker;
@@ -22,14 +23,14 @@ namespace INest.Services.Features.Items.Commands.CreateItem
         public CreateItemHandler(
             AppDbContext context,
             IPhotoService photoService,
-            ILendingService lendingService,
+            LendingStateHelper lendingStateHelper,
             IHtmlSanitizer sanitizer,
             ILogger<CreateItemHandler> logger,
             ICacheTracker tracker)
         {
             _context = context;
             _photoService = photoService;
-            _lendingService = lendingService;
+            _lendingStateHelper = lendingStateHelper;
             _sanitizer = sanitizer;
             _logger = logger;
             _tracker = tracker;
@@ -76,7 +77,7 @@ namespace INest.Services.Features.Items.Commands.CreateItem
                     CreatedAt = DateTime.UtcNow
                 });
 
-                await _lendingService.SyncLendingStateAsync(
+                await _lendingStateHelper.SyncLendingStateAsync(
                     item, dto.Status, safePerson, dto.ContactEmail, dto.ExpectedReturnDate, dto.SendNotification);
 
                 if (request.Photos != null && request.Photos.Count > 0)
