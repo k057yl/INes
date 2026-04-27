@@ -32,6 +32,7 @@
             public const string FILE_TOO_LARGE = "ERRORS.FILE_TOO_LARGE";
             public const string IMAGE_PROCESSING_FAILED = "ERRORS.IMAGE_PROCESSING_FAILED";
             public const string MAX_NESTING_REACHED = "ERRORS.MAX_NESTING_REACHED";
+            public const string EMPTY_LIST = "ERRORS.EMPTY_LIST";
         }
 
         public static class EMAILS

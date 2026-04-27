@@ -1,8 +1,18 @@
-﻿using INest.Constants;
-using INest.Exceptions;
+﻿using INest.Exceptions;
 using INest.Models.DTOs.Item;
 using INest.Models.Enums;
-using INest.Services.Interfaces;
+using INest.Services.Features.Items.Commands.CancelSale;
+using INest.Services.Features.Items.Commands.ChangeItemStatus;
+using INest.Services.Features.Items.Commands.CreateItem;
+using INest.Services.Features.Items.Commands.DeleteItem;
+using INest.Services.Features.Items.Commands.DeleteItemsBatch;
+using INest.Services.Features.Items.Commands.MoveItem;
+using INest.Services.Features.Items.Commands.UpdateItemFull;
+using INest.Services.Features.Items.Commands.UpdateItemPartial;
+using INest.Services.Features.Items.Queries.GetItemById;
+using INest.Services.Features.Items.Queries.GetItemHistory;
+using INest.Services.Features.Items.Queries.GetItems;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -15,91 +25,109 @@ namespace INest.Controllers
     [Route("api/[controller]")]
     public class ItemsController : ControllerBase
     {
-        private readonly IItemService _itemService;
-        public ItemsController(IItemService itemService) => _itemService = itemService;
+        private readonly IMediator _mediator;
+
+        public ItemsController(IMediator mediator)
+        {
+            _mediator = mediator;
+        }
 
         private Guid GetUserId()
         {
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userIdClaim))
             {
-                throw new AppException(LocalizationConstants.AUTH.ERRORS.TOKEN_MISSING, 401);
+                throw new AppException(AUTH.ERRORS.TOKEN_MISSING, 401);
             }
             return Guid.Parse(userIdClaim);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromForm] CreateItemDto dto, List<IFormFile> photos)
+        public async Task<IActionResult> Create([FromForm] CreateItemDto dto, [FromForm] List<IFormFile> photos)
         {
-            var item = await _itemService.CreateItemAsync(GetUserId(), dto, photos);
-            return CreatedAtAction(nameof(GetById), new { id = item.Id }, new
-            {
-                data = item,
-                message = ITEMS.SUCCESS.CREATE
-            });
+            var command = new CreateItemCommand(GetUserId(), dto, photos);
+            var item = await _mediator.Send(command);
+            return Ok(item);
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] ItemFilterDto filters)
         {
-            var items = await _itemService.GetUserItemsAsync(GetUserId(), filters);
+            var query = new GetItemsQuery(GetUserId(), filters);
+            var items = await _mediator.Send(query);
             return Ok(items);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            return Ok(await _itemService.GetItemAsync(GetUserId(), id));
+            var query = new GetItemByIdQuery(GetUserId(), id);
+            var item = await _mediator.Send(query);
+            return Ok(item);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateFull(Guid id, [FromForm] UpdateItemFullDto dto, List<IFormFile>? photos)
+        [HttpPut("{itemId}")]
+        public async Task<IActionResult> UpdateFull(Guid itemId, [FromForm] UpdateItemFullDto dto, [FromForm] List<IFormFile>? photos)
         {
-            await _itemService.UpdateFullAsync(GetUserId(), id, dto, photos);
-            return Ok(new { message = ITEMS.SUCCESS.UPDATE });
+            var command = new UpdateItemFullCommand(GetUserId(), itemId, dto, photos);
+            await _mediator.Send(command);
+            return NoContent();
         }
 
         [HttpPatch("{id}")]
         public async Task<IActionResult> UpdatePartial(Guid id, [FromForm] UpdateItemPartialDto dto, List<IFormFile>? photos)
         {
-            var result = await _itemService.UpdatePartialAsync(GetUserId(), id, dto, photos);
+            var command = new UpdateItemPartialCommand(GetUserId(), id, dto, photos);
+            var result = await _mediator.Send(command);
             return result ? Ok() : BadRequest();
         }
 
         [HttpPatch("{id}/move")]
         public async Task<IActionResult> Move(Guid id, [FromBody] MoveItemDto dto)
         {
-            await _itemService.MoveItemAsync(GetUserId(), id, dto.TargetLocationId);
+            var command = new MoveItemCommand(GetUserId(), id, dto.TargetLocationId);
+            await _mediator.Send(command);
             return Ok(new { message = HISTORY.MOVED });
         }
 
         [HttpPatch("{id}/status")]
         public async Task<IActionResult> ChangeStatus(Guid id, [FromBody] ItemStatus status)
         {
-            await _itemService.ChangeStatusAsync(GetUserId(), id, status);
+            var command = new ChangeItemStatusCommand(GetUserId(), id, status);
+            await _mediator.Send(command);
             return Ok();
         }
 
         [HttpDelete("{id}/sale")]
         public async Task<IActionResult> CancelSale(Guid id)
         {
-            await _itemService.CancelSaleAsync(GetUserId(), id);
+            var command = new CancelSaleCommand(GetUserId(), id);
+            await _mediator.Send(command);
             return Ok();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            await _itemService.DeleteAsync(GetUserId(), id);
+            var command = new DeleteItemCommand(GetUserId(), id);
+            await _mediator.Send(command);
             return Ok(new { message = ITEMS.SUCCESS.DELETE });
         }
 
         [HttpDelete("batch")]
         public async Task<IActionResult> DeleteBatch([FromBody] List<Guid> ids)
         {
-            if (ids == null || !ids.Any()) return BadRequest();
-            await _itemService.DeleteBatchAsync(GetUserId(), ids);
+            var command = new DeleteItemsBatchCommand(GetUserId(), ids);
+            await _mediator.Send(command);
             return NoContent();
+        }
+
+        [HttpGet("{id}/history")]
+        public async Task<IActionResult> GetHistory(Guid id)
+        {
+            var query = new GetItemHistoryQuery(GetUserId(), id);
+            var history = await _mediator.Send(query);
+            return Ok(history);
         }
     }
 }

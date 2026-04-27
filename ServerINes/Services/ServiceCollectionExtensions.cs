@@ -1,10 +1,11 @@
 ﻿using FluentValidation;
 using Ganss.Xss;
+using MediatR;
 using INest.Constants;
 using INest.Models.Entities;
 using INest.Models.Validators;
 using INest.Services.BackgroundServices;
-using INest.Services.Decorator;
+using INest.Services.Behaviors;
 using INest.Services.Interfaces;
 using INest.Services.Tracker;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -125,24 +126,32 @@ namespace INest.Services
         {
             services.AddValidatorsFromAssemblyContaining<CategoryRules>();
 
-            // Singleton
             services.AddSingleton<ICacheTracker, CacheTracker>();
             services.AddSingleton<IHtmlSanitizer, HtmlSanitizer>();
 
-            // Scoped
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IPhotoService, PhotoService>();
             services.AddScoped<IAuthService, AuthService>();
 
-            // Decor
-            services.AddDecoratedService<ICategoryService, CategoryService, CachedCategoryService>();
-            services.AddDecoratedService<ILocationService, LocationService, CachedLocationService>();
-            services.AddDecoratedService<IPlatformService, PlatformService, CachedPlatformService>();
-            services.AddDecoratedService<ISalesService, SalesService, CachedSalesService>();
-            services.AddDecoratedService<IItemService, ItemService, CachedItemService>();
-            services.AddDecoratedService<IReminderService, ReminderService, CachedReminderService>();
-            services.AddDecoratedService<ILendingService, LendingService, CachedLendingService>();
+            services.AddScoped<ILendingService, LendingService>();
+            services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<ILocationService, LocationService>();
+            services.AddScoped<IPlatformService, PlatformService>();
+            services.AddScoped<ISalesService, SalesService>();
+            services.AddScoped<IReminderService, ReminderService>();
+            //services.AddScoped<IItemService, ItemService>();
+
+            services.AddMediatR(cfg =>
+            {
+                cfg.RegisterServicesFromAssembly(typeof(ServiceCollectionExtensions).Assembly);
+
+                // 2. Регистрация наших универсальных Декораторов (Pipeline Behaviors)
+                // Порядок ВАЖЕН: запрос сначала попадает в кеш, если там пусто -> идет в валидацию -> потом в хендлер
+                // Раскомментируем, когда создадим эти классы:
+                cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(CachingBehavior<,>));
+                cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+            });
 
             services.AddHostedService<ReminderWorker>();
 
