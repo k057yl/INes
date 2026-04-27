@@ -1,7 +1,11 @@
-﻿using INest.Constants;
-using INest.Exceptions;
+﻿using INest.Exceptions;
 using INest.Models.DTOs.Sale;
-using INest.Services.Interfaces;
+using INest.Services.Features.Items.Commands.CancelSale;
+using INest.Services.Features.Sales.Commands.DeleteSaleRecord;
+using INest.Services.Features.Sales.Commands.SellItem;
+using INest.Services.Features.Sales.Commands.SmartDeleteSale;
+using INest.Services.Features.Sales.Queries.GetSales;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -14,16 +18,16 @@ namespace INest.Controllers
     [Authorize]
     public class SalesController : ControllerBase
     {
-        private readonly ISalesService _salesService;
+        private readonly IMediator _mediator;
 
-        public SalesController(ISalesService salesService) => _salesService = salesService;
+        public SalesController(IMediator mediator) => _mediator = mediator;
 
         private Guid GetUserId()
         {
             var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userIdClaim))
             {
-                throw new AppException(LocalizationConstants.AUTH.ERRORS.TOKEN_MISSING, 401);
+                throw new AppException(AUTH.ERRORS.TOKEN_MISSING, 401);
             }
             return Guid.Parse(userIdClaim);
         }
@@ -31,17 +35,24 @@ namespace INest.Controllers
         [HttpPost]
         public async Task<IActionResult> SellItem([FromBody] SellItemRequestDto request)
         {
-            var result = await _salesService.SellItemAsync(GetUserId(), request);
+            var command = new SellItemCommand(GetUserId(), request);
+            var result = await _mediator.Send(command);
             return Ok(new { data = result, message = SALES.SUCCESS.SELL });
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetSales() => Ok(await _salesService.GetSalesAsync(GetUserId()));
+        public async Task<IActionResult> GetSales()
+        {
+            var query = new GetSalesQuery(GetUserId());
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
 
         [HttpDelete("cancel/{itemId}")]
         public async Task<IActionResult> CancelSale(Guid itemId)
         {
-            await _salesService.CancelSaleAsync(GetUserId(), itemId);
+            var command = new CancelSaleCommand(GetUserId(), itemId);
+            await _mediator.Send(command);
             return Ok(new { message = SALES.SUCCESS.CANCEL });
         }
 
@@ -49,10 +60,15 @@ namespace INest.Controllers
         public async Task<IActionResult> SmartDelete(Guid saleId, [FromQuery] bool keepHistory = true)
         {
             var userId = GetUserId();
+
             if (keepHistory)
-                await _salesService.SmartDeleteAsync(userId, saleId);
+            {
+                await _mediator.Send(new SmartDeleteSaleCommand(userId, saleId));
+            }
             else
-                await _salesService.DeleteSaleRecordAsync(userId, saleId);
+            {
+                await _mediator.Send(new DeleteSaleRecordCommand(userId, saleId));
+            }
 
             return Ok(new { message = SALES.SUCCESS.DELETE });
         }

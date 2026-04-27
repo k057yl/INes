@@ -3,7 +3,6 @@ using Ganss.Xss;
 using MediatR;
 using INest.Constants;
 using INest.Models.Entities;
-using INest.Models.Validators;
 using INest.Services.BackgroundServices;
 using INest.Services.Behaviors;
 using INest.Services.Interfaces;
@@ -41,8 +40,6 @@ namespace INest.Services
                     options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
                     options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
                 });
-
-            services.AddValidatorsFromAssemblyContaining<CategoryRules>();
         }
 
         private static void AddCustomDatabase(this IServiceCollection services, IConfiguration config)
@@ -124,7 +121,7 @@ namespace INest.Services
 
         public static IServiceCollection AddBusinessServices(this IServiceCollection services)
         {
-            services.AddValidatorsFromAssemblyContaining<CategoryRules>();
+            services.AddValidatorsFromAssembly(typeof(ServiceCollectionExtensions).Assembly);
 
             services.AddSingleton<ICacheTracker, CacheTracker>();
             services.AddSingleton<IHtmlSanitizer, HtmlSanitizer>();
@@ -134,21 +131,13 @@ namespace INest.Services
             services.AddScoped<IPhotoService, PhotoService>();
             services.AddScoped<IAuthService, AuthService>();
 
+            // Эти малыши ждут своей очереди на распил
             services.AddScoped<ILendingService, LendingService>();
-            services.AddScoped<ICategoryService, CategoryService>();
-            services.AddScoped<ILocationService, LocationService>();
-            services.AddScoped<IPlatformService, PlatformService>();
-            services.AddScoped<ISalesService, SalesService>();
             services.AddScoped<IReminderService, ReminderService>();
-            //services.AddScoped<IItemService, ItemService>();
 
             services.AddMediatR(cfg =>
             {
                 cfg.RegisterServicesFromAssembly(typeof(ServiceCollectionExtensions).Assembly);
-
-                // 2. Регистрация наших универсальных Декораторов (Pipeline Behaviors)
-                // Порядок ВАЖЕН: запрос сначала попадает в кеш, если там пусто -> идет в валидацию -> потом в хендлер
-                // Раскомментируем, когда создадим эти классы:
                 cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(CachingBehavior<,>));
                 cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
             });
@@ -156,19 +145,6 @@ namespace INest.Services
             services.AddHostedService<ReminderWorker>();
 
             return services;
-        }
-
-        private static void AddDecoratedService<TInterface, TService, TDecorator>(this IServiceCollection services)
-            where TInterface : class
-            where TService : class, TInterface
-            where TDecorator : class, TInterface
-        {
-            services.AddScoped<TService>();
-            services.AddScoped<TInterface>(sp =>
-            {
-                var inner = sp.GetRequiredService<TService>();
-                return ActivatorUtilities.CreateInstance<TDecorator>(sp, inner);
-            });
         }
     }
 }

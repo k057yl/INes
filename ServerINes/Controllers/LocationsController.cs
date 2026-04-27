@@ -1,6 +1,14 @@
 ﻿using INest.Exceptions;
 using INest.Models.DTOs.Location;
-using INest.Services.Interfaces;
+using INest.Services.Features.Locations.Commands.CreateLocation;
+using INest.Services.Features.Locations.Commands.DeleteLocation;
+using INest.Services.Features.Locations.Commands.MoveLocation;
+using INest.Services.Features.Locations.Commands.RenameLocation;
+using INest.Services.Features.Locations.Commands.ReorderLocations;
+using INest.Services.Features.Locations.Queries.GetLocationById;
+using INest.Services.Features.Locations.Queries.GetLocations;
+using INest.Services.Features.Locations.Queries.GetLocationTree;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -13,8 +21,8 @@ namespace INest.Controllers
     [Route("api/[controller]")]
     public class LocationsController : ControllerBase
     {
-        private readonly ILocationService _locationService;
-        public LocationsController(ILocationService locationService) => _locationService = locationService;
+        private readonly IMediator _mediator;
+        public LocationsController(IMediator mediator) => _mediator = mediator;
 
         private Guid GetUserId()
         {
@@ -27,15 +35,15 @@ namespace INest.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll() => Ok(await _locationService.GetUserLocationsAsync(GetUserId()));
+        public async Task<IActionResult> GetAll() => Ok(await _mediator.Send(new GetLocationsQuery(GetUserId())));
 
         [HttpGet("tree")]
-        public async Task<IActionResult> GetTree() => Ok(await _locationService.GetTreeAsync(GetUserId()));
+        public async Task<IActionResult> GetTree() => Ok(await _mediator.Send(new GetLocationTreeQuery(GetUserId())));
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            var loc = await _locationService.GetLocationByIdAsync(GetUserId(), id);
+            var loc = await _mediator.Send(new GetLocationByIdQuery(GetUserId(), id));
             if (loc == null) throw new AppException(LOCATIONS.ERRORS.NOT_FOUND, 404);
             return Ok(loc);
         }
@@ -43,35 +51,35 @@ namespace INest.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateLocationDto dto)
         {
-            var location = await _locationService.CreateLocationAsync(GetUserId(), dto);
+            var location = await _mediator.Send(new CreateLocationCommand(GetUserId(), dto));
             return Ok(new { data = location, message = LOCATIONS.SUCCESS.CREATE });
         }
 
         [HttpPatch("{id}/move")]
         public async Task<IActionResult> Move(Guid id, [FromBody] MoveLocationDto dto)
         {
-            await _locationService.MoveLocationAsync(GetUserId(), id, dto.NewParentId);
+            await _mediator.Send(new MoveLocationCommand(GetUserId(), id, dto.NewParentId));
             return Ok(new { message = LOCATIONS.SUCCESS.MOVE });
         }
 
         [HttpPut("reorder")]
         public async Task<IActionResult> Reorder([FromBody] ReorderLocationsDto dto)
         {
-            await _locationService.ReorderLocationsAsync(GetUserId(), dto.ParentId, dto.OrderedIds);
+            await _mediator.Send(new ReorderLocationsCommand(GetUserId(), dto.ParentId, dto.OrderedIds));
             return Ok();
         }
 
         [HttpPatch("{id}/rename")]
         public async Task<IActionResult> Rename(Guid id, [FromBody] RenameLocationDto dto)
         {
-            await _locationService.RenameLocationAsync(GetUserId(), id, dto.Name);
+            await _mediator.Send(new RenameLocationCommand(GetUserId(), id, dto.Name));
             return Ok(new { message = LOCATIONS.SUCCESS.RENAME });
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            await _locationService.DeleteLocationAsync(GetUserId(), id);
+            await _mediator.Send(new DeleteLocationCommand(GetUserId(), id));
             return Ok(new { message = LOCATIONS.SUCCESS.DELETE });
         }
     }
