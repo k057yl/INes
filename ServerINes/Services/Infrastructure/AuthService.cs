@@ -9,7 +9,6 @@ using INest.Models.Entities;
 using INest.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
-using System.Collections.Concurrent;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using static INest.Constants.LocalizationConstants;
@@ -29,8 +28,6 @@ namespace INest.Services.Infrastructure
         private readonly IValidator<LoginDto> _loginValidator;
         private readonly IValidator<ForgotPasswordDto> _forgotPwdValidator;
         private readonly IValidator<ResetPasswordDto> _resetPwdValidator;
-
-        private static readonly ConcurrentDictionary<string, (string Code, DateTime Expire)> _otpStore = new();
 
         public AuthService(
             UserManager<AppUser> userManager,
@@ -61,9 +58,9 @@ namespace INest.Services.Infrastructure
             var valResult = await _registerValidator.ValidateAsync(dto);
             if (!valResult.IsValid) throw new ValidationAppException(valResult.Errors);
 
-            var normalizedEmail = dto.Email.ToLowerInvariant();
+            var normalizedEmail = dto.Email.Trim().ToUpperInvariant();
+            var sanitizedUsername = _sanitizer.Sanitize(dto.Username).Trim();
 
-            var sanitizedUsername = _sanitizer.Sanitize(dto.Username);
             if (string.IsNullOrWhiteSpace(sanitizedUsername))
                 throw new AppException(AUTH.ERRORS.INVALID_USERNAME, 400);
 
@@ -77,19 +74,21 @@ namespace INest.Services.Infrastructure
                 user = new AppUser
                 {
                     Email = normalizedEmail,
-                    UserName = sanitizedUsername,
+                    UserName = normalizedEmail,
+                    DisplayName = sanitizedUsername,
                     EmailConfirmed = false
                 };
                 var result = await _userManager.CreateAsync(user, dto.Password);
 
-                if (!result.Succeeded)
-                {
-                    throw new AppException(AUTH.ERRORS.REGISTRATION_FAILED, 400);
-                }
+                if (!result.Succeeded) throw new AppException(AUTH.ERRORS.REGISTRATION_FAILED, 400);
             }
 
             var code = RandomNumberGenerator.GetInt32(100000, 1000000).ToString();
-            _otpStore[normalizedEmail] = (code, DateTime.UtcNow.AddMinutes(10));
+            user.VerificationCode = code;
+            user.VerificationCodeExpiryTime = DateTime.UtcNow.AddMinutes(10);
+
+            var updateResult = await _userManager.UpdateAsync(user);
+            if (!updateResult.Succeeded) throw new AppException(SYSTEM.DEFAULT_ERROR, 500);
 
             var subject = _emailT[EMAILS.CONFIRM_SUBJECT];
             var body = string.Format(_emailT[EMAILS.CONFIRM_BODY], code);
@@ -99,24 +98,50 @@ namespace INest.Services.Infrastructure
 
         public async Task<AuthResponseDto> ConfirmRegistrationAsync(ConfirmRegisterDto dto)
         {
-            var email = dto.Email.ToLowerInvariant();
-
-            if (!_otpStore.TryGetValue(email, out var entry) || entry.Code != dto.Code || entry.Expire < DateTime.UtcNow)
-                throw new AppException(AUTH.ERRORS.INVALID_OR_EXPIRED_CODE, 400);
-
+            var email = dto.Email.Trim().ToUpperInvariant();
             var user = await _userManager.FindByEmailAsync(email);
+
             if (user == null)
                 throw new AppException(AUTH.ERRORS.USER_NOT_FOUND, 404);
 
+            if (user.VerificationCode != dto.Code || user.VerificationCodeExpiryTime < DateTime.UtcNow)
+                throw new AppException(AUTH.ERRORS.INVALID_OR_EXPIRED_CODE, 400);
+
             user.EmailConfirmed = true;
-            await _userManager.UpdateAsync(user);
+            user.VerificationCode = null;
+            user.VerificationCodeExpiryTime = null;
+
+            var updateResult = await _userManager.UpdateAsync(user);
+            if (!updateResult.Succeeded) throw new AppException(SYSTEM.DEFAULT_ERROR, 500);
 
             if (!await _userManager.IsInRoleAsync(user, SharedConstants.DEFAULT_ROLE))
-                await _userManager.AddToRoleAsync(user, SharedConstants.DEFAULT_ROLE);
-
-            _otpStore.TryRemove(email, out _);
+            {
+                var roleResult = await _userManager.AddToRoleAsync(user, SharedConstants.DEFAULT_ROLE);
+                if (!roleResult.Succeeded) throw new AppException(SYSTEM.DEFAULT_ERROR, 500);
+            }
 
             return await GenerateAuthResponse(user);
+        }
+
+        public async Task ResendConfirmationCodeAsync(string email)
+        {
+            var normalizedEmail = email.Trim().ToUpperInvariant();
+            var user = await _userManager.FindByEmailAsync(normalizedEmail);
+
+            if (user == null || user.EmailConfirmed)
+                throw new AppException(AUTH.ERRORS.USER_NOT_FOUND, 400);
+
+            var code = RandomNumberGenerator.GetInt32(100000, 1000000).ToString();
+            user.VerificationCode = code;
+            user.VerificationCodeExpiryTime = DateTime.UtcNow.AddMinutes(10);
+
+            var updateResult = await _userManager.UpdateAsync(user);
+            if (!updateResult.Succeeded) throw new AppException(SYSTEM.DEFAULT_ERROR, 500);
+
+            var subject = _emailT[EMAILS.CONFIRM_SUBJECT];
+            var body = string.Format(_emailT[EMAILS.CONFIRM_BODY], code);
+
+            await _emailService.SendEmailAsync(normalizedEmail, subject, body);
         }
 
         public async Task<AuthResponseDto> LoginAsync(LoginDto dto)
@@ -186,7 +211,13 @@ namespace INest.Services.Infrastructure
                 var user = await _userManager.FindByEmailAsync(payload.Email);
                 if (user == null)
                 {
-                    user = new AppUser { Email = payload.Email, UserName = payload.Email, EmailConfirmed = true };
+                    user = new AppUser
+                    {
+                        Email = payload.Email,
+                        UserName = payload.Email,
+                        DisplayName = payload.Name ?? payload.Email.Split('@')[0],
+                        EmailConfirmed = true
+                    };
                     var result = await _userManager.CreateAsync(user);
                     if (result.Succeeded)
                     {
@@ -206,7 +237,16 @@ namespace INest.Services.Infrastructure
             }
         }
 
-        public async Task LogoutAsync(string userId) => await Task.CompletedTask;
+        public async Task LogoutAsync(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user != null)
+            {
+                user.RefreshToken = null;
+                user.RefreshTokenExpiryTime = DateTime.MinValue;
+                await _userManager.UpdateAsync(user);
+            }
+        }
 
         private async Task<AuthResponseDto> GenerateAuthResponse(AppUser user)
         {

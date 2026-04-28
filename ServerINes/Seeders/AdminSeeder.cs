@@ -7,7 +7,8 @@ namespace INest.Seeders
     {
         public static async Task SeedAsync(
             UserManager<AppUser> userManager,
-            RoleManager<IdentityRole<Guid>> roleManager)
+            RoleManager<IdentityRole<Guid>> roleManager,
+            IConfiguration config)
         {
             string[] roles = { "inest_admin", "inest_app_user" };
 
@@ -19,8 +20,14 @@ namespace INest.Seeders
                 }
             }
 
-            const string adminEmail = "romank057yl@gmail.com";
-            const string adminPassword = "Qwe_123";
+            var adminEmail = config["AdminSeeder:Email"];
+            var adminPassword = config["AdminSeeder:Password"];
+            var displayName = config["AdminSeeder:DisplayName"] ?? "Admin";
+
+            if (string.IsNullOrEmpty(adminEmail) || string.IsNullOrEmpty(adminPassword))
+            {
+                return;
+            }
 
             var admin = await userManager.FindByEmailAsync(adminEmail);
 
@@ -30,6 +37,7 @@ namespace INest.Seeders
                 {
                     UserName = adminEmail,
                     Email = adminEmail,
+                    DisplayName = displayName,
                     EmailConfirmed = true,
                     CreatedAt = DateTime.UtcNow
                 };

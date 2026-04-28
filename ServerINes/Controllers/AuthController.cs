@@ -34,15 +34,8 @@ namespace INest.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto dto)
         {
-            try
-            {
-                await _authService.SendConfirmationCodeAsync(dto);
-                return Ok(new { message = AUTH.SUCCESS.OTP_SENT });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { error = ex.Message });
-            }
+            await _authService.SendConfirmationCodeAsync(dto);
+            return Ok(new { message = AUTH.SUCCESS.OTP_SENT });
         }
 
         [HttpPost("confirm-register")]
@@ -51,6 +44,14 @@ namespace INest.Controllers
             var result = await _authService.ConfirmRegistrationAsync(dto);
             SetTokenCookies(result);
             return Ok(result);
+        }
+
+        [AllowAnonymous]
+        [HttpPost("resend-code")]
+        public async Task<IActionResult> ResendCode([FromBody] ResendCodeDto dto)
+        {
+            await _authService.ResendConfirmationCodeAsync(dto.Email);
+            return Ok(new { message = AUTH.SUCCESS.OTP_SENT });
         }
 
         [AllowAnonymous]

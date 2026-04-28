@@ -37,13 +37,17 @@ export class AuthService {
   }
 
   refreshToken(): Observable<any> {
-  return this.http.post<any>(`${this.apiUrl}/refresh`, {}).pipe(
-    catchError(err => {
-      this.userSubject.next(null);
-      return throwError(() => err);
-    })
-  );
-}
+    return this.http.post<any>(`${this.apiUrl}/refresh`, {}).pipe(
+      catchError(err => {
+        this.userSubject.next(null);
+        return throwError(() => err);
+      })
+    );
+  }
+
+  resendCode(data: { email: string }) {
+    return this.http.post(`${this.apiUrl}/auth/resend-code`, data);
+  }
 
   register(dto: any): Observable<void> {
     return this.http.post<void>(`${this.apiUrl}/register`, dto);

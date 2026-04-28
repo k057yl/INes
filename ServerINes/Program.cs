@@ -34,7 +34,9 @@ using (var scope = app.Services.CreateScope())
 {
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
-    await AdminSeeder.SeedAsync(userManager, roleManager);
+    var config = scope.ServiceProvider.GetRequiredService<IConfiguration>();
+
+    await AdminSeeder.SeedAsync(userManager, roleManager, config);
 }
 
 // ---------- Pipeline ----------

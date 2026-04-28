@@ -21,8 +21,12 @@ namespace INest.Models.Validators
                 .Matches(@"[^a-zA-Z0-9]").WithMessage(LocalizationConstants.ERRORS.PWD_SPEC);
 
             RuleFor(x => x.Username)
-                .NotEmpty().WithMessage(LocalizationConstants.ERRORS.REQUIRED_FIELD)
-                .Matches(@"^[a-zA-Z0-9]*$").WithMessage(LocalizationConstants.ERRORS.USERNAME_LATIN_ONLY);
+                .NotEmpty()
+                .WithMessage(LocalizationConstants.ERRORS.REQUIRED_FIELD)
+                .MinimumLength(3)
+                .MaximumLength(30)
+                .Matches(@"^[a-zA-Z0-9._]+$")
+                .WithMessage(LocalizationConstants.ERRORS.USERNAME_LATIN_ONLY);
         }
     }
 }

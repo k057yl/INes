@@ -55,6 +55,8 @@ namespace INest.Services
         {
             services.AddIdentity<AppUser, IdentityRole<Guid>>(options =>
             {
+                options.User.RequireUniqueEmail = true;
+
                 options.Password.RequireDigit = false;
                 options.Password.RequireLowercase = false;
                 options.Password.RequireUppercase = false;
@@ -62,7 +64,8 @@ namespace INest.Services
                 options.Password.RequiredLength = 6;
             })
             .AddEntityFrameworkStores<AppDbContext>()
-            .AddDefaultTokenProviders();
+            .AddDefaultTokenProviders()
+            .AddUserValidator<CustomUserValidator<AppUser>>();
         }
 
         private static void AddCustomAuth(this IServiceCollection services, IConfiguration config)

@@ -49,7 +49,7 @@ export class RegisterComponent implements OnInit, AfterViewInit {
       username: ['', [
         Validators.required, 
         Validators.minLength(3),
-        Validators.pattern(/^[a-zA-Z0-9]*$/)
+        Validators.pattern(/^[a-zA-Z0-9._]+$/)
       ]],
       email: ['', 
         [Validators.required, Validators.pattern(emailRegex)], 
@@ -104,7 +104,7 @@ export class RegisterComponent implements OnInit, AfterViewInit {
         this.message = 'AUTH.SUCCESS.OTP_SENT'; 
         setTimeout(() => {
           this.router.navigate(['/confirm-register'], { 
-            state: { email: dto.email, password: dto.password } 
+            state: { email: dto.email} 
           });
         }, 1500);
       },

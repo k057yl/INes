@@ -18,7 +18,6 @@ export class ConfirmRegisterComponent implements OnInit {
   private authService = inject(AuthService);
 
   email = '';
-  password = ''; 
   otpCode = ''; 
   
   message?: string;
@@ -28,7 +27,6 @@ export class ConfirmRegisterComponent implements OnInit {
     const state = window.history.state;
     if (state && state.email) {
       this.email = state.email;
-      this.password = state.password;
     } else {
       this.router.navigate(['/register']);
     }
@@ -60,11 +58,8 @@ export class ConfirmRegisterComponent implements OnInit {
   resendCode() {
     this.error = undefined;
     this.message = undefined;
-    this.authService.register({ 
-      email: this.email, 
-      username: '...', 
-      password: this.password 
-    }).subscribe({
+    
+    this.authService.resendCode({ email: this.email }).subscribe({
       next: () => this.message = 'AUTH.SUCCESS.OTP_SENT',
       error: (err: HttpErrorResponse) => this.error = err.error?.error || 'SYSTEM.EMAIL_SEND_FAILED'
     });

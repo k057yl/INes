@@ -1,6 +1,7 @@
 ﻿using INest.Models.DTOs.Auth;
 using INest.Models.DTOs.Token;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 
 namespace INest.Services.Interfaces
 {
@@ -15,5 +16,6 @@ namespace INest.Services.Interfaces
         Task<AuthResponseDto?> GoogleLoginAsync(string idToken);
         Task LogoutAsync(string userId);
         Task<AuthResponseDto> RefreshTokenAsync(TokenRequestDto dto);
+        Task ResendConfirmationCodeAsync(string email);
     }
 }
