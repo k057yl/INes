@@ -8,7 +8,7 @@ using Microsoft.Extensions.Localization;
 using Configuration = brevo_csharp.Client.Configuration;
 using Task = System.Threading.Tasks.Task;
 
-namespace INest.Services
+namespace INest.Services.Infrastructure
 {
     public class EmailService : IEmailService
     {

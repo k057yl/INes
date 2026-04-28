@@ -41,6 +41,7 @@ export class LocationCardComponent {
   @Output() moveUp = new EventEmitter<StorageLocation>();
   @Output() moveDown = new EventEmitter<StorageLocation>();
   @Output() editItem = new EventEmitter<Item>();
+  @Output() returnItem = new EventEmitter<Item>();
 
   openItemMenuId: string | null = null;
   isMobile = window.innerWidth <= 768;

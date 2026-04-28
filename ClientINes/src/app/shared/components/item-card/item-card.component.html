@@ -8,91 +8,87 @@
   <div class="item-thumb" [routerLink]="['/item', item.id]">
     @if (item.photoUrl) {
       <img [src]="getPhotoUrl(item.photoUrl)" alt="item">
-    }
-    @if (!item.photoUrl) {
-      <div class="no-image">
-        <i class="fa fa-box-open"></i>
-      </div>
+    } @else {
+      <div class="no-image"><i class="fa fa-box-open"></i></div>
     }
   </div>
 
-  <div class="item-content" [routerLink]="['/item', item.id]" style="cursor: pointer;">
+  <div class="item-content" [routerLink]="['/item', item.id]">
     <div class="item-header">
       <span class="item-name" [title]="item.name">{{ item.name }}</span>
     </div>
     <div class="item-details">
       @if (featureService.isSalesModeEnabled() && item.estimatedValue) {
         <span class="price-tag">
-          {{ item.estimatedValue | number:'1.0-0' }} <i class="fa fa-coins" style="font-size: 0.7rem; margin-left: 2px;"></i>
+          {{ item.estimatedValue | number:'1.0-0' }} <i class="fa fa-coins"></i>
         </span>
       }
-      <span class="status-badges" style="margin-left: 10px;">
-        @if (item.status === 6) {
-          <i class="fa fa-shopping-cart" style="color: var(--g-blue);" [title]="'STATUS.LISTED' | translate"></i>
-        }
-        @if (item.status === 1) {
-          <i class="fa fa-share-square" style="color: var(--g-yellow);" [title]="'STATUS.LENT' | translate"></i>
-        }
-        @if (item.status === 7) {
-          <i class="fa fa-reply-all" style="color: var(--g-green); transform: scaleX(-1);" [title]="'STATUS.BORROWED' | translate"></i>
-        }
+      <span class="status-badges">
+        @if (item.status === 6) { <i class="fa fa-shopping-cart" style="color: var(--g-blue)"></i> }
+        @if (item.status === 1) { <i class="fa fa-share-square" style="color: var(--g-yellow)"></i> }
+        @if (item.status === 7) { <i class="fa fa-reply-all" style="color: var(--g-green); transform: scaleX(-1);"></i> }
       </span>
     </div>
   </div>
 
-  <div class="item-actions">
-    @if (!isMobile && featureService.isSalesModeEnabled()) {
-      <button
-        class="inest-action-btn"
-        [disabled]="!canSell"
-        (click)="canSell && sell.emit(item); $event.stopPropagation()"
-        [title]="(canSell ? 'COMMON.SELL' : 'STATUS.ERRORS.CANT_SELL_LENT') | translate">
+  <div class="card-action-bar">
+    <button class="inest-action-btn btn-info" [routerLink]="['/item', item.id]" [title]="'COMMON.INFO' | translate">
+      <i class="fa fa-info-circle"></i>
+    </button>
+    
+    <button class="inest-action-btn btn-edit" (click)="edit.emit(item); $event.stopPropagation()" [title]="'COMMON.EDIT' | translate">
+      <i class="fa fa-pen"></i>
+    </button>
+
+    <button class="inest-action-btn btn-lend" [disabled]="!canLend" (click)="canLend && lend.emit(item); $event.stopPropagation()" [title]="'COMMON.LEND' | translate">
+      <i class="fa fa-handshake"></i>
+    </button>
+
+    @if (canReturn) {
+      <button class="inest-action-btn btn-return" (click)="returnItem.emit(item); $event.stopPropagation()" [title]="'COMMON.RETURN' | translate">
+        <i class="fa fa-undo"></i>
+      </button>
+    }
+
+    @if (featureService.isSalesModeEnabled()) {
+      <button class="inest-action-btn btn-sell" [disabled]="!canSell" (click)="canSell && sell.emit(item); $event.stopPropagation()" [title]="'COMMON.SELL' | translate">
         <i class="fa fa-dollar-sign"></i>
       </button>
     }
 
-    <button class="inest-action-btn" (click)="toggleMenu($event)" [class.active]="showMenu" [title]="'COMMON.MORE' | translate">
-      <i class="fa fa-ellipsis-v"></i>
-    </button>
+    <div class="move-menu-wrapper">
+      <button class="inest-action-btn btn-move" (click)="toggleMenu($event); $event.stopPropagation()" [class.active]="showMenu" [title]="'COMMON.MOVE' | translate">
+        <i class="fa fa-exchange-alt"></i>
+      </button>
 
-    @if (showMenu) {
-      <div class="menu-dropdown item-menu">
-        <div class="menu-section">
-          <label><i class="fa fa-exchange-alt"></i> {{'DROP_MENU.MOVE_MSG' | translate}}</label>
-          <div class="select-wrapper">
-            <select (change)="onMove($event)">
+      @if (showMenu) {
+        <div class="menu-dropdown item-move-dropdown">
+          <div class="dropdown-header"><i class="fa fa-level-up-alt"></i> {{'DROP_MENU.MOVE_MSG' | translate}}</div>
+          <div class="select-container">
+            <select (change)="onMove($event)" (click)="$event.stopPropagation()">
               <option value="" disabled selected>{{'DROP_MENU.SELECT_LOCATION' | translate}}</option>
-              @for (loc of availableLocations; track loc) {
+              @for (loc of availableLocations; track loc.id) {
                 <option [value]="loc.id">{{ loc.name }}</option>
               }
             </select>
+            <i class="fa fa-chevron-down select-arrow"></i>
           </div>
         </div>
-        <div class="divider"></div>
-        <button [routerLink]="['/item', item.id]" (click)="menuOpenedItemIdChange.emit(null)">
-          <i class="fa fa-info-circle"></i> {{'COMMON.INFO' | translate}}
-        </button>
-        <button (click)="edit.emit(item); menuOpenedItemIdChange.emit(null)">
-          <i class="fa fa-pen" style="color: var(--g-yellow) !important;"></i> {{'COMMON.EDIT' | translate}}
-        </button>
-        <button [disabled]="!canLend"
-          (click)="canLend && lend.emit(item); menuOpenedItemIdChange.emit(null)">
-          <i class="fa fa-handshake" [style.color]="canLend ? 'var(--g-yellow)' : 'var(--text-muted)'"></i>
-          {{'COMMON.LEND' | translate}}
-        </button>
-        @if (isMobile && featureService.isSalesModeEnabled()) {
-          <button
-            [disabled]="!canSell"
-            (click)="canSell && sell.emit(item); menuOpenedItemIdChange.emit(null)">
-            <i class="fa fa-dollar-sign"></i> {{'COMMON.SELL' | translate}}
-          </button>
-        }
-        <button (click)="requestDelete($event)" class="delete-btn">
-          <i class="fa fa-trash-alt"></i> {{'COMMON.DELETE' | translate}}
-        </button>
-      </div>
-    }
+      }
+    </div>
+
+    <button class="inest-action-btn btn-delete" (click)="delete.emit(item); $event.stopPropagation()" [title]="'COMMON.DELETE' | translate">
+      <i class="fa fa-trash-alt"></i>
+    </button>
   </div>
 
-  <div class="item-drag-placeholder" *cdkDragPlaceholder></div>
+  @if (!isMobile) {
+    <div class="handle-section">
+        <div class="v-divider"></div>
+        <div class="drag-handle" cdkDragHandle>
+            <i class="fa fa-ellipsis-v"></i>
+            <i class="fa fa-ellipsis-v"></i>
+        </div>
+    </div>
+  }
 </div>

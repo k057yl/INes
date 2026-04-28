@@ -8,7 +8,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 using ISSize = SixLabors.ImageSharp.Size;
 
-namespace INest.Services
+namespace INest.Services.Infrastructure
 {
     public class PhotoService : IPhotoService
     {

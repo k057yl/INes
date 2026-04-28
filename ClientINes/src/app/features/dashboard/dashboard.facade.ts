@@ -8,7 +8,7 @@ import { ItemService } from '../../shared/services/item.service';
 import { SalesService } from '../../shared/services/sales.service';
 import { LendingService } from '../../shared/services/lending.service';
 import { SellItemRequestDto } from '../../models/dtos/sale.dto';
-import { LendItemDto } from '../../models/dtos/lending.dto';
+import { LendItemDto, ReturnItemDto } from '../../models/dtos/lending.dto';
 
 @Injectable()
 export class DashboardFacade {
@@ -219,6 +219,10 @@ export class DashboardFacade {
 
   lendItem(dto: LendItemDto) {
     return this.lendingService.lendItem(dto);
+  }
+
+  returnItem(itemId: string, dto: ReturnItemDto = { returnedDate: new Date().toISOString() }) {
+    return this.lendingService.returnItem(itemId, dto);
   }
 
   isChildOf(targetId: string, sourceLoc: StorageLocation): boolean {

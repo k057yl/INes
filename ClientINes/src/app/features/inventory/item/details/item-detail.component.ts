@@ -130,4 +130,22 @@ export class ItemDetailComponent implements OnInit {
       this.router.navigate(['/dashboard']);
     }
   }
+
+    onReturn() {
+      if (!this.item) return;
+      this.modalService.openConfirm({
+        mode: 'confirm',
+        title: 'COMMON.RETURN',
+        message: 'LENDING.CONFIRM_RETURN_MSG',
+        confirmText: 'COMMON.YES'
+      }).subscribe(() => {
+        this.http.post(`${environment.apiBaseUrl}/lending/${this.item!.id}/return`, { 
+          returnedDate: new Date().toISOString() 
+        })
+        .subscribe({
+          next: () => this.loadItem(this.item!.id),
+          error: () => console.error('Return failed')
+        });
+      });
+    }
 }

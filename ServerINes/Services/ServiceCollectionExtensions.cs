@@ -5,6 +5,7 @@ using INest.Models.Entities;
 using INest.Services.BackgroundServices;
 using INest.Services.Behaviors;
 using INest.Services.DomainHelpers;
+using INest.Services.Infrastructure;
 using INest.Services.Interfaces;
 using INest.Services.Tracker;
 using MediatR;

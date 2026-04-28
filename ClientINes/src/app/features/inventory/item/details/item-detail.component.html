@@ -5,6 +5,11 @@
         <i class="fa fa-chevron-left"></i> {{ 'COMMON.BACK' | translate }}
       </button>
       <div class="header-actions">
+        @if (isLent || isBorrowed) {
+          <button class="nav-btn return-btn" (click)="onReturn()" style="color: var(--g-blue); border-color: var(--g-blue);">
+            <i class="fa fa-undo"></i> {{ 'COMMON.RETURN' | translate }}
+          </button>
+        }
         <button class="nav-btn edit-btn" (click)="onEdit()">
           <i class="fa fa-pen"></i> {{ 'COMMON.EDIT' | translate }}
         </button>

@@ -4,215 +4,184 @@
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-left: 4px solid var(--accent-color);
-  border-radius: 12px;
-  padding: 10px;
+  border-radius: 16px;
+  padding: 12px 0 12px 14px; // Увеличили высоту за счет падингов
+  min-height: 74px;
   margin-bottom: 8px;
   position: relative;
-  overflow: visible;
-  cursor: grab;
-  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: all 0.2s ease;
 
   &:hover:not(.cdk-drag-placeholder):not(.cdk-drag-dragging) {
+    background: var(--bg-main-card);
     border-color: var(--accent-color);
-    background: var(--bg-input);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   }
-
-  &.status-borrowed {
-    background: rgba(52, 168, 83, 0.05);
-    border-style: dashed;
-  }
-
-  &.status-lent {
-    opacity: 0.8;
-  }
-
-  &.cdk-drag-dragging {
-    transition: none !important;
-    cursor: grabbing;
-    opacity: 0.9;
-    z-index: 3000 !important;
-  }
-
-  &.menu-open {
-    z-index: 1000 !important;
-    border-color: var(--accent-color);
-  }
-}
-
-.cdk-drag-animating {
-  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1) !important;
 }
 
 .item-thumb {
-  width: 54px;
-  height: 54px;
-  border-radius: 8px;
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
   overflow: hidden;
-  background: var(--bg-main);
   flex-shrink: 0;
-  cursor: pointer;
   border: 1px solid var(--border-color);
+  background: var(--bg-main);
   
   img { width: 100%; height: 100%; object-fit: cover; }
+  .no-image { 
+    display: flex; align-items: center; justify-content: center; 
+    height: 100%; color: var(--text-muted); font-size: 1.2rem;
+  }
 }
 
 .item-content {
   flex: 1;
-  margin: 0 15px;
-  overflow: hidden;
-  
+  margin: 0 16px;
+  min-width: 0;
+  cursor: pointer;
+
   .item-name {
     display: block;
     color: var(--text-main);
-    font-weight: 600;
-    font-size: 0.95rem;
+    font-weight: 700;
+    font-size: 1.05rem;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
   }
-}
 
-.item-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-left: auto;
-}
-
-.inest-action-btn {
-  &:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-    filter: grayscale(1);
-    pointer-events: none;
+  .item-details {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 4px;
+    
+    .price-tag { color: var(--g-yellow); font-size: 0.85rem; font-weight: 800; }
+    .status-badges i { font-size: 0.85rem; }
   }
 }
 
-.menu-dropdown.item-menu {
-  position: absolute;
-  right: 0;
-  top: calc(100% + 5px);
+.card-action-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-right: 12px;
+}
+
+// КНОПКИ В СТИЛЕ ЛОКАЦИЙ (tool-btn)
+.inest-action-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  z-index: 2000;
-  width: 220px;
-  border-radius: 12px;
-  padding: 6px;
-  animation: cardFadeIn 0.15s ease-out;
+  border-radius: 8px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: 100%;
-    right: 15px;
-    border: 6px solid transparent;
-    border-bottom-color: var(--bg-card);
+  i { font-size: 0.9rem; color: inherit; }
+
+  &:hover:not(:disabled) {
+    transform: scale(1.15);
+    background: var(--bg-main);
+  }
+
+  &:disabled { opacity: 0.2; cursor: not-allowed; filter: grayscale(1); }
+
+  // Юзаем твои переменные для ховеров
+  &.btn-info:hover, &.btn-return:hover { color: var(--g-blue); border-color: var(--g-blue); }
+  &.btn-edit:hover, &.btn-lend:hover, &.btn-sell:hover { color: var(--g-yellow); border-color: var(--g-yellow); }
+  &.btn-move:hover { color: var(--accent-color); border-color: var(--accent-color); }
+  &.btn-delete:hover { color: var(--error-red); border-color: var(--error-red); }
+
+  &.active {
+    background: var(--accent-color) !important;
+    border-color: var(--accent-color) !important;
+    color: var(--text-on-accent) !important;
   }
 }
 
-@keyframes cardFadeIn {
-  from { opacity: 0; transform: translateY(-8px); }
-  to { opacity: 1; transform: translateY(0); }
+// СЕКЦИЯ ГРИПА
+.handle-section {
+  display: flex;
+  align-items: stretch;
+  align-self: stretch;
+  flex-shrink: 0;
+
+  .v-divider {
+    width: 2px; // Сделал чуть жирнее
+    background: var(--border-color);
+    margin: 10px 0;
+    opacity: 0.4;
+  }
 }
 
-.menu-dropdown button {
-  width: 100%;
-  padding: 10px 14px;
-  background: transparent;
-  border: none;
-  color: var(--text-main);
+.drag-handle {
+  width: 36px;
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-size: 0.85rem;
-  cursor: pointer;
-  border-radius: 8px;
-  transition: 0.2s;
+  justify-content: center;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: grab;
+  transition: all 0.2s;
 
-  i { width: 18px; color: var(--accent-color); text-align: center; font-size: 1rem; }
+  &:hover { color: var(--accent-color); background: rgba(0,0,0,0.02); }
+  &:active { cursor: grabbing; }
 
-  &:hover:not(:disabled) { 
-    background: var(--bg-input); 
-    color: var(--accent-color);
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    color: var(--text-muted) !important;
-    cursor: not-allowed;
-    
-    i { color: var(--text-muted) !important; }
-  }
-
-  &.delete-btn {
-    color: var(--error-red);
-    i { color: var(--error-red); }
-    &:hover:not(:disabled) { background: rgba(255, 77, 77, 0.1); }
-  }
+  // Две колонки точек
+  gap: 2px;
+  i { font-size: 0.8rem; }
 }
 
-.divider { 
-  height: 1px; 
-  background: var(--border-color); 
-  margin: 6px 0; 
-  opacity: 0.5;
-}
+// Выпадающее меню
+.item-move-dropdown {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 12px);
+  width: 240px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  box-shadow: 0 15px 35px var(--toast-shadow);
+  z-index: 2000;
+  padding: 14px;
 
-.menu-section {
-  label {
-    display: block;
-    padding: 6px 12px 4px;
-    font-size: 0.65rem;
+  .dropdown-header {
+    font-size: 0.7rem;
+    font-weight: 800;
     color: var(--text-muted);
     text-transform: uppercase;
-    letter-spacing: 0.8px;
-    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    i { color: var(--accent-color); }
   }
-}
 
-.select-wrapper { 
-  padding: 4px 8px 8px; 
-  
-  select {
-    width: 100%;
-    background: var(--bg-main);
-    border: 1px solid var(--border-color);
-    color: var(--text-main);
-    padding: 8px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 0.85rem;
-    outline: none;
-
-    &:focus { border-color: var(--accent-color); }
+  .select-container {
+    position: relative;
+    select {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 10px;
+      color: var(--text-main);
+      font-size: 0.85rem;
+      cursor: pointer;
+      outline: none;
+      &:focus { border-color: var(--accent-color); }
+      option { background: var(--bg-card); }
+    }
   }
-}
-
-.item-drag-placeholder {
-  background: var(--bg-input);
-  border: 2px dashed var(--accent-color);
-  border-radius: 12px;
-  min-height: 80px;
-  margin-bottom: 8px;
-  opacity: 0.5;
 }
 
 @media (max-width: 768px) {
-  .item-card { 
-    touch-action: auto !important; 
-    cursor: default; 
-    &:hover { transform: none; }
-  }
-  
-  .menu-dropdown.item-menu {
-    position: fixed;
-    top: auto;
-    bottom: 20px;
-    left: 10px;
-    right: 10px;
-    width: calc(100% - 20px);
-    &::after { display: none; }
-  }
+  .handle-section { display: none; }
+  .item-card { padding-right: 12px; }
 }

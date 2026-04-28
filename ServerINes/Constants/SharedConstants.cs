@@ -9,6 +9,9 @@
         public const string WSL_IP = "https://172.27.128.1:8080";
 
         public const string PWA_MOBILE_API = "https://192.168.0.104:7068";
+
+        public const string DEFAULT_RESET_PASSWORD_PATH = "{0}/reset-password?email={1}&token={2}";
+
         public static string CONTENT_SECURITY_POLICY =>
             "default-src 'self'; " +
             "script-src 'self'; " +
@@ -17,17 +20,13 @@
             "img-src 'self' data: https://res.cloudinary.com; " +
             $"connect-src 'self' https://localhost:7068 {PWA_MOBILE_API};";
 
-
         public const string CATEGORY_OTHER = "Other";
-
         public const string DEFAULT_ROLE = "inest_app_user";
-
         public const string ADMIN_ROLE = "inest_app_admin";
-
         public const string JWT_KEY_MISSING = "JWT Key missing";
-
         public const string CONTENT_TYPE_JSON = "application/json";
-        //Item service
+
+        // Item service
         public const string OLD_VALUE = "Sold";
         public const string NEW_VALUE = "Active";
     }

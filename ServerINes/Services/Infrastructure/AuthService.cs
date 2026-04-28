@@ -14,7 +14,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using static INest.Constants.LocalizationConstants;
 
-namespace INest.Services
+namespace INest.Services.Infrastructure
 {
     public class AuthService : IAuthService
     {
@@ -146,8 +146,7 @@ namespace INest.Services
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
             var baseUrl = _config["Frontend:Url"];
-            var pathTemplate = _config["Frontend:ResetPasswordPath"]
-                               ?? "{0}/reset-password?email={1}&token={2}";
+            var pathTemplate = _config["Frontend:ResetPasswordPath"] ?? SharedConstants.DEFAULT_RESET_PASSWORD_PATH;
 
             var callbackUrl = string.Format(pathTemplate, baseUrl, dto.Email, Uri.EscapeDataString(token));
 

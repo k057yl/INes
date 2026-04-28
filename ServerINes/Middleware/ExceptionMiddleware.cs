@@ -37,7 +37,7 @@ namespace INest.Middleware
             context.Response.ContentType = SharedConstants.CONTENT_TYPE_JSON;
 
             var statusCode = (int)HttpStatusCode.InternalServerError;
-            var message = LocalizationConstants.SYSTEM.DEFAULT_ERROR;
+            var message = SYSTEM.DEFAULT_ERROR;
             object? details = _env.IsDevelopment() ? ex.StackTrace?.ToString() : null;
 
             var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
@@ -46,7 +46,7 @@ namespace INest.Middleware
             {
                 case ValidationAppException valEx:
                     statusCode = (int)HttpStatusCode.BadRequest;
-                    message = LocalizationConstants.SYSTEM.VALIDATION_FAILED;
+                    message = SYSTEM.VALIDATION_FAILED;
                     details = valEx.Errors
                         .GroupBy(e => e.PropertyName)
                         .ToDictionary(

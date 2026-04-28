@@ -30,6 +30,7 @@ export class ItemCardComponent {
   @Output() sell = new EventEmitter<Item>();
   @Output() delete = new EventEmitter<Item>();
   @Output() lend = new EventEmitter<Item>();
+  @Output() returnItem = new EventEmitter<Item>();
   @Output() move = new EventEmitter<{item: Item, targetLocationId: string}>();
   @Output() edit = new EventEmitter<Item>();
 
@@ -47,6 +48,10 @@ export class ItemCardComponent {
   get canLend(): boolean {
     const forbiddenStatuses = [1, 7, 4];
     return !forbiddenStatuses.includes(this.item.status);
+  }
+
+  get canReturn(): boolean {
+    return this.item.status === 1 || this.item.status === 7;
   }
 
   private readonly googleColors = ['var(--g-blue)', 'var(--g-red)', 'var(--g-yellow)', 'var(--g-green)'];
@@ -88,10 +93,5 @@ export class ItemCardComponent {
       this.move.emit({ item: this.item, targetLocationId: targetId });
       this.menuOpenedItemIdChange.emit(null);
     }
-  }
-
-  requestDelete(event: MouseEvent) {
-    this.menuOpenedItemIdChange.emit(null);
-    this.delete.emit(this.item);
   }
 }

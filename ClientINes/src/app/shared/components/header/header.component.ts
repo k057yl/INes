@@ -1,4 +1,4 @@
-import { Component, inject, signal, HostListener } from '@angular/core';
+import { Component, inject, signal, HostListener, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
@@ -15,6 +15,7 @@ import { DashboardModalService } from '../../../features/dashboard/dashboard.mod
   styleUrl: './header.component.scss'
 })
 export class HeaderComponent {
+  private el = inject(ElementRef);
   public authService = inject(AuthService);
   public loc = inject(LocalizationService);
   public themeService = inject(ThemeService);
@@ -54,8 +55,13 @@ export class HeaderComponent {
 
   @HostListener('document:click', ['$event'])
   onClickOutside(event: MouseEvent) {
-    this.isLangMenuOpen.set(false);
-    this.isCreateMenuOpen.set(false);
+    const target = event.target as HTMLElement;
+    
+    if (!this.el.nativeElement.contains(target)) {
+      this.isMenuOpen.set(false);
+      this.isLangMenuOpen.set(false);
+      this.isCreateMenuOpen.set(false);
+    }
   }
 
   openCreateItem() {
