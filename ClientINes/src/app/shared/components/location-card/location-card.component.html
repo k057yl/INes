@@ -135,16 +135,21 @@
           [connectedLists]="connectedLists"
           [connectedLocationLists]="connectedLocationLists"
           [isChildOf]="isChildOf"
+          
           (itemDropped)="itemDropped.emit($event)"
-          (locationDropped)="locationDropped.emit($event)"
-          (move)="move.emit($event)"
-          (moveItemManual)="moveItemManual.emit($event)"
-          (rename)="rename.emit($event)"
-          (delete)="delete.emit($event)"
           (sellItem)="sellItem.emit($event)"
           (lendItem)="lendItem.emit($event)"
+          (returnItem)="returnItem.emit($event)"  
           (deleteItem)="deleteItem.emit($event)"
-        (moveUp)="moveUp.emit($event)"    (moveDown)="moveDown.emit($event)"> </app-location-card>
+          (editItem)="editItem.emit($event)"      
+          (moveItemManual)="moveItemManual.emit($event)" 
+          (locationDropped)="locationDropped.emit($event)"
+          (move)="move.emit($event)"
+          (rename)="rename.emit($event)"
+          (delete)="delete.emit($event)"
+          (moveUp)="moveUp.emit($event)"
+          (moveDown)="moveDown.emit($event)">
+        </app-location-card>
       </div>
     }
   </div>

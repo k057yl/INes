@@ -76,17 +76,32 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }); 
   }
   
-  onDeleteLocation(loc: StorageLocation) { 
+  onDeleteLocation(loc: StorageLocation) {
     loc.showMenu = false; 
-    this.modal.openConfirm({ mode: 'delete', title: 'COMMON.DELETE', message: 'LOCATION_CARD.MODAL.YOU_SURE_MSG' }).subscribe(() => { 
-      this.facade.deleteLocation(loc.id).subscribe({
-        next: () => { 
-          this.toastr.success(this.translate.instant('LOCATIONS.SUCCESS.DELETE'));
-          if (this.currentPageBoard > 0 && this.pagedBoardLocations.length === 0) this.currentPageBoard--; 
-          this.syncRibbonWithBoard(); 
-        },
-        error: () => this.toastr.error(this.translate.instant('SYSTEM.DEFAULT_ERROR'))
-      }); 
+    this.modal.openConfirm({ 
+      mode: 'delete', 
+      title: 'COMMON.DELETE', 
+      message: 'LOCATION_CARD.MODAL.YOU_SURE_MSG' 
+    }).subscribe((confirmed) => { 
+      if (confirmed) {
+        this.facade.deleteLocation(loc.id).subscribe({
+          next: () => {
+            this.toastr.success(this.translate.instant('LOCATIONS.SUCCESS.DELETE'));
+            if (this.currentPageBoard > 0 && this.pagedBoardLocations.length === 0) {
+              this.currentPageBoard--; 
+            }
+            this.syncRibbonWithBoard(); 
+            this.loadData();
+          },
+          error: (err) => {
+            if (err.error?.message === 'LOCATIONS.ERRORS.NOT_EMPTY') {
+              this.toastr.warning(this.translate.instant('LOCATIONS.ERRORS.NOT_EMPTY'));
+            } else {
+              this.toastr.error(this.translate.instant('SYSTEM.DEFAULT_ERROR'));
+            }
+          }
+        });
+      }
     }); 
   }
   
@@ -247,10 +262,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   onReturnRequest(item: Item) {
-    this.modal.openConfirm({ mode: 'confirm', title: 'COMMON.RETURN', message: 'LENDING.CONFIRM_RETURN_MSG', confirmText: 'COMMON.YES' }).subscribe(() => {
+    this.modal.openConfirm({ mode: 'confirm', title: 'COMMON.RETURN', message: 'LENDING_MODAL.MODAL.RETURN_MSG', confirmText: 'COMMON.YES' }).subscribe(() => {
       this.facade.returnItem(item.id).subscribe({
         next: () => {
-          this.toastr.success(this.translate.instant('LENDING.SUCCESS.RETURN'));
+          this.toastr.success(this.translate.instant('LENDING_MODAL.SUCCESS_TOASTER'));
           this.loadData();
         },
         error: (err) => this.toastr.error(this.translate.instant('SYSTEM.DEFAULT_ERROR'))

@@ -7,7 +7,7 @@ namespace INest.Services.Features.Locations.Commands.DeleteLocation
         public DeleteLocationValidator()
         {
             RuleFor(x => x.UserId).NotEmpty();
-            RuleFor(x => x.LocationId).NotEmpty();
+            RuleFor(x => x.Id).NotEmpty();
         }
     }
 }

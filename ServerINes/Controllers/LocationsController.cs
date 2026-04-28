@@ -79,7 +79,7 @@ namespace INest.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            await _mediator.Send(new DeleteLocationCommand(GetUserId(), id));
+            var result = await _mediator.Send(new DeleteLocationCommand(GetUserId(), id));
             return Ok(new { message = LOCATIONS.SUCCESS.DELETE });
         }
     }

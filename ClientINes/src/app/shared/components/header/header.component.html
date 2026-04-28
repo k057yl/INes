@@ -41,7 +41,7 @@
     </nav>
 
     <div class="actions">
-      @if (user$ | async) {
+      @if ((user$ | async) && hasLocations()) {
         <div class="create-dropdown" [class.open]="isCreateMenuOpen()">
           <button class="create-trigger" (click)="toggleCreateMenu($event)" [title]="'COMMON.CREATE' | translate">
             <i class="fa fa-plus"></i>

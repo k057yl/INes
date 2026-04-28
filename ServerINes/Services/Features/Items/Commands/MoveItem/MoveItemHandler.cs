@@ -1,4 +1,5 @@
-﻿using INest.Models.Entities;
+﻿using INest.Exceptions;
+using INest.Models.Entities;
 using INest.Models.Enums;
 using INest.Services.Tracker;
 using MediatR;
@@ -24,19 +25,18 @@ namespace INest.Services.Features.Items.Commands.MoveItem
                 .Include(i => i.StorageLocation)
                 .FirstOrDefaultAsync(i => i.Id == request.ItemId && i.UserId == request.UserId, cancellationToken);
 
-            if (item == null) throw new KeyNotFoundException(ITEMS.ERRORS.NOT_FOUND);
+            if (item == null) throw new AppException(ITEMS.ERRORS.NOT_FOUND, 404);
 
             if (item.StorageLocationId != request.TargetLocationId)
             {
-                string? oldLocName = item.StorageLocation?.Name;
-                string? newLocName = null;
+                StorageLocation? targetLocation = null;
 
                 if (request.TargetLocationId.HasValue)
                 {
-                    var targetLoc = await _context.StorageLocations
-                        .AsNoTracking()
-                        .FirstOrDefaultAsync(l => l.Id == request.TargetLocationId.Value, cancellationToken);
-                    newLocName = targetLoc?.Name;
+                    targetLocation = await _context.StorageLocations
+                        .FirstOrDefaultAsync(l => l.Id == request.TargetLocationId.Value && l.UserId == request.UserId, cancellationToken);
+
+                    if (targetLocation == null) throw new AppException(LOCATIONS.ERRORS.NOT_FOUND, 404);
                 }
 
                 _context.ItemHistories.Add(new ItemHistory
@@ -44,29 +44,21 @@ namespace INest.Services.Features.Items.Commands.MoveItem
                     Id = Guid.NewGuid(),
                     ItemId = item.Id,
                     Type = ItemHistoryType.Moved,
-                    OldValue = oldLocName,
-                    NewValue = newLocName,
+                    OldValue = item.StorageLocation?.Name,
+                    NewValue = targetLocation?.Name,
                     CreatedAt = DateTime.UtcNow
                 });
 
                 var oldStatus = item.Status;
-
-                if (request.TargetLocationId.HasValue)
+                if (targetLocation != null)
                 {
-                    var targetLocation = await _context.StorageLocations
-                        .FirstOrDefaultAsync(l => l.Id == request.TargetLocationId.Value, cancellationToken);
-
-                    if (targetLocation != null)
-                    {
-                        if (targetLocation.IsSalesLocation) item.Status = ItemStatus.Listed;
-                        else if (targetLocation.IsLendingLocation) item.Status = ItemStatus.Lent;
-                        else if (item.Status == ItemStatus.Listed || item.Status == ItemStatus.Lent)
-                            item.Status = ItemStatus.Active;
-                    }
+                    if (targetLocation.IsSalesLocation) item.Status = ItemStatus.Listed;
+                    else if (targetLocation.IsLendingLocation) item.Status = ItemStatus.Lent;
+                    else if (item.Status == ItemStatus.Listed || item.Status == ItemStatus.Lent) item.Status = ItemStatus.Active;
                 }
-                else if (item.Status == ItemStatus.Listed || item.Status == ItemStatus.Lent)
+                else
                 {
-                    item.Status = ItemStatus.Active;
+                    if (item.Status == ItemStatus.Listed || item.Status == ItemStatus.Lent) item.Status = ItemStatus.Active;
                 }
 
                 if (oldStatus != item.Status)
@@ -84,10 +76,8 @@ namespace INest.Services.Features.Items.Commands.MoveItem
 
                 item.StorageLocationId = request.TargetLocationId;
                 await _context.SaveChangesAsync(cancellationToken);
-
                 _tracker.InvalidateUserCache(request.UserId);
             }
-
             return true;
         }
     }

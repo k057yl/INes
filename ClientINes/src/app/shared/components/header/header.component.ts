@@ -6,6 +6,7 @@ import { LocalizationService } from '../../services/localization.service';
 import { ThemeService } from '../../../core/services/theme.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { DashboardModalService } from '../../../features/dashboard/dashboard.modal.service';
+import { LocationService } from '../../services/location.service';
 
 @Component({
   selector: 'app-header',
@@ -21,14 +22,28 @@ export class HeaderComponent {
   public themeService = inject(ThemeService);
   private router = inject(Router);
   public modalService = inject(DashboardModalService);
+  private locationService = inject(LocationService);
 
   isMenuOpen = signal(false);
   isLangMenuOpen = signal(false);
   isCreateMenuOpen = signal(false);
+  hasLocations = signal<boolean>(false);
 
   user$ = this.authService.user$;
 
   get currentLang() { return this.loc.currentLang; }
+
+  ngOnInit() {
+    this.checkLocations();
+
+    this.modalService.refreshData$.subscribe(() => this.checkLocations());
+  }
+
+  private checkLocations() {
+    this.locationService.getTree().subscribe(locs => {
+      this.hasLocations.set(locs && locs.length > 0);
+    });
+  }
 
   onLogout() {
     this.authService.logout().subscribe({
