@@ -8,5 +8,6 @@ namespace INest.Services.Interfaces
         string GenerateJwtToken(AppUser user, IList<string> roles);
         string GenerateRefreshToken();
         ClaimsPrincipal GetPrincipalFromExpiredToken(string token);
+        string HashRefreshToken(string refreshToken);
     }
 }

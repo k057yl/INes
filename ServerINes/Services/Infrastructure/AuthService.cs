@@ -254,7 +254,7 @@ namespace INest.Services.Infrastructure
             var accessToken = _tokenService.GenerateJwtToken(user, roles);
             var refreshToken = _tokenService.GenerateRefreshToken();
 
-            user.RefreshToken = refreshToken;
+            user.RefreshToken = _tokenService.HashRefreshToken(refreshToken);
             user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(30);
             await _userManager.UpdateAsync(user);
 
@@ -275,7 +275,9 @@ namespace INest.Services.Infrastructure
 
             var user = await _userManager.FindByIdAsync(userId);
 
-            if (user == null || user.RefreshToken != dto.RefreshToken || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
+            var hashedInputToken = _tokenService.HashRefreshToken(dto.RefreshToken);
+
+            if (user == null || user.RefreshToken != hashedInputToken || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
                 throw new AppException(AUTH.ERRORS.INVALID_OR_EXPIRED_CODE, 401);
 
             return await GenerateAuthResponse(user);

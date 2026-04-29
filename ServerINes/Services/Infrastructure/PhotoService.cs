@@ -17,6 +17,8 @@ namespace INest.Services.Infrastructure
         private const int TargetWidth = 320;
         private const long MaxFileSizeBytes = 512 * 1024;
 
+        private static readonly string[] AllowedMimeTypes = { "image/jpeg", "image/png", "image/webp", "image/gif" };
+
         public PhotoService(IOptions<CloudinarySettings> config, ILogger<PhotoService> logger)
         {
             var acc = new Account(config.Value.CloudName, config.Value.ApiKey, config.Value.ApiSecret);
@@ -27,6 +29,12 @@ namespace INest.Services.Infrastructure
         public async Task<ImageUploadResult> AddPhotoAsync(IFormFile file)
         {
             if (file == null || file.Length == 0) return new ImageUploadResult();
+
+            if (!AllowedMimeTypes.Contains(file.ContentType.ToLowerInvariant()))
+            {
+                _logger.LogWarning("Попытка загрузить неверный формат файла: {Type}", file.ContentType);
+                return new ImageUploadResult { Error = new Error { Message = "Unsupported file format" } };
+            }
 
             if (file.Length > MaxFileSizeBytes * 20)
             {
@@ -51,6 +59,7 @@ namespace INest.Services.Infrastructure
                 var uploadParams = new ImageUploadParams
                 {
                     File = new FileDescription(file.FileName, outStream),
+                    Folder = "INest",
                     Transformation = new Transformation().Quality("auto").FetchFormat("auto")
                 };
 

@@ -145,6 +145,7 @@ namespace INest.Services
             });
 
             services.AddHostedService<ReminderWorker>();
+            services.AddHostedService<UnconfirmedUserCleanupWorker>();
 
             return services;
         }

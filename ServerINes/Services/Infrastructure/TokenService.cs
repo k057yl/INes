@@ -58,6 +58,14 @@ namespace INest.Services.Infrastructure
             return Convert.ToBase64String(randomNumber);
         }
 
+        public string HashRefreshToken(string refreshToken)
+        {
+            using var sha256 = SHA256.Create();
+            var bytes = Encoding.UTF8.GetBytes(refreshToken);
+            var hash = sha256.ComputeHash(bytes);
+            return Convert.ToBase64String(hash);
+        }
+
         public ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
         {
             var secretKey = _config["Jwt:Key"]?.Trim();

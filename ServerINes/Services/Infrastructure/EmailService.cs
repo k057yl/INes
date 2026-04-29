@@ -1,8 +1,6 @@
 ﻿using brevo_csharp.Api;
 using brevo_csharp.Model;
 using Ganss.Xss;
-using INest.Constants;
-using INest.Exceptions;
 using INest.Services.Interfaces;
 using Microsoft.Extensions.Localization;
 using Configuration = brevo_csharp.Client.Configuration;
@@ -14,29 +12,28 @@ namespace INest.Services.Infrastructure
     {
         private readonly ILogger<EmailService> _logger;
         private readonly IStringLocalizer<SharedResource> _localizer;
-        private readonly string _apiKey;
         private readonly string _fromEmail;
         private readonly string _fromName;
-        private readonly Configuration _brevoConfig;
         private readonly IHtmlSanitizer _sanitizer;
+        private readonly TransactionalEmailsApi _brevoApi;
 
         public EmailService(IConfiguration config, ILogger<EmailService> logger, IStringLocalizer<SharedResource> localizer, IHtmlSanitizer sanitizer)
         {
             _logger = logger;
             _localizer = localizer;
-            _apiKey = config["Brevo:ApiKey"] ?? throw new ArgumentNullException("Brevo ApiKey missing");
+            var apiKey = config["Brevo:ApiKey"] ?? throw new ArgumentNullException("Brevo ApiKey missing");
             _fromEmail = config["Brevo:FromEmail"] ?? throw new ArgumentNullException("Brevo FromEmail missing");
             _fromName = config["Brevo:FromName"] ?? throw new ArgumentNullException("Brevo FromName missing");
             _sanitizer = sanitizer;
 
-            _brevoConfig = new Configuration();
-            _brevoConfig.ApiKey.Add("api-key", _apiKey);
+            var brevoConfig = new Configuration();
+            brevoConfig.ApiKey.Add("api-key", apiKey);
+
+            _brevoApi = new TransactionalEmailsApi(brevoConfig);
         }
 
         public async Task<bool> SendEmailAsync(string toEmail, string subject, string htmlContent)
         {
-            var api = new TransactionalEmailsApi(_brevoConfig);
-
             var sendSmtpEmail = new SendSmtpEmail(
                 sender: new SendSmtpEmailSender(_fromName, _fromEmail),
                 to: new List<SendSmtpEmailTo> { new SendSmtpEmailTo(toEmail) },
@@ -46,7 +43,7 @@ namespace INest.Services.Infrastructure
 
             try
             {
-                var result = await api.SendTransacEmailAsync(sendSmtpEmail);
+                var result = await _brevoApi.SendTransacEmailAsync(sendSmtpEmail);
                 _logger.LogInformation("Email sent to {Email}, messageId: {Id}", toEmail, result.MessageId);
                 return true;
             }
