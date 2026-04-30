@@ -14,7 +14,7 @@
       <div class="header-right">
         @if (selectedIds.size > 0) {
           <button class="bulk-delete-btn" (click)="bulkDelete()">
-            <i class="fa fa-trash"></i> Удалить ({{ selectedIds.size }})
+            <i class="fa fa-trash"></i> {{ 'COMMON.DELETE' | translate }} ({{ selectedIds.size }})
           </button>
         }
 
@@ -67,7 +67,7 @@
                 {{ 'ITEMS_LIST.TABLE.CATEGORY' | translate }} <i class="fa fa-caret-down"></i>
                 @if (activeDropdown === 'category') {
                   <div class="th-dropdown-panel" (click)="$event.stopPropagation()">
-                    <div class="filter-item" (click)="setFilter('categoryId', null)" [class.active]="!filterForm.get('categoryId')?.value">Все категории</div>
+                    <div class="filter-item" (click)="setFilter('categoryId', null)" [class.active]="!filterForm.get('categoryId')?.value">{{ 'ITEMS_LIST.DROP_MENU.ALL_CATEGORIES' | translate }}</div>
                     @for (cat of categories; track cat) {
                       <div class="filter-item" (click)="setFilter('categoryId', cat.id)" [class.active]="filterForm.get('categoryId')?.value === cat.id">{{ cat.name }}</div>
                     }
@@ -79,7 +79,7 @@
                 {{ 'ITEMS_LIST.TABLE.LOCATION' | translate }} <i class="fa fa-caret-down"></i>
                 @if (activeDropdown === 'location') {
                   <div class="th-dropdown-panel" (click)="$event.stopPropagation()">
-                    <div class="filter-item" (click)="setFilter('storageLocationId', null)" [class.active]="!filterForm.get('storageLocationId')?.value">Все локации</div>
+                    <div class="filter-item" (click)="setFilter('storageLocationId', null)" [class.active]="!filterForm.get('storageLocationId')?.value">{{ 'ITEMS_LIST.DROP_MENU.ALL_LOCATIONS' | translate }}</div>
                     @for (loc of locations; track loc) {
                       <div class="filter-item" (click)="setFilter('storageLocationId', loc.id)" [class.active]="filterForm.get('storageLocationId')?.value === loc.id">{{ loc.name }}</div>
                     }
@@ -143,9 +143,10 @@
       </div>
 
       @if (items.length === 0 && !isLoading) {
-        <div class="empty-state">
-          <i class="fa fa-search-minus"></i>
-          <p>{{'ITEMS_LIST.EMPTY_RESULT' | translate}}</p>
+        <div class="global-empty-state">
+          <div class="empty-icon"><i class="fa fa-box-open"></i></div>
+          <h3>{{ 'HINTS.ITEMS_EMPTY_TITLE' | translate }}</h3>
+          <p>{{ 'HINTS.ITEMS_EMPTY_DESC' | translate }}</p>
         </div>
       }
     </div>

@@ -47,10 +47,10 @@
             </app-sale-card>
           }
           @if (sales.length === 0) {
-            <div class="empty-state">
-              <div class="empty-icon"><i class="fa fa-shopping-bag"></i></div>
-              <h3>{{ 'SALES_PAGE.NO_SALES' | translate }}</h3>
-              <p>{{ 'SALES_PAGE.NO_SALES_SUB' | translate }}</p>
+            <div class="global-empty-state">
+              <div class="empty-icon"><i class="fa fa-handshake"></i></div>
+              <h3>{{ 'HINTS.SALES_EMPTY_TITLE' | translate }}</h3>
+              <p>{{ 'HINTS.SALES_EMPTY_DESC' | translate }}</p>
             </div>
           }
         </div>

@@ -3,7 +3,7 @@ import { Subject, Observable } from 'rxjs';
 import { StorageLocation } from '../../models/entities/storage-location.entity';
 import { Item } from '../../models/entities/item.entity';
 
-export type DashboardModalType = 'itemForm' | 'locationForm' | 'confirm' | 'sell' | 'lend' | null;
+export type DashboardModalType = 'itemForm' | 'locationForm' | 'categoryForm' | 'platformForm' | 'confirm' | 'sell' | 'lend' | null;
 
 @Injectable({ providedIn: 'root' })
 export class DashboardModalService {
@@ -13,6 +13,7 @@ export class DashboardModalService {
   currentParentId: string | null = null;
   selectedItem: Item | null = null;
   selectedLocation: StorageLocation | null = null;
+  selectedEntity: any = null; 
   
   private confirmSubj = new Subject<any>();
   private refreshDataSubj = new Subject<void>();
@@ -29,6 +30,18 @@ export class DashboardModalService {
     this.selectedLocation = loc;
     this.currentParentId = parentId;
     this.activeModal = 'locationForm';
+    return this.resetSubject();
+  }
+
+  openCategoryForm(category: any = null): Observable<any> {
+    this.selectedEntity = category;
+    this.activeModal = 'categoryForm';
+    return this.resetSubject();
+  }
+
+  openPlatformForm(platform: any = null): Observable<any> {
+    this.selectedEntity = platform;
+    this.activeModal = 'platformForm';
     return this.resetSubject();
   }
 
@@ -66,6 +79,7 @@ export class DashboardModalService {
     this.selectedItem = null;
     this.selectedLocation = null;
     this.currentParentId = null;
+    this.selectedEntity = null; // чистим
     if (!this.confirmSubj.closed) this.confirmSubj.complete();
   }
 

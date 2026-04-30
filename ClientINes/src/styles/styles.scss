@@ -117,3 +117,35 @@ input:-webkit-autofill {
     .toast-progress { background-color: var(--g-yellow) !important; }
   }
 }
+
+.global-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-muted);
+  max-width: 500px;
+  margin: 0 auto;
+
+  .empty-icon {
+    font-size: 4rem;
+    color: var(--accent-color);
+    opacity: 0.5;
+    margin-bottom: 20px;
+    filter: drop-shadow(0 0 15px rgba(var(--accent-rgb), 0.2));
+  }
+
+  h3 {
+    color: var(--text-main);
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+
+  p {
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+}

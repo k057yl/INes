@@ -109,7 +109,12 @@
       </div>
 
       <div class="inest-form-group">
-        <label>{{ 'CREATE_ITEM_PAGE.CATEGORY' | translate }} *</label>
+        <div class="label-with-action">
+          <label>{{ 'CREATE_ITEM_PAGE.CATEGORY' | translate }} *</label>
+          <button type="button" class="inline-add-btn" (click)="openCategoryModal()">
+            <i class="fa fa-plus"></i> {{ 'COMMON.ADD' | translate }}
+          </button>
+        </div>
         <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('categoryId')">
           <i class="fa fa-folder inest-field-icon-left"></i>
           <select formControlName="categoryId">
@@ -283,3 +288,13 @@
     </form>
   </div>
 </div>
+
+@if (showCategoryModal) {
+  <app-inest-modal
+    mode="input"
+    [title]="'COMMON.CREATE'"
+    [name]="''"
+    (confirmed)="saveNewCategory($event)"
+    (cancelled)="closeCategoryModal()">
+  </app-inest-modal>
+}

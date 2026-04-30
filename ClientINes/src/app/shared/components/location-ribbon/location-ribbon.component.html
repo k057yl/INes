@@ -23,6 +23,13 @@
     [cdkDropListData]="pagedLocations"
     (cdkDropListDropped)="reorder.emit($event)">
 
+    @if (locations.length === 0) {
+      <div class="global-empty-state">
+        <i class="fa fa-info-circle"></i>
+        <span>{{ 'HINTS.RIBBON_EMPTY' | translate }}</span>
+      </div>
+    }
+
     @for (loc of pagedLocations; track loc) {
       <div class="root-chip"
         cdkDrag

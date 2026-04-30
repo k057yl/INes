@@ -57,11 +57,9 @@ export class ItemsListComponent implements OnInit {
 
   trackById = (index: number, item: any) => item.id;
 
-  @HostListener('document:click', ['$event'])
-  clickout(event: any) {
-    if (!this.eRef.nativeElement.contains(event.target)) {
-      this.activeDropdown = null;
-    }
+  @HostListener('document:click')
+  clickout() {
+    this.activeDropdown = null;
   }
 
   ngOnInit() {

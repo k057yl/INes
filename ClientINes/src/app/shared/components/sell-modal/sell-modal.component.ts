@@ -72,13 +72,23 @@ export class SellModalComponent implements OnInit {
     this.showPlatformModal = true;
   }
 
+  // --- ИСПРАВЛЕННЫЙ МЕТОД ---
   onPlatformConfirmed(name: string) {
     this.salesService.addPlatform({ name }).subscribe({
-      next: (newPlatform: Platform) => {
+      next: (res: any) => {
         this.toastr.success(this.translate.instant('PLATFORMS.SUCCESS.CREATE'));
-        this.platforms.push(newPlatform);
-        this.sellForm.patchValue({ platformId: newPlatform.id });
-        this.showPlatformModal = false;
+        this.showPlatformModal = false; // Закрываем модалку сразу
+
+        // Запрашиваем нормальный список платформ с бэка
+        this.salesService.getPlatforms().subscribe(platforms => {
+          this.platforms = platforms;
+          
+          // Ищем ID новой платформы
+          const newPlatformId = res?.id || platforms.find((p: any) => p.name === name)?.id;
+          if (newPlatformId) {
+            this.sellForm.patchValue({ platformId: newPlatformId });
+          }
+        });
       },
       error: (err) => {
         this.showPlatformModal = false;

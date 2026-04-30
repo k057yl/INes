@@ -1,13 +1,13 @@
 import { Component, OnInit, inject } from '@angular/core';
 
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { RouterModule } from '@angular/router';
 import { finalize } from 'rxjs';
 
 import { FeatureService } from '../../core/services/feature.service';
 import { CategoryService } from '../../shared/services/category.service';
 import { PlatformService } from '../../shared/services/platform.service';
-import { InestModalComponent } from '../../shared/components/modals/inest-modal/inest-modal.component';
+import { DashboardModalService } from '../../features/dashboard/dashboard.modal.service';
 
 interface SimpleEntity {
   id: string;
@@ -20,7 +20,7 @@ type SettingsTab = 'general' | 'categories' | 'platforms';
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [TranslateModule, RouterModule, InestModalComponent],
+  imports: [TranslateModule, RouterModule],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.scss'
 })
@@ -28,18 +28,13 @@ export class SettingsComponent implements OnInit {
   public featureService = inject(FeatureService);
   private categoryService = inject(CategoryService);
   private platformService = inject(PlatformService);
+  private modalService = inject(DashboardModalService);
+  private translate = inject(TranslateService);
 
   categories: SimpleEntity[] = [];
   platforms: SimpleEntity[] = [];
   activeTab: SettingsTab = 'general';
   isLoading = false;
-
-  // СОСТОЯНИЕ МОДАЛОК
-  modalType: 'category' | 'platform' | null = null;
-  modalMode: 'create' | 'edit' = 'create';
-  selectedEntity: SimpleEntity | null = null;
-  showEntityModal = false;
-  showDeleteModal = false;
 
   ngOnInit() {
     this.loadAllData();
@@ -53,94 +48,70 @@ export class SettingsComponent implements OnInit {
     ).subscribe(res => this.platforms = res);
   }
 
-  // --- ОБЩАЯ ЛОГИКА ОТКРЫТИЯ ---
-
-  private openEntityModal(type: 'category' | 'platform', mode: 'create' | 'edit', entity?: SimpleEntity) {
-    this.modalType = type;
-    this.modalMode = mode;
-    this.selectedEntity = entity || null;
-    this.showEntityModal = true;
-  }
-
-  private openDeleteModal(type: 'category' | 'platform', entity: SimpleEntity) {
-    this.modalType = type;
-    this.selectedEntity = entity;
-    this.showDeleteModal = true;
-  }
-
-  // --- ОБРАБОТЧИКИ КНОПОК (вызываются из HTML) ---
-
-  addCategory() { this.openEntityModal('category', 'create'); }
-  
-  renameCategory(cat: SimpleEntity) { this.openEntityModal('category', 'edit', cat); }
-  
-  deleteCategory(cat: SimpleEntity) { this.openDeleteModal('category', cat); }
-
-  addPlatform() { this.openEntityModal('platform', 'create'); }
-  
-  renamePlatform(plat: SimpleEntity) { this.openEntityModal('platform', 'edit', plat); }
-  
-  deletePlatform(plat: SimpleEntity) { this.openDeleteModal('platform', plat); }
-
-  // --- ЛОГИКА ПОДТВЕРЖДЕНИЯ (вызывается из модалок) ---
-
-  handleEntityConfirm(name: string) {
-  if (!this.modalType) return;
-
-  const service = this.modalType === 'category' ? this.categoryService : this.platformService;
-
-  if (this.modalMode === 'create') {
-    service.create({ name }).subscribe({
-      next: (res) => {
-        if (this.modalType === 'category') {
-          this.categories.push(res);
-          this.categories.sort((a, b) => a.name.localeCompare(b.name));
-        } else {
-          this.platforms.push(res);
-        }
-        this.closeModals();
+  addCategory() { 
+    this.modalService.openConfirm({
+      mode: 'input', title: 'COMMON.CREATE', message: '', name: ''
+    }).subscribe(res => {
+      if (res) {
+        this.categoryService.create({ name: res }).subscribe(() => this.loadAllData());
       }
     });
-  } else if (this.selectedEntity) {
-    const entity = this.selectedEntity; 
-    service.rename(entity.id, name).subscribe({
-      next: () => {
-        entity.name = name;
-        this.closeModals();
-      },
-      error: (err) => console.error('Ошибка переименования:', err)
+  }
+  
+  renameCategory(cat: SimpleEntity) { 
+    this.modalService.openConfirm({
+      mode: 'input', title: 'COMMON.EDIT', message: '', name: cat.name
+    }).subscribe(res => {
+      if (res) {
+        this.categoryService.rename(cat.id, res).subscribe(() => this.loadAllData());
+      }
     });
   }
-}
-
-handleDeleteConfirm() {
-  if (!this.selectedEntity || !this.modalType) return;
-
-  const idToDelete = this.selectedEntity.id;
-  const currentModalType = this.modalType;
-  const service = currentModalType === 'category' ? this.categoryService : this.platformService;
-
-  service.delete(idToDelete).subscribe({
-    next: () => {
-      if (currentModalType === 'category') {
-        this.categories = this.categories.filter(c => c.id !== idToDelete);
-      } else {
-        this.platforms = this.platforms.filter(p => p.id !== idToDelete);
+  
+  deleteCategory(cat: SimpleEntity) { 
+    this.modalService.openConfirm({
+      mode: 'delete', title: 'COMMON.DELETE', message: this.translate.instant('SETTINGS_PAGE.MODAL.DELETE_CATEGORY')
+    }).subscribe(res => {
+      if (res) {
+        this.categoryService.delete(cat.id).subscribe(() => {
+          this.categories = this.categories.filter(c => c.id !== cat.id);
+        });
       }
-      this.closeModals();
-    },
-    error: (err) => {
-      console.error('Ошибка удаления:', err);
-      this.closeModals();
-    }
-  });
-}
+    });
+  }
 
-  closeModals() {
-    this.showEntityModal = false;
-    this.showDeleteModal = false;
-    this.selectedEntity = null;
-    this.modalType = null;
+  addPlatform() { 
+    this.modalService.openConfirm({
+      mode: 'input', title: 'COMMON.CREATE', message: '', name: ''
+    }).subscribe(res => {
+      if (res) {
+        this.platformService.create({ name: res }).subscribe(() => this.loadAllData());
+      }
+    });
+  }
+  
+  renamePlatform(plat: SimpleEntity) { 
+    this.modalService.openConfirm({
+      mode: 'input', title: 'COMMON.EDIT', message: '', name: plat.name
+    }).subscribe(res => {
+      if (res) {
+        this.platformService.rename(plat.id, res).subscribe(() => this.loadAllData());
+      }
+    });
+  }
+  
+  deletePlatform(plat: SimpleEntity) { 
+    this.modalService.openConfirm({
+      mode: 'delete',
+      title: 'COMMON.DELETE',
+      message: this.translate.instant('SETTINGS_PAGE.MODAL.DELETE_PLATFORM')
+    }).subscribe(res => {
+      if (res) {
+        this.platformService.delete(plat.id).subscribe(() => {
+          this.platforms = this.platforms.filter(p => p.id !== plat.id);
+        });
+      }
+    });
   }
 
   switchTab(tab: SettingsTab) {

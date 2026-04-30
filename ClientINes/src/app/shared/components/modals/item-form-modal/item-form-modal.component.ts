@@ -13,6 +13,7 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { LocalizationService } from '../../../../shared/services/localization.service';
 import { DashboardModalService } from '../../../../features/dashboard/dashboard.modal.service';
 import { StatusNamePipe } from '../../../../shared/pipe/status-name.pipe';
+import { InestModalComponent } from '../inest-modal/inest-modal.component';
 
 import { ITEM_STATUS_OPTIONS } from '../../../../models/constants/item-status.constants';
 import { Item } from '../../../../models/entities/item.entity';
@@ -30,7 +31,7 @@ interface PhotoSlot {
 @Component({
   selector: 'app-item-form-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslateModule, RouterModule, StatusNamePipe],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule, RouterModule, StatusNamePipe, InestModalComponent],
   templateUrl: './item-form-modal.component.html',
   styleUrl: './item-form-modal.component.scss'
 })
@@ -54,6 +55,7 @@ export class ItemFormModalComponent implements OnInit {
   categories: any[] = [];
   selectedPhotos: PhotoSlot[] = [];
   isLocationPredefined = false;
+  showCategoryModal = false;
   
   readonly MAX_PHOTOS = 5;
   todayMax = new Date().toISOString().split('T')[0];
@@ -96,6 +98,35 @@ export class ItemFormModalComponent implements OnInit {
     this.applyLendingLogic(this.form.get('status')?.value);
   }
 
+  openCategoryModal() {
+    this.showCategoryModal = true;
+  }
+
+  closeCategoryModal() {
+    this.showCategoryModal = false;
+  }
+
+  saveNewCategory(name: string) {
+    this.categoryService.create({ name }).subscribe({
+      next: (res: any) => {
+        this.closeCategoryModal();
+
+        this.categoryService.getAll().subscribe(cats => {
+          this.categories = cats.sort((a: any, b: any) => a.name.localeCompare(b.name));
+          
+          const newCatId = res?.id || cats.find((c: any) => c.name === name)?.id;
+          if (newCatId) {
+            this.form.get('categoryId')?.setValue(newCatId);
+          }
+        });
+      },
+      error: () => {
+        this.toastr.error(this.translateService.instant('SYSTEM.DEFAULT_ERROR'));
+        this.closeCategoryModal();
+      }
+    });
+  }
+
   private applyLendingLogic(statusId: any) {
     const s = Number(statusId);
     const emailControl = this.form.get('contactEmail');
@@ -109,10 +140,10 @@ export class ItemFormModalComponent implements OnInit {
         
         const u = user as any;
         const foundEmail = u.email || 
-                          u.Email || 
-                          u.emailAddress ||
-                          u.userName ||
-                          u['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'];
+                           u.Email || 
+                           u.emailAddress ||
+                           u.userName ||
+                           u['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'];
 
         if (foundEmail) {
           emailControl?.setValue(foundEmail, { emitEvent: false });

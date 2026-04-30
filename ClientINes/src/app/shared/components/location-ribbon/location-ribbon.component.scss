@@ -48,7 +48,7 @@
   height: 38px;
   display: flex;
   align-items: center;
-  padding: 0 10px; // Чуть уменьшил паддинг для места
+  padding: 0 10px;
   cursor: pointer;
   opacity: 0.7;
   transition: all 0.2s;
@@ -93,7 +93,7 @@
   white-space: nowrap; 
   text-overflow: ellipsis; 
   overflow: hidden;
-  flex: 1; // Занимает всё доступное место
+  flex: 1;
 }
 
 /* ИНФОРМАТИВНЫЙ ИНДИКАТОР */

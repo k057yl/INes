@@ -129,24 +129,3 @@
     </main>
   </div>
 </div>
-
-@if (showEntityModal) {
-  <app-inest-modal
-    mode="input"
-    [title]="(modalMode === 'create' ? 'COMMON.CREATE' : 'COMMON.EDIT')"
-    [name]="selectedEntity?.name || ''"
-    (confirmed)="handleEntityConfirm($event)"
-    (cancelled)="closeModals()">
-  </app-inest-modal>
-}
-
-@if (showDeleteModal) {
-  <app-inest-modal
-    mode="delete"
-    [title]="'COMMON.DELETE'"
-    [message]="(modalType === 'category' ? 'SETTINGS_PAGE.MODAL.DELETE_CATEGORY' : 'SETTINGS_PAGE.MODAL.DELETE_PLATFORM')"
-    [confirmText]="'COMMON.DELETE'"
-    (confirmed)="handleDeleteConfirm()"
-    (cancelled)="closeModals()">
-  </app-inest-modal>
-}
