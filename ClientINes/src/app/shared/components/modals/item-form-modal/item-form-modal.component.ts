@@ -196,7 +196,6 @@ export class ItemFormModalComponent implements OnInit {
 
     if (item.status !== 0) {
       this.form.disable();
-      this.form.get('addPhoto')?.enable();
     }
   }
 
@@ -371,11 +370,6 @@ export class ItemFormModalComponent implements OnInit {
   isControlInvalid(name: string): boolean {
     const c = this.form.get(name);
     return !!(c && (c.touched || c.errors?.['serverError']) && c.invalid);
-  }
-
-  returnItem() {
-    if (!this.item) return;
-    this.lendingService.returnItem(this.item.id, { returnedDate: new Date().toISOString() }).subscribe(() => this.modalService.confirm());
   }
 
   cancel(): void { this.modalService.close(); }

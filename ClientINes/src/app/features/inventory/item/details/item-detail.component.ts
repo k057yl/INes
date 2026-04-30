@@ -136,7 +136,7 @@ export class ItemDetailComponent implements OnInit {
       this.modalService.openConfirm({
         mode: 'confirm',
         title: 'COMMON.RETURN',
-        message: 'LENDING.CONFIRM_RETURN_MSG',
+        message: 'LENDING_MODAL.MODAL.RETURN_MSG',
         confirmText: 'COMMON.YES'
       }).subscribe(() => {
         this.http.post(`${environment.apiBaseUrl}/lending/${this.item!.id}/return`, { 
