@@ -251,4 +251,12 @@ export class DashboardFacade {
 
     return (targetLevel + movingDepth) <= 3;
   }
+
+  changeItemStatus(itemId: string, newStatus: number) {
+    return this.itemService.changeStatus(itemId, newStatus).pipe(
+      tap(() => {
+        this.loadData().subscribe();
+      })
+    );
+  }
 }

@@ -79,7 +79,7 @@ export class DashboardModalService {
     this.selectedItem = null;
     this.selectedLocation = null;
     this.currentParentId = null;
-    this.selectedEntity = null; // чистим
+    this.selectedEntity = null;
     if (!this.confirmSubj.closed) this.confirmSubj.complete();
   }
 

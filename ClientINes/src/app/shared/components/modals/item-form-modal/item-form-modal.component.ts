@@ -84,6 +84,13 @@ export class ItemFormModalComponent implements OnInit {
     return s === 1 || s === 7;
   }
 
+  get availableStatuses() {
+    if (this.isEdit) {
+      return this.statusOptions.filter(opt => opt.value === this.item?.status);
+    }
+    return this.statusOptions.filter(opt => [0, 1, 7].includes(opt.value));
+  }
+
   ngOnInit() {
     this.loadInitialData();
 

@@ -1,4 +1,5 @@
-﻿using INest.Models.Entities;
+﻿using INest.Exceptions;
+using INest.Models.Entities;
 using INest.Models.Enums;
 using INest.Services.Tracker;
 using MediatR;
@@ -25,26 +26,40 @@ namespace INest.Services.Features.Items.Commands.ChangeItemStatus
 
             if (item == null) throw new KeyNotFoundException(ITEMS.ERRORS.NOT_FOUND);
 
-            if (item.Status != request.NewStatus)
+            if (item.Status == request.NewStatus) return true;
+
+            var finalStatuses = new[] { ItemStatus.Sold, ItemStatus.Gifted, ItemStatus.Lost, ItemStatus.Broken };
+
+            if (finalStatuses.Contains(item.Status))
             {
-                ItemHistoryType type = ItemHistoryType.StatusChanged;
-                if (request.NewStatus == ItemStatus.Sold) type = ItemHistoryType.Sold;
-
-                _context.ItemHistories.Add(new ItemHistory
-                {
-                    Id = Guid.NewGuid(),
-                    ItemId = item.Id,
-                    Type = type,
-                    OldValue = item.Status.ToString(),
-                    NewValue = request.NewStatus.ToString(),
-                    CreatedAt = DateTime.UtcNow
-                });
-
-                item.Status = request.NewStatus;
-                await _context.SaveChangesAsync(cancellationToken);
-
-                _tracker.InvalidateUserCache(request.UserId);
+                throw new AppException("Вася, этот предмет уже в архиве/продан. Смена статуса невозможна.");
             }
+
+            if (item.Status == ItemStatus.Borrowed && request.NewStatus == ItemStatus.Active)
+            {
+                _context.Items.Remove(item);
+                await _context.SaveChangesAsync(cancellationToken);
+                _tracker.InvalidateUserCache(request.UserId);
+                return true;
+            }
+
+            ItemHistoryType type = ItemHistoryType.StatusChanged;
+            if (request.NewStatus == ItemStatus.Sold) type = ItemHistoryType.Sold;
+
+            _context.ItemHistories.Add(new ItemHistory
+            {
+                Id = Guid.NewGuid(),
+                ItemId = item.Id,
+                Type = type,
+                OldValue = item.Status.ToString(),
+                NewValue = request.NewStatus.ToString(),
+                CreatedAt = DateTime.UtcNow
+            });
+
+            item.Status = request.NewStatus;
+
+            await _context.SaveChangesAsync(cancellationToken);
+            _tracker.InvalidateUserCache(request.UserId);
 
             return true;
         }

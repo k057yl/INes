@@ -50,6 +50,11 @@ export class ItemService {
     return this.http.put<void>(`${this.apiUrl}/${id}`, data);
   }
 
+  changeStatus(id: string, status: number): Observable<void> {
+    const headers = { 'Content-Type': 'application/json' };
+    return this.http.patch<void>(`${this.apiUrl}/${id}/status`, status, { headers });
+  }
+
   move(id: string, targetLocationId: string): Observable<void> {
     return this.http.patch<void>(`${this.apiUrl}/${id}/move`, { targetLocationId });
   }

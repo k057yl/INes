@@ -273,6 +273,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
+  onItemStatusChange(event: {item: Item, newStatus: number}) {
+    this.facade.changeItemStatus(event.item.id, event.newStatus).subscribe({
+      next: () => this.toastr.success(this.translate.instant('COMMON.CHANGE_STATUS')), 
+      error: () => this.toastr.error(this.translate.instant('SYSTEM.DEFAULT_ERROR'))
+    });
+  }
+
   isChildOf = (targetId: string, sourceLoc: StorageLocation) => this.facade.isChildOf(targetId, sourceLoc);
   trackById = (index: number, item: any) => item.id;
 }

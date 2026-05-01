@@ -2,17 +2,18 @@ import { Component, Input, Output, EventEmitter, inject, HostListener, ElementRe
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { DragDropModule } from '@angular/cdk/drag-drop';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { Item } from '../../../models/entities/item.entity';
 import { FeatureService } from '../../../core/services/feature.service';
 import { StorageLocation } from '../../../models/entities/storage-location.entity';
 import { environment } from '../../../../environments/environment';
+import { InestModalComponent } from '../modals/inest-modal/inest-modal.component'; 
 
 @Component({
   selector: 'app-item-card',
   standalone: true,
-  imports: [CommonModule, RouterModule, DragDropModule, TranslateModule],
+  imports: [CommonModule, RouterModule, DragDropModule, TranslateModule, InestModalComponent],
   templateUrl: './item-card.component.html',
   styleUrl: './item-card.component.scss'
 })
@@ -20,6 +21,7 @@ export class ItemCardComponent {
   private el = inject(ElementRef);
   public featureService = inject(FeatureService);
   private readonly baseUrl = environment.apiBaseUrl.replace('/api', '');
+  private translate = inject(TranslateService);
 
   @Input({ required: true }) item!: Item;
   @Input() flatLocations: StorageLocation[] = [];
@@ -33,8 +35,12 @@ export class ItemCardComponent {
   @Output() returnItem = new EventEmitter<Item>();
   @Output() move = new EventEmitter<{item: Item, targetLocationId: string}>();
   @Output() edit = new EventEmitter<Item>();
+  @Output() statusChange = new EventEmitter<{item: Item, newStatus: number}>();
 
   isMobile = window.innerWidth <= 768;
+  showStatusModal = false;
+  pendingStatus: number | null = null;
+  pendingStatusNameKey = '';
 
   get showMenu(): boolean {
     return this.menuOpenItemId === this.item.id;
@@ -78,7 +84,7 @@ export class ItemCardComponent {
   onDocumentClick(event: MouseEvent) {
     if (!this.showMenu) return;
     if (!this.el.nativeElement.contains(event.target)) {
-      this.menuOpenedItemIdChange.emit(null);
+      this.closeMenu();
     }
   }
 
@@ -87,11 +93,36 @@ export class ItemCardComponent {
     this.menuOpenedItemIdChange.emit(nextState);
   }
 
+  closeMenu(event?: Event) {
+    event?.stopPropagation();
+    this.menuOpenedItemIdChange.emit(null);
+  }
+
   onMove(event: Event) {
     const targetId = (event.target as HTMLSelectElement).value;
     if (targetId) {
       this.move.emit({ item: this.item, targetLocationId: targetId });
-      this.menuOpenedItemIdChange.emit(null);
+      this.closeMenu();
     }
+  }
+
+  openStatusModal(statusId: number, translationKey: string) {
+    this.pendingStatus = statusId;
+    this.pendingStatusNameKey = translationKey;
+    this.showStatusModal = true;
+    this.closeMenu();
+  }
+
+  confirmStatusChange() {
+    if (this.pendingStatus !== null) {
+      this.statusChange.emit({ item: this.item, newStatus: this.pendingStatus });
+    }
+    this.showStatusModal = false;
+    this.pendingStatus = null;
+  }
+
+  cancelStatusModal() {
+    this.showStatusModal = false;
+    this.pendingStatus = null;
   }
 }

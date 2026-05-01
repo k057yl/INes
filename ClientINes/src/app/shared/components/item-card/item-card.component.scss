@@ -5,7 +5,7 @@
   border: 1px solid var(--border-color);
   border-left: 4px solid var(--accent-color);
   border-radius: 16px;
-  padding: 12px 0 12px 14px; // Увеличили высоту за счет падингов
+  padding: 12px 0 12px 14px;
   min-height: 74px;
   margin-bottom: 8px;
   position: relative;
@@ -15,6 +15,38 @@
     background: var(--bg-main-card);
     border-color: var(--accent-color);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  }
+  
+  &.menu-open { z-index: 100; }
+}
+
+.custom-drag-preview {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-card);
+  padding: 6px 16px 6px 6px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  border-left: 4px solid var(--accent-color);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+  color: var(--text-main);
+  font-weight: 700;
+  font-size: 0.95rem;
+  opacity: 0.95;
+
+  .preview-thumb {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--bg-main);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    img { width: 100%; height: 100%; object-fit: cover; }
+    i { font-size: 1rem; color: var(--text-muted); }
   }
 }
 
@@ -38,7 +70,6 @@
   flex: 1;
   margin: 0 16px;
   min-width: 0;
-  cursor: pointer;
 
   .item-name {
     display: block;
@@ -61,14 +92,14 @@
   }
 }
 
+/* --- ACTION BAR С КНОПКАМИ --- */
 .card-action-bar {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   padding-right: 12px;
 }
 
-// КНОПКИ В СТИЛЕ ЛОКАЦИЙ (tool-btn)
 .inest-action-btn {
   width: 32px;
   height: 32px;
@@ -89,13 +120,7 @@
     background: var(--bg-main);
   }
 
-  &:disabled { opacity: 0.2; cursor: not-allowed; filter: grayscale(1); }
-
-  // Юзаем твои переменные для ховеров
-  &.btn-info:hover, &.btn-return:hover { color: var(--g-blue); border-color: var(--g-blue); }
-  &.btn-edit:hover, &.btn-lend:hover, &.btn-sell:hover { color: var(--g-yellow); border-color: var(--g-yellow); }
-  &.btn-move:hover { color: var(--accent-color); border-color: var(--accent-color); }
-  &.btn-delete:hover { color: var(--error-red); border-color: var(--error-red); }
+  &.btn-info:hover { color: var(--g-blue); border-color: var(--g-blue); }
 
   &.active {
     background: var(--accent-color) !important;
@@ -104,19 +129,105 @@
   }
 }
 
-// СЕКЦИЯ ГРИПА
+.card-actions-wrapper { position: relative; }
+
+.modern-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  width: 220px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 1000;
+
+  .dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 10px 12px;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    color: var(--text-main);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.2s, color 0.2s;
+
+    i { width: 16px; text-align: center; color: var(--text-muted); transition: color 0.2s; }
+    &:hover { background: var(--bg-main); }
+    
+    &.btn-edit:hover i { color: var(--g-yellow); }
+    &.btn-delete:hover { color: var(--error-red); background: rgba(255, 77, 77, 0.1); i { color: var(--error-red); } }
+  }
+
+  .dropdown-divider {
+    height: 1px;
+    background: var(--border-color);
+    margin: 4px 0;
+    opacity: 0.5;
+  }
+
+  .move-section {
+    padding: 8px 12px;
+    
+    label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      font-weight: 800;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      i { color: var(--accent-color); }
+    }
+
+    .select-container {
+      position: relative;
+      select {
+        width: 100%;
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 8px 10px;
+        color: var(--text-main);
+        font-size: 0.85rem;
+        cursor: pointer;
+        outline: none;
+        appearance: none;
+
+        &:focus { border-color: var(--accent-color); }
+        option { background: var(--bg-card); }
+      }
+      .select-arrow {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        pointer-events: none;
+      }
+    }
+  }
+}
+
 .handle-section {
   display: flex;
   align-items: stretch;
-  align-self: stretch;
   flex-shrink: 0;
 
-  .v-divider {
-    width: 2px; // Сделал чуть жирнее
-    background: var(--border-color);
-    margin: 10px 0;
-    opacity: 0.4;
-  }
+  .v-divider { width: 2px; background: var(--border-color); margin: 10px 0; opacity: 0.4; }
 }
 
 .drag-handle {
@@ -124,61 +235,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: transparent;
   color: var(--text-muted);
   cursor: grab;
+  font-size: 1.1rem;
   transition: all 0.2s;
 
   &:hover { color: var(--accent-color); background: rgba(0,0,0,0.02); }
   &:active { cursor: grabbing; }
-
-  // Две колонки точек
-  gap: 2px;
-  i { font-size: 0.8rem; }
-}
-
-// Выпадающее меню
-.item-move-dropdown {
-  position: absolute;
-  right: 0;
-  top: calc(100% + 12px);
-  width: 240px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 14px;
-  box-shadow: 0 15px 35px var(--toast-shadow);
-  z-index: 2000;
-  padding: 14px;
-
-  .dropdown-header {
-    font-size: 0.7rem;
-    font-weight: 800;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    i { color: var(--accent-color); }
-  }
-
-  .select-container {
-    position: relative;
-    select {
-      width: 100%;
-      background: var(--bg-input);
-      border: 1px solid var(--border-color);
-      border-radius: 10px;
-      padding: 10px;
-      color: var(--text-main);
-      font-size: 0.85rem;
-      cursor: pointer;
-      outline: none;
-      &:focus { border-color: var(--accent-color); }
-      option { background: var(--bg-card); }
-    }
-  }
 }
 
 @media (max-width: 768px) {

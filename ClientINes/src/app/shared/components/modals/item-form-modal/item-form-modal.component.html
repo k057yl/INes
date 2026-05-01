@@ -153,7 +153,7 @@
         <div class="inest-input-wrapper" [class.is-readonly]="isEdit">
           <i class="fa fa-info-circle inest-field-icon-left"></i>
           <select formControlName="status">
-            @for (opt of statusOptions; track opt) {
+            @for (opt of availableStatuses; track opt) {
               <option [value]="opt.value">
                 {{ opt.label | translate }}
               </option>
