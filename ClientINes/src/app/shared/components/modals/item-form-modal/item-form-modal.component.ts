@@ -80,7 +80,7 @@ export class ItemFormModalComponent implements OnInit {
 
   get isEdit(): boolean { return !!this.item; }
   get isLendingStatus(): boolean {
-    const s = Number(this.form.get('status')?.value);
+    const s = Number(this.form.getRawValue().status);
     return s === 1 || s === 7;
   }
 
@@ -255,23 +255,23 @@ export class ItemFormModalComponent implements OnInit {
     formData.append('currency', val.currency!);
 
     if (val.purchaseDate) {
-      formData.append('purchaseDate', new Date(val.purchaseDate).toISOString());
+      formData.append('purchaseDate', val.purchaseDate);
     }
 
     if (val.purchasePrice != null) {
-      formData.append('purchasePrice', val.purchasePrice.toString());
+      formData.append('purchasePrice', val.purchasePrice.toString().replace('.', ','));
     }
 
     const estValue = val.estimatedValue ?? val.purchasePrice;
     if (estValue != null) {
-      formData.append('estimatedValue', estValue.toString());
+      formData.append('estimatedValue', estValue.toString().replace('.', ','));
     }
 
     if (this.isLendingStatus) {
       formData.append('personName', val.personName || '');
       formData.append('contactEmail', val.contactEmail || '');
       if (val.expectedReturnDate) {
-        formData.append('expectedReturnDate', new Date(val.expectedReturnDate).toISOString());
+        formData.append('expectedReturnDate', val.expectedReturnDate);
       }
       formData.append('sendNotification', (!!val.sendNotification).toString());
     }
@@ -294,7 +294,6 @@ export class ItemFormModalComponent implements OnInit {
     request$.subscribe({
       next: (res: any) => {
         const successKey = res?.message || (this.isEdit ? 'ITEMS.SUCCESS.UPDATE' : 'ITEMS.SUCCESS.CREATE');
-
         const translatedMsg = this.translateService.instant(successKey);
 
         this.toastr.success(translatedMsg);

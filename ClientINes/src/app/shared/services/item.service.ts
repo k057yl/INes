@@ -47,7 +47,7 @@ export class ItemService {
   }
 
   update(id: string, data: FormData): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/${id}`, data);
+    return this.http.patch<void>(`${this.apiUrl}/${id}`, data);
   }
 
   changeStatus(id: string, status: number): Observable<void> {

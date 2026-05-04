@@ -18,5 +18,7 @@ namespace INest.Models.DTOs.Item
         public string? ContactEmail { get; set; }
         public DateTime? ExpectedReturnDate { get; set; }
         public bool SendNotification { get; set; }
+        public List<IFormFile>? Photos { get; set; }
+        public string? MainPhotoName { get; set; }
     }
 }

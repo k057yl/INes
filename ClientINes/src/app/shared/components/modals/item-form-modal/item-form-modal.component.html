@@ -162,6 +162,49 @@
         </div>
       </div>
 
+      @if (isLendingStatus) {
+        <div class="lending-info-section">
+          <div class="divider-text">
+            <span>{{ (form.get('status')?.value == 7 ? 'CREATE_ITEM_PAGE.BORROWED_INFO' : 'CREATE_ITEM_PAGE.LENT_INFO') | translate }}</span>
+          </div>
+
+          <div class="form-row-multi">
+            <div class="inest-form-group">
+              <label>{{ 'CREATE_ITEM_PAGE.PERSON_NAME' | translate }} *</label>
+              <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('personName')" [class.is-readonly]="isEdit && item?.status !== 0">
+                <i class="fa fa-user inest-field-icon-left"></i>
+                <input formControlName="personName" [placeholder]="'CREATE_ITEM_PAGE.PH_NAME' | translate">
+              </div>
+            </div>
+
+            <div class="inest-form-group">
+              <label>{{ 'CREATE_ITEM_PAGE.RETURN_DATE' | translate }} *</label>
+              <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('expectedReturnDate')" [class.is-readonly]="isEdit && item?.status !== 0">
+                <i class="fa fa-calendar-check inest-field-icon-left"></i>
+                <input type="date" formControlName="expectedReturnDate" [min]="todayMax">
+              </div>
+            </div>
+          </div>
+
+          <div class="inest-form-group">
+            <label>{{ 'CREATE_ITEM_PAGE.YOUR_EMAIL' | translate }}</label>
+            <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('contactEmail')" [class.is-readonly]="isEdit && item?.status !== 0">
+              <i class="fa fa-envelope inest-field-icon-left"></i>
+              <input type="email" formControlName="contactEmail" placeholder="example@mail.com">
+            </div>
+          </div>
+
+          @if (form.get('contactEmail')?.value) {
+            <div class="inest-form-group">
+              <label class="inest-checkbox-label">
+                <input type="checkbox" formControlName="sendNotification">
+                <span>{{ 'CREATE_ITEM_PAGE.SEND_NOTIFICATION' | translate }}</span>
+              </label>
+            </div>
+          }
+        </div>
+      }
+
       <div class="form-row-multi">
         <div class="inest-form-group">
           <label>{{ 'CREATE_ITEM_PAGE.PURCHASE_DATE' | translate }}</label>

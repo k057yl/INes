@@ -13,5 +13,7 @@ namespace INest.Models.DTOs.Item
         public decimal? PurchasePrice { get; set; }
         public decimal? EstimatedValue { get; set; }
         public string? Currency { get; set; }
+        public List<IFormFile>? Photos { get; set; }
+        public string? MainPhotoName { get; set; }
     }
 }

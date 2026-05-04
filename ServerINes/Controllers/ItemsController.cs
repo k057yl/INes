@@ -67,9 +67,9 @@ namespace INest.Controllers
         }
 
         [HttpPut("{itemId}")]
-        public async Task<IActionResult> UpdateFull(Guid itemId, [FromForm] UpdateItemFullDto dto, [FromForm] List<IFormFile>? photos)
+        public async Task<IActionResult> UpdateFull(Guid itemId, [FromForm] UpdateItemFullDto dto)
         {
-            var command = new UpdateItemFullCommand(GetUserId(), itemId, dto, photos);
+            var command = new UpdateItemFullCommand(GetUserId(), itemId, dto, dto.Photos);
             await _mediator.Send(command);
             return NoContent();
         }

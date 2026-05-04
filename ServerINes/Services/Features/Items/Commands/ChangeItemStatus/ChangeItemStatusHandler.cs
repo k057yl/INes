@@ -32,7 +32,7 @@ namespace INest.Services.Features.Items.Commands.ChangeItemStatus
 
             if (finalStatuses.Contains(item.Status))
             {
-                throw new AppException("Вася, этот предмет уже в архиве/продан. Смена статуса невозможна.");
+                throw new AppException(ITEMS.ERRORS.ONLY_ACTIVE_CAN_BE_EDITED);
             }
 
             if (item.Status == ItemStatus.Borrowed && request.NewStatus == ItemStatus.Active)
