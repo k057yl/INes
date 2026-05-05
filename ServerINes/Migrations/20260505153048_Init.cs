@@ -31,9 +31,12 @@ namespace INest.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Role = table.Column<int>(type: "integer", nullable: false),
+                    DisplayName = table.Column<string>(type: "text", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     VerificationCode = table.Column<string>(type: "text", nullable: true),
+                    VerificationCodeExpiryTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    RefreshToken = table.Column<string>(type: "text", nullable: true),
+                    RefreshTokenExpiryTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
@@ -188,6 +191,26 @@ namespace INest.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Platforms",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Color = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Platforms", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Platforms_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "StorageLocations",
                 columns: table => new
                 {
@@ -195,9 +218,13 @@ namespace INest.Migrations
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
+                    Color = table.Column<string>(type: "text", nullable: true),
+                    Icon = table.Column<string>(type: "text", nullable: true),
                     ParentLocationId = table.Column<Guid>(type: "uuid", nullable: true),
                     SortOrder = table.Column<int>(type: "integer", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    IsSalesLocation = table.Column<bool>(type: "boolean", nullable: false),
+                    IsLendingLocation = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -229,8 +256,11 @@ namespace INest.Migrations
                     PurchaseDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     PurchasePrice = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: true),
                     EstimatedValue = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: true),
+                    Currency = table.Column<string>(type: "text", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    CategoryId = table.Column<Guid>(type: "uuid", nullable: false)
+                    CategoryId = table.Column<Guid>(type: "uuid", nullable: false),
+                    PhotoUrl = table.Column<string>(type: "text", nullable: true),
+                    PublicId = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -285,6 +315,7 @@ namespace INest.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     ItemId = table.Column<Guid>(type: "uuid", nullable: false),
                     FilePath = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                    PublicId = table.Column<string>(type: "text", nullable: true),
                     IsMain = table.Column<bool>(type: "boolean", nullable: false),
                     UploadedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
@@ -309,6 +340,11 @@ namespace INest.Migrations
                     DateGiven = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ExpectedReturnDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     ReturnedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    Direction = table.Column<int>(type: "integer", nullable: false),
+                    ContactEmail = table.Column<string>(type: "text", nullable: true),
+                    SendNotification = table.Column<bool>(type: "boolean", nullable: false),
+                    NotificationSent = table.Column<bool>(type: "boolean", nullable: false),
+                    ValueAtLending = table.Column<decimal>(type: "numeric", nullable: true),
                     Comment = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
@@ -328,9 +364,12 @@ namespace INest.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     ItemId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Title = table.Column<string>(type: "text", nullable: false),
                     Type = table.Column<int>(type: "integer", nullable: false),
+                    Recurrence = table.Column<int>(type: "integer", nullable: false),
                     TriggerAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    IsCompleted = table.Column<bool>(type: "boolean", nullable: false)
+                    IsCompleted = table.Column<bool>(type: "boolean", nullable: false),
+                    IsNotificationSent = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -341,6 +380,39 @@ namespace INest.Migrations
                         principalTable: "Items",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Sales",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ItemId = table.Column<Guid>(type: "uuid", nullable: true),
+                    ItemNameSnapshot = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    CategoryNameSnapshot = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    SalePrice = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
+                    Profit = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
+                    SoldDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    PlatformId = table.Column<Guid>(type: "uuid", nullable: true),
+                    Comment = table.Column<string>(type: "text", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Sales", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Sales_Items_ItemId",
+                        column: x => x.ItemId,
+                        principalTable: "Items",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_Sales_Platforms_PlatformId",
+                        column: x => x.PlatformId,
+                        principalTable: "Platforms",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateIndex(
@@ -428,9 +500,30 @@ namespace INest.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Platforms_UserId",
+                table: "Platforms",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Reminders_ItemId",
                 table: "Reminders",
                 column: "ItemId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Sales_ItemId",
+                table: "Sales",
+                column: "ItemId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Sales_PlatformId",
+                table: "Sales",
+                column: "PlatformId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Sales_UserId",
+                table: "Sales",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_StorageLocations_ParentLocationId",
@@ -474,10 +567,16 @@ namespace INest.Migrations
                 name: "Reminders");
 
             migrationBuilder.DropTable(
+                name: "Sales");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "Items");
+
+            migrationBuilder.DropTable(
+                name: "Platforms");
 
             migrationBuilder.DropTable(
                 name: "Categories");

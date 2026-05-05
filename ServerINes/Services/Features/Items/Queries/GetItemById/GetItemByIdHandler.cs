@@ -1,11 +1,11 @@
-﻿using INest.Constants;
-using INest.Models.Entities;
+﻿using INest.Models.DTOs.Item;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using static INest.Constants.LocalizationConstants;
 
 namespace INest.Services.Features.Items.Queries.GetItemById
 {
-    public class GetItemByIdHandler : IRequestHandler<GetItemByIdQuery, Item?>
+    public class GetItemByIdHandler : IRequestHandler<GetItemByIdQuery, ItemDto?>
     {
         private readonly AppDbContext _context;
 
@@ -14,23 +14,26 @@ namespace INest.Services.Features.Items.Queries.GetItemById
             _context = context;
         }
 
-        public async Task<Item?> Handle(GetItemByIdQuery request, CancellationToken cancellationToken)
+        public async Task<ItemDto?> Handle(GetItemByIdQuery request, CancellationToken cancellationToken)
         {
             var item = await _context.Items
                 .Where(i => i.UserId == request.UserId && i.Id == request.ItemId)
-                .Include(i => i.Photos)
-                .Include(i => i.Category)
-                .Include(i => i.StorageLocation)
-                .Include(i => i.Sale)
-                .Include(i => i.Lending)
-                .Include(i => i.Reminders)
-                .Include(i => i.History.OrderByDescending(h => h.CreatedAt))
+                .AsNoTracking()
                 .FirstOrDefaultAsync(cancellationToken);
 
             if (item == null)
-                throw new KeyNotFoundException(LocalizationConstants.ITEMS.ERRORS.NOT_FOUND);
+                throw new KeyNotFoundException(ITEMS.ERRORS.NOT_FOUND);
 
-            return item;
+            return new ItemDto
+            {
+                Id = item.Id,
+                Name = item.Name,
+                IsOverdue =
+                    item.Lending != null &&
+                    item.Lending.ReturnedDate == null &&
+                    item.Lending.ExpectedReturnDate.HasValue &&
+                    item.Lending.ExpectedReturnDate <= DateTime.UtcNow
+            };
         }
     }
 }

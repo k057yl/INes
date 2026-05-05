@@ -18,7 +18,13 @@ namespace INest.Services.DomainHelpers
             _logger = logger;
         }
 
-        public async Task SyncLendingStateAsync(Item item, ItemStatus newStatus, string personName, string? contactEmail, DateTime? expectedReturnDate, bool sendNotification)
+        public async Task SyncLendingStateAsync(
+            Item item,
+            ItemStatus newStatus,
+            string personName,
+            string? contactEmail,
+            DateTime? expectedReturnDate,
+            bool sendNotification)
         {
             if (newStatus == ItemStatus.Lent || newStatus == ItemStatus.Borrowed)
             {
@@ -29,14 +35,18 @@ namespace INest.Services.DomainHelpers
                         Id = Guid.NewGuid(),
                         ItemId = item.Id,
                         DateGiven = DateTime.UtcNow,
-                        ValueAtLending = item.EstimatedValue
+                        ValueAtLending = item.EstimatedValue,
+                        SendNotification = sendNotification,
+                        NotificationSent = false
                     };
 
                     _context.ItemHistories.Add(new ItemHistory
                     {
                         Id = Guid.NewGuid(),
                         ItemId = item.Id,
-                        Type = newStatus == ItemStatus.Lent ? ItemHistoryType.Lent : ItemHistoryType.Borrowed,
+                        Type = newStatus == ItemStatus.Lent
+                            ? ItemHistoryType.Lent
+                            : ItemHistoryType.Borrowed,
                         NewValue = personName,
                         CreatedAt = DateTime.UtcNow
                     });
@@ -45,21 +55,29 @@ namespace INest.Services.DomainHelpers
                 item.Lending.PersonName = personName;
                 item.Lending.ContactEmail = contactEmail;
                 item.Lending.ExpectedReturnDate = expectedReturnDate;
-                item.Lending.Direction = newStatus == ItemStatus.Borrowed ? LendingDirection.In : LendingDirection.Out;
+                item.Lending.Direction =
+                    newStatus == ItemStatus.Borrowed
+                        ? LendingDirection.In
+                        : LendingDirection.Out;
+
                 item.Lending.SendNotification = sendNotification;
+
+                if (sendNotification)
+                {
+                    item.Lending.NotificationSent = false;
+                }
 
                 if (sendNotification && expectedReturnDate.HasValue)
                 {
                     var reminderDate = expectedReturnDate.Value.AddDays(-1);
+
                     if (reminderDate > DateTime.UtcNow)
                     {
-                        Reminder? existingReminder = null;
-
-                        if (_context.Entry(item).State != EntityState.Added)
-                        {
-                            existingReminder = await _context.Reminders
-                                .FirstOrDefaultAsync(r => r.ItemId == item.Id && r.Type == ReminderType.ReturnItem && !r.IsCompleted);
-                        }
+                        var existingReminder = await _context.Reminders
+                            .FirstOrDefaultAsync(r =>
+                                r.ItemId == item.Id &&
+                                r.Type == ReminderType.ReturnItem &&
+                                !r.IsCompleted);
 
                         if (existingReminder != null)
                         {
@@ -67,23 +85,13 @@ namespace INest.Services.DomainHelpers
                         }
                         else
                         {
-                            var newReminder = new Reminder
+                            _context.Reminders.Add(new Reminder
                             {
                                 Id = Guid.NewGuid(),
                                 ItemId = item.Id,
                                 TriggerAt = reminderDate,
                                 Type = ReminderType.ReturnItem,
                                 IsCompleted = false
-                            };
-                            _context.Reminders.Add(newReminder);
-
-                            _context.ItemHistories.Add(new ItemHistory
-                            {
-                                Id = Guid.NewGuid(),
-                                ItemId = item.Id,
-                                Type = ItemHistoryType.ReminderScheduled,
-                                NewValue = reminderDate.ToString("dd.MM.yyyy"),
-                                CreatedAt = DateTime.UtcNow
                             });
                         }
                     }
@@ -94,11 +102,17 @@ namespace INest.Services.DomainHelpers
                     try
                     {
                         await _emailService.SendLendingNotificationAsync(
-                            contactEmail, item.Name, personName, expectedReturnDate, newStatus == ItemStatus.Borrowed);
+                            contactEmail,
+                            item.Name,
+                            personName,
+                            expectedReturnDate,
+                            newStatus == ItemStatus.Borrowed);
+
+                        item.Lending.NotificationSent = true;
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError(ex, "Ошибка при отправке письма для {ItemName}", item.Name);
+                        _logger.LogError(ex, "Email failed for {Item}", item.Name);
                     }
                 }
             }

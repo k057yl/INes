@@ -11,15 +11,15 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace INest.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260216101313_AddSaleEntity")]
-    partial class AddSaleEntity
+    [Migration("20260505162056_CleanUpLendingFields")]
+    partial class CleanUpLendingFields
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.2")
+                .HasAnnotation("ProductVersion", "10.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -39,6 +39,10 @@ namespace INest.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -71,6 +75,12 @@ namespace INest.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("boolean");
 
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("RefreshTokenExpiryTime")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
 
@@ -83,6 +93,9 @@ namespace INest.Migrations
 
                     b.Property<string>("VerificationCode")
                         .HasColumnType("text");
+
+                    b.Property<DateTime?>("VerificationCodeExpiryTime")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -141,6 +154,10 @@ namespace INest.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
@@ -165,12 +182,6 @@ namespace INest.Migrations
                     b.Property<decimal?>("PurchasePrice")
                         .HasPrecision(18, 2)
                         .HasColumnType("numeric(18,2)");
-
-                    b.Property<decimal?>("SalePrice")
-                        .HasColumnType("numeric");
-
-                    b.Property<DateTime?>("SoldDate")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
@@ -240,6 +251,9 @@ namespace INest.Migrations
                     b.Property<Guid>("ItemId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("PublicId")
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("UploadedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -259,14 +273,23 @@ namespace INest.Migrations
                     b.Property<string>("Comment")
                         .HasColumnType("text");
 
+                    b.Property<string>("ContactEmail")
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("DateGiven")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Direction")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("ExpectedReturnDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("ItemId")
                         .HasColumnType("uuid");
+
+                    b.Property<bool>("NotificationSent")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("PersonName")
                         .IsRequired()
@@ -276,12 +299,42 @@ namespace INest.Migrations
                     b.Property<DateTime?>("ReturnedDate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<bool>("SendNotification")
+                        .HasColumnType("boolean");
+
+                    b.Property<decimal?>("ValueAtLending")
+                        .HasColumnType("numeric");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ItemId")
                         .IsUnique();
 
                     b.ToTable("Lendings");
+                });
+
+            modelBuilder.Entity("INest.Models.Entities.Platform", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Color")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Platforms");
                 });
 
             modelBuilder.Entity("INest.Models.Entities.Reminder", b =>
@@ -293,8 +346,18 @@ namespace INest.Migrations
                     b.Property<bool>("IsCompleted")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsNotificationSent")
+                        .HasColumnType("boolean");
+
                     b.Property<Guid>("ItemId")
                         .HasColumnType("uuid");
+
+                    b.Property<int>("Recurrence")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("TriggerAt")
                         .HasColumnType("timestamp with time zone");
@@ -315,14 +378,23 @@ namespace INest.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("CategoryNameSnapshot")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
                     b.Property<string>("Comment")
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("ItemId")
+                    b.Property<Guid?>("ItemId")
                         .HasColumnType("uuid");
+
+                    b.Property<string>("ItemNameSnapshot")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<Guid?>("PlatformId")
                         .HasColumnType("uuid");
@@ -338,12 +410,17 @@ namespace INest.Migrations
                     b.Property<DateTime>("SoldDate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ItemId")
                         .IsUnique();
 
                     b.HasIndex("PlatformId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Sales");
                 });
@@ -365,6 +442,12 @@ namespace INest.Migrations
 
                     b.Property<string>("Icon")
                         .HasColumnType("text");
+
+                    b.Property<bool>("IsLendingLocation")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsSalesLocation")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -596,6 +679,17 @@ namespace INest.Migrations
                     b.Navigation("Item");
                 });
 
+            modelBuilder.Entity("INest.Models.Entities.Platform", b =>
+                {
+                    b.HasOne("INest.Models.Entities.AppUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("INest.Models.Entities.Reminder", b =>
                 {
                     b.HasOne("INest.Models.Entities.Item", "Item")
@@ -612,10 +706,9 @@ namespace INest.Migrations
                     b.HasOne("INest.Models.Entities.Item", "Item")
                         .WithOne("Sale")
                         .HasForeignKey("INest.Models.Entities.Sale", "ItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("INest.Models.Entities.StorageLocation", "Platform")
+                    b.HasOne("INest.Models.Entities.Platform", "Platform")
                         .WithMany()
                         .HasForeignKey("PlatformId")
                         .OnDelete(DeleteBehavior.SetNull);

@@ -34,6 +34,13 @@ namespace INest.Models.Entities
         public string? PublicId { get; set; }
         public Sale? Sale { get; set; }
 
-        public bool HasActiveReminders => Reminders.Any(r => !r.IsCompleted && r.TriggerAt <= DateTime.UtcNow);
+        public bool IsLendingOverdue =>
+            Lending != null &&
+            Lending.ReturnedDate == null &&
+            Lending.ExpectedReturnDate.HasValue &&
+            Lending.ExpectedReturnDate.Value <= DateTime.UtcNow;
+
+        public bool HasOverdueReminders =>
+            Reminders.Any(r => !r.IsCompleted && r.TriggerAt <= DateTime.UtcNow);
     }
 }

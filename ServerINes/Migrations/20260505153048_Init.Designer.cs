@@ -11,8 +11,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace INest.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260422142010_AddUserIdToSales")]
-    partial class AddUserIdToSales
+    [Migration("20260505153048_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -39,6 +39,10 @@ namespace INest.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -89,6 +93,9 @@ namespace INest.Migrations
 
                     b.Property<string>("VerificationCode")
                         .HasColumnType("text");
+
+                    b.Property<DateTime?>("VerificationCodeExpiryTime")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
