@@ -13,8 +13,8 @@ export class LendingService {
 
   constructor(private http: HttpClient) {}
 
-  lendItem(dto: LendItemDto): Observable<Lending> {
-    return this.http.post<Lending>(`${this.apiUrl}/lend`, dto);
+  lendItem(dto: LendItemDto): Observable<any> {
+    return this.http.post(`${this.apiUrl}/lend`, dto);
   }
 
   returnItem(itemId: string, dto: ReturnItemDto): Observable<boolean> {

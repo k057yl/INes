@@ -5,7 +5,7 @@ using static INest.Constants.LocalizationConstants;
 
 namespace INest.Services.Features.Items.Queries.GetItemById
 {
-    public class GetItemByIdHandler : IRequestHandler<GetItemByIdQuery, ItemDto?>
+    public class GetItemByIdHandler : IRequestHandler<GetItemByIdQuery, ItemDetailDto?>
     {
         private readonly AppDbContext _context;
 
@@ -14,9 +14,15 @@ namespace INest.Services.Features.Items.Queries.GetItemById
             _context = context;
         }
 
-        public async Task<ItemDto?> Handle(GetItemByIdQuery request, CancellationToken cancellationToken)
+        public async Task<ItemDetailDto?> Handle(GetItemByIdQuery request, CancellationToken cancellationToken)
         {
             var item = await _context.Items
+                .Include(i => i.Lending)
+                .Include(i => i.Category)
+                .Include(i => i.StorageLocation)
+                .Include(i => i.History)
+                .Include(i => i.Photos)
+                .Include(i => i.Reminders)
                 .Where(i => i.UserId == request.UserId && i.Id == request.ItemId)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(cancellationToken);
@@ -24,15 +30,31 @@ namespace INest.Services.Features.Items.Queries.GetItemById
             if (item == null)
                 throw new KeyNotFoundException(ITEMS.ERRORS.NOT_FOUND);
 
-            return new ItemDto
+            return new ItemDetailDto
             {
                 Id = item.Id,
                 Name = item.Name,
-                IsOverdue =
-                    item.Lending != null &&
-                    item.Lending.ReturnedDate == null &&
-                    item.Lending.ExpectedReturnDate.HasValue &&
-                    item.Lending.ExpectedReturnDate <= DateTime.UtcNow
+                Description = item.Description,
+                Status = item.Status,
+
+                PurchasePrice = item.PurchasePrice,
+                EstimatedValue = item.EstimatedValue,
+                Currency = item.Currency,
+                PhotoUrl = item.PhotoUrl,
+
+                StorageLocationId = item.StorageLocationId,
+                StorageLocation = item.StorageLocation,
+
+                CategoryId = item.CategoryId,
+                Category = item.Category,
+
+                History = item.History.ToList(),
+                Photos = item.Photos.ToList(),
+                Reminders = item.Reminders.ToList(),
+                Lending = item.Lending,
+
+                IsLendingOverdue = item.IsLendingOverdue,
+                HasOverdueReminders = item.HasOverdueReminders
             };
         }
     }

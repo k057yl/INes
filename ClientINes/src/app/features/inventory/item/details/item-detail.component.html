@@ -55,7 +55,14 @@
             {{ 'STATUS.' + (item.status | statusName) | translate }}
           </span>
         </div>
-        <h1 class="item-name">{{ item.name }}</h1>
+        
+        <h1 class="item-name">
+          {{ item.name }}
+          @if (item.hasOverdueReminders) {
+            <i class="fa fa-bell" style="color: var(--g-red); font-size: 0.6em; vertical-align: super; margin-left: 8px;" title="Есть пропущенные напоминания"></i>
+          }
+        </h1>
+        
         <p class="item-description">{{ item.description || ('ITEM_DETAILS.NO_DESCRIPTION' | translate) }}</p>
         <div class="finance-grid">
           <div class="finance-card">
@@ -153,12 +160,22 @@
                   <label>{{ 'LENDING_MODAL.DATE_GIVEN' | translate }}</label>
                   <span>{{ item.lending.dateGiven | date:'dd.MM.yyyy' }}</span>
                 </div>
+                
                 @if (item.lending.expectedReturnDate) {
                   <div class="date-row">
                     <label>{{ 'LENDING_MODAL.EXPECTED_RETURN' | translate }}</label>
-                    <span class="return-deadline">{{ item.lending.expectedReturnDate | date:'dd.MM.yyyy' }}</span>
+                    <span class="return-deadline" 
+                          [style.color]="item.isLendingOverdue ? 'var(--g-red)' : 'inherit'"
+                          [style.font-weight]="item.isLendingOverdue ? 'bold' : 'normal'">
+                      {{ item.lending.expectedReturnDate | date:'dd.MM.yyyy' }}
+                      
+                      @if (item.isLendingOverdue) {
+                        <i class="fa fa-exclamation-triangle" style="margin-left: 5px;" title="Просрочено!"></i>
+                      }
+                    </span>
                   </div>
                 }
+                
               </div>
               @if (item.lending.comment) {
                 <div class="lending-comment-box">
@@ -175,4 +192,3 @@
 } @else {
   <div class="loader-overlay"><i class="fa fa-spinner fa-spin"></i></div>
 }
-

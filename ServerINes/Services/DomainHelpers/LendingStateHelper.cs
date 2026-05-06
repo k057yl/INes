@@ -26,6 +26,8 @@ namespace INest.Services.DomainHelpers
             DateTime? expectedReturnDate,
             bool sendNotification)
         {
+            item.Status = newStatus;
+
             if (newStatus == ItemStatus.Lent || newStatus == ItemStatus.Borrowed)
             {
                 if (item.Lending == null)
@@ -119,6 +121,7 @@ namespace INest.Services.DomainHelpers
             else if (item.Lending != null)
             {
                 _context.Lendings.Remove(item.Lending);
+                item.Lending = null;
             }
         }
     }

@@ -21,6 +21,7 @@
             $"connect-src 'self' https://localhost:7068 {PWA_MOBILE_API};";
 
         public const string CATEGORY_OTHER = "Other";
+        public const string CATEGORY_NONE = "No Category";
         public const string DEFAULT_ROLE = "inest_app_user";
         public const string ADMIN_ROLE = "inest_app_admin";
         public const string JWT_KEY_MISSING = "JWT Key missing";

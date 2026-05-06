@@ -1,4 +1,5 @@
-﻿using INest.Models.DTOs.Item;
+﻿using INest.Constants;
+using INest.Models.DTOs.Item;
 using INest.Models.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -66,7 +67,6 @@ namespace INest.Services.Features.Items.Queries.GetItems
 
                 EstimatedValue = item.EstimatedValue,
                 Currency = item.Currency,
-
                 PhotoUrl = item.PhotoUrl,
 
                 StorageLocationId = item.StorageLocationId,
@@ -75,14 +75,17 @@ namespace INest.Services.Features.Items.Queries.GetItems
                     : null,
 
                 CategoryId = item.CategoryId,
-                CategoryName = item.Category.Name,
+                CategoryName = item.Category != null ? item.Category.Name : SharedConstants.CATEGORY_NONE,
 
-                IsOverdue =
-                    item.Lending != null &&
-                    item.Lending.ReturnedDate == null &&
-                    item.Lending.ExpectedReturnDate.HasValue &&
-                    item.Lending.ExpectedReturnDate.HasValue &&
-                    item.Lending.ExpectedReturnDate.Value <= DateTime.UtcNow
+                PersonName = item.Lending != null ? item.Lending.PersonName : null,
+                ContactEmail = item.Lending != null ? item.Lending.ContactEmail : null,
+                ExpectedReturnDate = item.Lending != null ? item.Lending.ExpectedReturnDate : null,
+                ReturnedDate = item.Lending != null ? item.Lending.ReturnedDate : null,
+
+                IsOverdue = item.Lending != null &&
+                            item.Lending.ReturnedDate == null &&
+                            item.Lending.ExpectedReturnDate.HasValue &&
+                            item.Lending.ExpectedReturnDate.Value <= DateTime.UtcNow
             })
             .ToListAsync(cancellationToken);
         }

@@ -5,12 +5,14 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
 import { Item } from '../../../../models/entities/item.entity';
 import { ItemHistoryType } from '../../../../models/enums/item-history-type.enum';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { StatusNamePipe } from '../../../../shared/pipe/status-name.pipe';
 import { ItemRemindersComponent } from '../reminder/item-reminders.component';
 import { PricePipe } from '../../../../shared/pipe/price-currency.pipe';
 import { DashboardModalService } from '../../../dashboard/dashboard.modal.service';
-import { TranslateService } from '@ngx-translate/core';
+import { LendingService } from '../../../../shared/services/lending.service';
+import { ToastrService } from 'ngx-toastr';
+
 
 @Component({
   selector: 'app-item-detail',
@@ -24,7 +26,9 @@ export class ItemDetailComponent implements OnInit {
   private router = inject(Router);
   private http = inject(HttpClient);
   private modalService = inject(DashboardModalService);
+  private lendingService = inject(LendingService);
   private translate = inject(TranslateService);
+  private toastr = inject(ToastrService);
 
   item: Item | null = null;
   isLoading = true;
@@ -131,21 +135,19 @@ export class ItemDetailComponent implements OnInit {
     }
   }
 
-    onReturn() {
-      if (!this.item) return;
-      this.modalService.openConfirm({
-        mode: 'confirm',
-        title: 'COMMON.RETURN',
-        message: 'LENDING_MODAL.MODAL.RETURN_MSG',
-        confirmText: 'COMMON.YES'
-      }).subscribe(() => {
-        this.http.post(`${environment.apiBaseUrl}/lending/${this.item!.id}/return`, { 
-          returnedDate: new Date().toISOString() 
-        })
-        .subscribe({
-          next: () => this.loadItem(this.item!.id),
-          error: () => console.error('Return failed')
-        });
+  onReturn() {
+    if (!this.item) return;
+
+    this.modalService.openConfirm({
+      mode: 'confirm',
+      title: 'COMMON.RETURN',
+      message: 'LENDING_MODAL.MODAL.RETURN_MSG',
+      confirmText: 'COMMON.YES'
+    }).subscribe(() => {  
+      this.lendingService.returnItem(this.item!.id, { returnedDate: new Date().toISOString() }).subscribe({
+        next: () => this.loadItem(this.item!.id),
+        error: () => this.toastr.error(this.translate.instant('SYSTEM.DEFAULT_ERROR'))
       });
-    }
+    });
+  }
 }

@@ -42,4 +42,6 @@ export interface Item {
   lending?: Lending;
   reminders: Reminder[];
   hasActiveReminders: boolean;
+  isLendingOverdue: boolean;
+  hasOverdueReminders: boolean;
 }

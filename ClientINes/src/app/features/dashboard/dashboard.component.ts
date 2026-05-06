@@ -12,6 +12,7 @@ import { RIBBON_CONFIG, BOARD_CONFIG } from '../../shared/constants/ui.constants
 import { StorageLocation } from '../../models/entities/storage-location.entity';
 import { Item } from '../../models/entities/item.entity';
 import { CdkDrag } from '@angular/cdk/drag-drop';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-dashboard',
@@ -136,7 +137,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
             this.toastr.success(this.translate.instant('LENDING.SUCCESS.LEND'));
             this.loadData();
           },
-          error: (err) => this.toastr.error(this.translate.instant(err.error?.error || 'SYSTEM.DEFAULT_ERROR'))
+          error: (err: HttpErrorResponse) =>
+            this.toastr.error(this.translate.instant(err.error?.error || 'SYSTEM.DEFAULT_ERROR'))
         }); 
       }
     }); 

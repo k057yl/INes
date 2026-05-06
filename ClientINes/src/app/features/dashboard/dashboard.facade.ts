@@ -220,6 +220,10 @@ export class DashboardFacade {
   lendItem(dto: LendItemDto) {
     return this.lendingService.lendItem(dto);
   }
+  
+  updateItem(itemId: string, formData: FormData) {
+    return this.itemService.update(itemId, formData);
+  }
 
   returnItem(itemId: string, dto: ReturnItemDto = { returnedDate: new Date().toISOString() }) {
     return this.lendingService.returnItem(itemId, dto);

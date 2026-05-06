@@ -41,7 +41,9 @@ namespace INest.Services.Features.Items.Commands.UpdateItemPartial
                 .FirstOrDefaultAsync(i => i.Id == request.ItemId && i.UserId == request.UserId, cancellationToken);
 
             if (item == null) throw new KeyNotFoundException(ITEMS.ERRORS.NOT_FOUND);
-            if (item.Status != ItemStatus.Active) throw new InvalidOperationException(ITEMS.ERRORS.ONLY_ACTIVE_CAN_BE_EDITED);
+
+            if (item.Status != ItemStatus.Active)
+                throw new InvalidOperationException(ITEMS.ERRORS.ONLY_ACTIVE_CAN_BE_EDITED);
 
             using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
             try
