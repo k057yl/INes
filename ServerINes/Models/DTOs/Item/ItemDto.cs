@@ -22,10 +22,11 @@ namespace INest.Models.DTOs.Item
         public string CategoryName { get; set; } = null!;
 
         public bool IsOverdue { get; set; }
-        //**********
         public string? PersonName { get; set; }
         public string? ContactEmail { get; set; }
         public DateTime? ExpectedReturnDate { get; set; }
         public DateTime? ReturnedDate { get; set; }
+        public bool IsLendingOverdue { get; set; }
+        public bool HasOverdueReminders { get; set; }
     }
 }

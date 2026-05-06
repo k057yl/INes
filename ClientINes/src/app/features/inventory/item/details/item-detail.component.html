@@ -56,6 +56,7 @@
           </span>
         </div>
         
+        <!-- ВОТ ТУТ ДОБАВИЛ КОЛОКОЛЬЧИК ДЛЯ ПРОСРОЧЕННЫХ НАПОМИНАНИЙ -->
         <h1 class="item-name">
           {{ item.name }}
           @if (item.hasOverdueReminders) {
@@ -161,6 +162,7 @@
                   <span>{{ item.lending.dateGiven | date:'dd.MM.yyyy' }}</span>
                 </div>
                 
+                <!-- ВОТ ТУТ КРАСИМ ДАТУ И ВЫВОДИМ ИКОНКУ, ЕСЛИ ПРОСРОЧЕНО -->
                 @if (item.lending.expectedReturnDate) {
                   <div class="date-row">
                     <label>{{ 'LENDING_MODAL.EXPECTED_RETURN' | translate }}</label>

@@ -21,6 +21,10 @@ namespace INest.Services.Features.Locations.Queries.GetLocationTree
                 .AsNoTracking()
                 .Include(l => l.Items.Where(i => i.Status != ItemStatus.Sold))
                     .ThenInclude(i => i.Category)
+                .Include(l => l.Items)
+                    .ThenInclude(i => i.Lending)
+                .Include(l => l.Items)
+                    .ThenInclude(i => i.Reminders)
                 .ToListAsync(cancellationToken);
 
             return BuildTree(all, null);
@@ -33,6 +37,7 @@ namespace INest.Services.Features.Locations.Queries.GetLocationTree
                 .OrderBy(l => l.SortOrder)
                 .Select(l => {
                     l.Children = BuildTree(all, l.Id);
+
                     return l;
                 })
                 .ToList();

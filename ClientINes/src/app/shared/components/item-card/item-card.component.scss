@@ -12,9 +12,16 @@
   transition: all 0.2s ease;
 
   &:hover:not(.cdk-drag-placeholder):not(.cdk-drag-dragging) {
-    background: var(--bg-main-card);
     border-color: var(--accent-color);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    
+    &:not([style*="background-color"]) {
+      background: var(--bg-main-card);
+    }
+    
+    &[style*="background-color"] {
+       filter: brightness(1.1);
+    }
   }
   
   &.menu-open { z-index: 100; }

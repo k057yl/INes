@@ -3,7 +3,8 @@
   [cdkDragData]="item"
   [cdkDragDisabled]="isMobile"
   [class.menu-open]="showMenu"
-  [style.border-left-color]="getAccentColor()">
+  [style.border-left-color]="getAccentColor()"
+  [style.background-color]="getCardBackground()">
 
   <div *cdkDragPreview class="custom-drag-preview" [style.border-left-color]="getAccentColor()">
     <div class="preview-thumb">

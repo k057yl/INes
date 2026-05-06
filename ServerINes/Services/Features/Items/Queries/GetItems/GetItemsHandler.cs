@@ -58,36 +58,35 @@ namespace INest.Services.Features.Items.Queries.GetItems
             };
 
             return await query
-            .Select(item => new ItemDto
-            {
-                Id = item.Id,
-                Name = item.Name,
-                Description = item.Description,
-                Status = item.Status,
+                .Select(item => new ItemDto
+                {
+                    Id = item.Id,
+                    Name = item.Name,
+                    Description = item.Description,
+                    Status = item.Status,
+                    EstimatedValue = item.EstimatedValue,
+                    Currency = item.Currency,
+                    PhotoUrl = item.PhotoUrl,
+                    StorageLocationId = item.StorageLocationId,
+                    StorageLocationName = item.StorageLocation != null ? item.StorageLocation.Name : null,
+                    CategoryId = item.CategoryId,
+                    CategoryName = item.Category != null ? item.Category.Name : SharedConstants.CATEGORY_NONE,
 
-                EstimatedValue = item.EstimatedValue,
-                Currency = item.Currency,
-                PhotoUrl = item.PhotoUrl,
+                    PersonName = item.Lending != null ? item.Lending.PersonName : null,
+                    ContactEmail = item.Lending != null ? item.Lending.ContactEmail : null,
+                    ExpectedReturnDate = item.Lending != null ? item.Lending.ExpectedReturnDate : null,
+                    ReturnedDate = item.Lending != null ? item.Lending.ReturnedDate : null,
 
-                StorageLocationId = item.StorageLocationId,
-                StorageLocationName = item.StorageLocation != null
-                    ? item.StorageLocation.Name
-                    : null,
+                    IsLendingOverdue = item.Lending != null &&
+                                       item.Lending.ReturnedDate == null &&
+                                       item.Lending.ExpectedReturnDate.HasValue &&
+                                       item.Lending.ExpectedReturnDate.Value <= DateTime.UtcNow,
 
-                CategoryId = item.CategoryId,
-                CategoryName = item.Category != null ? item.Category.Name : SharedConstants.CATEGORY_NONE,
-
-                PersonName = item.Lending != null ? item.Lending.PersonName : null,
-                ContactEmail = item.Lending != null ? item.Lending.ContactEmail : null,
-                ExpectedReturnDate = item.Lending != null ? item.Lending.ExpectedReturnDate : null,
-                ReturnedDate = item.Lending != null ? item.Lending.ReturnedDate : null,
-
-                IsOverdue = item.Lending != null &&
-                            item.Lending.ReturnedDate == null &&
-                            item.Lending.ExpectedReturnDate.HasValue &&
-                            item.Lending.ExpectedReturnDate.Value <= DateTime.UtcNow
-            })
-            .ToListAsync(cancellationToken);
-        }
+                    HasOverdueReminders = item.Reminders.Any(r =>
+                        !r.IsCompleted &&
+                        r.TriggerAt <= DateTime.UtcNow)
+                })
+                .ToListAsync(cancellationToken);
+            }
     }
 }

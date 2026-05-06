@@ -27,17 +27,27 @@ namespace INest.Services.Features.Lendings.Commands.ReturnItem
             if (item?.Lending == null)
                 throw new KeyNotFoundException(LENDING.ERRORS.NOT_LENT);
 
-            item.Status = ItemStatus.Active;
+            var oldStatus = item.Status;
+
             item.Lending.ReturnedDate = request.Dto.ReturnedDate ?? DateTime.UtcNow;
 
-            _context.ItemHistories.Add(new ItemHistory
+            if (oldStatus == ItemStatus.Borrowed)
             {
-                Id = Guid.NewGuid(),
-                ItemId = item.Id,
-                Type = ItemHistoryType.Returned,
-                NewValue = HISTORY.RETURNED,
-                CreatedAt = DateTime.UtcNow
-            });
+                _context.Items.Remove(item);
+            }
+            else
+            {
+                item.Status = ItemStatus.Active;
+
+                _context.ItemHistories.Add(new ItemHistory
+                {
+                    Id = Guid.NewGuid(),
+                    ItemId = item.Id,
+                    Type = ItemHistoryType.Returned,
+                    NewValue = HISTORY.RETURNED,
+                    CreatedAt = DateTime.UtcNow
+                });
+            }
 
             await _context.SaveChangesAsync(cancellationToken);
 

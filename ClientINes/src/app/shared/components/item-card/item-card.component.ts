@@ -60,6 +60,41 @@ export class ItemCardComponent {
     return this.item.status === 1 || this.item.status === 7;
   }
 
+  get isDueSoon(): boolean {
+    if (this.isOverdueOrToday) return false;
+    if (!this.item.lending?.expectedReturnDate) return false;
+
+    const returnDate = new Date(this.item.lending.expectedReturnDate);
+    const now = new Date();
+    
+    returnDate.setHours(0, 0, 0, 0);
+    now.setHours(0, 0, 0, 0);
+
+    const diffTime = returnDate.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    return diffDays > 0 && diffDays <= 3;
+  }
+
+  get isOverdueOrToday(): boolean {
+    if (this.item.isLendingOverdue) return true;
+    if (!this.item.lending?.expectedReturnDate) return false;
+
+    const returnDate = new Date(this.item.lending.expectedReturnDate);
+    const now = new Date();
+    
+    returnDate.setHours(0, 0, 0, 0);
+    now.setHours(0, 0, 0, 0);
+
+    return returnDate.getTime() <= now.getTime();
+  }
+
+  getCardBackground(): string {
+    if (this.item.isLendingOverdue) return 'rgba(255, 69, 58, 0.15)';
+    if (this.isDueSoon) return 'rgba(255, 214, 10, 0.15)';
+    return '';
+  }
+
   private readonly googleColors = ['var(--g-blue)', 'var(--g-red)', 'var(--g-yellow)', 'var(--g-green)'];
 
   getAccentColor(): string {

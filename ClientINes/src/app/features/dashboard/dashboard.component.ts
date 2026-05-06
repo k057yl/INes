@@ -264,14 +264,27 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   onReturnRequest(item: Item) {
-    this.modal.openConfirm({ mode: 'confirm', title: 'COMMON.RETURN', message: 'LENDING_MODAL.MODAL.RETURN_MSG', confirmText: 'COMMON.YES' }).subscribe(() => {
-      this.facade.returnItem(item.id).subscribe({
-        next: () => {
-          this.toastr.success(this.translate.instant('LENDING_MODAL.SUCCESS_TOASTER'));
-          this.loadData();
-        },
-        error: (err) => this.toastr.error(this.translate.instant('SYSTEM.DEFAULT_ERROR'))
-      });
+    const isBorrowed = item.status === 7;
+
+    const message = isBorrowed 
+      ? 'ITEM_CARD.MODAL.RETURN_BORROWED_MSG' 
+      : 'LENDING_MODAL.MODAL.RETURN_MSG';
+
+    this.modal.openConfirm({ 
+      mode: 'confirm', 
+      title: 'COMMON.RETURN', 
+      message: message, 
+      confirmText: 'COMMON.YES' 
+    }).subscribe((confirmed) => {
+      if (confirmed) {
+        this.facade.returnItem(item.id).subscribe({
+          next: () => {
+            this.toastr.success(this.translate.instant('LENDING_MODAL.SUCCESS_TOASTER'));
+            this.loadData();
+          },
+          error: (err) => this.toastr.error(this.translate.instant('SYSTEM.DEFAULT_ERROR'))
+        });
+      }
     });
   }
 

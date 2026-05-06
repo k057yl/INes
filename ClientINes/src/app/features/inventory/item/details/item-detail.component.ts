@@ -5,14 +5,13 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
 import { Item } from '../../../../models/entities/item.entity';
 import { ItemHistoryType } from '../../../../models/enums/item-history-type.enum';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { StatusNamePipe } from '../../../../shared/pipe/status-name.pipe';
 import { ItemRemindersComponent } from '../reminder/item-reminders.component';
 import { PricePipe } from '../../../../shared/pipe/price-currency.pipe';
 import { DashboardModalService } from '../../../dashboard/dashboard.modal.service';
+import { ItemService } from '../../../../shared/services/item.service';
 import { LendingService } from '../../../../shared/services/lending.service';
-import { ToastrService } from 'ngx-toastr';
-
 
 @Component({
   selector: 'app-item-detail',
@@ -26,9 +25,8 @@ export class ItemDetailComponent implements OnInit {
   private router = inject(Router);
   private http = inject(HttpClient);
   private modalService = inject(DashboardModalService);
+  private itemService = inject(ItemService);
   private lendingService = inject(LendingService);
-  private translate = inject(TranslateService);
-  private toastr = inject(ToastrService);
 
   item: Item | null = null;
   isLoading = true;
@@ -138,16 +136,29 @@ export class ItemDetailComponent implements OnInit {
   onReturn() {
     if (!this.item) return;
 
+    const isBorrowed = this.item.status === 7;
+    const message = isBorrowed 
+      ? 'ITEM_CARD.MODAL.RETURN_BORROWED_MSG' 
+      : 'LENDING_MODAL.MODAL.RETURN_MSG';
+
     this.modalService.openConfirm({
       mode: 'confirm',
       title: 'COMMON.RETURN',
-      message: 'LENDING_MODAL.MODAL.RETURN_MSG',
+      message: message,
       confirmText: 'COMMON.YES'
-    }).subscribe(() => {  
+    }).subscribe(() => {
+
       this.lendingService.returnItem(this.item!.id, { returnedDate: new Date().toISOString() }).subscribe({
-        next: () => this.loadItem(this.item!.id),
-        error: () => this.toastr.error(this.translate.instant('SYSTEM.DEFAULT_ERROR'))
+        next: () => {
+          if (isBorrowed) {
+            this.router.navigate(['/dashboard'], { replaceUrl: true });
+          } else {
+            this.loadItem(this.item!.id);
+          }
+        },
+        error: (err) => console.error('Return failed', err)
       });
+
     });
   }
 }
