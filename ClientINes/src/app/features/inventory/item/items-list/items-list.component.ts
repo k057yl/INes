@@ -62,6 +62,11 @@ export class ItemsListComponent implements OnInit {
     this.activeDropdown = null;
   }
 
+  get hasActiveFilters(): boolean {
+    const f = this.filterForm.getRawValue();
+    return !!f.searchQuery || !!f.categoryId || !!f.storageLocationId || f.status !== null;
+  }
+
   ngOnInit() {
     this.categoryService.getAll().subscribe(res => this.categories = res);
     this.locationService.getAll().subscribe(res => this.locations = res);
@@ -142,7 +147,7 @@ export class ItemsListComponent implements OnInit {
       return;
     }
 
-    const message = this.translate.instant('ITEMS_LIST.BULK_DELETE_COUNT_CONFIRM', { 0: this.selectedIds.size });
+    const message = this.translate.instant('ITEMS_LIST.BULK_DELETE_COUNT_CONFIRM', { count: this.selectedIds.size });
 
     this.modalService.openConfirm({
       mode: 'delete',

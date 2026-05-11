@@ -463,8 +463,9 @@
   "ITEMS_LIST": {
     "TITLE": "Управление предметами",
     "EMPTY_RESULT": "Ничего не найдено",
+    "EMPTY_RESULT_DESC": "Попробуйте изменить параметры фильтрации или поисковый запрос.",
     "BULK_DELETE_BTN": "Удалить выбранные",
-    "BULK_DELETE_COUNT_CONFIRM": "Удалить выбранные предметы ({0} шт.)?",
+    "BULK_DELETE_COUNT_CONFIRM": "Удалить выбранные предметы ({{count}} шт.)?",
     "TABLE": {
       "PHOTO": "Фото",
       "NAME": "Название",
@@ -472,7 +473,8 @@
       "LOCATION": "Локация",
       "STATUS": "Статус",
       "PRICE": "Цена",
-      "ACTION": "Действия"},
+      "ACTION": "Действия"
+    },
     "DROP_MENU": {
       "ALL_CATEGORIES": "Все категории",
       "ALL_LOCATIONS": "Все локации"

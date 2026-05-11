@@ -63,8 +63,8 @@
                 <i class="fa" [ngClass]="getSortIcon(2, 3)"></i>
               </th>
 
-              <th class="col-cat filterable" (click)="toggleDropdown('category', $event)">
-                {{ 'ITEMS_LIST.TABLE.CATEGORY' | translate }} <i class="fa fa-caret-down"></i>
+              <th class="col-cat filterable" [class.has-filter]="!!filterForm.get('categoryId')?.value" (click)="toggleDropdown('category', $event)">
+                {{ 'ITEMS_LIST.TABLE.CATEGORY' | translate }} <i class="fa" [ngClass]="filterForm.get('categoryId')?.value ? 'fa-filter' : 'fa-caret-down'"></i>
                 @if (activeDropdown === 'category') {
                   <div class="th-dropdown-panel" (click)="$event.stopPropagation()">
                     <div class="filter-item" (click)="setFilter('categoryId', null)" [class.active]="!filterForm.get('categoryId')?.value">{{ 'ITEMS_LIST.DROP_MENU.ALL_CATEGORIES' | translate }}</div>
@@ -75,8 +75,8 @@
                 }
               </th>
 
-              <th class="col-loc filterable" (click)="toggleDropdown('location', $event)">
-                {{ 'ITEMS_LIST.TABLE.LOCATION' | translate }} <i class="fa fa-caret-down"></i>
+              <th class="col-loc filterable" [class.has-filter]="!!filterForm.get('storageLocationId')?.value" (click)="toggleDropdown('location', $event)">
+                {{ 'ITEMS_LIST.TABLE.LOCATION' | translate }} <i class="fa" [ngClass]="filterForm.get('storageLocationId')?.value ? 'fa-filter' : 'fa-caret-down'"></i>
                 @if (activeDropdown === 'location') {
                   <div class="th-dropdown-panel" (click)="$event.stopPropagation()">
                     <div class="filter-item" (click)="setFilter('storageLocationId', null)" [class.active]="!filterForm.get('storageLocationId')?.value">{{ 'ITEMS_LIST.DROP_MENU.ALL_LOCATIONS' | translate }}</div>
@@ -87,8 +87,8 @@
                 }
               </th>
 
-              <th class="col-status filterable" (click)="toggleDropdown('status', $event)">
-                {{ 'ITEMS_LIST.TABLE.STATUS' | translate }} <i class="fa fa-caret-down"></i>
+              <th class="col-status filterable" [class.has-filter]="filterForm.get('status')?.value !== null" (click)="toggleDropdown('status', $event)">
+                {{ 'ITEMS_LIST.TABLE.STATUS' | translate }} <i class="fa" [ngClass]="filterForm.get('status')?.value !== null ? 'fa-filter' : 'fa-caret-down'"></i>
                 @if (activeDropdown === 'status') {
                   <div class="th-dropdown-panel" (click)="$event.stopPropagation()">
                     @for (s of STATUSES; track s) {
@@ -118,10 +118,10 @@
                   <img [src]="item.photoUrl || 'assets/images/no-image.png'" class="mini-thumb">
                 </td>
                 <td class="col-name"><span class="name-text">{{ item.name }}</span></td>
-                <td class="col-cat"><span class="cat-tag">{{ item.category?.name || '—' }}</span></td>
+                <td class="col-cat"><span class="cat-tag">{{ item.categoryName|| '—' }}</span></td>
                 <td class="col-loc">
                   <i class="fa fa-folder-open" style="color: var(--accent-color); margin-right: 5px;"></i>
-                  {{ item.storageLocation?.name || '—' }}
+                  {{ item.storageLocationName || '—' }}
                 </td>
                 <td class="col-status">
                   <div class="status-wrapper">
@@ -144,9 +144,15 @@
 
       @if (items.length === 0 && !isLoading) {
         <div class="global-empty-state">
-          <div class="empty-icon"><i class="fa fa-box-open"></i></div>
-          <h3>{{ 'HINTS.ITEMS_EMPTY_TITLE' | translate }}</h3>
-          <p>{{ 'HINTS.ITEMS_EMPTY_DESC' | translate }}</p>
+          @if (hasActiveFilters) {
+            <div class="empty-icon"><i class="fa fa-search-minus"></i></div>
+            <h3>{{ 'ITEMS_LIST.EMPTY_RESULT' | translate }}</h3>
+            <p>{{ 'ITEMS_LIST.EMPTY_RESULT_DESC' | translate }}</p>
+          } @else {
+            <div class="empty-icon"><i class="fa fa-box-open"></i></div>
+            <h3>{{ 'HINTS.ITEMS_EMPTY_TITLE' | translate }}</h3>
+            <p>{{ 'HINTS.ITEMS_EMPTY_DESC' | translate }}</p>
+          }
         </div>
       }
     </div>

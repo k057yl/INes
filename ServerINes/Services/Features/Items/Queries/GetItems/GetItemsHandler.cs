@@ -20,6 +20,10 @@ namespace INest.Services.Features.Items.Queries.GetItems
             var filters = request.Filters;
 
             var query = _context.Items
+                .Include(i => i.Category)
+                .Include(i => i.StorageLocation)
+                .Include(i => i.Lending)
+                .Include(i => i.Reminders)
                 .Where(i => i.UserId == request.UserId)
                 .AsNoTracking()
                 .AsQueryable();

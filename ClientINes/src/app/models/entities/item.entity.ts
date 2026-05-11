@@ -44,4 +44,7 @@ export interface Item {
   hasActiveReminders: boolean;
   isLendingOverdue: boolean;
   hasOverdueReminders: boolean;
+
+  categoryName?: string;
+  storageLocationName?: string;
 }
