@@ -1,6 +1,6 @@
 <div class="items-list-page">
   <div class="container">
-
+    
     <header class="items-list-header">
       <div class="header-left">
         <h1>{{ 'ITEMS_LIST.TITLE' | translate }}</h1>
@@ -19,9 +19,18 @@
         }
 
         <div class="controls-toolbar" [formGroup]="filterForm">
+          
+          @if (hasActiveFilters) {
+            <button type="button" class="reset-filters-btn" (click)="resetFilters()">
+              <i class="fa fa-sync-alt"></i>
+              <span>{{ 'FILTERS.RESET_SHORT' | translate }}</span>
+            </button>
+          }
+
           <div class="search-box">
             <i class="fa fa-search search-icon"></i>
             <input type="text" formControlName="searchQuery" [placeholder]="'FILTERS.SEARCH_PHL' | translate">
+            
             @if (filterForm.get('searchQuery')?.value) {
               <button type="button" class="clear-btn" (click)="setFilter('searchQuery', '')">
                 <i class="fa fa-times"></i>

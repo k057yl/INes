@@ -150,7 +150,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.facade.moveItemLocally(data.item, data.targetLocationId); 
       this.facade.moveItemApi(data.item.id, data.targetLocationId).subscribe({ 
         next: () => {
-          this.toastr.success(this.translate.instant('ITEMS.SUCCESS.MOVE'));
+          this.toastr.success(this.translate.instant('ITEM_CARD.MODAL.MOVE_SUCCESS'));
           this.jumpToLocation(data.targetLocationId);
         }, 
         error: () => {
@@ -255,7 +255,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     const item = event.previousContainer.data[event.previousIndex];
     this.facade.moveItemLocally(item, loc.id);
     this.facade.moveItemApi(item.id, loc.id).subscribe({ 
-      next: () => this.toastr.success(this.translate.instant('ITEMS.SUCCESS.MOVE')),
+      next: () => this.toastr.success(this.translate.instant('ITEM_CARD.MODAL.MOVE_SUCCESS')),
       error: () => {
         this.toastr.error(this.translate.instant('SYSTEM.DEFAULT_ERROR'));
         this.loadData();

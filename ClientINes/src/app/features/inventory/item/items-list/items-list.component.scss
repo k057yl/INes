@@ -37,10 +37,38 @@
       .controls-toolbar {
         display: flex; align-items: center; gap: 10px;
 
+        .reset-filters-btn {
+          background: transparent;
+          border: none;
+          color: var(--text-muted);
+          font-size: 0.8rem;
+          font-weight: 700;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          padding: 0 10px;
+          height: 42px;
+          transition: 0.2s;
+          white-space: nowrap;
+          animation: fadeInRight 0.3s ease;
+
+          i { 
+            font-size: 0.7rem; 
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+          }
+
+          &:hover {
+            color: var(--error-red);
+            i { transform: rotate(-180deg); }
+          }
+        }
+
         .search-box {
           position: relative; display: flex; align-items: center;
           background: var(--bg-card); border: 1px solid var(--border-color);
           border-radius: 12px; padding: 0 15px; height: 42px; width: 280px; transition: 0.2s;
+          width: 260px;
           &:focus-within { border-color: var(--accent-color); }
           .search-icon { color: var(--text-muted); margin-right: 10px; }
           input { flex: 1; background: transparent; border: none; color: var(--text-main); outline: none; font-size: 0.9rem; }
@@ -162,6 +190,11 @@
 @media (max-width: 768px) {
   .items-list-header { flex-direction: column; align-items: stretch !important; gap: 10px; }
   .header-right { flex-direction: column; align-items: stretch; }
-  .controls-toolbar .search-box { width: 100% !important; }
+  .controls-toolbar {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    .reset-filters-btn { order: 2; height: 30px; }
+    .search-box { order: 1; width: 100% !important; }
+  }
   .inest-table .col-cat, .inest-table .col-loc, .inest-table .col-price, .inest-table .col-status { display: none !important; }
 }
