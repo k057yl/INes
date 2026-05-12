@@ -16,5 +16,6 @@ namespace INest.Models.DTOs.Sale
         public Guid? PlatformId { get; set; }
 
         public string? Comment { get; set; }
+        public decimal? PlatformFee { get; set; }
     }
 }

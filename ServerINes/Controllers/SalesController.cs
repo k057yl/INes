@@ -41,9 +41,9 @@ namespace INest.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetSales()
+        public async Task<IActionResult> GetSales([FromQuery] SaleFilterDto filters)
         {
-            var query = new GetSalesQuery(GetUserId());
+            var query = new GetSalesQuery(GetUserId(), filters);
             var result = await _mediator.Send(query);
             return Ok(result);
         }

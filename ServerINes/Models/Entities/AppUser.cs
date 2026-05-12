@@ -16,5 +16,6 @@ namespace INest.Models.Entities
 
         public string? RefreshToken { get; set; }
         public DateTime RefreshTokenExpiryTime { get; set; }
+        public string TimeZoneId { get; set; } = "UTC";
     }
 }

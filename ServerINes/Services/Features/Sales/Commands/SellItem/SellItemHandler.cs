@@ -39,6 +39,7 @@ namespace INest.Services.Features.Sales.Commands.SellItem
             var safeComment = !string.IsNullOrEmpty(dto.Comment) ? _sanitizer.Sanitize(dto.Comment) : null;
 
             decimal purchasePrice = item.PurchasePrice ?? 0;
+            decimal platformFee = dto.PlatformFee ?? 0;
             decimal profit = dto.SalePrice - purchasePrice;
 
             var sale = new Sale
@@ -48,6 +49,10 @@ namespace INest.Services.Features.Sales.Commands.SellItem
                 ItemId = item.Id,
                 ItemNameSnapshot = item.Name,
                 CategoryNameSnapshot = item.Category?.Name,
+                CategoryId = item.CategoryId,
+                PurchasePriceSnapshot = purchasePrice,
+                Currency = item.Currency ?? "USD",
+                PlatformFee = platformFee,
                 SalePrice = dto.SalePrice,
                 Profit = profit,
                 SoldDate = dto.SoldDate,

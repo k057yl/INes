@@ -5,6 +5,8 @@ import { SellItemRequestDto, SaleResponseDto } from '../../models/dtos/sale.dto'
 import { PlatformDto } from '../../models/dtos/platform.dto';
 import { Platform } from '../../models/entities/platform.entity';
 import { Observable } from 'rxjs';
+import { HttpParams } from '@angular/common/http';
+import { SaleFilters } from '../../models/dtos/sale.dto';
 
 @Injectable({ providedIn: 'root' })
 export class SalesService {
@@ -16,8 +18,19 @@ export class SalesService {
     return this.http.post<SaleResponseDto>(this.salesUrl, dto);
   }
 
-  getHistory(): Observable<SaleResponseDto[]> {
-    return this.http.get<SaleResponseDto[]>(this.salesUrl);
+  getHistory(filters?: SaleFilters): Observable<SaleResponseDto[]> {
+    let params = new HttpParams();
+    
+    if (filters) {
+      Object.keys(filters).forEach(key => {
+        const value = (filters as any)[key];
+        if (value !== null && value !== undefined && value !== '') {
+          params = params.set(key, value.toString());
+        }
+      });
+    }
+
+    return this.http.get<SaleResponseDto[]>(this.salesUrl, { params });
   }
 
   cancelSale(itemId: string): Observable<void> {

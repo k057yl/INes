@@ -1,6 +1,6 @@
 <div class="sales-page" [class.is-loading]="isLoading">
   <div class="container">
-
+    
     <header class="sales-header">
       <div class="title-group">
         <h1>{{ 'SALES_PAGE.TITLE' | translate }}</h1>
@@ -14,7 +14,7 @@
             <span class="label">{{ 'SALES_PAGE.TOTAL_REVENUE' | translate }}</span>
             <span class="value">{{ totalRevenue | number:'1.2-2' }} </span>
           </div>
-          <div class="stat-progress" [style.background]="'var(--g-blue)'"></div>
+          <div class="stat-progress" style="background: var(--g-blue)"></div>
         </div>
 
         <div class="stat-card profit">
@@ -31,39 +31,102 @@
     </header>
 
     <div class="sales-content">
-      @if (sales.length > 0) {
-        <div class="list-header">
+      
+      <div class="list-header" [formGroup]="filterForm">
+        <div class="list-header-left">
           <span class="count">{{ 'SALES_PAGE.COUNT_LABEL' | translate }}: {{ sales.length }}</span>
         </div>
-      }
+
+        <div class="controls-toolbar">
+          @if (hasActiveFilters) {
+            <button type="button" class="reset-filters-btn" (click)="resetFilters()">
+              <i class="fa fa-sync-alt"></i> <span>{{ 'FILTERS.RESET_SHORT' | translate }}</span>
+            </button>
+          }
+
+          <div class="search-box">
+            <i class="fa fa-search search-icon"></i>
+            <input type="text" formControlName="searchQuery" [placeholder]="'FILTERS.SEARCH_PHL' | translate">
+          </div>
+
+          <div class="th-dropdown-wrapper">
+            <button class="icon-btn" 
+                    [class.active]="activeDropdown === 'category'" 
+                    [class.has-filter]="!!filterForm.get('categoryId')?.value"
+                    (click)="activeDropdown = activeDropdown === 'category' ? null : 'category'">
+              <i class="fa fa-folder"></i>
+            </button>
+            @if (activeDropdown === 'category') {
+              <div class="th-dropdown-panel right-aligned">
+                <div class="filter-item" (click)="setFilter('categoryId', null)" [class.active]="!filterForm.get('categoryId')?.value">{{ 'FILTERS.ALL_CATEGORIES' | translate }}</div>
+                @for (c of categories; track c.id) {
+                  <div class="filter-item" (click)="setFilter('categoryId', c.id)" [class.active]="filterForm.get('categoryId')?.value === c.id">{{ c.name }}</div>
+                }
+              </div>
+            }
+          </div>
+
+          <div class="th-dropdown-wrapper">
+            <button class="icon-btn" 
+                    [class.active]="activeDropdown === 'platform'" 
+                    [class.has-filter]="!!filterForm.get('platformId')?.value"
+                    (click)="activeDropdown = activeDropdown === 'platform' ? null : 'platform'">
+              <i class="fa fa-tag"></i>
+            </button>
+            @if (activeDropdown === 'platform') {
+              <div class="th-dropdown-panel right-aligned">
+                <div class="filter-item" (click)="setFilter('platformId', null)" [class.active]="!filterForm.get('platformId')?.value">{{ 'FILTERS.ALL_PLATFORMS' | translate }}</div>
+                @for (p of platforms; track p.id) {
+                  <div class="filter-item" (click)="setFilter('platformId', p.id)" [class.active]="filterForm.get('platformId')?.value === p.id">{{ p.name }}</div>
+                }
+              </div>
+            }
+          </div>
+
+          <div class="th-dropdown-wrapper">
+            <button class="icon-btn" 
+                    [class.active]="activeDropdown === 'sort'" 
+                    [class.has-filter]="filterForm.get('sortBy')?.value !== 0"
+                    (click)="activeDropdown = activeDropdown === 'sort' ? null : 'sort'">
+              <i class="fa fa-sort-amount-down"></i>
+            </button>
+            @if (activeDropdown === 'sort') {
+              <div class="th-dropdown-panel right-aligned">
+                <div class="filter-item" (click)="setFilter('sortBy', 0)" [class.active]="filterForm.get('sortBy')?.value === 0">{{ 'FILTERS.SORT.NEWEST' | translate }}</div>
+                <div class="filter-item" (click)="setFilter('sortBy', 4)" [class.active]="filterForm.get('sortBy')?.value === 4">{{ 'FILTERS.SORT.PROFIT_DESC' | translate }}</div>
+                <div class="filter-item" (click)="setFilter('sortBy', 2)" [class.active]="filterForm.get('sortBy')?.value === 2">{{ 'FILTERS.SORT.PRICE_DESC' | translate }}</div>
+                <div class="filter-item" (click)="setFilter('sortBy', 3)" [class.active]="filterForm.get('sortBy')?.value === 3">{{ 'FILTERS.SORT.PRICE_ASC' | translate }}</div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
 
       @if (!isLoading) {
         <div class="sales-grid">
-          @for (s of sales; track s) {
-            <app-sale-card
-              [sale]="s"
-              (undo)="handleUndo($event)"
+          @for (s of sales; track s.saleId) {
+            <app-sale-card 
+              [sale]="s" 
+              (undo)="handleUndo($event)" 
               (delete)="handleDelete($event)">
             </app-sale-card>
           }
           @if (sales.length === 0) {
             <div class="global-empty-state">
-              <div class="empty-icon"><i class="fa fa-handshake"></i></div>
-              <h3>{{ 'HINTS.SALES_EMPTY_TITLE' | translate }}</h3>
-              <p>{{ 'HINTS.SALES_EMPTY_DESC' | translate }}</p>
+              <div class="empty-icon"><i class="fa" [class.fa-handshake]="!hasActiveFilters" [class.fa-search-minus]="hasActiveFilters"></i></div>
+              <h3>{{ (hasActiveFilters ? 'ITEMS_LIST.EMPTY_RESULT' : 'HINTS.SALES_EMPTY_TITLE') | translate }}</h3>
             </div>
           }
         </div>
       } @else {
         <div class="loading-wrapper">
           <div class="inest-spinner"></div>
-          <span>{{ 'AUTH.CHECKING_MAIL' | translate }}</span>
+          <span>{{ 'COMMON.LOADING' | translate }}</span>
         </div>
       }
     </div>
   </div>
 </div>
-
 
 @if (activeAction === 'undo') {
   <app-inest-modal
@@ -71,7 +134,6 @@
     [title]="'SALES_PAGE.MODALS.RETURN_TITLE' | translate"
     [message]="'SALES_PAGE.MODALS.RETURN_MESSAGE' | translate"
     [confirmText]="'COMMON.RETURN' | translate"
-    [cancelText]="'COMMON.CANCEL' | translate"
     (confirmed)="onConfirm()"
     (cancelled)="closeModal()">
   </app-inest-modal>

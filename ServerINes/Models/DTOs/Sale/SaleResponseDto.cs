@@ -9,5 +9,6 @@
         public decimal Profit { get; set; }
         public DateTime SoldDate { get; set; }
         public string? PlatformName { get; set; }
+        public string? CategoryName { get; set; }
     }
 }

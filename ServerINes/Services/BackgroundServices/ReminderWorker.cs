@@ -16,65 +16,66 @@ namespace INest.Services.BackgroundServices
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("Reminder Worker стартовал.");
+            _logger.LogInformation("Reminder Worker: Начинаем утренний обход планеты (09:00 - 10:00).");
 
             while (!stoppingToken.IsCancellationRequested)
             {
                 try
                 {
-                    var now = DateTime.UtcNow;
+                    var nowUtc = DateTime.UtcNow;
 
-                    if (now.Hour == 9)
+                    using (var scope = _services.CreateScope())
                     {
-                        _logger.LogInformation("Наступило время рассылки (9:00 UTC). Проверяем напоминания...");
+                        var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                        var emailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
+                        var pendingReminders = await context.Reminders
+                            .Include(r => r.Item)
+                            .ThenInclude(i => i.User)
+                            .Where(r => !r.IsCompleted && !r.IsNotificationSent)
+                            .Where(r => r.TriggerAt <= nowUtc.AddDays(2))
+                            .ToListAsync(stoppingToken);
 
-                        using (var scope = _services.CreateScope())
+                        if (pendingReminders.Any())
                         {
-                            var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-                            var emailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
-
-                            var targetDate = now.AddDays(1).Date;
-
-                            var pendingReminders = await context.Reminders
-                                .Include(r => r.Item)
-                                .ThenInclude(i => i.User)
-                                .Where(r => !r.IsCompleted && !r.IsNotificationSent)
-                                .Where(r => r.TriggerAt.Date <= targetDate)
-                                .ToListAsync(stoppingToken);
-
-                            if (pendingReminders.Any())
+                            foreach (var reminder in pendingReminders)
                             {
-                                foreach (var reminder in pendingReminders)
+                                var user = reminder.Item?.User;
+                                if (user == null || string.IsNullOrEmpty(user.Email)) continue;
+
+                                var userTzId = string.IsNullOrEmpty(user.TimeZoneId) ? "UTC" : user.TimeZoneId;
+
+                                try
                                 {
-                                    var toEmail = reminder.Item?.User?.Email;
+                                    var tzInfo = TimeZoneInfo.FindSystemTimeZoneById(userTzId);
+                                    var userLocalTime = TimeZoneInfo.ConvertTimeFromUtc(nowUtc, tzInfo);
+                                    var startTime = new TimeSpan(9, 0, 0);
+                                    var endTime = new TimeSpan(10, 0, 0);
+                                    var currentTime = userLocalTime.TimeOfDay;
 
-                                    if (string.IsNullOrEmpty(toEmail))
+                                    if (currentTime >= startTime && currentTime < endTime)
                                     {
-                                        _logger.LogWarning("Пропуск: Email владельца не найден для напоминания {Id}", reminder.Id);
-                                        continue;
+                                        await emailService.SendReminderNotificationAsync(
+                                            user.Email,
+                                            reminder.Title,
+                                            reminder.TriggerAt);
+
+                                        reminder.IsNotificationSent = true;
+                                        _logger.LogInformation("Уведомление отправлено на {Email}. У юзера сейчас: {Time}", user.Email, userLocalTime);
                                     }
-
-                                    await emailService.SendReminderNotificationAsync(
-                                        toEmail,
-                                        reminder.Title,
-                                        reminder.TriggerAt);
-
-                                    reminder.IsNotificationSent = true;
-                                    _logger.LogInformation("Уведомление отправлено на {Email}: {Title}", toEmail, reminder.Title);
                                 }
+                                catch (TimeZoneNotFoundException)
+                                {
+                                    _logger.LogWarning("У юзера {Email} какая-то дичь вместо часового пояса: {Tz}", user.Email, userTzId);
+                                }
+                            }
 
-                                await context.SaveChangesAsync(stoppingToken);
-                            }
-                            else
-                            {
-                                _logger.LogInformation("На сегодня новых напоминаний нет.");
-                            }
+                            await context.SaveChangesAsync(stoppingToken);
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Ошибка в работе воркера напоминаний");
+                    _logger.LogError(ex, "Ошибка в цикле рассылки");
                 }
 
                 await Task.Delay(TimeSpan.FromMinutes(30), stoppingToken);
