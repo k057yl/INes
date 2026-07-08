@@ -1,7 +1,8 @@
 ﻿using FluentValidation;
 using Ganss.Xss;
 using INest.Constants;
-using INest.Models.Entities;
+using INest.Data.Entities;
+using INest.Data.Entities.Infrastructure;
 using INest.Services.BackgroundServices;
 using INest.Services.Behaviors;
 using INest.Services.DomainHelpers;

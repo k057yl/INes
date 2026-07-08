@@ -1,6 +1,6 @@
 ﻿using Ganss.Xss;
+using INest.Data.Entities.Infrastructure;
 using INest.Exceptions;
-using INest.Models.Entities;
 using INest.Services.Tracker;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

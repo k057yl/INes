@@ -1,6 +1,6 @@
 ﻿using Ganss.Xss;
+using INest.Data.Entities.Core;
 using INest.Exceptions;
-using INest.Models.Entities;
 using INest.Models.Enums;
 using INest.Services.Interfaces;
 using INest.Services.Tracker;

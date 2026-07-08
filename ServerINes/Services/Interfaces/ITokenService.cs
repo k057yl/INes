@@ -1,4 +1,4 @@
-﻿using INest.Models.Entities;
+﻿using INest.Data.Entities.Infrastructure;
 using System.Security.Claims;
 
 namespace INest.Services.Interfaces

@@ -1,4 +1,6 @@
-﻿using INest.Models.Entities;
+﻿using INest.Data.Entities.Core;
+using INest.Data.Entities.Finances;
+using INest.Data.Entities.Infrastructure;
 using INest.Models.Enums;
 using INest.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -28,45 +30,50 @@ namespace INest.Services.DomainHelpers
         {
             item.Status = newStatus;
 
+            var lending = await _context.Lendings
+                .FirstOrDefaultAsync(l => l.ItemId == item.Id);
+
             if (newStatus == ItemStatus.Lent || newStatus == ItemStatus.Borrowed)
             {
-                if (item.Lending == null)
+                if (lending == null)
                 {
-                    item.Lending = new Lending
+                    lending = new Lending
                     {
                         Id = Guid.NewGuid(),
                         ItemId = item.Id,
+                        UserId = item.UserId,
                         DateGiven = DateTime.UtcNow,
                         ValueAtLending = item.EstimatedValue,
                         SendNotification = sendNotification,
                         NotificationSent = false
                     };
 
+                    _context.Lendings.Add(lending);
+
                     _context.ItemHistories.Add(new ItemHistory
                     {
                         Id = Guid.NewGuid(),
                         ItemId = item.Id,
+                        UserId = item.UserId,
                         Type = newStatus == ItemStatus.Lent
                             ? ItemHistoryType.Lent
                             : ItemHistoryType.Borrowed,
-                        NewValue = personName,
-                        CreatedAt = DateTime.UtcNow
+                        NewValue = personName
                     });
                 }
 
-                item.Lending.PersonName = personName;
-                item.Lending.ContactEmail = contactEmail;
-                item.Lending.ExpectedReturnDate = expectedReturnDate;
-                item.Lending.Direction =
-                    newStatus == ItemStatus.Borrowed
+                lending.PersonName = personName;
+                lending.ContactEmail = contactEmail;
+                lending.ExpectedReturnDate = expectedReturnDate;
+                lending.Direction = newStatus == ItemStatus.Borrowed
                         ? LendingDirection.In
                         : LendingDirection.Out;
 
-                item.Lending.SendNotification = sendNotification;
+                lending.SendNotification = sendNotification;
 
                 if (sendNotification)
                 {
-                    item.Lending.NotificationSent = false;
+                    lending.NotificationSent = false;
                 }
 
                 if (sendNotification && expectedReturnDate.HasValue)
@@ -91,6 +98,7 @@ namespace INest.Services.DomainHelpers
                             {
                                 Id = Guid.NewGuid(),
                                 ItemId = item.Id,
+                                UserId = item.UserId,
                                 TriggerAt = reminderDate,
                                 Type = ReminderType.ReturnItem,
                                 IsCompleted = false
@@ -110,7 +118,7 @@ namespace INest.Services.DomainHelpers
                             expectedReturnDate,
                             newStatus == ItemStatus.Borrowed);
 
-                        item.Lending.NotificationSent = true;
+                        lending.NotificationSent = true;
                     }
                     catch (Exception ex)
                     {
@@ -118,10 +126,9 @@ namespace INest.Services.DomainHelpers
                     }
                 }
             }
-            else if (item.Lending != null)
+            else if (lending != null)
             {
-                _context.Lendings.Remove(item.Lending);
-                item.Lending = null;
+                _context.Lendings.Remove(lending);
             }
         }
     }

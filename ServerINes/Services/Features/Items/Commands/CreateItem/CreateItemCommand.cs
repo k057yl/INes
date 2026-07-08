@@ -1,5 +1,5 @@
-﻿using INest.Models.DTOs.Item;
-using INest.Models.Entities;
+﻿using INest.Data.Entities.Core;
+using INest.Models.DTOs.Item;
 using MediatR;
 
 namespace INest.Services.Features.Items.Commands.CreateItem

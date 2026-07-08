@@ -1,6 +1,7 @@
 ﻿using Ganss.Xss;
+using INest.Data.Entities.Core;
+using INest.Data.Entities.Infrastructure;
 using INest.Exceptions;
-using INest.Models.Entities;
 using INest.Models.Enums;
 using INest.Services.Interfaces;
 using INest.Services.Tracker;
@@ -45,7 +46,6 @@ namespace INest.Services.Features.Items.Commands.UpdateItemPartial
             if (item.Status != ItemStatus.Active)
                 throw new InvalidOperationException(ITEMS.ERRORS.ONLY_ACTIVE_CAN_BE_EDITED);
 
-            using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
             try
             {
                 void LogChange(ItemHistoryType type, string? oldValue, string? newValue)
@@ -55,10 +55,10 @@ namespace INest.Services.Features.Items.Commands.UpdateItemPartial
                     {
                         Id = Guid.NewGuid(),
                         ItemId = item.Id,
+                        UserId = request.UserId,
                         Type = type,
                         OldValue = oldValue,
-                        NewValue = newValue,
-                        CreatedAt = DateTime.UtcNow
+                        NewValue = newValue
                     });
                 }
 
@@ -148,14 +148,12 @@ namespace INest.Services.Features.Items.Commands.UpdateItemPartial
                 }
 
                 await _context.SaveChangesAsync(cancellationToken);
-                await transaction.CommitAsync(cancellationToken);
 
                 _tracker.InvalidateUserCache(request.UserId);
                 return true;
             }
             catch (Exception ex)
             {
-                await transaction.RollbackAsync(cancellationToken);
                 _logger.LogError(ex, "Ошибка при частичном обновлении предмета {ItemId}", request.ItemId);
                 throw;
             }
@@ -184,9 +182,9 @@ namespace INest.Services.Features.Items.Commands.UpdateItemPartial
                 {
                     Id = Guid.NewGuid(),
                     ItemId = item.Id,
+                    UserId = item.UserId,
                     FilePath = upload.Result.SecureUrl.ToString(),
-                    PublicId = upload.Result.PublicId,
-                    UploadedAt = DateTime.UtcNow
+                    PublicId = upload.Result.PublicId
                 };
 
                 if (string.IsNullOrEmpty(item.PhotoUrl))

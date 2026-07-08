@@ -1,12 +1,10 @@
 ﻿using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using INest.Constants;
-using INest.Models.Entities;
+using INest.Data.Entities;
 using INest.Services.Interfaces;
 using Microsoft.Extensions.Options;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Processing;
-using ISSize = SixLabors.ImageSharp.Size;
+using SkiaSharp;
 
 namespace INest.Services.Infrastructure
 {
@@ -44,15 +42,25 @@ namespace INest.Services.Infrastructure
             using var outStream = new MemoryStream();
             try
             {
-                using (var image = await Image.LoadAsync(file.OpenReadStream()))
+                using (var inputStream = file.OpenReadStream())
+                using (var originalBitmap = SKBitmap.Decode(inputStream))
                 {
-                    image.Mutate(x => x.Resize(new ResizeOptions
-                    {
-                        Size = new ISSize(TargetWidth, 0),
-                        Mode = ResizeMode.Max
-                    }));
+                    if (originalBitmap == null)
+                        throw new Exception("Failed to decode image via SkiaSharp");
 
-                    await image.SaveAsJpegAsync(outStream, new SixLabors.ImageSharp.Formats.Jpeg.JpegEncoder { Quality = 75 });
+                    int targetHeight = (int)(originalBitmap.Height * ((float)TargetWidth / originalBitmap.Width));
+
+                    using (var resizedBitmap = new SKBitmap(TargetWidth, targetHeight))
+                    {
+                        var samplingOptions = new SKSamplingOptions(SKFilterMode.Linear);
+                        originalBitmap.ScalePixels(resizedBitmap, samplingOptions);
+
+                        using (var image = SKImage.FromBitmap(resizedBitmap))
+                        using (var data = image.Encode(SKEncodedImageFormat.Jpeg, 75))
+                        {
+                            data.SaveTo(outStream);
+                        }
+                    }
                 }
 
                 outStream.Position = 0;
@@ -67,7 +75,7 @@ namespace INest.Services.Infrastructure
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Photo processing failed");
+                _logger.LogError(ex, "Photo processing via SkiaSharp failed");
                 return new ImageUploadResult { Error = new Error { Message = LocalizationConstants.ERRORS.IMAGE_PROCESSING_FAILED } };
             }
         }

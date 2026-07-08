@@ -1,5 +1,5 @@
-﻿using INest.Models.DTOs.Lending;
-using INest.Models.Entities;
+﻿using INest.Data.Entities.Finances;
+using INest.Models.DTOs.Lending;
 using MediatR;
 
 namespace INest.Services.Features.Lendings.Commands.LendItem

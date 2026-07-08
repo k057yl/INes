@@ -2,10 +2,10 @@
 using Ganss.Xss;
 using Google.Apis.Auth;
 using INest.Constants;
+using INest.Data.Entities.Infrastructure;
 using INest.Exceptions;
 using INest.Models.DTOs.Auth;
 using INest.Models.DTOs.Token;
-using INest.Models.Entities;
 using INest.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;

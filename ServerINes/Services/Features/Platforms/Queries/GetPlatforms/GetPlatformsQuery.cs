@@ -1,5 +1,5 @@
 ﻿using INest.Constants;
-using INest.Models.Entities;
+using INest.Data.Entities.Finances;
 using INest.Services.Interfaces;
 using MediatR;
 

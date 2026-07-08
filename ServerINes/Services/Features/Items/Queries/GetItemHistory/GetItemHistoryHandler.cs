@@ -1,5 +1,5 @@
 ﻿using INest.Constants;
-using INest.Models.Entities;
+using INest.Data.Entities.Infrastructure;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

@@ -1,10 +1,11 @@
 ﻿using Ganss.Xss;
-using INest.Models.Entities;
+using INest.Data.Entities.Finances;
+using INest.Data.Entities.Infrastructure;
+using INest.Models.DTOs.Sale;
 using INest.Models.Enums;
 using INest.Services.Tracker;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using INest.Models.DTOs.Sale;
 using static INest.Constants.LocalizationConstants;
 
 namespace INest.Services.Features.Sales.Commands.SellItem
@@ -57,8 +58,7 @@ namespace INest.Services.Features.Sales.Commands.SellItem
                 Profit = profit,
                 SoldDate = dto.SoldDate,
                 PlatformId = dto.PlatformId,
-                Comment = safeComment,
-                CreatedAt = DateTime.UtcNow
+                Comment = safeComment
             };
 
             var oldStatus = item.Status;
@@ -68,8 +68,8 @@ namespace INest.Services.Features.Sales.Commands.SellItem
             {
                 Id = Guid.NewGuid(),
                 ItemId = item.Id,
+                UserId = request.UserId,
                 Type = ItemHistoryType.StatusChanged,
-                CreatedAt = DateTime.UtcNow,
                 Comment = HISTORY.SOLD_FOR,
                 OldValue = oldStatus.ToString(),
                 NewValue = dto.SalePrice.ToString()

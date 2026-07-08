@@ -1,11 +1,49 @@
-# Backend
+# =========================
+# Backend (.NET)
+# =========================
 **/bin/
 **/obj/
 **/*.user
 **/*.vs
-appsettings*.json
+.vs/
+*.suo
+*.userosscache
+*.sln.docstates
 
+# =========================
+# Secrets & Local Configuration
+# =========================
+
+# Local environment variables
+**/.env
+**/.env.*
+
+# Local appsettings
+**/appsettings.Development.json
+**/appsettings.Local.json
+
+# Local databases
+*.db
+*.db-shm
+*.db-wal
+
+# =========================
 # Frontend (Angular)
+# =========================
 node_modules/
 dist/
 .angular/
+.vscode/
+coverage/
+.npm/
+
+# =========================
+# Docker
+# =========================
+docker-compose.override.yml
+
+# =========================
+# OS
+# =========================
+.DS_Store
+Thumbs.db

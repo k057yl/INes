@@ -1,5 +1,7 @@
-﻿using INest.Exceptions;
-using INest.Models.Entities;
+﻿using INest.Data;
+using INest.Data.Entities.Core;
+using INest.Data.Entities.Infrastructure;
+using INest.Exceptions;
 using INest.Models.Enums;
 using INest.Services.Tracker;
 using MediatR;
@@ -43,10 +45,10 @@ namespace INest.Services.Features.Items.Commands.MoveItem
                 {
                     Id = Guid.NewGuid(),
                     ItemId = item.Id,
+                    UserId = request.UserId,
                     Type = ItemHistoryType.Moved,
                     OldValue = item.StorageLocation?.Name,
-                    NewValue = targetLocation?.Name,
-                    CreatedAt = DateTime.UtcNow
+                    NewValue = targetLocation?.Name
                 });
 
                 var oldStatus = item.Status;
@@ -67,10 +69,10 @@ namespace INest.Services.Features.Items.Commands.MoveItem
                     {
                         Id = Guid.NewGuid(),
                         ItemId = item.Id,
+                        UserId = request.UserId,
                         Type = ItemHistoryType.StatusChanged,
                         OldValue = oldStatus.ToString(),
-                        NewValue = item.Status.ToString(),
-                        CreatedAt = DateTime.UtcNow
+                        NewValue = item.Status.ToString()
                     });
                 }
 

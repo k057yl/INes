@@ -1,5 +1,5 @@
-﻿using INest.Models.DTOs.Platform;
-using INest.Models.Entities;
+﻿using INest.Data.Entities.Finances;
+using INest.Models.DTOs.Platform;
 using MediatR;
 
 namespace INest.Services.Features.Platforms.Commands.UpdatePlatform

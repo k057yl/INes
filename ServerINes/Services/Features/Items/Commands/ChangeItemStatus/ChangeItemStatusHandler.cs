@@ -1,5 +1,5 @@
-﻿using INest.Exceptions;
-using INest.Models.Entities;
+﻿using INest.Data.Entities.Infrastructure;
+using INest.Exceptions;
 using INest.Models.Enums;
 using INest.Services.Tracker;
 using MediatR;
@@ -50,10 +50,10 @@ namespace INest.Services.Features.Items.Commands.ChangeItemStatus
             {
                 Id = Guid.NewGuid(),
                 ItemId = item.Id,
+                UserId = request.UserId,
                 Type = type,
                 OldValue = item.Status.ToString(),
-                NewValue = request.NewStatus.ToString(),
-                CreatedAt = DateTime.UtcNow
+                NewValue = request.NewStatus.ToString()
             });
 
             item.Status = request.NewStatus;

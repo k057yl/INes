@@ -1,6 +1,6 @@
 using INest.Constants;
+using INest.Data.Entities.Infrastructure;
 using INest.Middleware;
-using INest.Models.Entities;
 using INest.Seeders;
 using INest.Services;
 using Microsoft.AspNetCore.Identity;

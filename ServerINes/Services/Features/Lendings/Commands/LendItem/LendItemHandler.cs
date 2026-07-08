@@ -1,6 +1,7 @@
 ﻿using Ganss.Xss;
+using INest.Data.Entities.Finances;
+using INest.Data.Entities.Infrastructure;
 using INest.Exceptions;
-using INest.Models.Entities;
 using INest.Models.Enums;
 using INest.Services.Tracker;
 using MediatR;
@@ -32,59 +33,52 @@ namespace INest.Services.Features.Lendings.Commands.LendItem
 
             var safeComment = !string.IsNullOrEmpty(dto.Comment) ? _sanitizer.Sanitize(dto.Comment) : null;
 
-            using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
-            try
+            var item = await _context.Items
+                .FirstOrDefaultAsync(i => i.Id == dto.ItemId && i.UserId == request.UserId, cancellationToken);
+
+            if (item == null)
+                throw new KeyNotFoundException(ITEMS.ERRORS.NOT_FOUND);
+
+            var existingLending = await _context.Lendings
+                .FirstOrDefaultAsync(l => l.ItemId == item.Id, cancellationToken);
+
+            if (existingLending != null && existingLending.ReturnedDate == null)
+                throw new InvalidOperationException(LENDING.ERRORS.ALREADY_LENT);
+
+            if (existingLending != null)
             {
-                var item = await _context.Items
-                    .Include(i => i.Lending)
-                    .FirstOrDefaultAsync(i => i.Id == dto.ItemId && i.UserId == request.UserId, cancellationToken);
-
-                if (item == null)
-                    throw new KeyNotFoundException(ITEMS.ERRORS.NOT_FOUND);
-
-                if (item.Lending != null && item.Lending.ReturnedDate == null)
-                    throw new InvalidOperationException(LENDING.ERRORS.ALREADY_LENT);
-
-                if (item.Lending != null)
-                {
-                    _context.Lendings.Remove(item.Lending);
-                }
-
-                var lending = new Lending
-                {
-                    Id = Guid.NewGuid(),
-                    ItemId = item.Id,
-                    PersonName = safePersonName,
-                    DateGiven = DateTime.UtcNow,
-                    ExpectedReturnDate = dto.ExpectedReturnDate,
-                    ValueAtLending = dto.ValueAtLending ?? item.EstimatedValue,
-                    Comment = safeComment,
-                    Direction = LendingDirection.Out
-                };
-
-                item.Status = ItemStatus.Lent;
-                _context.Lendings.Add(lending);
-
-                _context.ItemHistories.Add(new ItemHistory
-                {
-                    Id = Guid.NewGuid(),
-                    ItemId = item.Id,
-                    Type = ItemHistoryType.Lent,
-                    NewValue = $"{safePersonName}|{lending.ValueAtLending}$",
-                    CreatedAt = DateTime.UtcNow
-                });
-
-                await _context.SaveChangesAsync(cancellationToken);
-                await transaction.CommitAsync(cancellationToken);
-
-                _tracker.InvalidateUserCache(request.UserId);
-                return lending;
+                _context.Lendings.Remove(existingLending);
             }
-            catch (Exception)
+
+            var lending = new Lending
             {
-                await transaction.RollbackAsync(cancellationToken);
-                throw;
-            }
+                Id = Guid.NewGuid(),
+                ItemId = item.Id,
+                UserId = request.UserId,
+                PersonName = safePersonName,
+                DateGiven = DateTime.UtcNow,
+                ExpectedReturnDate = dto.ExpectedReturnDate,
+                ValueAtLending = dto.ValueAtLending ?? item.EstimatedValue,
+                Comment = safeComment,
+                Direction = LendingDirection.Out
+            };
+
+            item.Status = ItemStatus.Lent;
+            _context.Lendings.Add(lending);
+
+            _context.ItemHistories.Add(new ItemHistory
+            {
+                Id = Guid.NewGuid(),
+                ItemId = item.Id,
+                UserId = request.UserId,
+                Type = ItemHistoryType.Lent,
+                NewValue = $"{safePersonName}|{lending.ValueAtLending}$"
+            });
+
+            await _context.SaveChangesAsync(cancellationToken);
+
+            _tracker.InvalidateUserCache(request.UserId);
+            return lending;
         }
     }
 }

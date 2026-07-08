@@ -1,0 +1,38 @@
+services:
+  inest-api:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: inest-api-prod
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Host=inest-db;Port=5432;Database=${DB_NAME};Username=${DB_USER};Password=${DB_PASSWORD}
+    depends_on:
+      - inest-db
+    networks:
+      - inest_network
+
+  inest-db:
+    image: postgres:15-alpine
+    container_name: inest-postgres-prod
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - inest_db_data:/var/lib/postgresql/data
+    networks:
+      - inest_network
+
+volumes:
+  inest_db_data:
+
+networks:
+  inest_network:
+    driver: bridge

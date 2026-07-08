@@ -63,7 +63,7 @@ namespace INest.Services.Features.Categories.Commands.DeleteCategory
 
             if (defaultCat == null)
             {
-                defaultCat = new INest.Models.Entities.Category
+                defaultCat = new INest.Data.Entities.Core.Category
                 {
                     Id = Guid.NewGuid(),
                     UserId = userId,

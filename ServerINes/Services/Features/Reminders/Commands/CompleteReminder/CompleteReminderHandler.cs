@@ -1,4 +1,4 @@
-﻿using INest.Models.Entities;
+﻿using INest.Data.Entities.Infrastructure;
 using INest.Models.Enums;
 using INest.Services.Tracker;
 using MediatR;
@@ -43,6 +43,7 @@ namespace INest.Services.Features.Reminders.Commands.CompleteReminder
                 {
                     Id = Guid.NewGuid(),
                     ItemId = reminder.ItemId,
+                    UserId = request.UserId,
                     Title = reminder.Title,
                     Type = reminder.Type,
                     Recurrence = reminder.Recurrence,
@@ -55,9 +56,9 @@ namespace INest.Services.Features.Reminders.Commands.CompleteReminder
             {
                 Id = Guid.NewGuid(),
                 ItemId = reminder.ItemId,
+                UserId = request.UserId,
                 Type = ItemHistoryType.ReminderCompleted,
-                NewValue = $"{HISTORY.REMINDER.COMPLETED}|{reminder.Title}",
-                CreatedAt = DateTime.UtcNow
+                NewValue = $"{HISTORY.REMINDER.COMPLETED}|{reminder.Title}"
             });
 
             await _context.SaveChangesAsync(cancellationToken);

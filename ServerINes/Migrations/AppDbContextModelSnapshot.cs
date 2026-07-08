@@ -21,7 +21,379 @@ namespace INest.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("INest.Models.Entities.AppUser", b =>
+            modelBuilder.Entity("INest.Data.Entities.Core.Category", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Color")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
+
+                    b.Property<Guid?>("ParentCategoryId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentCategoryId");
+
+                    b.HasIndex("UserId", "IsDeleted");
+
+                    b.ToTable("Categories");
+                });
+
+            modelBuilder.Entity("INest.Data.Entities.Core.Item", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<decimal?>("EstimatedValue")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("PhotoUrl")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PublicId")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("PurchaseDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal?>("PurchasePrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("StorageLocationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("StorageLocationId");
+
+                    b.HasIndex("UserId", "IsDeleted");
+
+                    b.ToTable("Items");
+                });
+
+            modelBuilder.Entity("INest.Data.Entities.Core.ItemPhoto", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsMain")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("ItemId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("PublicId")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("UploadedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemId");
+
+                    b.ToTable("ItemPhotos");
+                });
+
+            modelBuilder.Entity("INest.Data.Entities.Core.StorageLocation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Color")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Icon")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsLendingLocation")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsSalesLocation")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<Guid?>("ParentLocationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "IsDeleted");
+
+                    b.ToTable("StorageLocations");
+                });
+
+            modelBuilder.Entity("INest.Data.Entities.Finances.Lending", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Comment")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ContactEmail")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("DateGiven")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Direction")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ExpectedReturnDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("ItemId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("NotificationSent")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("PersonName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTime?>("ReturnedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("SendNotification")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal?>("ValueAtLending")
+                        .HasColumnType("numeric");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemId")
+                        .IsUnique();
+
+                    b.ToTable("Lendings");
+                });
+
+            modelBuilder.Entity("INest.Data.Entities.Finances.Platform", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Color")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Platforms");
+                });
+
+            modelBuilder.Entity("INest.Data.Entities.Finances.Sale", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("CategoryId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CategoryNameSnapshot")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Comment")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid?>("ItemId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ItemNameSnapshot")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<decimal>("PlatformFee")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<Guid?>("PlatformId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Profit")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal>("PurchasePriceSnapshot")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal>("SalePrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<DateTime>("SoldDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("ItemId");
+
+                    b.HasIndex("PlatformId");
+
+                    b.HasIndex("UserId", "IsDeleted");
+
+                    b.ToTable("Sales");
+                });
+
+            modelBuilder.Entity("INest.Data.Entities.Infrastructure.AppUser", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -47,6 +419,9 @@ namespace INest.Migrations
                         .HasColumnType("character varying(200)");
 
                     b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("LockoutEnabled")
@@ -113,98 +488,7 @@ namespace INest.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("INest.Models.Entities.Category", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Color")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("character varying(150)");
-
-                    b.Property<Guid?>("ParentCategoryId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ParentCategoryId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Categories");
-                });
-
-            modelBuilder.Entity("INest.Models.Entities.Item", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("CategoryId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Currency")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<decimal?>("EstimatedValue")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("numeric(18,2)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<string>("PhotoUrl")
-                        .HasColumnType("text");
-
-                    b.Property<string>("PublicId")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("PurchaseDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<decimal?>("PurchasePrice")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("numeric(18,2)");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid?>("StorageLocationId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CategoryId");
-
-                    b.HasIndex("StorageLocationId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Items");
-                });
-
-            modelBuilder.Entity("INest.Models.Entities.ItemHistory", b =>
+            modelBuilder.Entity("INest.Data.Entities.Infrastructure.ItemHistory", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -215,6 +499,9 @@ namespace INest.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
 
                     b.Property<Guid>("ItemId")
                         .HasColumnType("uuid");
@@ -228,123 +515,34 @@ namespace INest.Migrations
                     b.Property<int>("Type")
                         .HasColumnType("integer");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("ItemId");
-
-                    b.ToTable("ItemHistories");
-                });
-
-            modelBuilder.Entity("INest.Models.Entities.ItemPhoto", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("FilePath")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<bool>("IsMain")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid>("ItemId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("PublicId")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("UploadedAt")
+                    b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ItemId");
-
-                    b.ToTable("ItemPhotos");
-                });
-
-            modelBuilder.Entity("INest.Models.Entities.Lending", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Comment")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ContactEmail")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("DateGiven")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("Direction")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("ExpectedReturnDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("ItemId")
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("NotificationSent")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("PersonName")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<DateTime?>("ReturnedDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("SendNotification")
-                        .HasColumnType("boolean");
-
-                    b.Property<decimal?>("ValueAtLending")
-                        .HasColumnType("numeric");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ItemId")
-                        .IsUnique();
-
-                    b.ToTable("Lendings");
-                });
-
-            modelBuilder.Entity("INest.Models.Entities.Platform", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Color")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("ItemId");
 
-                    b.ToTable("Platforms");
+                    b.HasIndex("UserId", "IsDeleted");
+
+                    b.ToTable("ItemHistories");
                 });
 
-            modelBuilder.Entity("INest.Models.Entities.Reminder", b =>
+            modelBuilder.Entity("INest.Data.Entities.Infrastructure.Reminder", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<bool>("IsCompleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("IsNotificationSent")
@@ -366,127 +564,19 @@ namespace INest.Migrations
                     b.Property<int>("Type")
                         .HasColumnType("integer");
 
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ItemId");
 
+                    b.HasIndex("UserId", "IsDeleted");
+
                     b.ToTable("Reminders");
-                });
-
-            modelBuilder.Entity("INest.Models.Entities.Sale", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("CategoryId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("CategoryNameSnapshot")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("Comment")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Currency")
-                        .IsRequired()
-                        .HasMaxLength(3)
-                        .HasColumnType("character varying(3)");
-
-                    b.Property<Guid?>("ItemId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("ItemNameSnapshot")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<decimal>("PlatformFee")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<Guid?>("PlatformId")
-                        .HasColumnType("uuid");
-
-                    b.Property<decimal>("Profit")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("PurchasePriceSnapshot")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("SalePrice")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime>("SoldDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CategoryId");
-
-                    b.HasIndex("ItemId")
-                        .IsUnique();
-
-                    b.HasIndex("PlatformId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Sales");
-                });
-
-            modelBuilder.Entity("INest.Models.Entities.StorageLocation", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Color")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Icon")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsLendingLocation")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsSalesLocation")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<Guid?>("ParentLocationId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("SortOrder")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ParentLocationId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("StorageLocations");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
@@ -619,14 +709,14 @@ namespace INest.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("INest.Models.Entities.Category", b =>
+            modelBuilder.Entity("INest.Data.Entities.Core.Category", b =>
                 {
-                    b.HasOne("INest.Models.Entities.Category", "ParentCategory")
+                    b.HasOne("INest.Data.Entities.Core.Category", "ParentCategory")
                         .WithMany("Children")
                         .HasForeignKey("ParentCategoryId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("INest.Models.Entities.AppUser", "User")
+                    b.HasOne("INest.Data.Entities.Infrastructure.AppUser", "User")
                         .WithMany("Categories")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -637,20 +727,20 @@ namespace INest.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("INest.Models.Entities.Item", b =>
+            modelBuilder.Entity("INest.Data.Entities.Core.Item", b =>
                 {
-                    b.HasOne("INest.Models.Entities.Category", "Category")
+                    b.HasOne("INest.Data.Entities.Core.Category", "Category")
                         .WithMany("Items")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("INest.Models.Entities.StorageLocation", "StorageLocation")
+                    b.HasOne("INest.Data.Entities.Core.StorageLocation", "StorageLocation")
                         .WithMany("Items")
                         .HasForeignKey("StorageLocationId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("INest.Models.Entities.AppUser", "User")
+                    b.HasOne("INest.Data.Entities.Infrastructure.AppUser", "User")
                         .WithMany("Items")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -663,20 +753,9 @@ namespace INest.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("INest.Models.Entities.ItemHistory", b =>
+            modelBuilder.Entity("INest.Data.Entities.Core.ItemPhoto", b =>
                 {
-                    b.HasOne("INest.Models.Entities.Item", "Item")
-                        .WithMany("History")
-                        .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Item");
-                });
-
-            modelBuilder.Entity("INest.Models.Entities.ItemPhoto", b =>
-                {
-                    b.HasOne("INest.Models.Entities.Item", "Item")
+                    b.HasOne("INest.Data.Entities.Core.Item", "Item")
                         .WithMany("Photos")
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -685,21 +764,10 @@ namespace INest.Migrations
                     b.Navigation("Item");
                 });
 
-            modelBuilder.Entity("INest.Models.Entities.Lending", b =>
+            modelBuilder.Entity("INest.Data.Entities.Core.StorageLocation", b =>
                 {
-                    b.HasOne("INest.Models.Entities.Item", "Item")
-                        .WithOne("Lending")
-                        .HasForeignKey("INest.Models.Entities.Lending", "ItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Item");
-                });
-
-            modelBuilder.Entity("INest.Models.Entities.Platform", b =>
-                {
-                    b.HasOne("INest.Models.Entities.AppUser", "User")
-                        .WithMany()
+                    b.HasOne("INest.Data.Entities.Infrastructure.AppUser", "User")
+                        .WithMany("Locations")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -707,10 +775,10 @@ namespace INest.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("INest.Models.Entities.Reminder", b =>
+            modelBuilder.Entity("INest.Data.Entities.Finances.Lending", b =>
                 {
-                    b.HasOne("INest.Models.Entities.Item", "Item")
-                        .WithMany("Reminders")
+                    b.HasOne("INest.Data.Entities.Core.Item", "Item")
+                        .WithMany()
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -718,45 +786,59 @@ namespace INest.Migrations
                     b.Navigation("Item");
                 });
 
-            modelBuilder.Entity("INest.Models.Entities.Sale", b =>
+            modelBuilder.Entity("INest.Data.Entities.Finances.Platform", b =>
                 {
-                    b.HasOne("INest.Models.Entities.Category", "Category")
+                    b.HasOne("INest.Data.Entities.Infrastructure.AppUser", "User")
                         .WithMany()
-                        .HasForeignKey("CategoryId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("INest.Models.Entities.Item", "Item")
-                        .WithOne("Sale")
-                        .HasForeignKey("INest.Models.Entities.Sale", "ItemId")
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("INest.Data.Entities.Finances.Sale", b =>
+                {
+                    b.HasOne("INest.Data.Entities.Core.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("INest.Models.Entities.Platform", "Platform")
+                    b.HasOne("INest.Data.Entities.Core.Item", null)
+                        .WithMany()
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("INest.Data.Entities.Finances.Platform", "Platform")
                         .WithMany()
                         .HasForeignKey("PlatformId")
                         .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Category");
 
-                    b.Navigation("Item");
-
                     b.Navigation("Platform");
                 });
 
-            modelBuilder.Entity("INest.Models.Entities.StorageLocation", b =>
+            modelBuilder.Entity("INest.Data.Entities.Infrastructure.ItemHistory", b =>
                 {
-                    b.HasOne("INest.Models.Entities.StorageLocation", "ParentLocation")
-                        .WithMany("Children")
-                        .HasForeignKey("ParentLocationId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("INest.Models.Entities.AppUser", "User")
-                        .WithMany("Locations")
-                        .HasForeignKey("UserId")
+                    b.HasOne("INest.Data.Entities.Core.Item", "Item")
+                        .WithMany("History")
+                        .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ParentLocation");
+                    b.Navigation("Item");
+                });
 
-                    b.Navigation("User");
+            modelBuilder.Entity("INest.Data.Entities.Infrastructure.Reminder", b =>
+                {
+                    b.HasOne("INest.Data.Entities.Core.Item", "Item")
+                        .WithMany("Reminders")
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Item");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -770,7 +852,7 @@ namespace INest.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
                 {
-                    b.HasOne("INest.Models.Entities.AppUser", null)
+                    b.HasOne("INest.Data.Entities.Infrastructure.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -779,7 +861,7 @@ namespace INest.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
                 {
-                    b.HasOne("INest.Models.Entities.AppUser", null)
+                    b.HasOne("INest.Data.Entities.Infrastructure.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -794,7 +876,7 @@ namespace INest.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("INest.Models.Entities.AppUser", null)
+                    b.HasOne("INest.Data.Entities.Infrastructure.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -803,47 +885,41 @@ namespace INest.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
                 {
-                    b.HasOne("INest.Models.Entities.AppUser", null)
+                    b.HasOne("INest.Data.Entities.Infrastructure.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("INest.Models.Entities.AppUser", b =>
+            modelBuilder.Entity("INest.Data.Entities.Core.Category", b =>
+                {
+                    b.Navigation("Children");
+
+                    b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("INest.Data.Entities.Core.Item", b =>
+                {
+                    b.Navigation("History");
+
+                    b.Navigation("Photos");
+
+                    b.Navigation("Reminders");
+                });
+
+            modelBuilder.Entity("INest.Data.Entities.Core.StorageLocation", b =>
+                {
+                    b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("INest.Data.Entities.Infrastructure.AppUser", b =>
                 {
                     b.Navigation("Categories");
 
                     b.Navigation("Items");
 
                     b.Navigation("Locations");
-                });
-
-            modelBuilder.Entity("INest.Models.Entities.Category", b =>
-                {
-                    b.Navigation("Children");
-
-                    b.Navigation("Items");
-                });
-
-            modelBuilder.Entity("INest.Models.Entities.Item", b =>
-                {
-                    b.Navigation("History");
-
-                    b.Navigation("Lending");
-
-                    b.Navigation("Photos");
-
-                    b.Navigation("Reminders");
-
-                    b.Navigation("Sale");
-                });
-
-            modelBuilder.Entity("INest.Models.Entities.StorageLocation", b =>
-                {
-                    b.Navigation("Children");
-
-                    b.Navigation("Items");
                 });
 #pragma warning restore 612, 618
         }

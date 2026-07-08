@@ -18,12 +18,11 @@ namespace INest.Services.Features.Items.Queries.GetItems
         public async Task<IEnumerable<ItemDto>> Handle(GetItemsQuery request, CancellationToken cancellationToken)
         {
             var filters = request.Filters;
+            var now = DateTime.UtcNow;
 
             var query = _context.Items
                 .Include(i => i.Category)
                 .Include(i => i.StorageLocation)
-                .Include(i => i.Lending)
-                .Include(i => i.Reminders)
                 .Where(i => i.UserId == request.UserId)
                 .AsNoTracking()
                 .AsQueryable();
@@ -76,21 +75,23 @@ namespace INest.Services.Features.Items.Queries.GetItems
                     CategoryId = item.CategoryId,
                     CategoryName = item.Category != null ? item.Category.Name : SharedConstants.CATEGORY_NONE,
 
-                    PersonName = item.Lending != null ? item.Lending.PersonName : null,
-                    ContactEmail = item.Lending != null ? item.Lending.ContactEmail : null,
-                    ExpectedReturnDate = item.Lending != null ? item.Lending.ExpectedReturnDate : null,
-                    ReturnedDate = item.Lending != null ? item.Lending.ReturnedDate : null,
+                    PersonName = _context.Lendings.Where(l => l.ItemId == item.Id).Select(l => l.PersonName).FirstOrDefault(),
+                    ContactEmail = _context.Lendings.Where(l => l.ItemId == item.Id).Select(l => l.ContactEmail).FirstOrDefault(),
+                    ExpectedReturnDate = _context.Lendings.Where(l => l.ItemId == item.Id).Select(l => l.ExpectedReturnDate).FirstOrDefault(),
+                    ReturnedDate = _context.Lendings.Where(l => l.ItemId == item.Id).Select(l => l.ReturnedDate).FirstOrDefault(),
 
-                    IsLendingOverdue = item.Lending != null &&
-                                       item.Lending.ReturnedDate == null &&
-                                       item.Lending.ExpectedReturnDate.HasValue &&
-                                       item.Lending.ExpectedReturnDate.Value <= DateTime.UtcNow,
+                    IsLendingOverdue = _context.Lendings.Any(l =>
+                        l.ItemId == item.Id &&
+                        l.ReturnedDate == null &&
+                        l.ExpectedReturnDate != null &&
+                        l.ExpectedReturnDate <= now),
 
-                    HasOverdueReminders = item.Reminders.Any(r =>
+                    HasOverdueReminders = _context.Reminders.Any(r =>
+                        r.ItemId == item.Id &&
                         !r.IsCompleted &&
-                        r.TriggerAt <= DateTime.UtcNow)
+                        r.TriggerAt <= now)
                 })
                 .ToListAsync(cancellationToken);
-            }
+        }
     }
 }

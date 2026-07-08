@@ -1,6 +1,7 @@
 ﻿using Ganss.Xss;
+using INest.Data.Entities.Core;
+using INest.Data.Entities.Infrastructure;
 using INest.Exceptions;
-using INest.Models.Entities;
 using INest.Models.Enums;
 using INest.Services.DomainHelpers;
 using INest.Services.Interfaces;

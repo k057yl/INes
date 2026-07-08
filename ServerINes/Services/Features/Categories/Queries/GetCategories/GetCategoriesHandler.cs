@@ -1,4 +1,4 @@
-﻿using INest.Models.Entities;
+﻿using INest.Data.Entities.Core;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

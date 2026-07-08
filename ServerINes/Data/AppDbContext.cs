@@ -1,4 +1,7 @@
-﻿using INest.Models.Entities;
+﻿using INest.Data.Entities;
+using INest.Data.Entities.Core;
+using INest.Data.Entities.Finances;
+using INest.Data.Entities.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +22,34 @@ public class AppDbContext
     public AppDbContext(DbContextOptions<AppDbContext> options)
         : base(options)
     {
+    }
+
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        var entries = ChangeTracker.Entries<AuditableEntity>();
+
+        foreach (var entry in entries)
+        {
+            switch (entry.State)
+            {
+                case EntityState.Added:
+                    entry.Entity.CreatedAt = DateTime.UtcNow;
+                    entry.Entity.IsDeleted = false;
+                    break;
+
+                case EntityState.Modified:
+                    entry.Entity.UpdatedAt = DateTime.UtcNow;
+                    break;
+
+                case EntityState.Deleted:
+                    entry.State = EntityState.Modified;
+                    entry.Entity.IsDeleted = true;
+                    entry.Entity.UpdatedAt = DateTime.UtcNow;
+                    break;
+            }
+        }
+
+        return base.SaveChangesAsync(cancellationToken);
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -1,4 +1,4 @@
-﻿using INest.Models.Entities;
+﻿using INest.Data.Entities.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 
 namespace INest.Services.BackgroundServices

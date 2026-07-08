@@ -20,8 +20,6 @@ namespace INest.Services.Features.Locations.Commands.DeleteLocation
         public async Task<bool> Handle(DeleteLocationCommand request, CancellationToken cancellationToken)
         {
             var location = await _context.StorageLocations
-                .Include(l => l.Children)
-                .Include(l => l.Items)
                 .FirstOrDefaultAsync(l => l.Id == request.Id && l.UserId == request.UserId, cancellationToken);
 
             if (location == null)
@@ -29,7 +27,13 @@ namespace INest.Services.Features.Locations.Commands.DeleteLocation
                 throw new AppException(LOCATIONS.ERRORS.NOT_FOUND, 404);
             }
 
-            if (location.Children.Any() || location.Items.Any())
+            var hasChildren = await _context.StorageLocations
+                .AnyAsync(l => l.ParentLocationId == location.Id, cancellationToken);
+
+            var hasItems = await _context.Items
+                .AnyAsync(i => i.StorageLocationId == location.Id, cancellationToken);
+
+            if (hasChildren || hasItems)
             {
                 throw new AppException(ERRORS.NOT_EMPTY, 400);
             }
@@ -38,7 +42,6 @@ namespace INest.Services.Features.Locations.Commands.DeleteLocation
             await _context.SaveChangesAsync(cancellationToken);
 
             _tracker.InvalidateUserCache(request.UserId);
-
             return true;
         }
     }

@@ -19,8 +19,7 @@ namespace INest.Services.Features.Sales.Commands.DeleteSaleRecord
         public async Task<bool> Handle(DeleteSaleRecordCommand request, CancellationToken cancellationToken)
         {
             var sale = await _context.Sales
-                .Include(s => s.Item)
-                .FirstOrDefaultAsync(s => s.Id == request.SaleId && (s.Item == null || s.Item.UserId == request.UserId), cancellationToken);
+                .FirstOrDefaultAsync(s => s.Id == request.SaleId && s.UserId == request.UserId, cancellationToken);
 
             if (sale == null)
                 throw new KeyNotFoundException(SALES.ERRORS.NOT_FOUND);

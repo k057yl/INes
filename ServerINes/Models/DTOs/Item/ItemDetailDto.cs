@@ -1,9 +1,10 @@
 ﻿using INest.Models.Enums;
-using INest.Models.Entities;
-using CategoryEntity = INest.Models.Entities.Category;
-using PhotoEntity = INest.Models.Entities.ItemPhoto;
-using LendingEntity = INest.Models.Entities.Lending;
-using ReminderEntity = INest.Models.Entities.Reminder;
+using CategoryEntity = INest.Data.Entities.Core.Category;
+using PhotoEntity = INest.Data.Entities.Core.ItemPhoto;
+using LendingEntity = INest.Data.Entities.Finances.Lending;
+using ReminderEntity = INest.Data.Entities.Infrastructure.Reminder;
+using INest.Data.Entities.Core;
+using INest.Data.Entities.Infrastructure;
 
 namespace INest.Models.DTOs.Item
 {

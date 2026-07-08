@@ -1,4 +1,4 @@
-﻿using INest.Models.Entities;
+﻿using INest.Data.Entities.Infrastructure;
 using INest.Models.Enums;
 using INest.Services.Tracker;
 using MediatR;
@@ -21,19 +21,25 @@ namespace INest.Services.Features.Lendings.Commands.ReturnItem
         public async Task<bool> Handle(ReturnItemCommand request, CancellationToken cancellationToken)
         {
             var item = await _context.Items
-                .Include(i => i.Lending)
                 .FirstOrDefaultAsync(i => i.Id == request.ItemId && i.UserId == request.UserId, cancellationToken);
 
-            if (item?.Lending == null)
+            if (item == null)
+                throw new KeyNotFoundException(ITEMS.ERRORS.NOT_FOUND);
+
+            var lending = await _context.Lendings
+                .FirstOrDefaultAsync(l => l.ItemId == item.Id, cancellationToken);
+
+            if (lending == null)
                 throw new KeyNotFoundException(LENDING.ERRORS.NOT_LENT);
 
             var oldStatus = item.Status;
 
-            item.Lending.ReturnedDate = request.Dto.ReturnedDate ?? DateTime.UtcNow;
+            lending.ReturnedDate = request.Dto.ReturnedDate ?? DateTime.UtcNow;
 
             if (oldStatus == ItemStatus.Borrowed)
             {
                 _context.Items.Remove(item);
+                _context.Lendings.Remove(lending);
             }
             else
             {
@@ -43,10 +49,12 @@ namespace INest.Services.Features.Lendings.Commands.ReturnItem
                 {
                     Id = Guid.NewGuid(),
                     ItemId = item.Id,
+                    UserId = request.UserId,
                     Type = ItemHistoryType.Returned,
-                    NewValue = HISTORY.RETURNED,
-                    CreatedAt = DateTime.UtcNow
+                    NewValue = HISTORY.RETURNED
                 });
+
+                _context.Lendings.Remove(lending);
             }
 
             await _context.SaveChangesAsync(cancellationToken);
