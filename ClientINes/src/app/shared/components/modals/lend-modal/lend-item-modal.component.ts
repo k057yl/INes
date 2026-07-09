@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 
-import { Item } from '../../../../models/entities/item.entity';
-import { LendItemDto } from '../../../../models/dtos/lending.dto';
+import { Item } from '../../../../core/models/entities/item.entity';
+import { LendItemDto } from '../../../../core/models/dtos/lending.dto';
 import { TranslateModule } from '@ngx-translate/core';
 
 @Component({

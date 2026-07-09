@@ -1,9 +1,9 @@
 ﻿using INest.Exceptions;
-using INest.Models.DTOs.Category;
-using INest.Services.Features.Categories.Commands.CreateCategory;
-using INest.Services.Features.Categories.Commands.DeleteCategory;
-using INest.Services.Features.Categories.Commands.UpdateCategory;
-using INest.Services.Features.Categories.Queries.GetCategories;
+using INest.Features.Categories.DTOs;
+using INest.Features.Categories.Commands.CreateCategory;
+using INest.Features.Categories.Commands.DeleteCategory;
+using INest.Features.Categories.Commands.UpdateCategory;
+using INest.Features.Categories.Queries.GetCategories;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

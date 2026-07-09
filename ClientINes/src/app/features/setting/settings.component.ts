@@ -5,8 +5,8 @@ import { RouterModule } from '@angular/router';
 import { finalize } from 'rxjs';
 
 import { FeatureService } from '../../core/services/feature.service';
-import { CategoryService } from '../../shared/services/category.service';
-import { PlatformService } from '../../shared/services/platform.service';
+import { CategoryService } from '../../core/services/category.service';
+import { PlatformService } from '../../core/services/platform.service';
 import { DashboardModalService } from '../../features/dashboard/dashboard.modal.service';
 
 interface SimpleEntity {

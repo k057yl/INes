@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { ResolveFn, Router } from '@angular/router';
-import { LocationService } from '../../../shared/services/location.service';
-import { StorageLocation } from '../../../models/entities/storage-location.entity';
+import { LocationService } from '../../../core/services/location.service';
+import { StorageLocation } from '../../../core/models/entities/storage-location.entity';
 import { catchError, EMPTY } from 'rxjs';
 
 export const locationResolver: ResolveFn<StorageLocation> = (route) => {

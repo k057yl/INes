@@ -5,18 +5,18 @@ import { RouterModule } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
 
-import { ItemService } from '../../../../shared/services/item.service';
-import { LocationService } from '../../../../shared/services/location.service';
-import { CategoryService } from '../../../../shared/services/category.service';
-import { LendingService } from '../../../../shared/services/lending.service';
+import { ItemService } from '../../../../core/services/item.service';
+import { LocationService } from '../../../../core/services/location.service';
+import { CategoryService } from '../../../../core/services/category.service';
+import { LendingService } from '../../../../core/services/lending.service';
 import { AuthService } from '../../../../core/services/auth.service';
-import { LocalizationService } from '../../../../shared/services/localization.service';
+import { LocalizationService } from '../../../../core/services/localization.service';
 import { DashboardModalService } from '../../../../features/dashboard/dashboard.modal.service';
-import { StatusNamePipe } from '../../../../shared/pipe/status-name.pipe';
+import { StatusNamePipe } from '../../../pipes/status-name.pipe';
 import { InestModalComponent } from '../inest-modal/inest-modal.component';
 
-import { ITEM_STATUS_OPTIONS } from '../../../../models/constants/item-status.constants';
-import { Item } from '../../../../models/entities/item.entity';
+import { ITEM_STATUS_OPTIONS } from '../../../../core/models/constants/item-status.constants';
+import { Item } from '../../../../core/models/entities/item.entity';
 
 import { take, filter } from 'rxjs/operators';
 import { FormErrorService } from '../../../../core/services/form-error.service';

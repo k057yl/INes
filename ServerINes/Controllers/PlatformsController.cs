@@ -1,9 +1,9 @@
 ﻿using INest.Exceptions;
-using INest.Models.DTOs.Platform;
-using INest.Services.Features.Platforms.Commands.CreatePlatform;
-using INest.Services.Features.Platforms.Commands.DeletePlatform;
-using INest.Services.Features.Platforms.Commands.UpdatePlatform;
-using INest.Services.Features.Platforms.Queries.GetPlatforms;
+using INest.Features.Platforms.DTOs;
+using INest.Features.Platforms.Commands.CreatePlatform;
+using INest.Features.Platforms.Commands.DeletePlatform;
+using INest.Features.Platforms.Commands.UpdatePlatform;
+using INest.Features.Platforms.Queries.GetPlatforms;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

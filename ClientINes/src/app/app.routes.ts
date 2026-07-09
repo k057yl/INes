@@ -17,7 +17,6 @@ export const routes: Routes = [
   { path: 'register', component: RegisterComponent, canActivate: [guestGuard] },
   { path: 'confirm-register', component: ConfirmRegisterComponent, canActivate: [guestGuard] },
   
-  // Защищенные роуты (Inventory & App)
   { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },
   { 
     path: 'location/:id', 

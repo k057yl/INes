@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
-import { StorageLocation } from '../../models/entities/storage-location.entity';
-import { Item } from '../../models/entities/item.entity';
+import { StorageLocation } from '../../core/models/entities/storage-location.entity';
+import { Item } from '../../core/models/entities/item.entity';
 
 export type DashboardModalType = 'itemForm' | 'locationForm' | 'categoryForm' | 'platformForm' | 'confirm' | 'sell' | 'lend' | null;
 

@@ -19,6 +19,7 @@
 **/.env.*
 
 # Local appsettings
+**/appsettings.json
 **/appsettings.Development.json
 **/appsettings.Local.json
 

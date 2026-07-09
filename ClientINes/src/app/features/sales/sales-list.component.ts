@@ -6,11 +6,11 @@ import { ToastrService } from 'ngx-toastr';
 import { debounceTime, finalize, switchMap, tap, startWith, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 
-import { SalesService } from '../../shared/services/sales.service';
-import { CategoryService } from '../../shared/services/category.service';
-import { SaleResponseDto, SaleFilters } from '../../models/dtos/sale.dto';
-import { Platform } from '../../models/entities/platform.entity';
-import { Category } from '../../models/entities/category.entity';
+import { SalesService } from '../../core/services/sales.service';
+import { CategoryService } from '../../core/services/category.service';
+import { SaleResponseDto, SaleFilters } from '../../core/models/dtos/sale.dto';
+import { Platform } from '../../core/models/entities/platform.entity';
+import { Category } from '../../core/models/entities/category.entity';
 import { SaleCardComponent } from '../../shared/components/sale-card/sale-card.component';
 import { InestModalComponent } from '../../shared/components/modals/inest-modal/inest-modal.component';
 

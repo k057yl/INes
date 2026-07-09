@@ -1,7 +1,7 @@
 ﻿using INest.Exceptions;
-using INest.Models.DTOs.Lending;
-using INest.Services.Features.Lendings.Commands.LendItem;
-using INest.Services.Features.Lendings.Commands.ReturnItem;
+using INest.Features.Lendings.DTOs;
+using INest.Features.Lendings.Commands.LendItem;
+using INest.Features.Lendings.Commands.ReturnItem;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

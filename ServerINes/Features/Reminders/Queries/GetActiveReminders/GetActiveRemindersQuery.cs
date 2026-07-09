@@ -1,0 +1,13 @@
+﻿using INest.Constants;
+using INest.Data.Entities.Infrastructure;
+using INest.Infrastructure.Caching;
+using MediatR;
+
+namespace INest.Features.Reminders.Queries.GetActiveReminders
+{
+    public record GetActiveRemindersQuery(Guid UserId) : IRequest<IEnumerable<Reminder>>, ICacheableQuery
+    {
+        public string CacheKey => CacheConstants.GET_ACTIVE_REMINDERS_KEY(UserId);
+        public TimeSpan? Expiration => TimeSpan.FromMinutes(30);
+    }
+}

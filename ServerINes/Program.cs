@@ -1,8 +1,8 @@
+using INest;
 using INest.Constants;
 using INest.Data.Entities.Infrastructure;
 using INest.Middleware;
 using INest.Seeders;
-using INest.Services;
 using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);

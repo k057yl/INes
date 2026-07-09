@@ -5,10 +5,10 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ColorChromeModule } from 'ngx-color/chrome';
 import { ToastrService } from 'ngx-toastr';
 
-import { LocationService } from '../../../../shared/services/location.service';
+import { LocationService } from '../../../../core/services/location.service';
 import { FeatureService } from '../../../../core/services/feature.service';
 import { DashboardModalService } from '../../../../features/dashboard/dashboard.modal.service';
-import { StorageLocation } from '../../../../models/entities/storage-location.entity';
+import { StorageLocation } from '../../../../core/models/entities/storage-location.entity';
 
 @Component({
   selector: 'app-location-form-modal',

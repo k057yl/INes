@@ -4,8 +4,8 @@ import { DragDropModule, CdkDragDrop, CdkDrag } from '@angular/cdk/drag-drop';
 import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { StorageLocation } from '../../../models/entities/storage-location.entity';
-import { Item } from '../../../models/entities/item.entity';
+import { StorageLocation } from '../../../core/models/entities/storage-location.entity';
+import { Item } from '../../../core/models/entities/item.entity';
 import { DashboardModalService } from '../../../features/dashboard/dashboard.modal.service';
 import { DashboardFacade } from '../../../features/dashboard/dashboard.facade';
 import { ItemCardComponent } from '../item-card/item-card.component';

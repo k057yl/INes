@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SaleResponseDto } from '../../../models/dtos/sale.dto';
+import { SaleResponseDto } from '../../../core/models/dtos/sale.dto';
 import { TranslateModule } from '@ngx-translate/core';
 
 @Component({

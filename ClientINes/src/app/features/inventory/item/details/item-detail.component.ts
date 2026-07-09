@@ -3,15 +3,15 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
-import { Item } from '../../../../models/entities/item.entity';
-import { ItemHistoryType } from '../../../../models/enums/item-history-type.enum';
+import { Item } from '../../../../core/models/entities/item.entity';
+import { ItemHistoryType } from '../../../../core/models/enums/item-history-type.enum';
 import { TranslateModule } from '@ngx-translate/core';
-import { StatusNamePipe } from '../../../../shared/pipe/status-name.pipe';
+import { StatusNamePipe } from '../../../../shared/pipes/status-name.pipe';
 import { ItemRemindersComponent } from '../reminder/item-reminders.component';
-import { PricePipe } from '../../../../shared/pipe/price-currency.pipe';
+import { PricePipe } from '../../../../shared/pipes/price-currency.pipe';
 import { DashboardModalService } from '../../../dashboard/dashboard.modal.service';
-import { ItemService } from '../../../../shared/services/item.service';
-import { LendingService } from '../../../../shared/services/lending.service';
+import { ItemService } from '../../../../core/services/item.service';
+import { LendingService } from '../../../../core/services/lending.service';
 
 @Component({
   selector: 'app-item-detail',

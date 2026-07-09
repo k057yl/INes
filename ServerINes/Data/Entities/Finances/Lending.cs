@@ -1,5 +1,5 @@
 ﻿using INest.Data.Entities.Core;
-using INest.Models.Enums;
+using INest.Data.Enums;
 
 namespace INest.Data.Entities.Finances
 {

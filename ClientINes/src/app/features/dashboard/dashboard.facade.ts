@@ -1,14 +1,14 @@
 import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, tap, throwError, of } from 'rxjs';
-import { StorageLocation } from '../../models/entities/storage-location.entity';
-import { Item } from '../../models/entities/item.entity';
-import { LocationService } from '../../shared/services/location.service';
-import { ItemService } from '../../shared/services/item.service';
-import { SalesService } from '../../shared/services/sales.service';
-import { LendingService } from '../../shared/services/lending.service';
-import { SellItemRequestDto } from '../../models/dtos/sale.dto';
-import { LendItemDto, ReturnItemDto } from '../../models/dtos/lending.dto';
+import { StorageLocation } from '../../core/models/entities/storage-location.entity';
+import { Item } from '../../core/models/entities/item.entity';
+import { LocationService } from '../../core/services/location.service';
+import { ItemService } from '../../core/services/item.service';
+import { SalesService } from '../../core/services/sales.service';
+import { LendingService } from '../../core/services/lending.service';
+import { SellItemRequestDto } from '../../core/models/dtos/sale.dto';
+import { LendItemDto, ReturnItemDto } from '../../core/models/dtos/lending.dto';
 
 @Injectable()
 export class DashboardFacade {

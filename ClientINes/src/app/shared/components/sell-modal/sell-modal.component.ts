@@ -2,10 +2,10 @@ import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
-import { Item } from '../../../models/entities/item.entity';
-import { SellItemRequestDto } from '../../../models/dtos/sale.dto';
-import { Platform } from '../../../models/entities/platform.entity';
-import { SalesService } from '../../services/sales.service';
+import { Item } from '../../../core/models/entities/item.entity';
+import { SellItemRequestDto } from '../../../core/models/dtos/sale.dto';
+import { Platform } from '../../../core/models/entities/platform.entity';
+import { SalesService } from '../../../core/services/sales.service';
 import { InestModalComponent } from '../modals/inest-modal/inest-modal.component';
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { FORM_VALIDATION } from '../../constants/form-defaults.constants';

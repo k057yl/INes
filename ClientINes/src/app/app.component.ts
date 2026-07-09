@@ -3,7 +3,7 @@ import { RouterOutlet } from '@angular/router';
 
 import { HeaderComponent } from './shared/components/header/header.component';
 import { FooterComponent } from './shared/components/footer/footer.component';
-import { LocalizationService } from './shared/services/localization.service';
+import { LocalizationService } from './core/services/localization.service';
 import { AuthService } from './core/services/auth.service';
 
 import { DashboardModalService } from './features/dashboard/dashboard.modal.service';

@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter, HostListener, ElementRef, injec
 
 import { DragDropModule, CdkDragDrop } from '@angular/cdk/drag-drop';
 import { TranslateModule } from '@ngx-translate/core';
-import { StorageLocation } from '../../../models/entities/storage-location.entity';
+import { StorageLocation } from '../../../core/models/entities/storage-location.entity';
 import { RouterModule } from '@angular/router';
 import { RIBBON_CONFIG } from '../../constants/ui.constants';
 

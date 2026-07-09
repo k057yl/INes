@@ -1,5 +1,5 @@
 ﻿using INest.Data.Entities.Infrastructure;
-using INest.Models.Enums;
+using INest.Data.Enums;
 
 namespace INest.Data.Entities.Core
 {

@@ -26,13 +26,13 @@ import { of } from 'rxjs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 
-import { ItemService } from '../../../../shared/services/item.service';
-import { CategoryService } from '../../../../shared/services/category.service';
-import { LocationService } from '../../../../shared/services/location.service';
+import { ItemService } from '../../../../core/services/item.service';
+import { CategoryService } from '../../../../core/services/category.service';
+import { LocationService } from '../../../../core/services/location.service';
 
-import { Item, ItemFilters } from '../../../../models/entities/item.entity';
+import { Item, ItemFilters } from '../../../../core/models/entities/item.entity';
 
-import { StatusNamePipe } from '../../../../shared/pipe/status-name.pipe';
+import { StatusNamePipe } from '../../../../shared/pipes/status-name.pipe';
 import { DashboardModalService } from '../../../dashboard/dashboard.modal.service';
 
 type DropdownType =

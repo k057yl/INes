@@ -1,0 +1,31 @@
+﻿using FluentValidation;
+using INest.Constants;
+
+namespace INest.Features.Auth.Commands.Register
+{
+    public class RegisterValidator : AbstractValidator<RegisterCommand>
+    {
+        public RegisterValidator()
+        {
+            RuleFor(x => x.Email)
+                .NotEmpty().WithMessage(LocalizationConstants.ERRORS.REQUIRED_FIELD)
+                .EmailAddress().WithMessage(LocalizationConstants.ERRORS.INVALID_EMAIL_FORMAT);
+
+            RuleFor(x => x.Password)
+                .NotEmpty().WithMessage(LocalizationConstants.ERRORS.REQUIRED_FIELD)
+                .MinimumLength(6).WithMessage(LocalizationConstants.ERRORS.PWD_MIN_LENGTH)
+                .Matches(@"^[\u0000-\u007F]+$").WithMessage(LocalizationConstants.ERRORS.PWD_LATIN)
+                .Matches(@"[A-Z]").WithMessage(LocalizationConstants.ERRORS.PWD_UPPER)
+                .Matches(@"[0-9]").WithMessage(LocalizationConstants.ERRORS.PWD_DIGIT)
+                .Matches(@"[^a-zA-Z0-9]").WithMessage(LocalizationConstants.ERRORS.PWD_SPEC);
+
+            RuleFor(x => x.Username)
+                .NotEmpty()
+                .WithMessage(LocalizationConstants.ERRORS.REQUIRED_FIELD)
+                .MinimumLength(3)
+                .MaximumLength(30)
+                .Matches(@"^[a-zA-Z0-9._]+$")
+                .WithMessage(LocalizationConstants.ERRORS.USERNAME_LATIN_ONLY);
+        }
+    }
+}

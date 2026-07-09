@@ -1,10 +1,10 @@
 ﻿using INest.Exceptions;
-using INest.Models.DTOs.Reminder;
-using INest.Services.Features.Reminders.Commands.AddReminder;
-using INest.Services.Features.Reminders.Commands.CompleteReminder;
-using INest.Services.Features.Reminders.Commands.DeleteReminder;
-using INest.Services.Features.Reminders.Queries.GetActiveReminders;
-using INest.Services.Features.Reminders.Queries.GetItemReminders;
+using INest.Features.Reminders.DTOs;
+using INest.Features.Reminders.Commands.AddReminder;
+using INest.Features.Reminders.Commands.CompleteReminder;
+using INest.Features.Reminders.Commands.DeleteReminder;
+using INest.Features.Reminders.Queries.GetActiveReminders;
+using INest.Features.Reminders.Queries.GetItemReminders;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

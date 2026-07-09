@@ -1,0 +1,18 @@
+﻿namespace INest.Data.Enums
+{
+    public enum ItemHistoryType
+    {
+        Created = 0,
+        Moved = 1,
+        StatusChanged = 2,
+        Repaired = 3,
+        Lent = 4,
+        Returned = 5,
+        ValueUpdated = 6,
+        ReminderCompleted = 7,
+        ReminderScheduled = 8,
+        Sold = 9,
+        Borrowed = 10,
+        ReturnedFromLend = 11
+    }
+}

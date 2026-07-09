@@ -1,5 +1,5 @@
 ﻿using INest.Constants;
-using INest.Models.Enums;
+using INest.Data.Enums;
 
 namespace INest.Exceptions
 {

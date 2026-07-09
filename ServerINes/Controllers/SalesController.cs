@@ -1,10 +1,10 @@
 ﻿using INest.Exceptions;
-using INest.Models.DTOs.Sale;
-using INest.Services.Features.Items.Commands.CancelSale;
-using INest.Services.Features.Sales.Commands.DeleteSaleRecord;
-using INest.Services.Features.Sales.Commands.SellItem;
-using INest.Services.Features.Sales.Commands.SmartDeleteSale;
-using INest.Services.Features.Sales.Queries.GetSales;
+using INest.Features.Sales.DTOs;
+using INest.Features.Items.Commands.CancelSale;
+using INest.Features.Sales.Commands.DeleteSaleRecord;
+using INest.Features.Sales.Commands.SellItem;
+using INest.Features.Sales.Commands.SmartDeleteSale;
+using INest.Features.Sales.Queries.GetSales;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
