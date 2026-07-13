@@ -4,7 +4,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { Router, RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { environment } from '../../../../environments/environment';
-import { emailUniqueValidator } from '../../../shared/validators/email-unique.validator';
+import { emailUniqueValidator } from '../../../core/validators/email-unique.validator';
 import { AuthService } from '../../../core/services/auth.service';
 
 declare var google: any;

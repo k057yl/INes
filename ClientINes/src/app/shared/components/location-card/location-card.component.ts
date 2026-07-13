@@ -1,5 +1,4 @@
 import { Component, Input, Output, EventEmitter, inject, ElementRef, HostListener, OnInit } from '@angular/core';
-
 import { DragDropModule, CdkDragDrop, CdkDrag } from '@angular/cdk/drag-drop'; 
 import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
@@ -8,6 +7,7 @@ import { StorageLocation } from '../../../core/models/entities/storage-location.
 import { Item } from '../../../core/models/entities/item.entity';
 import { DashboardModalService } from '../../../features/dashboard/dashboard.modal.service';
 import { DashboardFacade } from '../../../features/dashboard/dashboard.facade';
+import { DashboardTreeService } from '../../../features/dashboard/dashboard-tree.service';
 import { ItemCardComponent } from '../item-card/item-card.component';
 
 @Component({
@@ -17,17 +17,17 @@ import { ItemCardComponent } from '../item-card/item-card.component';
   templateUrl: './location-card.component.html',
   styleUrl: './location-card.component.scss'
 })
-export class LocationCardComponent {
+export class LocationCardComponent implements OnInit {
   private el = inject(ElementRef);
   public modalService = inject(DashboardModalService);
   public facade = inject(DashboardFacade);
+  public treeService = inject(DashboardTreeService);
 
   @Input({ required: true }) location!: StorageLocation;
   @Input() accentColor?: string;
   @Input() flatLocations: StorageLocation[] = [];
   @Input() connectedLists: string[] = [];
   @Input() connectedLocationLists: string[] = [];
-  @Input() isChildOf!: (targetId: string, sourceLoc: StorageLocation) => boolean;
 
   @Output() itemDropped = new EventEmitter<{event: CdkDragDrop<Item[]>, loc: StorageLocation}>();
   @Output() locationDropped = new EventEmitter<{event: CdkDragDrop<StorageLocation[]>, targetId: string | null}>();
@@ -46,7 +46,6 @@ export class LocationCardComponent {
 
   openItemMenuId: string | null = null;
   isMobile = window.innerWidth <= 768;
-
   isDragOver = false;
 
   get effectiveColor(): string {
@@ -56,6 +55,7 @@ export class LocationCardComponent {
   onDragEntered() {
     this.isDragOver = true;
   }
+  
   onDragExited() {
     this.isDragOver = false;
   }
@@ -77,15 +77,15 @@ export class LocationCardComponent {
   private _checkIfValidTarget(draggedData: any): boolean {
     if (!draggedData || !('children' in draggedData)) return false;
     if (draggedData.id === this.location.id) return false;
-    if (this.facade.isChildOf(this.location.id, draggedData)) return false;
-    return this.facade.canMoveLocation(draggedData.id, this.location.id);
+    if (this.treeService.isChildOf(this.location.id, draggedData)) return false;
+    return this.treeService.canMoveLocation(this.facade.flatLocations, draggedData.id, this.location.id);
   }
 
   @HostListener('window:resize')
   onResize() { this.isMobile = window.innerWidth <= 768; }
 
   canDropItem = (drag: CdkDrag): boolean => {
-    return drag.data && !('children' in drag.data);
+    return !!(drag.data && !('children' in drag.data));
   };
 
   canDropLocation = (drag: CdkDrag): boolean => {
@@ -152,7 +152,7 @@ export class LocationCardComponent {
     const select = event.target as HTMLSelectElement;
     const targetId = select.value === 'root' ? null : select.value;
 
-    if (!this.facade.canMoveLocation(this.location.id, targetId)) {
+    if (!this.treeService.canMoveLocation(this.facade.flatLocations, this.location.id, targetId)) {
       select.value = "";
       return;
     }

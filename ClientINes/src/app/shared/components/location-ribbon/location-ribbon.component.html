@@ -30,7 +30,7 @@
       </div>
     }
 
-    @for (loc of pagedLocations; track loc) {
+    @for (loc of pagedLocations; track loc.id) {
       <div class="root-chip"
         cdkDrag
         [class.active-on-board]="isLocActiveOnBoard(loc.id)"

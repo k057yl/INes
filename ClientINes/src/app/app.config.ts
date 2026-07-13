@@ -7,7 +7,10 @@ import { FormsModule } from '@angular/forms';
 import { provideServiceWorker } from '@angular/service-worker';
 import { routes } from './app.routes';
 
-import { jwtInterceptor, cultureInterceptor, globalErrorInterceptor } from './core/interceptors/app.interceptors';
+import { cultureInterceptor } from './core/interceptors/culture.interceptor';
+import { jwtInterceptor } from './core/interceptors/jwt.interceptor';
+import { globalErrorInterceptor } from './core/interceptors/global-error.interceptor';
+
 import { AuthService } from './core/services/auth.service';
 
 import { provideTranslateService } from '@ngx-translate/core';
@@ -18,12 +21,7 @@ import { LOCALE_ID} from '@angular/core';
 import { registerLocaleData } from '@angular/common';
 import localeRu from '@angular/common/locales/ru';
 
-
 registerLocaleData(localeRu, 'ru');
-
-export function initializeApp(authService: AuthService) {
-  return () => authService.checkAuth();
-}
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -41,7 +39,11 @@ export const appConfig: ApplicationConfig = {
     }),
 
     provideHttpClient(
-      withInterceptors([cultureInterceptor, jwtInterceptor, globalErrorInterceptor])
+      withInterceptors([
+        cultureInterceptor, 
+        jwtInterceptor, 
+        globalErrorInterceptor
+      ])
     ),
 
     { provide: LOCALE_ID, useValue: 'ru' },

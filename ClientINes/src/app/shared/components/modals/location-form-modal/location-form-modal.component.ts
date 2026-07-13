@@ -45,6 +45,8 @@ export class LocationFormModalComponent implements OnInit {
   get isEdit(): boolean { return !!this.location; }
 
   ngOnInit() {
+    console.log('Input parentId:', this.parentId);
+  console.log('Form before:', this.form.getRawValue());
     if (this.isEdit && this.location) {
       const loc = this.location as any;
       this.form.patchValue({
@@ -57,6 +59,7 @@ export class LocationFormModalComponent implements OnInit {
     } else if (this.parentId) {
       this.form.patchValue({ parentLocationId: this.parentId });
     }
+    console.log('Form after:', this.form.getRawValue());
   }
 
   selectPresetColor(color: string) {

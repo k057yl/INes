@@ -6,6 +6,7 @@ import { Subscription } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 import { DashboardFacade } from './dashboard.facade';
 import { DashboardModalService } from './dashboard.modal.service';
+import { DashboardTreeService } from './dashboard-tree.service';
 import { LocationCardComponent } from '../../shared/components/location-card/location-card.component';
 import { LocationRibbonComponent } from '../../shared/components/location-ribbon/location-ribbon.component';
 import { RIBBON_CONFIG, BOARD_CONFIG } from '../../shared/constants/ui.constants';
@@ -18,13 +19,15 @@ import { HttpErrorResponse } from '@angular/common/http';
   selector: 'app-dashboard',
   standalone: true,
   imports: [RouterModule, DragDropModule, LocationCardComponent, LocationRibbonComponent, TranslateModule],
-  providers: [DashboardFacade],
+  providers: [DashboardTreeService, DashboardFacade],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   public facade = inject(DashboardFacade); 
   public modal = inject(DashboardModalService);
+  public treeService = inject(DashboardTreeService);
+  
   private translate = inject(TranslateService);
   private toastr = inject(ToastrService);
   private sub = new Subscription();
@@ -43,27 +46,31 @@ export class DashboardComponent implements OnInit, OnDestroy {
   get activeBoardIds(): string[] { return this.pagedBoardLocations.map(l => l.id); }
   get totalBoardPages(): number { return Math.ceil(this.facade.locations.length / BOARD_CONFIG.PAGE_SIZE); }
   
-  get visibleConnectedLists(): string[] { return this.facade.flattenLocations(this.pagedBoardLocations).map(l => l.id); }
+  get visibleConnectedLists(): string[] { return this.facade.flatLocations.filter(l => this.pagedBoardLocations.some(p => p.id === l.id || this.treeService.isChildOf(l.id, p))).map(l => l.id); }
   get visibleConnectedLocationLists(): string[] { 
-    return this.facade.flattenLocations(this.pagedBoardLocations).map(l => 'list-loc-' + l.id); 
+    return this.visibleConnectedLists.map(id => 'list-loc-' + id); 
   }
 
-  ngOnInit() { this.loadData(); this.sub.add(this.modal.refreshData$.subscribe(() => this.loadData())); }
-  ngOnDestroy() { this.sub.unsubscribe(); }
-  loadData() { this.facade.loadData().subscribe(); }
+  ngOnInit() { 
+    this.loadData(); 
+    this.sub.add(this.modal.refreshData$.subscribe(() => this.loadData())); 
+  }
+  
+  ngOnDestroy() { 
+    this.sub.unsubscribe(); 
+  }
+  
+  loadData() { 
+    this.facade.loadData().subscribe(); 
+  }
 
   changeBoardPage(delta: number) { this.currentPageBoard += delta; this.syncRibbonWithBoard(); }
   private syncRibbonWithBoard() { const firstVisibleIndex = this.currentPageBoard * BOARD_CONFIG.PAGE_SIZE; this.currentPageRibbon = Math.floor(firstVisibleIndex / this.ribbonPageSize); }
   jumpToLocation(locId: string) { const index = this.facade.locations.findIndex(l => l.id === locId); if (index !== -1) { this.currentPageBoard = Math.floor(index / BOARD_CONFIG.PAGE_SIZE); this.syncRibbonWithBoard(); } }
   onRibbonPageChange(newPage: number) { this.currentPageRibbon = newPage; const firstItemIndex = newPage * this.ribbonPageSize; this.currentPageBoard = Math.floor(firstItemIndex / BOARD_CONFIG.PAGE_SIZE); }
 
-  onEditItem(item: Item) {
-    this.modal.openItemForm(item).subscribe();
-  }
-  
-  onCreateItem(locId?: string) { 
-    this.modal.openItemForm(null, locId).subscribe(); 
-  }
+  onEditItem(item: Item) { this.modal.openItemForm(item).subscribe(); }
+  onCreateItem(locId?: string) { this.modal.openItemForm(null, locId).subscribe(); }
   
   onRename(loc: StorageLocation) { 
     loc.showMenu = false; 
@@ -84,37 +91,43 @@ export class DashboardComponent implements OnInit, OnDestroy {
       title: 'COMMON.DELETE', 
       message: 'LOCATION_CARD.MODAL.YOU_SURE_MSG' 
     }).subscribe((confirmed) => { 
-      if (confirmed) {
-        this.facade.deleteLocation(loc.id).subscribe({
-          next: () => {
-            this.toastr.success(this.translate.instant('LOCATIONS.SUCCESS.DELETE'));
-            if (this.currentPageBoard > 0 && this.pagedBoardLocations.length === 0) {
-              this.currentPageBoard--; 
-            }
-            this.syncRibbonWithBoard(); 
-            this.loadData();
-          },
-          error: (err) => {
-            if (err.error?.message === 'LOCATIONS.ERRORS.NOT_EMPTY') {
-              this.toastr.warning(this.translate.instant('LOCATIONS.ERRORS.NOT_EMPTY'));
-            } else {
-              this.toastr.error(this.translate.instant('SYSTEM.DEFAULT_ERROR'));
-            }
-          }
-        });
-      }
+      if (confirmed) this.executeDeleteLocation(loc);
     }); 
+  }
+
+  private executeDeleteLocation(loc: StorageLocation) {
+    this.facade.deleteLocation(loc.id).subscribe({
+      next: () => {
+        this.toastr.success(this.translate.instant('LOCATIONS.SUCCESS.DELETE'));
+        if (this.currentPageBoard > 0 && this.pagedBoardLocations.length === 0) {
+          this.currentPageBoard--; 
+        }
+        this.syncRibbonWithBoard(); 
+        this.loadData();
+      },
+      error: (err) => {
+        if (err.error?.message === 'LOCATIONS.ERRORS.NOT_EMPTY') {
+          this.toastr.warning(this.translate.instant('LOCATIONS.ERRORS.NOT_EMPTY'));
+        } else {
+          this.toastr.error(this.translate.instant('SYSTEM.DEFAULT_ERROR'));
+        }
+      }
+    });
   }
   
   onDeleteItem(item: Item) { 
-    this.modal.openConfirm({ mode: 'delete', title: 'COMMON.DELETE', message: 'ITEM_CARD.MODAL.YOU_SURE_MSG' }).subscribe(() => { 
-      this.facade.deleteItem(item.id).subscribe({
-        next: () => {
-          this.toastr.success(this.translate.instant('ITEMS.SUCCESS.DELETE'));
-          this.loadData();
-        },
-        error: () => this.toastr.error(this.translate.instant('SYSTEM.DEFAULT_ERROR')) 
-      }); 
+    this.modal.openConfirm({ mode: 'delete', title: 'COMMON.DELETE', message: 'ITEM_CARD.MODAL.YOU_SURE_MSG' }).subscribe(confirmed => { 
+      if (confirmed) this.executeDeleteItem(item);
+    }); 
+  }
+
+  private executeDeleteItem(item: Item) {
+    this.facade.deleteItem(item.id).subscribe({
+      next: () => {
+        this.toastr.success(this.translate.instant('ITEMS.SUCCESS.DELETE'));
+        this.loadData();
+      },
+      error: () => this.toastr.error(this.translate.instant('SYSTEM.DEFAULT_ERROR')) 
     }); 
   }
   
@@ -146,18 +159,22 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   onItemMoveManual(data: {item: Item, targetLocationId: string}) { 
     const targetLoc = this.facade.flatLocations.find(l => l.id === data.targetLocationId); 
-    this.modal.openConfirm({ mode: 'confirm', title: 'ITEM_CARD.MODAL.MOVE_TITLE', message: targetLoc?.name || '...', confirmText: 'COMMON.YES' }).subscribe(() => { 
-      this.facade.moveItemLocally(data.item, data.targetLocationId); 
-      this.facade.moveItemApi(data.item.id, data.targetLocationId).subscribe({ 
-        next: () => {
-          this.toastr.success(this.translate.instant('ITEM_CARD.MODAL.MOVE_SUCCESS'));
-          this.jumpToLocation(data.targetLocationId);
-        }, 
-        error: () => {
-          this.toastr.error(this.translate.instant('SYSTEM.DEFAULT_ERROR'));
-          this.loadData();
-        } 
-      }); 
+    this.modal.openConfirm({ mode: 'confirm', title: 'ITEM_CARD.MODAL.MOVE_TITLE', message: targetLoc?.name || '...', confirmText: 'COMMON.YES' }).subscribe(confirmed => { 
+      if (confirmed) this.executeManualItemMove(data);
+    }); 
+  }
+
+  private executeManualItemMove(data: {item: Item, targetLocationId: string}) {
+    this.facade.moveItemLocally(data.item, data.targetLocationId); 
+    this.facade.moveItemApi(data.item.id, data.targetLocationId).subscribe({ 
+      next: () => {
+        this.toastr.success(this.translate.instant('ITEM_CARD.MODAL.MOVE_SUCCESS'));
+        this.jumpToLocation(data.targetLocationId);
+      }, 
+      error: () => {
+        this.toastr.error(this.translate.instant('SYSTEM.DEFAULT_ERROR'));
+        this.loadData();
+      } 
     }); 
   }
   
@@ -165,7 +182,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
     const offset = this.currentPageRibbon * this.ribbonPageSize; 
     moveItemInArray(this.facade.locations, event.previousIndex + offset, event.currentIndex + offset); 
     this.facade.reorderLocations(this.facade.locations.map(l => l.id)).subscribe({
-      next: () => this.toastr.success(this.translate.instant('LOCATIONS.SUCCESS.REORDER')),
+      next: () => {
+        this.toastr.success(this.translate.instant('LOCATIONS.SUCCESS.REORDER'));
+        this.loadData();
+      },
       error: () => {
         this.toastr.error(this.translate.instant('SYSTEM.DEFAULT_ERROR'));
         this.loadData();
@@ -194,46 +214,25 @@ export class DashboardComponent implements OnInit, OnDestroy {
   canDropRootLocation = (drag: CdkDrag): boolean => {
     const data = drag.data;
     if (!data || !('children' in data)) return false;
-    return this.facade.canMoveLocation(data.id, null);
+    return this.treeService.canMoveLocation(this.facade.flatLocations, data.id, null);
   };
 
   onLocationDropped(data: {event: CdkDragDrop<StorageLocation[]>, targetId: string | null}) {
     const { event, targetId } = data;
-    const normalizedTargetId = targetId === 'root' ? null : targetId;
+    if (event.previousContainer === event.container) return;
+    this.executeLocationDrop(event, targetId);
+  }
+
+  private executeLocationDrop(event: CdkDragDrop<StorageLocation[]>, targetId: string | null) {
+    const normalizedTargetId = (targetId === 'root' || !targetId) ? null : targetId;
     const loc = event.previousContainer.data[event.previousIndex];
 
     if (event.previousContainer === event.container) return;
 
-    if (event.previousContainer.id === 'root-loc-list') {
-      const offset = this.currentPageBoard * BOARD_CONFIG.PAGE_SIZE;
-      this.facade.locations.splice(event.previousIndex + offset, 1);
-      this.facade.locations = [...this.facade.locations];
-    } else {
-      event.previousContainer.data.splice(event.previousIndex, 1);
-      const sourceParentId = event.previousContainer.id.replace('list-loc-', '');
-      const sourceParent = this.facade.flatLocations.find(l => l.id === sourceParentId);
-      if (sourceParent) sourceParent.children = [...sourceParent.children!];
-    }
-
-    event.container.data.push(loc);
-
-    if (targetId && targetId !== 'root') {
-      const targetParent = this.facade.flatLocations.find(l => l.id === targetId);
-      if (targetParent) targetParent.children = [...targetParent.children!];
-    }
-
-    this.facade.refreshState();
-
-    this.facade.moveLocationApi(loc.id, normalizedTargetId).subscribe({
+    this.facade.moveLocation(loc.id, normalizedTargetId).subscribe({
       next: () => {
-        const orderedIds = event.container.data.map(l => l.id);
-        this.facade.reorderLocations(orderedIds, normalizedTargetId).subscribe({
-          next: () => this.toastr.success(this.translate.instant('LOCATIONS.SUCCESS.MOVE')),
-          error: () => {
-            this.toastr.error(this.translate.instant('SYSTEM.DEFAULT_ERROR'));
-            this.loadData();
-          }
-        });
+        this.toastr.success(this.translate.instant('LOCATIONS.SUCCESS.MOVE'));
+        this.loadData();
       },
       error: (err) => {
         if (err === 'TOO_DEEP') {
@@ -248,14 +247,25 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   onItemDropped(data: {event: CdkDragDrop<Item[]>, loc: StorageLocation}) {
     const { event, loc } = data;
+    if (!event.container.data) {
+      event.container.data = [];
+    }
+
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
       return;
     }
+    this.executeItemDrop(event, loc);
+  }
+
+  private executeItemDrop(event: CdkDragDrop<Item[]>, loc: StorageLocation) {
     const item = event.previousContainer.data[event.previousIndex];
     this.facade.moveItemLocally(item, loc.id);
     this.facade.moveItemApi(item.id, loc.id).subscribe({ 
-      next: () => this.toastr.success(this.translate.instant('ITEM_CARD.MODAL.MOVE_SUCCESS')),
+      next: () => {
+        this.toastr.success(this.translate.instant('ITEM_CARD.MODAL.MOVE_SUCCESS'));
+        this.loadData();
+      },
       error: () => {
         this.toastr.error(this.translate.instant('SYSTEM.DEFAULT_ERROR'));
         this.loadData();
@@ -265,26 +275,25 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   onReturnRequest(item: Item) {
     const isBorrowed = item.status === 7;
-
-    const message = isBorrowed 
-      ? 'ITEM_CARD.MODAL.RETURN_BORROWED_MSG' 
-      : 'LENDING_MODAL.MODAL.RETURN_MSG';
+    const message = isBorrowed ? 'ITEM_CARD.MODAL.RETURN_BORROWED_MSG' : 'LENDING_MODAL.MODAL.RETURN_MSG';
 
     this.modal.openConfirm({ 
       mode: 'confirm', 
       title: 'COMMON.RETURN', 
       message: message, 
       confirmText: 'COMMON.YES' 
-    }).subscribe((confirmed) => {
-      if (confirmed) {
-        this.facade.returnItem(item.id).subscribe({
-          next: () => {
-            this.toastr.success(this.translate.instant('LENDING_MODAL.SUCCESS_TOASTER'));
-            this.loadData();
-          },
-          error: (err) => this.toastr.error(this.translate.instant('SYSTEM.DEFAULT_ERROR'))
-        });
-      }
+    }).subscribe(confirmed => {
+      if (confirmed) this.executeReturnItem(item);
+    });
+  }
+
+  private executeReturnItem(item: Item) {
+    this.facade.returnItem(item.id).subscribe({
+      next: () => {
+        this.toastr.success(this.translate.instant('LENDING_MODAL.SUCCESS_TOASTER'));
+        this.loadData();
+      },
+      error: () => this.toastr.error(this.translate.instant('SYSTEM.DEFAULT_ERROR'))
     });
   }
 
@@ -295,6 +304,5 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
-  isChildOf = (targetId: string, sourceLoc: StorageLocation) => this.facade.isChildOf(targetId, sourceLoc);
   trackById = (index: number, item: any) => item.id;
 }

@@ -10,8 +10,7 @@
   [cdkDropListEnterPredicate]="canDropLocation"
   (cdkDropListEntered)="onDragEntered()"
   (cdkDropListExited)="onDragExited()"
-     (cdkDropListDropped)="onDragExited(); 
-     locationDropped.emit({event: $event, targetId: location.id})" 
+  (cdkDropListDropped)="onDragExited(); locationDropped.emit({event: $event, targetId: location.id})" 
   [cdkDropListSortingDisabled]="true">
 
   <div class="loc-header-wrapper">
@@ -31,7 +30,7 @@
           </button>
 
           <button class="tool-btn add-loc"
-            [disabled]="facade.getLocationLevel(location.id) >= 3"
+            [disabled]="treeService.getLocationLevel(facade.flatLocations, location.id) >= 3"
             (click)="onAddLocation($event)"
             [title]="'LOCATION_CARD.BTN.LOCATION' | translate">
             <i class="fa fa-folder-plus"></i>
@@ -72,13 +71,13 @@
         <select (change)="onMove($event)">
           <option value="" disabled selected>{{'DROP_MENU.SELECT_LOCATION' | translate}}</option>
           <option value="root"
-            [disabled]="!facade.canMoveLocation(location.id, null)">
+            [disabled]="!treeService.canMoveLocation(facade.flatLocations, location.id, null)">
             📁 {{'DROP_MENU.HIGHER_LEVEL' | translate}}
           </option>
           @for (target of flatLocations; track target) {
             <option
               [value]="target.id"
-              [disabled]="target.id === location.id || isChildOf(target.id, location) || !facade.canMoveLocation(location.id, target.id)">
+              [disabled]="target.id === location.id || treeService.isChildOf(target.id, location) || !treeService.canMoveLocation(facade.flatLocations, location.id, target.id)">
               {{ target.name }}
             </option>
           }
@@ -124,7 +123,7 @@
         cdkDrag
         [cdkDragData]="child"
         [cdkDragDisabled]="isMobile"
-        (cdkDragStarted)="onDragStart(child)"  (cdkDragEnded)="onDragEnd()">
+        (cdkDragStarted)="onDragStart(child)" (cdkDragEnded)="onDragEnd()">
         <div *cdkDragPreview class="custom-drag-preview" [style.border-color]="effectiveColor">
           <i [className]="'fa ' + (child.icon || 'fa-folder')" [style.color]="effectiveColor"></i>
           <span class="preview-title">{{ child.name }}</span>
@@ -135,7 +134,6 @@
           [flatLocations]="flatLocations"
           [connectedLists]="connectedLists"
           [connectedLocationLists]="connectedLocationLists"
-          [isChildOf]="isChildOf"
           
           (itemDropped)="itemDropped.emit($event)"
           (sellItem)="sellItem.emit($event)"

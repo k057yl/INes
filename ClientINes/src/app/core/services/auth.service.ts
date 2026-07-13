@@ -94,4 +94,10 @@ export class AuthService {
   isAuthenticated(): boolean {
     return this.isLoggedIn();
   }
+
+  // ================= СБРОС СЕССИИ БЕЗ СЕТИ =================
+
+  clearLocalSession(): void {
+    this.userSubject.next(null);
+  }
 }
