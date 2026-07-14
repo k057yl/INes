@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 
-import { Item } from '../../../../core/models/entities/item.entity';
-import { LendItemDto } from '../../../../core/models/dtos/lending.dto';
+import { Item } from '../../../../core/contracts/item';
+import { ItemLendDto } from '../../../../core/dtos/item-lend.dto';
 import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
@@ -17,7 +17,7 @@ export class LendItemModalComponent implements OnInit {
   @Input() isOpen = false;
   
   @Output() close = new EventEmitter<void>();
-  @Output() confirm = new EventEmitter<LendItemDto>();
+  @Output() confirm = new EventEmitter<ItemLendDto>();
 
   lendForm!: FormGroup;
 
@@ -36,7 +36,7 @@ export class LendItemModalComponent implements OnInit {
   if (this.lendForm.valid) {
     const formValue = this.lendForm.value;
     
-    const dto: LendItemDto = {
+    const dto: ItemLendDto = {
       itemId: this.item.id,
       personName: formValue.personName,
       valueAtLending: formValue.valueAtLending, 

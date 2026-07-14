@@ -1,8 +1,8 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
-import { Reminder } from '../../../core/models/entities/reminder.entity';
-import { ReminderType } from '../../../core/models/enums/reminder-type.enum';
+import { Reminder } from '../../../core/contracts/reminder';
+import { ReminderType } from '../../../core/enums/reminder-type.enum';
 
 @Component({
   selector: 'app-reminder-card',

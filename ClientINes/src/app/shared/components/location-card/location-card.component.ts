@@ -3,8 +3,8 @@ import { DragDropModule, CdkDragDrop, CdkDrag } from '@angular/cdk/drag-drop';
 import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { StorageLocation } from '../../../core/models/entities/storage-location.entity';
-import { Item } from '../../../core/models/entities/item.entity';
+import { StorageLocation } from '../../../core/contracts/storage-location';
+import { Item } from '../../../core/contracts/item';
 import { DashboardModalService } from '../../../features/dashboard/dashboard.modal.service';
 import { DashboardFacade } from '../../../features/dashboard/dashboard.facade';
 import { DashboardTreeService } from '../../../features/dashboard/dashboard-tree.service';

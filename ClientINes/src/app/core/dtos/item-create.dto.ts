@@ -1,10 +1,6 @@
 import { ItemStatus } from '../enums/item-status.enum';
 
-export interface CreateCategoryDto {
-  name: string;
-}
-
-export interface CreateItemDto {
+export interface ItemCreateDto {
   name: string;
   description?: string;
   categoryId: string;
@@ -20,5 +16,3 @@ export interface CreateItemDto {
   sendNotification?: boolean;
   mainPhotoName?: string;
 }
-
-export interface UpdateItemDto extends Partial<CreateItemDto> {}

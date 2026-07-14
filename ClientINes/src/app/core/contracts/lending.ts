@@ -1,4 +1,4 @@
-import { Item } from "./item.entity";
+import { Item } from "./item";
 
 export interface Lending {
   id: string;

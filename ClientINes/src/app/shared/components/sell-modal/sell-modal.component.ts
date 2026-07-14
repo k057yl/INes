@@ -2,9 +2,9 @@ import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
-import { Item } from '../../../core/models/entities/item.entity';
-import { SellItemRequestDto } from '../../../core/models/dtos/sale.dto';
-import { Platform } from '../../../core/models/entities/platform.entity';
+import { Item } from '../../../core/contracts/item';
+import { SaleCreateDto } from '../../../core/dtos/sale-item-create.dto';
+import { Platform } from '../../../core/contracts/platform';
 import { SalesService } from '../../../core/services/sales.service';
 import { InestModalComponent } from '../modals/inest-modal/inest-modal.component';
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
@@ -28,7 +28,7 @@ export class SellModalComponent implements OnInit {
   showPlatformModal = false;
   
   @Output() close = new EventEmitter<void>();
-  @Output() confirm = new EventEmitter<SellItemRequestDto>();
+  @Output() confirm = new EventEmitter<SaleCreateDto>();
 
   private readonly localToday = this.getLocalDateString();
 
@@ -110,7 +110,7 @@ export class SellModalComponent implements OnInit {
     }
     
     const formValue = this.sellForm.getRawValue();
-    const dto: SellItemRequestDto = {
+    const dto: SaleCreateDto = {
       itemId: this.item.id,
       salePrice: Number(formValue.salePrice),
       soldDate: new Date(formValue.soldDate!).toISOString(),

@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SaleResponseDto } from '../../../core/models/dtos/sale.dto';
+import { SaleListItem } from '../../../core/contracts/sale-list-item';
 import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
@@ -11,9 +11,9 @@ import { TranslateModule } from '@ngx-translate/core';
   styleUrl: './sale-card.component.scss'
 })
 export class SaleCardComponent {
-  @Input() sale!: SaleResponseDto;
-  @Output() undo = new EventEmitter<SaleResponseDto>();
-  @Output() delete = new EventEmitter<SaleResponseDto>();
+  @Input() sale!: SaleListItem;
+  @Output() undo = new EventEmitter<SaleListItem>();
+  @Output() delete = new EventEmitter<SaleListItem>();
 
   private readonly EMPTY_GUID = '00000000-0000-0000-0000-000000000000';
 

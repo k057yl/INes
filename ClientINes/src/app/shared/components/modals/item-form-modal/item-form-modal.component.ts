@@ -15,8 +15,8 @@ import { DashboardModalService } from '../../../../features/dashboard/dashboard.
 import { StatusNamePipe } from '../../../pipes/status-name.pipe';
 import { InestModalComponent } from '../inest-modal/inest-modal.component';
 
-import { ITEM_STATUS_OPTIONS } from '../../../../core/models/constants/item-status.constants';
-import { Item } from '../../../../core/models/entities/item.entity';
+import { ITEM_STATUS_OPTIONS } from '../../../../core/constants/item-status.constants';
+import { Item } from '../../../../core/contracts/item';
 
 import { take, filter } from 'rxjs/operators';
 import { FormErrorService } from '../../../../core/services/form-error.service';

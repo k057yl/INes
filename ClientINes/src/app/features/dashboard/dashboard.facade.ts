@@ -1,14 +1,15 @@
 import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, tap, throwError, of } from 'rxjs';
-import { StorageLocation } from '../../core/models/entities/storage-location.entity';
-import { Item } from '../../core/models/entities/item.entity';
+import { StorageLocation } from '../../core/contracts/storage-location';
+import { Item } from '../../core/contracts/item';
 import { LocationService } from '../../core/services/location.service';
 import { ItemService } from '../../core/services/item.service';
 import { SalesService } from '../../core/services/sales.service';
 import { LendingService } from '../../core/services/lending.service';
-import { SellItemRequestDto } from '../../core/models/dtos/sale.dto';
-import { LendItemDto, ReturnItemDto } from '../../core/models/dtos/lending.dto';
+import { SaleCreateDto } from '../../core/dtos/sale-item-create.dto';
+import { ItemLendDto } from '../../core/dtos/item-lend.dto';
+import { ItemReturnDto } from '../../core/dtos/item-return.dto';
 import { DashboardTreeService } from './dashboard-tree.service';
 
 @Injectable()
@@ -175,13 +176,13 @@ export class DashboardFacade {
     );
   }
 
-  sellItem(dto: SellItemRequestDto) {
+  sellItem(dto: SaleCreateDto) {
     return this.salesService.sellItem(dto).pipe(
       tap(() => this.router.navigate(['/sales']))
     );
   }
 
-  lendItem(dto: LendItemDto) {
+  lendItem(dto: ItemLendDto) {
     return this.lendingService.lendItem(dto);
   }
   
@@ -189,7 +190,7 @@ export class DashboardFacade {
     return this.itemService.update(itemId, formData);
   }
 
-  returnItem(itemId: string, dto: ReturnItemDto = { returnedDate: new Date().toISOString() }) {
+  returnItem(itemId: string, dto: ItemReturnDto = { returnedDate: new Date().toISOString() }) {
     return this.lendingService.returnItem(itemId, dto);
   }
 

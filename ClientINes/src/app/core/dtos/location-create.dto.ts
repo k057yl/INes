@@ -1,4 +1,4 @@
-export interface CreateLocationDto {
+export interface LocationCreateDto {
   name: string;
   description?: string;
   parentId?: string | null;

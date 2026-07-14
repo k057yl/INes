@@ -30,7 +30,8 @@ import { ItemService } from '../../../../core/services/item.service';
 import { CategoryService } from '../../../../core/services/category.service';
 import { LocationService } from '../../../../core/services/location.service';
 
-import { Item, ItemFilters } from '../../../../core/models/entities/item.entity';
+import { Item } from '../../../../core/contracts/item';
+import { GetItemFilters } from '../../../../core/dtos/items-get.dto';
 
 import { StatusNamePipe } from '../../../../shared/pipes/status-name.pipe';
 import { DashboardModalService } from '../../../dashboard/dashboard.modal.service';
@@ -128,7 +129,7 @@ export class ItemsListComponent implements OnInit {
       }),
 
       switchMap(filters => {
-        const typedFilters = filters as ItemFilters;
+        const typedFilters = filters as GetItemFilters;
         
         return this.itemService.getAll(typedFilters).pipe(
           catchError((err) => {
@@ -195,7 +196,7 @@ export class ItemsListComponent implements OnInit {
     });
   }
 
-  updateFilters(value: Partial<ItemFilters>): void {
+  updateFilters(value: Partial<GetItemFilters>): void {
     this.filterForm.patchValue(value);
   }
 
@@ -216,7 +217,7 @@ export class ItemsListComponent implements OnInit {
     this.activeDropdown = null;
   }
 
-  setFilter(field: keyof ItemFilters, value: ItemFilters[keyof ItemFilters]): void {
+  setFilter(field: keyof GetItemFilters, value: GetItemFilters[keyof GetItemFilters]): void {
     this.updateFilters({
       [field]: value
     });

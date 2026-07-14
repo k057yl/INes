@@ -10,8 +10,8 @@ import { DashboardTreeService } from './dashboard-tree.service';
 import { LocationCardComponent } from '../../shared/components/location-card/location-card.component';
 import { LocationRibbonComponent } from '../../shared/components/location-ribbon/location-ribbon.component';
 import { RIBBON_CONFIG, BOARD_CONFIG } from '../../shared/constants/ui.constants';
-import { StorageLocation } from '../../core/models/entities/storage-location.entity';
-import { Item } from '../../core/models/entities/item.entity';
+import { StorageLocation } from '../../core/contracts/storage-location';
+import { Item } from '../../core/contracts/item';
 import { CdkDrag } from '@angular/cdk/drag-drop';
 import { HttpErrorResponse } from '@angular/common/http';
 

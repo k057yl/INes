@@ -1,12 +1,14 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
-import { SellItemRequestDto, SaleResponseDto } from '../models/dtos/sale.dto';
-import { PlatformDto } from '../models/dtos/platform.dto';
-import { Platform } from '../models/entities/platform.entity';
+import { GetPlatformDto } from '../dtos/platforms-get.dto';
+import { Platform } from '../contracts/platform';
 import { Observable } from 'rxjs';
 import { HttpParams } from '@angular/common/http';
-import { SaleFilters } from '../models/dtos/sale.dto';
+
+import { GetSalesDto } from '../dtos/sales-get.dto';
+import { SaleListItem } from '../contracts/sale-list-item';
+import { SaleCreateDto } from '../dtos/sale-item-create.dto';
 
 @Injectable({ providedIn: 'root' })
 export class SalesService {
@@ -14,11 +16,11 @@ export class SalesService {
   private salesUrl = `${environment.apiBaseUrl}/sales`;
   private platformsUrl = `${environment.apiBaseUrl}/platforms`;
 
-  sellItem(dto: SellItemRequestDto): Observable<SaleResponseDto> {
-    return this.http.post<SaleResponseDto>(this.salesUrl, dto);
+  sellItem(dto: SaleCreateDto): Observable<SaleListItem> {
+    return this.http.post<SaleListItem>(this.salesUrl, dto);
   }
 
-  getHistory(filters?: SaleFilters): Observable<SaleResponseDto[]> {
+  getHistory(filters?: GetSalesDto): Observable<SaleListItem[]> {
     let params = new HttpParams();
     
     if (filters) {
@@ -30,7 +32,7 @@ export class SalesService {
       });
     }
 
-    return this.http.get<SaleResponseDto[]>(this.salesUrl, { params });
+    return this.http.get<SaleListItem[]>(this.salesUrl, { params });
   }
 
   cancelSale(itemId: string): Observable<void> {
@@ -47,7 +49,7 @@ export class SalesService {
     return this.http.get<Platform[]>(this.platformsUrl);
   }
 
-  addPlatform(dto: PlatformDto): Observable<Platform> {
+  addPlatform(dto: GetPlatformDto): Observable<Platform> {
     return this.http.post<Platform>(this.platformsUrl, dto);
   }
 }

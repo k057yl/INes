@@ -4,9 +4,9 @@ import { RouterModule } from '@angular/router';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
-import { Item } from '../../../core/models/entities/item.entity';
+import { Item } from '../../../core/contracts/item';
 import { FeatureService } from '../../../core/services/feature.service';
-import { StorageLocation } from '../../../core/models/entities/storage-location.entity';
+import { StorageLocation } from '../../../core/contracts/storage-location';
 import { environment } from '../../../../environments/environment';
 import { InestModalComponent } from '../modals/inest-modal/inest-modal.component'; 
 

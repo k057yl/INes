@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { CreateReminderDto } from '../models/dtos/reminder.dto';
-import { Reminder } from '../models/entities/reminder.entity';
+import { RemindCreateDto } from '../dtos/remind-create.dto';
+import { Reminder } from '../contracts/reminder';
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +21,7 @@ export class ReminderService {
     return this.http.get<Reminder[]>(`${this.apiUrl}/item/${itemId}`);
   }
 
-  createReminder(dto: CreateReminderDto): Observable<Reminder> {
+  createReminder(dto: RemindCreateDto): Observable<Reminder> {
     return this.http.post<Reminder>(this.apiUrl, dto);
   }
 

@@ -2,9 +2,9 @@ import { inject, Injectable } from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { Item } from '../models/entities/item.entity';
-import { CreateItemDto } from '../models/dtos/item.dto';
-import { ItemFilters } from '../models/entities/item.entity';
+import { Item } from '../contracts/item';
+import { ItemCreateDto } from '../dtos/item-create.dto';
+import { GetItemFilters } from '../dtos/items-get.dto';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +17,7 @@ export class ItemService {
     `${environment.apiBaseUrl}/items`;
 
   getAll(
-    filters?: ItemFilters
+    filters?: GetItemFilters
   ): Observable<Item[]> {
 
     const params =
@@ -30,7 +30,7 @@ export class ItemService {
   }
 
   private buildParams(
-    obj?: ItemFilters
+    obj?: GetItemFilters
   ): HttpParams {
 
     let params = new HttpParams();
@@ -42,7 +42,7 @@ export class ItemService {
     Object.keys(obj).forEach(key => {
 
       const value =
-        obj[key as keyof ItemFilters];
+        obj[key as keyof GetItemFilters];
 
       if (
         value !== null &&
@@ -72,7 +72,7 @@ export class ItemService {
     );
   }
 
-  create(dto: CreateItemDto): Observable<Item> {
+  create(dto: ItemCreateDto): Observable<Item> {
 
     return this.http.post<Item>(
       this.apiUrl,

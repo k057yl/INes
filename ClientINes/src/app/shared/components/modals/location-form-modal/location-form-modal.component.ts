@@ -8,7 +8,7 @@ import { ToastrService } from 'ngx-toastr';
 import { LocationService } from '../../../../core/services/location.service';
 import { FeatureService } from '../../../../core/services/feature.service';
 import { DashboardModalService } from '../../../../features/dashboard/dashboard.modal.service';
-import { StorageLocation } from '../../../../core/models/entities/storage-location.entity';
+import { StorageLocation } from '../../../../core/contracts/storage-location';
 
 @Component({
   selector: 'app-location-form-modal',

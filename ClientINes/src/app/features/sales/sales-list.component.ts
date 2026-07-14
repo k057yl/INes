@@ -8,9 +8,10 @@ import { of } from 'rxjs';
 
 import { SalesService } from '../../core/services/sales.service';
 import { CategoryService } from '../../core/services/category.service';
-import { SaleResponseDto, SaleFilters } from '../../core/models/dtos/sale.dto';
-import { Platform } from '../../core/models/entities/platform.entity';
-import { Category } from '../../core/models/entities/category.entity';
+import { SaleListItem } from '../../core/contracts/sale-list-item';
+import { GetSalesDto } from '../../core/dtos/sales-get.dto';
+import { Platform } from '../../core/contracts/platform';
+import { Category } from '../../core/contracts/category';
 import { SaleCardComponent } from '../../shared/components/sale-card/sale-card.component';
 import { InestModalComponent } from '../../shared/components/modals/inest-modal/inest-modal.component';
 
@@ -31,14 +32,14 @@ export class SalesListComponent implements OnInit {
   private fb = inject(FormBuilder);
   private eRef = inject(ElementRef);
 
-  sales: SaleResponseDto[] = [];
+  sales: SaleListItem[] = [];
   platforms: Platform[] = [];
   categories: Category[] = [];
   isLoading = true;
   readonly EMPTY_GUID = '00000000-0000-0000-0000-000000000000';
 
   activeAction: SalesAction = null;
-  selectedSale: SaleResponseDto | null = null;
+  selectedSale: SaleListItem | null = null;
   activeDropdown: 'platform' | 'sort' | 'category' | null = null;
 
   filterForm = this.fb.group({
@@ -77,7 +78,7 @@ export class SalesListComponent implements OnInit {
       startWith(this.filterForm.getRawValue()),
       debounceTime(350),
       tap(() => this.isLoading = true),
-      switchMap(filters => this.salesService.getHistory(filters as SaleFilters).pipe(
+      switchMap(filters => this.salesService.getHistory(filters as GetSalesDto).pipe(
         catchError(err => {
           console.error('FETCH_ERROR:', err);
           return of([]);
@@ -87,7 +88,7 @@ export class SalesListComponent implements OnInit {
     ).subscribe(data => this.sales = data);
   }
 
-  setFilter(field: keyof SaleFilters, value: any): void {
+  setFilter(field: keyof GetSalesDto, value: any): void {
     this.filterForm.patchValue({ [field]: value });
     this.activeDropdown = null;
   }
@@ -99,13 +100,13 @@ export class SalesListComponent implements OnInit {
     });
   }
 
-  handleUndo(sale: SaleResponseDto) {
+  handleUndo(sale: SaleListItem) {
     console.log('UNDO_CLICKED:', sale);
     this.selectedSale = sale;
     this.activeAction = 'undo';
   }
 
-  handleDelete(sale: SaleResponseDto) {
+  handleDelete(sale: SaleListItem) {
     console.log('DELETE_CLICKED:', sale);
     this.selectedSale = sale;
     this.activeAction = 'delete';
@@ -122,7 +123,7 @@ export class SalesListComponent implements OnInit {
     this.closeModal();
   }
 
-  private executeUndo(sale: SaleResponseDto) {
+  private executeUndo(sale: SaleListItem) {
     this.isLoading = true;
     this.salesService.cancelSale(sale.itemId)
       .pipe(finalize(() => this.isLoading = false))
@@ -132,7 +133,7 @@ export class SalesListComponent implements OnInit {
       });
   }
 
-  private executeDelete(sale: SaleResponseDto, keepHistory: boolean) {
+  private executeDelete(sale: SaleListItem, keepHistory: boolean) {
     this.isLoading = true;
     this.salesService.smartDelete(sale.saleId, keepHistory)
       .pipe(finalize(() => this.isLoading = false))
@@ -143,7 +144,7 @@ export class SalesListComponent implements OnInit {
   }
 
   refreshData() {
-    this.salesService.getHistory(this.filterForm.getRawValue() as SaleFilters)
+    this.salesService.getHistory(this.filterForm.getRawValue() as GetSalesDto)
       .subscribe(data => this.sales = data);
   }
 

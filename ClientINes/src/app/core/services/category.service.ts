@@ -1,8 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { CreateCategoryDto } from '../models/dtos/item.dto';
-import { Category } from '../models/entities/category.entity';
+import { CategoryCreateDto } from '../dtos/category-create.dto';
+import { Category } from '../contracts/category';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -16,11 +16,11 @@ export class CategoryService {
     return this.http.get<Category[]>(this.apiUrl);
   }
 
-  create(dto: CreateCategoryDto): Observable<Category> {
+  create(dto: CategoryCreateDto): Observable<Category> {
     return this.http.post<Category>(this.apiUrl, dto);
   }
 
-  update(id: string, dto: CreateCategoryDto): Observable<void> {
+  update(id: string, dto: CategoryCreateDto): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/${id}`, dto);
   }
 

@@ -2,9 +2,9 @@ import { Component, Input, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ReminderService } from '../../../../core/services/reminder.service';
-import { Reminder } from '../../../../core/models/entities/reminder.entity';
-import { ReminderType } from '../../../../core/models/enums/reminder-type.enum';
-import { ReminderRecurrence } from '../../../../core/models/enums/reminder-recurrence.enum';
+import { Reminder } from '../../../../core/contracts/reminder';
+import { ReminderType } from '../../../../core/enums/reminder-type.enum';
+import { ReminderRecurrence } from '../../../../core/enums/reminder-recurrence.enum';
 import { TranslateModule } from '@ngx-translate/core';
 import { DashboardModalService } from '../../../dashboard/dashboard.modal.service';
 

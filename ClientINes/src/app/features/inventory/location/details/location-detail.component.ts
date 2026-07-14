@@ -4,8 +4,8 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { environment } from '../../../../../environments/environment';
-import { StorageLocation } from '../../../../core/models/entities/storage-location.entity';
-import { ItemStatus } from '../../../../core/models/enums/item-status.enum';
+import { StorageLocation } from '../../../../core/contracts/storage-location';
+import { ItemStatus } from '../../../../core/enums/item-status.enum';
 import { ItemService } from '../../../../core/services/item.service';
 import { DashboardModalService } from '../../../dashboard/dashboard.modal.service';
 
