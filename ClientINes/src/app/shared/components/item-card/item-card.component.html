@@ -60,7 +60,7 @@
             <i class="fa fa-pen"></i> {{ 'COMMON.EDIT' | translate }}
           </button>
 
-          @if (canLend) {
+          @if (featureService.isLendingModeEnabled() && canLend) {
             <button class="dropdown-item btn-lend" (click)="lend.emit(item); closeMenu()">
               <i class="fa fa-handshake"></i> {{ 'COMMON.LEND' | translate }}
             </button>

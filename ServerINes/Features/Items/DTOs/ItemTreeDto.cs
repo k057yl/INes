@@ -10,6 +10,12 @@ namespace INest.Features.Items.DTOs
 
         public ItemStatus Status { get; set; }
 
+        public decimal? PurchasePrice { get; set; }
+
+        public decimal? EstimatedValue { get; set; }
+
+        public string Currency { get; set; } = string.Empty;
+
         public string? PhotoUrl { get; set; }
     }
 }

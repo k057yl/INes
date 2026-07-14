@@ -1,15 +1,15 @@
 import { Component, OnInit, inject } from '@angular/core';
-
+import { CommonModule } from '@angular/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { RouterModule } from '@angular/router';
-import { finalize } from 'rxjs';
+import { finalize, forkJoin } from 'rxjs';
 
 import { FeatureService } from '../../core/services/feature.service';
 import { CategoryService } from '../../core/services/category.service';
 import { PlatformService } from '../../core/services/platform.service';
 import { DashboardModalService } from '../../features/dashboard/dashboard.modal.service';
 
-interface SimpleEntity {
+interface SimpleContract {
   id: string;
   name: string;
   color?: string;
@@ -20,7 +20,7 @@ type SettingsTab = 'general' | 'categories' | 'platforms';
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [TranslateModule, RouterModule],
+  imports: [CommonModule, TranslateModule, RouterModule],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.scss'
 })
@@ -31,8 +31,8 @@ export class SettingsComponent implements OnInit {
   private modalService = inject(DashboardModalService);
   private translate = inject(TranslateService);
 
-  categories: SimpleEntity[] = [];
-  platforms: SimpleEntity[] = [];
+  categories: SimpleContract[] = [];
+  platforms: SimpleContract[] = [];
   activeTab: SettingsTab = 'general';
   isLoading = false;
 
@@ -42,10 +42,17 @@ export class SettingsComponent implements OnInit {
 
   loadAllData() {
     this.isLoading = true;
-    this.categoryService.getAll().subscribe(res => this.categories = res);
-    this.platformService.getAll().pipe(
+    forkJoin({
+      categories: this.categoryService.getAll(),
+      platforms: this.platformService.getAll()
+    }).pipe(
       finalize(() => this.isLoading = false)
-    ).subscribe(res => this.platforms = res);
+    ).subscribe({
+      next: (res) => {
+        this.categories = res.categories;
+        this.platforms = res.platforms;
+      }
+    });
   }
 
   addCategory() { 
@@ -58,7 +65,7 @@ export class SettingsComponent implements OnInit {
     });
   }
   
-  renameCategory(cat: SimpleEntity) { 
+  renameCategory(cat: SimpleContract) { 
     this.modalService.openConfirm({
       mode: 'input', title: 'COMMON.EDIT', message: '', name: cat.name
     }).subscribe(res => {
@@ -68,14 +75,15 @@ export class SettingsComponent implements OnInit {
     });
   }
   
-  deleteCategory(cat: SimpleEntity) { 
+  deleteCategory(cat: SimpleContract) { 
     this.modalService.openConfirm({
-      mode: 'delete', title: 'COMMON.DELETE', message: this.translate.instant('SETTINGS_PAGE.MODAL.DELETE_CATEGORY')
+      mode: 'delete', 
+      title: 'COMMON.DELETE', 
+      message: this.translate.instant('SETTINGS_PAGE.MODAL.DELETE_CATEGORY'),
+      name: cat.name
     }).subscribe(res => {
       if (res) {
-        this.categoryService.delete(cat.id).subscribe(() => {
-          this.categories = this.categories.filter(c => c.id !== cat.id);
-        });
+        this.categoryService.delete(cat.id).subscribe(() => this.loadAllData());
       }
     });
   }
@@ -90,7 +98,7 @@ export class SettingsComponent implements OnInit {
     });
   }
   
-  renamePlatform(plat: SimpleEntity) { 
+  renamePlatform(plat: SimpleContract) { 
     this.modalService.openConfirm({
       mode: 'input', title: 'COMMON.EDIT', message: '', name: plat.name
     }).subscribe(res => {
@@ -100,16 +108,15 @@ export class SettingsComponent implements OnInit {
     });
   }
   
-  deletePlatform(plat: SimpleEntity) { 
+  deletePlatform(plat: SimpleContract) { 
     this.modalService.openConfirm({
       mode: 'delete',
       title: 'COMMON.DELETE',
-      message: this.translate.instant('SETTINGS_PAGE.MODAL.DELETE_PLATFORM')
+      message: this.translate.instant('SETTINGS_PAGE.MODAL.DELETE_PLATFORM'),
+      name: plat.name
     }).subscribe(res => {
       if (res) {
-        this.platformService.delete(plat.id).subscribe(() => {
-          this.platforms = this.platforms.filter(p => p.id !== plat.id);
-        });
+        this.platformService.delete(plat.id).subscribe(() => this.loadAllData());
       }
     });
   }

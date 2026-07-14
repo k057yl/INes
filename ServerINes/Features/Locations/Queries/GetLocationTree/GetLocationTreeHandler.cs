@@ -46,9 +46,12 @@ public class GetLocationTreeHandler
                         Id = i.Id,
                         Name = i.Name,
                         PhotoUrl = i.PhotoUrl,
-                        Status = i.Status
+                        Status = i.Status,
+                        PurchasePrice = i.PurchasePrice,
+                        EstimatedValue = i.EstimatedValue,
+                        Currency = i.Currency
                     })
-    .ToList()
+                    .ToList()
             })
             .ToList();
 

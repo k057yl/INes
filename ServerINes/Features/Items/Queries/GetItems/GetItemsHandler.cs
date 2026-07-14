@@ -67,6 +67,7 @@ namespace INest.Features.Items.Queries.GetItems
                     Name = item.Name,
                     Description = item.Description,
                     Status = item.Status,
+                    PurchasePrice = item.PurchasePrice,
                     EstimatedValue = item.EstimatedValue,
                     Currency = item.Currency,
                     PhotoUrl = item.PhotoUrl,

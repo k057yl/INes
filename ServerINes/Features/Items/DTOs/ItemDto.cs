@@ -12,6 +12,7 @@ namespace INest.Features.Items.DTOs
 
         public decimal? EstimatedValue { get; set; }
         public string Currency { get; set; } = "USD";
+        public decimal? PurchasePrice { get; set; }
 
         public string? PhotoUrl { get; set; }
 
