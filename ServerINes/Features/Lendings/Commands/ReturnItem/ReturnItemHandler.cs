@@ -34,8 +34,6 @@ namespace INest.Features.Lendings.Commands.ReturnItem
 
             item.Return();
 
-            lending.ReturnedDate = request.Dto.ReturnedDate ?? DateTime.UtcNow;
-
             _context.ItemHistories.Add(new ItemHistory
             {
                 Id = Guid.NewGuid(),

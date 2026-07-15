@@ -33,23 +33,26 @@ export class LendItemModalComponent implements OnInit {
   }
 
   onSubmit(): void {
-  if (this.lendForm.valid) {
-    const formValue = this.lendForm.value;
-    
-    const dto: ItemLendDto = {
-      itemId: this.item.id,
-      personName: formValue.personName,
-      valueAtLending: formValue.valueAtLending, 
-      expectedReturnDate: formValue.expectedReturnDate ? new Date(formValue.expectedReturnDate).toISOString() : null,
-      comment: formValue.comment || null
-    };
+    if (this.lendForm.valid) {
+      const formValue = this.lendForm.value;
+      
+      const dto: ItemLendDto = {
+        itemId: this.item.id,
+        personName: formValue.personName,
+        valueAtLending: formValue.valueAtLending, 
+        expectedReturnDate: formValue.expectedReturnDate || null,
+        comment: formValue.comment || null,
+        contactEmail: null, 
+        sendNotification: false,
+        direction: 0
+      };
 
-    this.confirm.emit(dto);
-    this.lendForm.reset();
-  } else {
-    this.lendForm.markAllAsTouched();
+      this.confirm.emit(dto);
+      this.lendForm.reset();
+    } else {
+      this.lendForm.markAllAsTouched();
+    }
   }
-}
 
   onCancel(): void {
     this.lendForm.reset();
