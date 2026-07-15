@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace INest.Features.Items.Commands.CancelSale
+namespace INest.Features.Sales.Commands.CancelSale
 {
     public class CancelSaleValidator : AbstractValidator<CancelSaleCommand>
     {
@@ -8,6 +8,7 @@ namespace INest.Features.Items.Commands.CancelSale
         {
             RuleFor(x => x.UserId).NotEmpty();
             RuleFor(x => x.ItemId).NotEmpty();
+            RuleFor(x => x.LocationId).NotEmpty();
         }
     }
 }

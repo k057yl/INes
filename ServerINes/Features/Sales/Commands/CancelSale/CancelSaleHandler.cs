@@ -1,12 +1,11 @@
-﻿using INest.Constants;
-using INest.Data.Entities.Infrastructure;
+﻿using INest.Data.Entities.Infrastructure;
 using INest.Data.Enums;
 using INest.Infrastructure.Tracker;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using static INest.Constants.LocalizationConstants;
 
-namespace INest.Features.Items.Commands.CancelSale
+namespace INest.Features.Sales.Commands.CancelSale
 {
     public class CancelSaleHandler : IRequestHandler<CancelSaleCommand, bool>
     {
@@ -32,7 +31,10 @@ namespace INest.Features.Items.Commands.CancelSale
             if (sale == null) throw new KeyNotFoundException(SALES.ERRORS.NOT_FOUND);
 
             _context.Sales.Remove(sale);
-            item.Status = ItemStatus.Active;
+
+            item.CancelSale();
+
+            item.StorageLocationId = request.LocationId;
 
             _context.ItemHistories.Add(new ItemHistory
             {
@@ -40,9 +42,10 @@ namespace INest.Features.Items.Commands.CancelSale
                 ItemId = item.Id,
                 UserId = request.UserId,
                 Type = ItemHistoryType.Returned,
-                OldValue = SharedConstants.OLD_VALUE,
-                NewValue = SharedConstants.NEW_VALUE,
-                Comment = HISTORY.SALES_CANCELED
+                OldValue = ItemStatus.Sold.ToString(),
+                NewValue = ItemStatus.Active.ToString(),
+                Comment = HISTORY.SALES_CANCELED,
+                CreatedAt = DateTime.UtcNow
             });
 
             await _context.SaveChangesAsync(cancellationToken);

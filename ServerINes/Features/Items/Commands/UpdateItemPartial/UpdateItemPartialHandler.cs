@@ -44,11 +44,11 @@ namespace INest.Features.Items.Commands.UpdateItemPartial
             if (item == null) throw new KeyNotFoundException(ITEMS.ERRORS.NOT_FOUND);
 
             if (item.Status != ItemStatus.Active)
-                throw new InvalidOperationException(ITEMS.ERRORS.ONLY_ACTIVE_CAN_BE_EDITED);
+                throw new AppException(ITEMS.ERRORS.ONLY_ACTIVE_CAN_BE_EDITED);
 
             try
             {
-                void LogChange(ItemHistoryType type, string? oldValue, string? newValue)
+                void LogChange(ItemHistoryType historyType, string? oldValue, string? newValue)
                 {
                     if (oldValue == newValue) return;
                     _context.ItemHistories.Add(new ItemHistory
@@ -56,9 +56,10 @@ namespace INest.Features.Items.Commands.UpdateItemPartial
                         Id = Guid.NewGuid(),
                         ItemId = item.Id,
                         UserId = request.UserId,
-                        Type = type,
+                        Type = historyType,
                         OldValue = oldValue,
-                        NewValue = newValue
+                        NewValue = newValue,
+                        CreatedAt = DateTime.UtcNow
                     });
                 }
 
@@ -101,22 +102,7 @@ namespace INest.Features.Items.Commands.UpdateItemPartial
 
                     LogChange(ItemHistoryType.Moved, oldLocName, targetLoc?.Name);
 
-                    var oldStatus = item.Status;
-
-                    if (targetLoc != null)
-                    {
-                        if (targetLoc.IsSalesLocation) item.Status = ItemStatus.Listed;
-                        else if (targetLoc.IsLendingLocation) item.Status = ItemStatus.Lent;
-                        else if (item.Status == ItemStatus.Listed || item.Status == ItemStatus.Lent)
-                            item.Status = ItemStatus.Active;
-                    }
-
-                    if (oldStatus != item.Status)
-                    {
-                        LogChange(ItemHistoryType.StatusChanged, oldStatus.ToString(), item.Status.ToString());
-                    }
-
-                    item.StorageLocationId = targetLocationId;
+                    item.MoveToLocation(targetLocationId);
                 }
 
                 if (dto.PurchaseDate.HasValue && dto.PurchaseDate != item.PurchaseDate)

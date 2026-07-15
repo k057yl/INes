@@ -9,12 +9,8 @@ namespace INest.Exceptions
         {
             ItemStatus.Active => LocalizationConstants.STATUS.ACTIVE,
             ItemStatus.Lent => LocalizationConstants.STATUS.LENT,
-            ItemStatus.Lost => LocalizationConstants.STATUS.LOST,
-            ItemStatus.Broken => LocalizationConstants.STATUS.BROKEN,
             ItemStatus.Sold => LocalizationConstants.STATUS.SOLD,
-            ItemStatus.Gifted => LocalizationConstants.STATUS.GIFTED,
-            ItemStatus.Listed => LocalizationConstants.STATUS.LISTED,
-            ItemStatus.Borrowed => LocalizationConstants.STATUS.BORROWED,
+            ItemStatus.Archived => LocalizationConstants.STATUS.ARCHIVED,
             _ => LocalizationConstants.SYSTEM.DEFAULT_ERROR
         };
 
@@ -22,8 +18,6 @@ namespace INest.Exceptions
         {
             ItemHistoryType.Created => LocalizationConstants.HISTORY.CREATED,
             ItemHistoryType.Moved => LocalizationConstants.HISTORY.MOVED,
-            ItemHistoryType.StatusChanged => LocalizationConstants.HISTORY.STATUS_CHANGED,
-            ItemHistoryType.Repaired => LocalizationConstants.HISTORY.REPAIRED,
             ItemHistoryType.Lent => LocalizationConstants.HISTORY.LENT,
             ItemHistoryType.Returned => LocalizationConstants.HISTORY.RETURNED,
             ItemHistoryType.ValueUpdated => LocalizationConstants.HISTORY.VALUE_UPDATED,
@@ -43,13 +37,6 @@ namespace INest.Exceptions
             ReminderType.Tax => LocalizationConstants.REMINDERS.TAX,
             ReminderType.Subscription => LocalizationConstants.REMINDERS.SUBSCRIPTION,
             _ => LocalizationConstants.REMINDERS.CUSTOM
-        };
-
-        public static string GetLocalizationKey(this LendingDirection direction) => direction switch
-        {
-            LendingDirection.Out => LocalizationConstants.STATUS.LENT,
-            LendingDirection.In => LocalizationConstants.STATUS.BORROWED,
-            _ => LocalizationConstants.SYSTEM.DEFAULT_ERROR
         };
     }
 }

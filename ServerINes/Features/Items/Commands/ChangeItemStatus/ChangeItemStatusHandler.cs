@@ -28,35 +28,44 @@ namespace INest.Features.Items.Commands.ChangeItemStatus
 
             if (item.Status == request.NewStatus) return true;
 
-            var finalStatuses = new[] { ItemStatus.Sold, ItemStatus.Gifted, ItemStatus.Lost, ItemStatus.Broken };
+            ItemHistoryType historyType;
 
-            if (finalStatuses.Contains(item.Status))
+            switch (request.NewStatus)
             {
-                throw new AppException(ITEMS.ERRORS.ONLY_ACTIVE_CAN_BE_EDITED);
-            }
+                case ItemStatus.Active:
+                    item.Return();
+                    historyType = ItemHistoryType.Returned;
+                    break;
 
-            if (item.Status == ItemStatus.Borrowed && request.NewStatus == ItemStatus.Active)
-            {
-                _context.Items.Remove(item);
-                await _context.SaveChangesAsync(cancellationToken);
-                _tracker.InvalidateUserCache(request.UserId);
-                return true;
-            }
+                case ItemStatus.Lent:
+                    item.Lend();
+                    historyType = ItemHistoryType.Lent;
+                    break;
 
-            ItemHistoryType type = ItemHistoryType.StatusChanged;
-            if (request.NewStatus == ItemStatus.Sold) type = ItemHistoryType.Sold;
+                case ItemStatus.Sold:
+                    item.Sell();
+                    historyType = ItemHistoryType.Sold;
+                    break;
+
+                case ItemStatus.Archived:
+                    item.Archive();
+                    historyType = ItemHistoryType.Archived;
+                    break;
+
+                default:
+                    throw new AppException(ITEMS.ERRORS.INVALID_INITIAL_STATUS);
+            }
 
             _context.ItemHistories.Add(new ItemHistory
             {
                 Id = Guid.NewGuid(),
                 ItemId = item.Id,
                 UserId = request.UserId,
-                Type = type,
+                Type = historyType,
                 OldValue = item.Status.ToString(),
-                NewValue = request.NewStatus.ToString()
+                NewValue = request.NewStatus.ToString(),
+                CreatedAt = DateTime.UtcNow
             });
-
-            item.Status = request.NewStatus;
 
             await _context.SaveChangesAsync(cancellationToken);
             _tracker.InvalidateUserCache(request.UserId);

@@ -3,11 +3,9 @@ using INest.Data.Entities.Core;
 using INest.Data.Entities.Infrastructure;
 using INest.Data.Enums;
 using INest.Exceptions;
-using INest.Features.Lendings.Services;
 using INest.Infrastructure.Storage;
 using INest.Infrastructure.Tracker;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using static INest.Constants.LocalizationConstants;
 
 namespace INest.Features.Items.Commands.CreateItem
@@ -16,7 +14,7 @@ namespace INest.Features.Items.Commands.CreateItem
     {
         private readonly AppDbContext _context;
         private readonly IPhotoService _photoService;
-        private readonly LendingStateService _lendingStateHelper;
+        private readonly LendingService _lendingService;
         private readonly IHtmlSanitizer _sanitizer;
         private readonly ILogger<CreateItemHandler> _logger;
         private readonly ICacheTracker _tracker;
@@ -24,14 +22,14 @@ namespace INest.Features.Items.Commands.CreateItem
         public CreateItemHandler(
             AppDbContext context,
             IPhotoService photoService,
-            LendingStateService lendingStateHelper,
+            LendingService lendingService,
             IHtmlSanitizer sanitizer,
             ILogger<CreateItemHandler> logger,
             ICacheTracker tracker)
         {
             _context = context;
             _photoService = photoService;
-            _lendingStateHelper = lendingStateHelper;
+            _lendingService = lendingService;
             _sanitizer = sanitizer;
             _logger = logger;
             _tracker = tracker;
@@ -40,13 +38,15 @@ namespace INest.Features.Items.Commands.CreateItem
         public async Task<Item> Handle(CreateItemCommand request, CancellationToken cancellationToken)
         {
             var dto = request.Dto;
+
             var safeName = _sanitizer.Sanitize(dto.Name);
-            if (string.IsNullOrWhiteSpace(safeName)) throw new AppException(SYSTEM.ERRORS.VALIDATION_FAILED, 400);
+            if (string.IsNullOrWhiteSpace(safeName))
+                throw new AppException(SYSTEM.ERRORS.VALIDATION_FAILED);
 
-            var safeDesc = !string.IsNullOrEmpty(dto.Description) ? _sanitizer.Sanitize(dto.Description) : null;
-            var safePerson = !string.IsNullOrEmpty(dto.PersonName) ? _sanitizer.Sanitize(dto.PersonName) : "Unknown";
+            var safeDescription = string.IsNullOrWhiteSpace(dto.Description) ? null : _sanitizer.Sanitize(dto.Description);
+            var safePerson = string.IsNullOrWhiteSpace(dto.PersonName) ? "Unknown" : _sanitizer.Sanitize(dto.PersonName);
 
-            using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
+            await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
 
             try
             {
@@ -55,16 +55,14 @@ namespace INest.Features.Items.Commands.CreateItem
                     Id = Guid.NewGuid(),
                     UserId = request.UserId,
                     Name = safeName,
-                    Description = safeDesc,
+                    Description = safeDescription,
                     CategoryId = dto.CategoryId,
                     StorageLocationId = dto.StorageLocationId,
-                    Status = dto.Status,
                     PurchaseDate = dto.PurchaseDate,
                     PurchasePrice = dto.PurchasePrice,
                     EstimatedValue = dto.EstimatedValue ?? dto.PurchasePrice,
                     Currency = dto.Currency ?? "USD",
-                    CreatedAt = DateTime.UtcNow,
-                    Photos = new List<ItemPhoto>()
+                    CreatedAt = DateTime.UtcNow
                 };
 
                 _context.Items.Add(item);
@@ -73,15 +71,13 @@ namespace INest.Features.Items.Commands.CreateItem
                 {
                     Id = Guid.NewGuid(),
                     ItemId = item.Id,
+                    UserId = request.UserId,
                     Type = ItemHistoryType.Created,
                     NewValue = item.Name,
                     CreatedAt = DateTime.UtcNow
                 });
 
-                await _lendingStateHelper.SyncLendingStateAsync(
-                    item, dto.Status, safePerson, dto.ContactEmail, dto.ExpectedReturnDate, dto.SendNotification);
-
-                if (request.Photos != null && request.Photos.Count > 0)
+                if (request.Photos.Count > 0)
                 {
                     await HandlePhotosAsync(item, request.Photos, dto.MainPhotoName);
                 }
@@ -89,33 +85,59 @@ namespace INest.Features.Items.Commands.CreateItem
                 await _context.SaveChangesAsync(cancellationToken);
                 await transaction.CommitAsync(cancellationToken);
 
+                if (dto.Status == ItemStatus.Lent)
+                {
+                    await _lendingService.LendAsync(
+                        item,
+                        safePerson,
+                        dto.ContactEmail,
+                        dto.ExpectedReturnDate,
+                        dto.SendNotification);
+
+                    await _context.SaveChangesAsync(cancellationToken);
+                }
+                else if (dto.Status == ItemStatus.Sold)
+                {
+                    item.Sell();
+                    await _context.SaveChangesAsync(cancellationToken);
+                }
+                else if (dto.Status != ItemStatus.Active)
+                {
+                    throw new AppException(ITEMS.ERRORS.INVALID_INITIAL_STATUS);
+                }
+
                 _tracker.InvalidateUserCache(request.UserId);
+
                 return item;
             }
             catch (Exception ex)
             {
-                await transaction.RollbackAsync(cancellationToken);
-                _logger.LogError(ex, "Критическая ошибка при создании предмета");
+                if (_context.Database.CurrentTransaction != null)
+                {
+                    await transaction.RollbackAsync(cancellationToken);
+                }
+
+                _logger.LogError(ex, "Error while creating item.");
                 throw;
             }
         }
 
-        private async Task HandlePhotosAsync(Item item, List<IFormFile> photos, string? mainPhotoName = null)
+        private async Task HandlePhotosAsync(Item item, List<IFormFile> photos, string? mainPhotoName)
         {
-            var uploadTasks = photos.Select(async photoFile =>
+            var uploadTasks = photos.Select(async photo =>
             {
-                var result = await _photoService.AddPhotoAsync(photoFile);
-                return new { File = photoFile, Result = result };
-            }).ToList();
+                var result = await _photoService.AddPhotoAsync(photo);
+                return new { File = photo, Result = result };
+            });
 
-            var uploadResults = await Task.WhenAll(uploadTasks);
+            var uploads = await Task.WhenAll(uploadTasks);
 
-            foreach (var upload in uploadResults)
+            foreach (var upload in uploads)
             {
                 if (upload.Result.Error != null)
-                    throw new Exception(upload.Result.Error.Message);
+                    throw new AppException(upload.Result.Error.Message);
 
-                var itemPhoto = new ItemPhoto
+                var photo = new ItemPhoto
                 {
                     Id = Guid.NewGuid(),
                     ItemId = item.Id,
@@ -124,19 +146,15 @@ namespace INest.Features.Items.Commands.CreateItem
                     UploadedAt = DateTime.UtcNow
                 };
 
-                if ((!string.IsNullOrEmpty(mainPhotoName) && upload.File.FileName == mainPhotoName) ||
+                if ((!string.IsNullOrWhiteSpace(mainPhotoName) && upload.File.FileName == mainPhotoName) ||
                     string.IsNullOrEmpty(item.PhotoUrl))
                 {
-                    item.PhotoUrl = itemPhoto.FilePath;
-                    item.PublicId = itemPhoto.PublicId;
+                    item.PhotoUrl = photo.FilePath;
+                    item.PublicId = photo.PublicId;
                 }
 
-                item.Photos.Add(itemPhoto);
-
-                if (_context.Entry(item).State != EntityState.Detached)
-                {
-                    _context.ItemPhotos.Add(itemPhoto);
-                }
+                item.Photos.Add(photo);
+                _context.ItemPhotos.Add(photo);
             }
         }
     }

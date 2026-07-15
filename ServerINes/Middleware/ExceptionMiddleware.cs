@@ -12,7 +12,10 @@ namespace INest.Middleware
         private readonly ILogger<ExceptionMiddleware> _logger;
         private readonly IHostEnvironment _env;
 
-        public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger, IHostEnvironment env)
+        public ExceptionMiddleware(
+            RequestDelegate next,
+            ILogger<ExceptionMiddleware> logger,
+            IHostEnvironment env)
         {
             _next = next;
             _logger = logger;
@@ -38,53 +41,48 @@ namespace INest.Middleware
 
             var statusCode = (int)HttpStatusCode.InternalServerError;
             var message = SYSTEM.DEFAULT_ERROR;
-            object? details = _env.IsDevelopment() ? ex.StackTrace?.ToString() : null;
+            object? details = _env.IsDevelopment()
+                ? ex.StackTrace
+                : null;
 
-            var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+            var options = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            };
 
             switch (ex)
             {
-                case ValidationAppException valEx:
-                    statusCode = (int)HttpStatusCode.BadRequest;
+                case ValidationAppException validationException:
+                    statusCode = StatusCodes.Status400BadRequest;
                     message = SYSTEM.VALIDATION_FAILED;
-                    details = valEx.Errors
+
+                    details = validationException.Errors
                         .GroupBy(e => e.PropertyName)
                         .ToDictionary(
                             g => JsonNamingPolicy.CamelCase.ConvertName(g.Key),
-                            g => g.Select(x => x.ErrorMessage).ToArray()
-                        );
+                            g => g.Select(x => x.ErrorMessage).ToArray());
+
                     break;
 
-                case AppException appEx:
-                    statusCode = appEx.StatusCode;
-                    message = appEx.Message;
-                    break;
-
-                case KeyNotFoundException:
-                    statusCode = (int)HttpStatusCode.NotFound;
-                    message = ex.Message;
-                    break;
-
-                case InvalidOperationException:
-                    statusCode = (int)HttpStatusCode.BadRequest;
-                    message = ex.Message;
+                case AppException appException:
+                    statusCode = appException.StatusCode;
+                    message = appException.Message;
                     break;
 
                 case UnauthorizedAccessException:
-                    statusCode = (int)HttpStatusCode.Unauthorized;
+                    statusCode = StatusCodes.Status401Unauthorized;
                     message = AUTH.ERRORS.TOKEN_MISSING;
                     break;
             }
 
             context.Response.StatusCode = statusCode;
 
-            var response = new
-            {
-                error = message,
-                details = details
-            };
-
-            await context.Response.WriteAsync(JsonSerializer.Serialize(response, options));
+            await context.Response.WriteAsync(
+                JsonSerializer.Serialize(new
+                {
+                    error = message,
+                    details
+                }, options));
         }
     }
 }

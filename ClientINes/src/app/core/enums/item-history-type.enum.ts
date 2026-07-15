@@ -1,14 +1,11 @@
 export enum ItemHistoryType {
   Created = 0,
   Moved = 1,
-  StatusChanged = 2,
-  Repaired = 3,
-  Lent = 4,
-  Returned = 5,
-  ValueUpdated = 6,
-  ReminderCompleted = 7,
-  ReminderScheduled = 8,
-  Sold = 9,
-  Borrowed = 10,
-  ReturnedFromLend = 11
+  Lent = 2,
+  Returned = 3,
+  Sold = 4,
+  ValueUpdated = 5,
+  ReminderCompleted = 6,
+  ReminderScheduled = 7,
+  Archived = 8
 }

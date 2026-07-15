@@ -1,6 +1,5 @@
 ﻿using INest.Exceptions;
 using INest.Features.Sales.DTOs;
-using INest.Features.Items.Commands.CancelSale;
 using INest.Features.Sales.Commands.DeleteSaleRecord;
 using INest.Features.Sales.Commands.SellItem;
 using INest.Features.Sales.Commands.SmartDeleteSale;
@@ -10,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using static INest.Constants.LocalizationConstants;
+using INest.Features.Sales.Commands.CancelSale;
 
 namespace INest.Controllers
 {
@@ -49,9 +49,9 @@ namespace INest.Controllers
         }
 
         [HttpDelete("cancel/{itemId}")]
-        public async Task<IActionResult> CancelSale(Guid itemId)
+        public async Task<IActionResult> CancelSale(Guid itemId, [FromQuery] Guid locationId)
         {
-            var command = new CancelSaleCommand(GetUserId(), itemId);
+            var command = new CancelSaleCommand(GetUserId(), itemId, locationId);
             await _mediator.Send(command);
             return Ok(new { message = SALES.SUCCESS.CANCEL });
         }

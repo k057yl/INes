@@ -72,18 +72,15 @@ export class SellModalComponent implements OnInit {
     this.showPlatformModal = true;
   }
 
-  // --- ИСПРАВЛЕННЫЙ МЕТОД ---
   onPlatformConfirmed(name: string) {
     this.salesService.addPlatform({ name }).subscribe({
       next: (res: any) => {
         this.toastr.success(this.translate.instant('PLATFORMS.SUCCESS.CREATE'));
-        this.showPlatformModal = false; // Закрываем модалку сразу
+        this.showPlatformModal = false;
 
-        // Запрашиваем нормальный список платформ с бэка
         this.salesService.getPlatforms().subscribe(platforms => {
           this.platforms = platforms;
-          
-          // Ищем ID новой платформы
+
           const newPlatformId = res?.id || platforms.find((p: any) => p.name === name)?.id;
           if (newPlatformId) {
             this.sellForm.patchValue({ platformId: newPlatformId });
@@ -98,8 +95,14 @@ export class SellModalComponent implements OnInit {
   }
 
   onSubmit() {
-    if (this.item.status === 1 || this.item.status === 7) {
+    if (this.item.status === 1) {
       this.toastr.warning(this.translate.instant('STATUS.ERRORS.CANT_SELL_LENT'));
+      this.close.emit();
+      return;
+    }
+
+    if (this.item.status === 2) {
+      this.toastr.warning(this.translate.instant('STATUS.ERRORS.ALREADY_SOLD'));
       this.close.emit();
       return;
     }

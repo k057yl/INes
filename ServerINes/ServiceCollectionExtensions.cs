@@ -3,7 +3,6 @@ using Ganss.Xss;
 using INest.Constants;
 using INest.Data.Entities;
 using INest.Data.Entities.Infrastructure;
-using INest.Features.Lendings.Services;
 using INest.Infrastructure;
 using INest.Infrastructure.BackgroundServices;
 using INest.Infrastructure.Behaviors;
@@ -137,7 +136,7 @@ namespace INest
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IPhotoService, PhotoService>();
-            services.AddScoped<LendingStateService>();
+            services.AddScoped<LendingService>();
 
             services.AddMediatR(cfg =>
             {

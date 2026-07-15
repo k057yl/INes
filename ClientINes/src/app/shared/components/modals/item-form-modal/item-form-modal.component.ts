@@ -259,12 +259,12 @@ export class ItemFormModalComponent implements OnInit {
     }
 
     if (val.purchasePrice != null) {
-      formData.append('purchasePrice', val.purchasePrice.toString().replace('.', ','));
+      formData.append('purchasePrice', val.purchasePrice.toString());
     }
 
     const estValue = val.estimatedValue ?? val.purchasePrice;
     if (estValue != null) {
-      formData.append('estimatedValue', estValue.toString().replace('.', ','));
+      formData.append('estimatedValue', estValue.toString());
     }
 
     if (this.isLendingStatus) {

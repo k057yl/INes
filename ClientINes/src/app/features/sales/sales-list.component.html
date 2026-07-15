@@ -128,6 +128,7 @@
   </div>
 </div>
 
+<!-- Модалка возврата предмета с кастомным селектором локации -->
 @if (activeAction === 'undo') {
   <app-inest-modal
     mode="confirm"
@@ -136,6 +137,22 @@
     [confirmText]="'COMMON.RETURN' | translate"
     (confirmed)="onConfirm()"
     (cancelled)="closeModal()">
+    
+    <div class="inest-form-group" style="margin-top: 15px; text-align: left;">
+      <label style="display: block; margin-bottom: 8px; font-weight: 500;">
+        {{ 'CREATE_ITEM_PAGE.LOCATION' | translate }} *
+      </label>
+      <div class="inest-input-wrapper">
+        <i class="fa fa-map-marker-alt inest-field-icon-left"></i>
+        <select [(ngModel)]="selectedReturnLocationId" style="width: 100%; padding-left: 35px; height: 40px; border-radius: 6px;">
+          <option [value]="null" disabled selected>{{ 'CREATE_ITEM_PAGE.SELECT_LOCATION' | translate }}</option>
+          @for (loc of locations; track loc.id) {
+            <option [value]="loc.id">{{ loc.name }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
   </app-inest-modal>
 }
 

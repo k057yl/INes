@@ -48,35 +48,12 @@ namespace INest.Features.Items.Commands.MoveItem
                     UserId = request.UserId,
                     Type = ItemHistoryType.Moved,
                     OldValue = item.StorageLocation?.Name,
-                    NewValue = targetLocation?.Name
+                    NewValue = targetLocation?.Name,
+                    CreatedAt = DateTime.UtcNow
                 });
 
-                var oldStatus = item.Status;
-                if (targetLocation != null)
-                {
-                    if (targetLocation.IsSalesLocation) item.Status = ItemStatus.Listed;
-                    else if (targetLocation.IsLendingLocation) item.Status = ItemStatus.Lent;
-                    else if (item.Status == ItemStatus.Listed || item.Status == ItemStatus.Lent) item.Status = ItemStatus.Active;
-                }
-                else
-                {
-                    if (item.Status == ItemStatus.Listed || item.Status == ItemStatus.Lent) item.Status = ItemStatus.Active;
-                }
+                item.MoveToLocation(request.TargetLocationId);
 
-                if (oldStatus != item.Status)
-                {
-                    _context.ItemHistories.Add(new ItemHistory
-                    {
-                        Id = Guid.NewGuid(),
-                        ItemId = item.Id,
-                        UserId = request.UserId,
-                        Type = ItemHistoryType.StatusChanged,
-                        OldValue = oldStatus.ToString(),
-                        NewValue = item.Status.ToString()
-                    });
-                }
-
-                item.StorageLocationId = request.TargetLocationId;
                 await _context.SaveChangesAsync(cancellationToken);
                 _tracker.InvalidateUserCache(request.UserId);
             }

@@ -86,8 +86,8 @@ export class ItemsListComponent implements OnInit {
     { value: null, label: 'FILTERS.SHOW_ALL' },
     { value: 0, label: 'STATUS.ACTIVE' },
     { value: 1, label: 'STATUS.LENT' },
-    { value: 6, label: 'STATUS.LISTED' },
-    { value: 4, label: 'STATUS.SOLD' }
+    { value: 2, label: 'STATUS.SOLD' },
+    { value: 3, label: 'STATUS.ARCHIVED' }
   ];
 
   filterForm = this.fb.group({
@@ -319,16 +319,14 @@ export class ItemsListComponent implements OnInit {
 
     const hasSoldItems = this.items
       .filter(x => this.selectedIds.has(x.id))
-      .some(x => x.status === 4);
+      .some(x => x.status === 2);
 
     if (hasSoldItems) {
-
       this.toastr.error(
         this.translate.instant(
           'ITEMS.ERRORS.CANNOT_DELETE_SOLD'
         )
       );
-
       return;
     }
 

@@ -93,6 +93,12 @@
             {
                 public const string NOT_FOUND = "ITEMS.ERRORS.NOT_FOUND";
                 public const string ONLY_ACTIVE_CAN_BE_EDITED = "ITEMS.ERRORS.ONLY_ACTIVE_CAN_BE_EDITED";
+                public const string CANNOT_LEND = "ITEMS.ERRORS.CANNOT_LEND";
+                public const string CANNOT_RETURN = "ITEMS.ERRORS.CANNOT_RETURN";
+                public const string CANNOT_SELL = "ITEMS.ERRORS.CANNOT_SELL";
+                public const string ALREADY_ARCHIVED = "ITEMS.ERRORS.ALREADY_ARCHIVED";
+                public const string INVALID_INITIAL_STATUS = "ITEMS.ERRORS.INVALID_INITIAL_STATUS";
+                public const string CANNOT_CANCEL_SALE = "ITEMS.ERRORS.CANNOT_CANCEL_SALE";
             }
 
             public static class SUCCESS
@@ -160,12 +166,8 @@
         {
             public const string ACTIVE = "STATUS.ACTIVE";
             public const string LENT = "STATUS.LENT";
-            public const string LOST = "STATUS.LOST";
-            public const string BROKEN = "STATUS.BROKEN";
             public const string SOLD = "STATUS.SOLD";
-            public const string GIFTED = "STATUS.GIFTED";
-            public const string LISTED = "STATUS.LISTED";
-            public const string BORROWED = "STATUS.BORROWED";
+            public const string ARCHIVED = "STATUS.ARCHIVED";
         }
 
         public static class HISTORY

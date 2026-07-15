@@ -5,6 +5,7 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { debounceTime, finalize, switchMap, tap, startWith, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { FormsModule } from '@angular/forms';
 
 import { SalesService } from '../../core/services/sales.service';
 import { CategoryService } from '../../core/services/category.service';
@@ -14,13 +15,14 @@ import { Platform } from '../../core/contracts/platform';
 import { Category } from '../../core/contracts/category';
 import { SaleCardComponent } from '../../shared/components/sale-card/sale-card.component';
 import { InestModalComponent } from '../../shared/components/modals/inest-modal/inest-modal.component';
+import { LocationService } from '../../core/services/location.service';
 
 export type SalesAction = 'undo' | 'delete' | null;
 
 @Component({
   selector: 'app-sales-list',
   standalone: true,
-  imports: [CommonModule, TranslateModule, ReactiveFormsModule, SaleCardComponent, InestModalComponent],
+  imports: [CommonModule, TranslateModule, ReactiveFormsModule, FormsModule, SaleCardComponent, InestModalComponent],
   templateUrl: './sales-list.component.html',
   styleUrl: './sales-list.component.scss'
 })
@@ -31,10 +33,13 @@ export class SalesListComponent implements OnInit {
   private translate = inject(TranslateService);
   private fb = inject(FormBuilder);
   private eRef = inject(ElementRef);
+  private locationService = inject(LocationService);
 
   sales: SaleListItem[] = [];
   platforms: Platform[] = [];
   categories: Category[] = [];
+  locations: any[] = [];
+  selectedReturnLocationId: string | null = null;
   isLoading = true;
   readonly EMPTY_GUID = '00000000-0000-0000-0000-000000000000';
 
@@ -73,6 +78,7 @@ export class SalesListComponent implements OnInit {
   ngOnInit() {
     this.salesService.getPlatforms().subscribe(res => this.platforms = res);
     this.categoryService.getAll().subscribe(res => this.categories = res);
+    this.locationService.getAll().subscribe((res: any[]) => this.locations = res);
 
     this.filterForm.valueChanges.pipe(
       startWith(this.filterForm.getRawValue()),
@@ -116,16 +122,20 @@ export class SalesListComponent implements OnInit {
     if (!this.selectedSale || !this.activeAction) return;
 
     if (this.activeAction === 'undo') {
-      this.executeUndo(this.selectedSale);
+      if (!this.selectedReturnLocationId) {
+        this.toastr.error(this.translate.instant('ERRORS.REQUIRED_FIELD'));
+        return;
+      }
+      this.executeUndo(this.selectedSale, this.selectedReturnLocationId);
     } else if (this.activeAction === 'delete') {
       this.executeDelete(this.selectedSale, result === 'smart');
     }
     this.closeModal();
   }
 
-  private executeUndo(sale: SaleListItem) {
+  private executeUndo(sale: SaleListItem, locationId: string) {
     this.isLoading = true;
-    this.salesService.cancelSale(sale.itemId)
+    this.salesService.cancelSale(sale.itemId, locationId)
       .pipe(finalize(() => this.isLoading = false))
       .subscribe(() => {
         this.toastr.success(this.translate.instant('SALES.SUCCESS.CANCEL'));
@@ -151,5 +161,6 @@ export class SalesListComponent implements OnInit {
   closeModal() {
     this.activeAction = null;
     this.selectedSale = null;
+    this.selectedReturnLocationId = null;
   }
 }

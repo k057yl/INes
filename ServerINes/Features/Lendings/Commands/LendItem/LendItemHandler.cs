@@ -50,6 +50,8 @@ namespace INest.Features.Lendings.Commands.LendItem
                 _context.Lendings.Remove(existingLending);
             }
 
+            item.Lend();
+
             var lending = new Lending
             {
                 Id = Guid.NewGuid(),
@@ -59,11 +61,9 @@ namespace INest.Features.Lendings.Commands.LendItem
                 DateGiven = DateTime.UtcNow,
                 ExpectedReturnDate = dto.ExpectedReturnDate,
                 ValueAtLending = dto.ValueAtLending ?? item.EstimatedValue,
-                Comment = safeComment,
-                Direction = LendingDirection.Out
+                Comment = safeComment
             };
 
-            item.Status = ItemStatus.Lent;
             _context.Lendings.Add(lending);
 
             _context.ItemHistories.Add(new ItemHistory
@@ -72,7 +72,8 @@ namespace INest.Features.Lendings.Commands.LendItem
                 ItemId = item.Id,
                 UserId = request.UserId,
                 Type = ItemHistoryType.Lent,
-                NewValue = $"{safePersonName}|{lending.ValueAtLending}$"
+                NewValue = $"{safePersonName}|{lending.ValueAtLending}$",
+                CreatedAt = DateTime.UtcNow
             });
 
             await _context.SaveChangesAsync(cancellationToken);

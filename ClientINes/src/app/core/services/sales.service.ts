@@ -35,8 +35,13 @@ export class SalesService {
     return this.http.get<SaleListItem[]>(this.salesUrl, { params });
   }
 
-  cancelSale(itemId: string): Observable<void> {
-    return this.http.delete<void>(`${environment.apiBaseUrl}/Sales/cancel/${itemId}`);
+  cancelSale(itemId: string, locationId: string): Observable<void> {
+    return this.http.delete<void>(
+      `${this.salesUrl}/cancel/${itemId}`, 
+      {
+        params: { locationId }
+      }
+    );
   }
 
   smartDelete(saleId: string, keepHistory: boolean): Observable<void> {

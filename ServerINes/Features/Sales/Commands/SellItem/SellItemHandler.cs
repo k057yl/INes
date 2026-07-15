@@ -34,8 +34,7 @@ namespace INest.Features.Sales.Commands.SellItem
             if (item == null)
                 throw new KeyNotFoundException(ITEMS.ERRORS.NOT_FOUND);
 
-            if (item.Status == ItemStatus.Sold)
-                throw new InvalidOperationException(SALES.ERRORS.ALREADY_SOLD);
+            item.Sell();
 
             var safeComment = !string.IsNullOrEmpty(dto.Comment) ? _sanitizer.Sanitize(dto.Comment) : null;
 
@@ -61,18 +60,16 @@ namespace INest.Features.Sales.Commands.SellItem
                 Comment = safeComment
             };
 
-            var oldStatus = item.Status;
-            item.Status = ItemStatus.Sold;
-
             _context.ItemHistories.Add(new ItemHistory
             {
                 Id = Guid.NewGuid(),
                 ItemId = item.Id,
                 UserId = request.UserId,
-                Type = ItemHistoryType.StatusChanged,
+                Type = ItemHistoryType.Sold,
                 Comment = HISTORY.SOLD_FOR,
-                OldValue = oldStatus.ToString(),
-                NewValue = dto.SalePrice.ToString()
+                OldValue = item.PurchasePrice?.ToString() ?? "0",
+                NewValue = dto.SalePrice.ToString(),
+                CreatedAt = DateTime.UtcNow
             });
 
             _context.Sales.Add(sale);

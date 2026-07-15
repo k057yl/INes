@@ -274,8 +274,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   onReturnRequest(item: Item) {
-    const isBorrowed = item.status === 7;
-    const message = isBorrowed ? 'ITEM_CARD.MODAL.RETURN_BORROWED_MSG' : 'LENDING_MODAL.MODAL.RETURN_MSG';
+    const message = 'LENDING_MODAL.MODAL.RETURN_MSG';
 
     this.modal.openConfirm({ 
       mode: 'confirm', 

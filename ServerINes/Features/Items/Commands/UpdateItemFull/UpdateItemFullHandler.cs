@@ -51,13 +51,12 @@ namespace INest.Features.Items.Commands.UpdateItemFull
                 if (item == null) throw new KeyNotFoundException(ITEMS.ERRORS.NOT_FOUND);
 
                 if (item.Status != ItemStatus.Active)
-                    throw new InvalidOperationException(ITEMS.ERRORS.ONLY_ACTIVE_CAN_BE_EDITED);
+                    throw new AppException(ITEMS.ERRORS.ONLY_ACTIVE_CAN_BE_EDITED);
 
                 item.Name = safeName;
                 item.Description = safeDesc;
                 item.CategoryId = dto.CategoryId;
-                item.StorageLocationId = dto.StorageLocationId;
-                item.Status = dto.Status;
+                item.MoveToLocation(dto.StorageLocationId);
                 item.PurchaseDate = dto.PurchaseDate;
                 item.PurchasePrice = dto.PurchasePrice;
                 item.EstimatedValue = dto.EstimatedValue;

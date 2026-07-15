@@ -45,20 +45,16 @@ export class ItemDetailComponent implements OnInit {
   historyIcons: Record<number, string> = {
     [ItemHistoryType.Created]: 'fa-plus-circle',
     [ItemHistoryType.Moved]: 'fa-exchange-alt',
-    [ItemHistoryType.StatusChanged]: 'fa-sync-alt',
-    [ItemHistoryType.Repaired]: 'fa-tools',
     [ItemHistoryType.Lent]: 'fa-handshake',
-    [ItemHistoryType.Borrowed]: 'fa-reply-all',
     [ItemHistoryType.Returned]: 'fa-undo',
-    [ItemHistoryType.ReturnedFromLend]: 'fa-home',
+    [ItemHistoryType.Sold]: 'fa-dollar-sign',
     [ItemHistoryType.ValueUpdated]: 'fa-chart-line',
     [ItemHistoryType.ReminderCompleted]: 'fa-check-double',
     [ItemHistoryType.ReminderScheduled]: 'fa-bell',
-    [ItemHistoryType.Sold]: 'fa-dollar-sign'
+    [ItemHistoryType.Archived]: 'fa-archive'
   };
 
   get isLent(): boolean { return this.item?.status === 1; }
-  get isBorrowed(): boolean { return this.item?.status === 7; }
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
@@ -136,25 +132,19 @@ export class ItemDetailComponent implements OnInit {
   onReturn() {
     if (!this.item) return;
 
-    const isBorrowed = this.item.status === 7;
-    const message = isBorrowed 
-      ? 'ITEM_CARD.MODAL.RETURN_BORROWED_MSG' 
-      : 'LENDING_MODAL.MODAL.RETURN_MSG';
+    const message = 'LENDING_MODAL.MODAL.RETURN_MSG';
 
     this.modalService.openConfirm({
       mode: 'confirm',
       title: 'COMMON.RETURN',
       message: message,
       confirmText: 'COMMON.YES'
-    }).subscribe(() => {
+    }).subscribe((res) => {
+      if (!res) return;
 
       this.lendingService.returnItem(this.item!.id, { returnedDate: new Date().toISOString() }).subscribe({
         next: () => {
-          if (isBorrowed) {
-            this.router.navigate(['/dashboard'], { replaceUrl: true });
-          } else {
-            this.loadItem(this.item!.id);
-          }
+          this.loadItem(this.item!.id);
         },
         error: (err) => console.error('Return failed', err)
       });

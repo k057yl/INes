@@ -5,7 +5,8 @@
         <i class="fa fa-chevron-left"></i> {{ 'COMMON.BACK' | translate }}
       </button>
       <div class="header-actions">
-        @if (isLent || isBorrowed) {
+        
+        @if (isLent) {
           <button class="nav-btn return-btn" (click)="onReturn()" style="color: var(--g-blue); border-color: var(--g-blue);">
             <i class="fa fa-undo"></i> {{ 'COMMON.RETURN' | translate }}
           </button>
@@ -56,7 +57,6 @@
           </span>
         </div>
         
-        <!-- ВОТ ТУТ ДОБАВИЛ КОЛОКОЛЬЧИК ДЛЯ ПРОСРОЧЕННЫХ НАПОМИНАНИЙ -->
         <h1 class="item-name">
           {{ item.name }}
           @if (item.hasOverdueReminders) {
@@ -117,13 +117,6 @@
                         </span>
                       }
 
-                      @else if (h.type === 7 && h.newValue; as val) {
-                        <span class="status-change">
-                          <i class="fa fa-check-circle"></i>
-                          {{ val.includes('|') ? val.split('|')[1] : val }}
-                        </span>
-                      }
-
                       @else if (h.newValue; as val) {
                         <span class="status-change">
                           {{ val }}
@@ -145,11 +138,12 @@
         <div class="widget-wrapper">
           <app-item-reminders [itemId]="item.id"></app-item-reminders>
         </div>
-        @if ((isLent || isBorrowed) && item.lending) {
+
+        @if (isLent && item.lending) {
           <div class="lending-info-card">
-            <div class="card-header" [class.borrowed-header]="isBorrowed">
-              <i class="fa" [ngClass]="isLent ? 'fa-handshake' : 'fa-reply-all'"></i>
-              <span>{{ (isLent ? 'STATUS.LENT' : 'STATUS.BORROWED') | translate }}</span>
+            <div class="card-header">
+              <i class="fa fa-handshake"></i>
+              <span>{{ 'STATUS.LENT' | translate }}</span>
             </div>
             <div class="card-body">
               <div class="lending-main-info">
@@ -162,7 +156,6 @@
                   <span>{{ item.lending.dateGiven | date:'dd.MM.yyyy' }}</span>
                 </div>
                 
-                <!-- ВОТ ТУТ КРАСИМ ДАТУ И ВЫВОДИМ ИКОНКУ, ЕСЛИ ПРОСРОЧЕНО -->
                 @if (item.lending.expectedReturnDate) {
                   <div class="date-row">
                     <label>{{ 'LENDING_MODAL.EXPECTED_RETURN' | translate }}</label>

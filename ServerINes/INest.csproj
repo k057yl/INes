@@ -18,9 +18,9 @@
     <Content Include="Features\Categories\Commands\UpdateCategory\UpdateCategoryValidator.cs" />
     <Content Include="Features\Categories\Queries\GetCategories\GetCategoriesHandler.cs" />
     <Content Include="Features\Categories\Queries\GetCategories\GetCategoriesQuery.cs" />
-    <Content Include="Features\Items\Commands\CancelSale\CancelSaleCommand.cs" />
-    <Content Include="Features\Items\Commands\CancelSale\CancelSaleHandler.cs" />
-    <Content Include="Features\Items\Commands\CancelSale\CancelSaleValidator.cs" />
+    <Content Include="Features\Sales\Commands\CancelSale\CancelSaleCommand.cs" />
+    <Content Include="Features\Sales\Commands\CancelSale\CancelSaleHandler.cs" />
+    <Content Include="Features\Sales\Commands\CancelSale\CancelSaleValidator.cs" />
     <Content Include="Features\Items\Commands\ChangeItemStatus\ChangeItemStatusCommand.cs" />
     <Content Include="Features\Items\Commands\ChangeItemStatus\ChangeItemStatusHandler.cs" />
     <Content Include="Features\Items\Commands\ChangeItemStatus\ChangeItemStatusValidator.cs" />
@@ -123,21 +123,21 @@
   <ItemGroup>
     <PackageReference Include="brevo_csharp" Version="1.1.2" />
     <PackageReference Include="CloudinaryDotNet" Version="1.29.2" />
+    <PackageReference Include="DotNetEnv" Version="3.2.0" />
     <PackageReference Include="FluentValidation" Version="12.1.1" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
     <PackageReference Include="Google.Apis.Auth" Version="1.75.0" />
     <PackageReference Include="HtmlSanitizer" Version="9.0.892" />
     <PackageReference Include="MediatR" Version="14.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.9" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.9" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.9" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.9" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.9">
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.10" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.10">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.2" />
-    <PackageReference Include="SkiaSharp" Version="4.150.0" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
+    <PackageReference Include="SkiaSharp" Version="4.150.1" />
     <PackageReference Include="TimeZoneConverter" Version="7.2.0" />
   </ItemGroup>
 

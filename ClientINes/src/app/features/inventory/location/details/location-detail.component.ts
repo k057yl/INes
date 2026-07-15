@@ -32,12 +32,8 @@ export class LocationDetailComponent implements OnInit {
   readonly statusKeys: Record<number, string> = {
     [ItemStatus.Active]: 'STATUS.ACTIVE',
     [ItemStatus.Lent]: 'STATUS.LENT',
-    [ItemStatus.Lost]: 'STATUS.LOST',
-    [ItemStatus.Broken]: 'STATUS.BROKEN',
     [ItemStatus.Sold]: 'STATUS.SOLD',
-    [ItemStatus.Gifted]: 'STATUS.GIFTED',
-    [ItemStatus.Listed]: 'STATUS.LISTED',
-    [ItemStatus.Borrowed]: 'STATUS.BORROWED'
+    [ItemStatus.Archived]: 'STATUS.ARCHIVED'
   };
 
   ngOnInit() {

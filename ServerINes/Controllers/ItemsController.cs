@@ -1,7 +1,6 @@
 ﻿using INest.Data.Enums;
 using INest.Exceptions;
 using INest.Features.Items.DTOs;
-using INest.Features.Items.Commands.CancelSale;
 using INest.Features.Items.Commands.ChangeItemStatus;
 using INest.Features.Items.Commands.CreateItem;
 using INest.Features.Items.Commands.DeleteItem;
@@ -94,14 +93,6 @@ namespace INest.Controllers
         public async Task<IActionResult> ChangeStatus(Guid id, [FromBody] ItemStatus status)
         {
             var command = new ChangeItemStatusCommand(GetUserId(), id, status);
-            await _mediator.Send(command);
-            return Ok();
-        }
-
-        [HttpDelete("{id}/sale")]
-        public async Task<IActionResult> CancelSale(Guid id)
-        {
-            var command = new CancelSaleCommand(GetUserId(), id);
             await _mediator.Send(command);
             return Ok();
         }

@@ -4,17 +4,15 @@ using INest.Data.Entities.Infrastructure;
 using INest.Middleware;
 using INest.Seeders;
 using Microsoft.AspNetCore.Identity;
+using DotNetEnv;
+
+Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ---------- Регистрация слоев ----------
 builder.Services.AddInfrastructure(builder.Configuration);
 
-// Здесь живут сервисы и их декораторы для кэширования
 builder.Services.AddBusinessServices();
-
-// ---------- Swagger ----------
-builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
@@ -29,7 +27,6 @@ app.Use(async (context, next) =>
 app.UseCors("AllowAngular");
 app.UseHttpsRedirection();
 
-// ---------- Миграции + сидирование ----------
 using (var scope = app.Services.CreateScope())
 {
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
@@ -39,14 +36,7 @@ using (var scope = app.Services.CreateScope())
     await AdminSeeder.SeedAsync(userManager, roleManager, config);
 }
 
-// ---------- Pipeline ----------
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
-
 app.UseRouting();
-
 app.UseAuthentication();
 app.UseAuthorization();
 
