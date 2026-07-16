@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using CloudinaryDotNet;
+using FluentValidation;
 using Ganss.Xss;
 using INest.Constants;
 using INest.Data.Entities;
@@ -6,14 +7,18 @@ using INest.Data.Entities.Infrastructure;
 using INest.Infrastructure;
 using INest.Infrastructure.BackgroundServices;
 using INest.Infrastructure.Behaviors;
+using INest.Infrastructure.Dispatcher;
 using INest.Infrastructure.Email;
 using INest.Infrastructure.Identity;
+using INest.Infrastructure.Sanitizer;
 using INest.Infrastructure.Storage;
+using INest.Infrastructure.Telegram;
 using INest.Infrastructure.Tracker;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -31,7 +36,15 @@ namespace INest
 
             services.AddMemoryCache();
             services.AddLocalization(options => options.ResourcesPath = "Resources");
+
             services.Configure<CloudinarySettings>(config.GetSection("CloudinarySettings"));
+
+            services.AddSingleton(sp =>
+            {
+                var settings = sp.GetRequiredService<IOptions<CloudinarySettings>>().Value;
+                var acc = new Account(settings.CloudName, settings.ApiKey, settings.ApiSecret);
+                return new Cloudinary(acc);
+            });
 
             return services;
         }
@@ -131,9 +144,12 @@ namespace INest
             services.AddValidatorsFromAssembly(typeof(ServiceCollectionExtensions).Assembly);
 
             services.AddSingleton<ICacheTracker, CacheTracker>();
-            services.AddSingleton<IHtmlSanitizer, HtmlSanitizer>();
+            services.AddSingleton<ISanitizerService, SanitizerService>();
 
             services.AddScoped<IEmailService, EmailService>();
+
+            services.AddScoped<INotificationDispatcher, NotificationDispatcher>();
+
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IPhotoService, PhotoService>();
             services.AddScoped<LendingService>();
@@ -147,6 +163,8 @@ namespace INest
 
             services.AddHostedService<ReminderWorker>();
             services.AddHostedService<UnconfirmedUserCleanupWorker>();
+
+            services.AddHostedService<TelegramBotBackgroundService>();
 
             return services;
         }

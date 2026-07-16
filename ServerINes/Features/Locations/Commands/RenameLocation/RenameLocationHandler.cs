@@ -1,5 +1,5 @@
-﻿using Ganss.Xss;
-using INest.Exceptions;
+﻿using INest.Exceptions;
+using INest.Infrastructure.Sanitizer;
 using INest.Infrastructure.Tracker;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -10,10 +10,10 @@ namespace INest.Features.Locations.Commands.RenameLocation
     public class RenameLocationHandler : IRequestHandler<RenameLocationCommand, bool>
     {
         private readonly AppDbContext _context;
-        private readonly IHtmlSanitizer _sanitizer;
+        private readonly ISanitizerService _sanitizer;
         private readonly ICacheTracker _tracker;
 
-        public RenameLocationHandler(AppDbContext context, IHtmlSanitizer sanitizer, ICacheTracker tracker)
+        public RenameLocationHandler(AppDbContext context, ISanitizerService sanitizer, ICacheTracker tracker)
         {
             _context = context;
             _sanitizer = sanitizer;
@@ -28,7 +28,7 @@ namespace INest.Features.Locations.Commands.RenameLocation
             if (location == null)
                 throw new KeyNotFoundException(LOCATIONS.ERRORS.NOT_FOUND);
 
-            var sanitizedName = _sanitizer.Sanitize(request.NewName);
+            var sanitizedName = _sanitizer.StripAllHtml(request.NewName);
             if (string.IsNullOrWhiteSpace(sanitizedName))
             {
                 throw new AppException(LOCATIONS.ERRORS.INVALID_NAME, 400);

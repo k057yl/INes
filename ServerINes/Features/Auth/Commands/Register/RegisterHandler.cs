@@ -1,7 +1,7 @@
-﻿using Ganss.Xss;
-using INest.Data.Entities.Infrastructure;
+﻿using INest.Data.Entities.Infrastructure;
 using INest.Exceptions;
 using INest.Infrastructure.Email;
+using INest.Infrastructure.Sanitizer;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
@@ -15,13 +15,13 @@ namespace INest.Features.Auth.Commands.Register
         private readonly UserManager<AppUser> _userManager;
         private readonly IEmailService _emailService;
         private readonly IStringLocalizer<SharedResource> _emailT;
-        private readonly IHtmlSanitizer _sanitizer;
+        private readonly ISanitizerService _sanitizer;
 
         public RegisterHandler(
             UserManager<AppUser> userManager,
             IEmailService emailService,
             IStringLocalizer<SharedResource> emailT,
-            IHtmlSanitizer sanitizer)
+            ISanitizerService sanitizer)
         {
             _userManager = userManager;
             _emailService = emailService;
@@ -32,7 +32,8 @@ namespace INest.Features.Auth.Commands.Register
         public async Task Handle(RegisterCommand request, CancellationToken cancellationToken)
         {
             var normalizedEmail = request.Email.Trim().ToUpperInvariant();
-            var sanitizedUsername = _sanitizer.Sanitize(request.Username).Trim();
+
+            var sanitizedUsername = _sanitizer.StripAllHtml(request.Username).Trim();
 
             if (string.IsNullOrWhiteSpace(sanitizedUsername))
                 throw new AppException(AUTH.ERRORS.INVALID_USERNAME, 400);
@@ -65,10 +66,12 @@ namespace INest.Features.Auth.Commands.Register
             if (!updateResult.Succeeded)
                 throw new AppException(SYSTEM.DEFAULT_ERROR, 500);
 
-            var subject = _emailT[EMAILS.CONFIRM_SUBJECT];
-            var body = string.Format(_emailT[EMAILS.CONFIRM_BODY], code);
+            string subject = _emailT[EMAILS.CONFIRM_SUBJECT].Value;
+            string bodyTemplate = _emailT[EMAILS.CONFIRM_BODY].Value;
 
-            await _emailService.SendEmailAsync(normalizedEmail, subject, body);
+            string htmlBody = string.Format(bodyTemplate, code);
+
+            await _emailService.SendEmailAsync(normalizedEmail, subject, htmlBody);
         }
     }
 }

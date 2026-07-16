@@ -1,9 +1,7 @@
 ﻿using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using INest.Constants;
-using INest.Data.Entities;
 using INest.Infrastructure.Storage;
-using Microsoft.Extensions.Options;
 using SkiaSharp;
 
 namespace INest.Infrastructure
@@ -17,21 +15,20 @@ namespace INest.Infrastructure
 
         private static readonly string[] AllowedMimeTypes = { "image/jpeg", "image/png", "image/webp", "image/gif" };
 
-        public PhotoService(IOptions<CloudinarySettings> config, ILogger<PhotoService> logger)
+        public PhotoService(Cloudinary cloudinary, ILogger<PhotoService> logger)
         {
-            var acc = new Account(config.Value.CloudName, config.Value.ApiKey, config.Value.ApiSecret);
-            _cloudinary = new Cloudinary(acc);
+            _cloudinary = cloudinary;
             _logger = logger;
         }
 
-        public async Task<ImageUploadResult> AddPhotoAsync(IFormFile file)
+        public async Task<ImageUploadResult> AddPhotoAsync(IFormFile file, Guid? userId = null)
         {
             if (file == null || file.Length == 0) return new ImageUploadResult();
 
             if (!AllowedMimeTypes.Contains(file.ContentType.ToLowerInvariant()))
             {
                 _logger.LogWarning("Попытка загрузить неверный формат файла: {Type}", file.ContentType);
-                return new ImageUploadResult { Error = new Error { Message = "Unsupported file format" } };
+                return new ImageUploadResult { Error = new Error { Message = LocalizationConstants.ERRORS.IMAGE_PROCESSING_FAILED } };
             }
 
             if (file.Length > MaxFileSizeBytes * 20)
@@ -46,7 +43,7 @@ namespace INest.Infrastructure
                 using (var originalBitmap = SKBitmap.Decode(inputStream))
                 {
                     if (originalBitmap == null)
-                        throw new Exception("Failed to decode image via SkiaSharp");
+                        throw new Exception(LocalizationConstants.ERRORS.IMAGE_PROCESSING_FAILED);
 
                     int targetHeight = (int)(originalBitmap.Height * ((float)TargetWidth / originalBitmap.Width));
 
@@ -64,11 +61,16 @@ namespace INest.Infrastructure
                 }
 
                 outStream.Position = 0;
+
+                var folderPath = userId.HasValue
+                    ? $"INest/users/{userId.Value}"
+                    : "INest";
+
                 var uploadParams = new ImageUploadParams
                 {
                     File = new FileDescription(file.FileName, outStream),
-                    Folder = "INest",
-                    Transformation = new Transformation().Quality("auto").FetchFormat("auto")
+                    Folder = folderPath,
+                    Transformation = new Transformation().Quality("auto").FetchFormat("auto"),
                 };
 
                 return await _cloudinary.UploadAsync(uploadParams);

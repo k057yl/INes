@@ -1,7 +1,7 @@
-﻿using Ganss.Xss;
-using INest.Data.Entities.Core;
+﻿using INest.Data.Entities.Core;
 using INest.Data.Enums;
 using INest.Exceptions;
+using INest.Infrastructure.Sanitizer;
 using INest.Infrastructure.Storage;
 using INest.Infrastructure.Tracker;
 using MediatR;
@@ -14,14 +14,14 @@ namespace INest.Features.Items.Commands.UpdateItemFull
     {
         private readonly AppDbContext _context;
         private readonly IPhotoService _photoService;
-        private readonly IHtmlSanitizer _sanitizer;
+        private readonly ISanitizerService _sanitizer;
         private readonly ILogger<UpdateItemFullHandler> _logger;
         private readonly ICacheTracker _tracker;
 
         public UpdateItemFullHandler(
             AppDbContext context,
             IPhotoService photoService,
-            IHtmlSanitizer sanitizer,
+            ISanitizerService sanitizer,
             ILogger<UpdateItemFullHandler> logger,
             ICacheTracker tracker)
         {
@@ -36,10 +36,10 @@ namespace INest.Features.Items.Commands.UpdateItemFull
         {
             var dto = request.Dto;
 
-            var safeName = _sanitizer.Sanitize(dto.Name);
+            var safeName = _sanitizer.StripAllHtml(dto.Name);
             if (string.IsNullOrWhiteSpace(safeName)) throw new AppException(SYSTEM.ERRORS.VALIDATION_FAILED, 400);
 
-            var safeDesc = !string.IsNullOrEmpty(dto.Description) ? _sanitizer.Sanitize(dto.Description) : null;
+            var safeDesc = !string.IsNullOrEmpty(dto.Description) ? _sanitizer.SanitizeHtml(dto.Description) : null;
 
             using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
             try
@@ -64,7 +64,7 @@ namespace INest.Features.Items.Commands.UpdateItemFull
 
                 if (request.Photos != null && request.Photos.Count > 0)
                 {
-                    await HandlePhotosAsync(item, request.Photos);
+                    await HandlePhotosAsync(item, request.Photos, request.UserId);
                 }
 
                 await _context.SaveChangesAsync(cancellationToken);
@@ -81,7 +81,7 @@ namespace INest.Features.Items.Commands.UpdateItemFull
             }
         }
 
-        private async Task HandlePhotosAsync(Item item, List<IFormFile>? photos, string? mainPhotoName = null)
+        private async Task HandlePhotosAsync(Item item, List<IFormFile>? photos, Guid userId, string? mainPhotoName = null)
         {
             if (photos == null || photos.Count == 0) return;
 
@@ -89,7 +89,7 @@ namespace INest.Features.Items.Commands.UpdateItemFull
 
             var uploadTasks = photos.Select(async photoFile =>
             {
-                var result = await _photoService.AddPhotoAsync(photoFile);
+                var result = await _photoService.AddPhotoAsync(photoFile, userId);
                 return new { File = photoFile, Result = result };
             }).ToList();
 
@@ -98,7 +98,7 @@ namespace INest.Features.Items.Commands.UpdateItemFull
             foreach (var upload in uploadResults)
             {
                 if (upload.Result.Error != null)
-                    throw new Exception(upload.Result.Error.Message);
+                    throw new AppException(ERRORS.IMAGE_PROCESSING_FAILED);
 
                 var itemPhoto = new ItemPhoto
                 {

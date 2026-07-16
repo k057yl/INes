@@ -1,6 +1,6 @@
-﻿using Ganss.Xss;
-using INest.Data.Entities.Infrastructure;
+﻿using INest.Data.Entities.Infrastructure;
 using INest.Exceptions;
+using INest.Infrastructure.Sanitizer;
 using INest.Infrastructure.Tracker;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -11,10 +11,10 @@ namespace INest.Features.Reminders.Commands.AddReminder
     public class AddReminderHandler : IRequestHandler<AddReminderCommand, Reminder>
     {
         private readonly AppDbContext _context;
-        private readonly IHtmlSanitizer _sanitizer;
+        private readonly ISanitizerService _sanitizer;
         private readonly ICacheTracker _tracker;
 
-        public AddReminderHandler(AppDbContext context, IHtmlSanitizer sanitizer, ICacheTracker tracker)
+        public AddReminderHandler(AppDbContext context, ISanitizerService sanitizer, ICacheTracker tracker)
         {
             _context = context;
             _sanitizer = sanitizer;
@@ -25,10 +25,10 @@ namespace INest.Features.Reminders.Commands.AddReminder
         {
             var dto = request.Dto;
 
-            var itemExists = await _context.Items.AnyAsync(i => i.Id == dto.ItemId && i.UserId == request.UserId, cancellationToken);
+            var itemExists = await _context.Items.AsNoTracking().AnyAsync(i => i.Id == dto.ItemId && i.UserId == request.UserId, cancellationToken);
             if (!itemExists) throw new KeyNotFoundException(ITEMS.ERRORS.NOT_FOUND);
 
-            var safeTitle = _sanitizer.Sanitize(dto.Title);
+            var safeTitle = _sanitizer.StripAllHtml(dto.Title);
             if (string.IsNullOrWhiteSpace(safeTitle))
                 throw new AppException(SYSTEM.ERRORS.VALIDATION_FAILED, 400);
 

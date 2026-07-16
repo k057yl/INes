@@ -453,6 +453,9 @@ namespace INest.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
 
+                    b.Property<long?>("TelegramChatId")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("TimeZoneId")
                         .IsRequired()
                         .HasColumnType("text");
@@ -527,6 +530,41 @@ namespace INest.Migrations
                     b.ToTable("ItemHistories");
                 });
 
+            modelBuilder.Entity("INest.Data.Entities.Infrastructure.Notification", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsRead")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Notifications");
+                });
+
             modelBuilder.Entity("INest.Data.Entities.Infrastructure.Reminder", b =>
                 {
                     b.Property<Guid>("Id")
@@ -574,6 +612,42 @@ namespace INest.Migrations
                     b.HasIndex("UserId", "IsDeleted");
 
                     b.ToTable("Reminders");
+                });
+
+            modelBuilder.Entity("INest.Data.Entities.Infrastructure.TelegramConnectionCode", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("ExpiryTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("TelegramConnectionCodes");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
@@ -827,6 +901,17 @@ namespace INest.Migrations
                     b.Navigation("Item");
                 });
 
+            modelBuilder.Entity("INest.Data.Entities.Infrastructure.Notification", b =>
+                {
+                    b.HasOne("INest.Data.Entities.Infrastructure.AppUser", "User")
+                        .WithMany("Notifications")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("INest.Data.Entities.Infrastructure.Reminder", b =>
                 {
                     b.HasOne("INest.Data.Entities.Core.Item", "Item")
@@ -917,6 +1002,8 @@ namespace INest.Migrations
                     b.Navigation("Items");
 
                     b.Navigation("Locations");
+
+                    b.Navigation("Notifications");
                 });
 #pragma warning restore 612, 618
         }

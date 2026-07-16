@@ -120,10 +120,10 @@
   <data name="COMMON_NOT_SPECIFIED" xml:space="preserve">
     <value>не указана</value>
   </data>
-  <data name="CONFIRM_BODY" xml:space="preserve">
+  <data name="EMAILS.CONFIRM_BODY" xml:space="preserve">
     <value>&lt;h3&gt;Добро пожаловать!&lt;/h3&gt;&lt;p&gt;Ваш код: &lt;b&gt;{0}&lt;/b&gt;&lt;/p&gt;</value>
   </data>
-  <data name="CONFIRM_SUBJECT" xml:space="preserve">
+  <data name="EMAILS.CONFIRM_SUBJECT" xml:space="preserve">
     <value>Добро пожаловать в INest! Подтвердите регистрацию</value>
   </data>
   <data name="LENDING_BODY_IN" xml:space="preserve">
@@ -138,10 +138,57 @@
   <data name="LENDING_SUBJECT_OUT" xml:space="preserve">
     <value>Уведомление: Вы передали вещь</value>
   </data>
-  <data name="RESET_BODY" xml:space="preserve">
+  <data name="EMAILS.RESET_BODY" xml:space="preserve">
     <value>&lt;p&gt;Нажмите &lt;a href='{0}'&gt;здесь&lt;/a&gt;, чтобы сбросить пароль.&lt;/p&gt;</value>
   </data>
-  <data name="RESET_SUBJECT" xml:space="preserve">
+  <data name="EMAILS.RESET_SUBJECT" xml:space="preserve">
     <value>Сброс пароля</value>
+  </data>
+  <data name="TG_LINK_ERROR" xml:space="preserve">
+    <value>❌ Ошибка привязки. Возможно, ссылка устарела или токен недействителен. Сгенерируй новый код в админке.</value>
+  </data>
+  <data name="TG_LINK_SUCCESS" xml:space="preserve">
+    <value>🎉 Аккаунт успешно привязан к INest! Теперь уведомления и быстрый поиск доступны прямо здесь.</value>
+  </data>
+  <data name="TG_WELCOME_WITHOUT_TOKEN" xml:space="preserve">
+    <value>Привет! Для привязки аккаунта перейди по ссылке из админки INest.</value>
+  </data>
+  <data name="TG_FIND_USAGE" xml:space="preserve">
+    <value>🔍 Напиши что искать после команды, например: `/find отвертка`
+*(Ищет по названию и описанию)*</value>
+  </data>
+  <data name="TG_FIND_EMPTY" xml:space="preserve">
+    <value>🤷‍♂️ Ничего не найдено по запросу: *{0}*</value>
+  </data>
+  <data name="TG_FIND_ITEM_HEADER" xml:space="preserve">
+    <value>🔍 *Вот что я нашёл по запросу "{0}":*</value>
+  </data>
+  <data name="TG_FIND_ITEM_ROW" xml:space="preserve">
+    <value>📦 *{0}*
+📍 Место: _{1}_</value>
+  </data>
+  <data name="TG_FIND_ITEM_DESC" xml:space="preserve">
+    <value>📝 Примечание: {0}</value>
+  </data>
+  <data name="TG_HELP_TEXT" xml:space="preserve">
+    <value>🤖 *Доступные команды:*
+
+🔍 `/find &lt;название&gt;` - быстрый поиск вещи по коробкам и локациям
+ℹ️ `/status` - проверить статус привязки аккаунта</value>
+  </data>
+  <data name="TG_STATUS_OK" xml:space="preserve">
+    <value>✅ Ваш аккаунт успешно связан с базой INest. Уведомления активны!</value>
+  </data>
+  <data name="TG_MENU_FIND" xml:space="preserve">
+    <value>Поиск вещей по коробкам</value>
+  </data>
+  <data name="TG_MENU_STATUS" xml:space="preserve">
+    <value>Проверить статус привязки</value>
+  </data>
+  <data name="TG_MENU_HELP" xml:space="preserve">
+    <value>Показать справку</value>
+  </data>
+  <data name="TG_BTN_FIND_ITEMS" xml:space="preserve">
+    <value>🔍 Поиск вещей</value>
   </data>
 </root>

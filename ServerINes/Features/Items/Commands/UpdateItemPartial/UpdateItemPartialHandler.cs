@@ -1,8 +1,8 @@
-﻿using Ganss.Xss;
-using INest.Data.Entities.Core;
+﻿using INest.Data.Entities.Core;
 using INest.Data.Entities.Infrastructure;
 using INest.Data.Enums;
 using INest.Exceptions;
+using INest.Infrastructure.Sanitizer;
 using INest.Infrastructure.Storage;
 using INest.Infrastructure.Tracker;
 using MediatR;
@@ -15,14 +15,14 @@ namespace INest.Features.Items.Commands.UpdateItemPartial
     {
         private readonly AppDbContext _context;
         private readonly IPhotoService _photoService;
-        private readonly IHtmlSanitizer _sanitizer;
+        private readonly ISanitizerService _sanitizer;
         private readonly ILogger<UpdateItemPartialHandler> _logger;
         private readonly ICacheTracker _tracker;
 
         public UpdateItemPartialHandler(
             AppDbContext context,
             IPhotoService photoService,
-            IHtmlSanitizer sanitizer,
+            ISanitizerService sanitizer,
             ILogger<UpdateItemPartialHandler> logger,
             ICacheTracker tracker)
         {
@@ -65,7 +65,7 @@ namespace INest.Features.Items.Commands.UpdateItemPartial
 
                 if (dto.Name != null)
                 {
-                    var safeName = _sanitizer.Sanitize(dto.Name);
+                    var safeName = _sanitizer.StripAllHtml(dto.Name);
                     if (string.IsNullOrWhiteSpace(safeName)) throw new AppException(SYSTEM.ERRORS.VALIDATION_FAILED, 400);
 
                     if (safeName != item.Name)
@@ -77,7 +77,7 @@ namespace INest.Features.Items.Commands.UpdateItemPartial
 
                 if (dto.Description != null)
                 {
-                    var safeDesc = _sanitizer.Sanitize(dto.Description);
+                    var safeDesc = _sanitizer.SanitizeHtml(dto.Description);
                     if (safeDesc != item.Description)
                     {
                         LogChange(ItemHistoryType.ValueUpdated, item.Description, safeDesc);
@@ -129,7 +129,7 @@ namespace INest.Features.Items.Commands.UpdateItemPartial
 
                 if (request.Photos != null && request.Photos.Count > 0)
                 {
-                    await HandlePhotosAsync(item, request.Photos);
+                    await HandlePhotosAsync(item, request.Photos, request.UserId);
                     LogChange(ItemHistoryType.ValueUpdated, null, $"{HISTORY.PHOTOS_ADDED_COUNT}|{request.Photos.Count}");
                 }
 
@@ -145,7 +145,7 @@ namespace INest.Features.Items.Commands.UpdateItemPartial
             }
         }
 
-        private async Task HandlePhotosAsync(Item item, List<IFormFile>? photos)
+        private async Task HandlePhotosAsync(Item item, List<IFormFile>? photos, Guid userId)
         {
             if (photos == null || photos.Count == 0) return;
 
@@ -153,7 +153,7 @@ namespace INest.Features.Items.Commands.UpdateItemPartial
 
             var uploadTasks = photos.Select(async photoFile =>
             {
-                var result = await _photoService.AddPhotoAsync(photoFile);
+                var result = await _photoService.AddPhotoAsync(photoFile, userId);
                 return new { File = photoFile, Result = result };
             }).ToList();
 
@@ -162,7 +162,7 @@ namespace INest.Features.Items.Commands.UpdateItemPartial
             foreach (var upload in uploadResults)
             {
                 if (upload.Result.Error != null)
-                    throw new Exception(upload.Result.Error.Message);
+                    throw new AppException(ERRORS.IMAGE_PROCESSING_FAILED);
 
                 var itemPhoto = new ItemPhoto
                 {

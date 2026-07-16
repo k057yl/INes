@@ -8,6 +8,7 @@ import { FeatureService } from '../../core/services/feature.service';
 import { CategoryService } from '../../core/services/category.service';
 import { PlatformService } from '../../core/services/platform.service';
 import { DashboardModalService } from '../../features/dashboard/dashboard.modal.service';
+import { TelegramBotService, TelegramStatusContract } from '../../core/services/telegram-bot.service';
 
 interface SimpleContract {
   id: string;
@@ -15,7 +16,7 @@ interface SimpleContract {
   color?: string;
 }
 
-type SettingsTab = 'general' | 'categories' | 'platforms';
+type SettingsTab = 'general' | 'categories' | 'platforms' | 'integrations';
 
 @Component({
   selector: 'app-settings',
@@ -30,11 +31,15 @@ export class SettingsComponent implements OnInit {
   private platformService = inject(PlatformService);
   private modalService = inject(DashboardModalService);
   private translate = inject(TranslateService);
+  private telegramService = inject(TelegramBotService);
 
   categories: SimpleContract[] = [];
   platforms: SimpleContract[] = [];
   activeTab: SettingsTab = 'general';
   isLoading = false;
+
+  tgStatus: TelegramStatusContract = { isLinked: false };
+  isViberBotEnabled = false;
 
   ngOnInit() {
     this.loadAllData();
@@ -53,6 +58,47 @@ export class SettingsComponent implements OnInit {
         this.platforms = res.platforms;
       }
     });
+  }
+
+  loadTelegramStatus() {
+    this.isLoading = true;
+    this.telegramService.getStatus()
+      .pipe(finalize(() => this.isLoading = false))
+      .subscribe(status => this.tgStatus = status);
+  }
+
+  generateTelegramToken() {
+    this.isLoading = true;
+    this.telegramService.generateToken()
+      .pipe(finalize(() => this.isLoading = false))
+      .subscribe(status => this.tgStatus = status);
+  }
+
+  unlinkTelegram() {
+    this.modalService.openConfirm({
+      mode: 'delete',
+      title: 'COMMON.DELETE',
+      message: 'Вы уверены, что хотите отключить Telegram-бота? Уведомления будут приходить только на Email.',
+      name: 'Telegram Bot'
+    }).subscribe(confirm => {
+      if (confirm) {
+        this.isLoading = true;
+        this.telegramService.unlink()
+          .pipe(finalize(() => this.isLoading = false))
+          .subscribe(() => {
+            this.tgStatus = { isLinked: false };
+          });
+      }
+    });
+  }
+
+  getTelegramLink(): string {
+    if (!this.tgStatus.botUsername || !this.tgStatus.verificationToken) return '#';
+    return `https://t.me/${this.tgStatus.botUsername}?start=${this.tgStatus.verificationToken}`;
+  }
+
+  toggleViberBot(enabled: boolean): void {
+    this.isViberBotEnabled = enabled;
   }
 
   addCategory() { 
@@ -123,5 +169,8 @@ export class SettingsComponent implements OnInit {
 
   switchTab(tab: SettingsTab) {
     this.activeTab = tab;
+    if (tab === 'integrations') {
+      this.loadTelegramStatus();
+    }
   }
 }

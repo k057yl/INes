@@ -120,10 +120,10 @@
   <data name="COMMON_NOT_SPECIFIED" xml:space="preserve">
     <value>not specified</value>
   </data>
-  <data name="CONFIRM_BODY" xml:space="preserve">
+  <data name="EMAILS.CONFIRM_BODY" xml:space="preserve">
     <value>&lt;h3&gt;Welcome!&lt;/h3&gt;&lt;p&gt;Your code: &lt;b&gt;{0}&lt;/b&gt;&lt;/p&gt;</value>
   </data>
-  <data name="CONFIRM_SUBJECT" xml:space="preserve">
+  <data name="EMAILS.CONFIRM_SUBJECT" xml:space="preserve">
     <value>Welcome to INest! Confirm your registration</value>
   </data>
   <data name="LENDING_BODY_IN" xml:space="preserve">
@@ -138,10 +138,57 @@
   <data name="LENDING_SUBJECT_OUT" xml:space="preserve">
     <value>Notification: Item lent</value>
   </data>
-  <data name="RESET_BODY" xml:space="preserve">
+  <data name="EMAILS.RESET_BODY" xml:space="preserve">
     <value>&lt;p&gt;Click &lt;a href='{0}'&gt;here&lt;/a&gt; to reset your password.&lt;/p&gt;</value>
   </data>
-  <data name="RESET_SUBJECT" xml:space="preserve">
+  <data name="EMAILS.RESET_SUBJECT" xml:space="preserve">
     <value>Reset Password</value>
+  </data>
+  <data name="TG_LINK_ERROR" xml:space="preserve">
+    <value>❌ Linking failed. The link might be expired or the token is invalid. Please generate a new code in the admin panel.</value>
+  </data>
+  <data name="TG_LINK_SUCCESS" xml:space="preserve">
+    <value>🎉 Account successfully linked to INest! Notifications and quick search are now active here.</value>
+  </data>
+  <data name="TG_WELCOME_WITHOUT_TOKEN" xml:space="preserve">
+    <value>Hello! To link your account, please use the link provided in the INest admin panel.</value>
+  </data>
+  <data name="TG_FIND_USAGE" xml:space="preserve">
+    <value>🔍 Type what you want to find after the command, e.g.: `/find screwdriver`
+*(Searches by name and description)*</value>
+  </data>
+  <data name="TG_FIND_EMPTY" xml:space="preserve">
+    <value>🤷‍♂️ Nothing found for: *{0}*</value>
+  </data>
+  <data name="TG_FIND_ITEM_HEADER" xml:space="preserve">
+    <value>🔍 *Search results for "{0}":*</value>
+  </data>
+  <data name="TG_FIND_ITEM_ROW" xml:space="preserve">
+    <value>📦 *{0}*
+📍 Location: _{1}_</value>
+  </data>
+  <data name="TG_FIND_ITEM_DESC" xml:space="preserve">
+    <value>📝 Note: {0}</value>
+  </data>
+  <data name="TG_HELP_TEXT" xml:space="preserve">
+    <value>🤖 *Available commands:*
+
+🔍 `/find &lt;name&gt;` - search for items by boxes and locations
+ℹ️ `/status` - check account link status</value>
+  </data>
+  <data name="TG_STATUS_OK" xml:space="preserve">
+    <value>✅ Your account is successfully linked to INest. Notifications are active!</value>
+  </data>
+  <data name="TG_MENU_FIND" xml:space="preserve">
+    <value>Search items by boxes</value>
+  </data>
+  <data name="TG_MENU_STATUS" xml:space="preserve">
+    <value>Check link status</value>
+  </data>
+  <data name="TG_MENU_HELP" xml:space="preserve">
+    <value>Show help info</value>
+  </data>
+  <data name="TG_BTN_FIND_ITEMS" xml:space="preserve">
+    <value>🔍 Search items</value>
   </data>
 </root>

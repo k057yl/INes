@@ -1,6 +1,6 @@
-﻿using Ganss.Xss;
-using INest.Data.Entities.Finances;
+﻿using INest.Data.Entities.Finances;
 using INest.Exceptions;
+using INest.Infrastructure.Sanitizer;
 using INest.Infrastructure.Tracker;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -11,10 +11,10 @@ namespace INest.Features.Platforms.Commands.UpdatePlatform
     public class UpdatePlatformHandler : IRequestHandler<UpdatePlatformCommand, Platform>
     {
         private readonly AppDbContext _context;
-        private readonly IHtmlSanitizer _sanitizer;
+        private readonly ISanitizerService _sanitizer;
         private readonly ICacheTracker _tracker;
 
-        public UpdatePlatformHandler(AppDbContext context, IHtmlSanitizer sanitizer, ICacheTracker tracker)
+        public UpdatePlatformHandler(AppDbContext context, ISanitizerService sanitizer, ICacheTracker tracker)
         {
             _context = context;
             _sanitizer = sanitizer;
@@ -29,7 +29,7 @@ namespace INest.Features.Platforms.Commands.UpdatePlatform
             if (platform == null)
                 throw new KeyNotFoundException(PLATFORMS.ERRORS.NOT_FOUND);
 
-            var sanitizedName = _sanitizer.Sanitize(request.Dto.Name);
+            var sanitizedName = _sanitizer.StripAllHtml(request.Dto.Name);
             if (string.IsNullOrWhiteSpace(sanitizedName))
                 throw new AppException(PLATFORMS.ERRORS.INVALID_NAME, 400);
 

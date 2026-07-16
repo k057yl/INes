@@ -1,8 +1,8 @@
-﻿using Ganss.Xss;
-using INest.Data.Entities.Finances;
+﻿using INest.Data.Entities.Finances;
 using INest.Data.Entities.Infrastructure;
 using INest.Data.Enums;
 using INest.Features.Sales.DTOs;
+using INest.Infrastructure.Sanitizer;
 using INest.Infrastructure.Tracker;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -13,10 +13,10 @@ namespace INest.Features.Sales.Commands.SellItem
     public class SellItemHandler : IRequestHandler<SellItemCommand, SaleResponseDto>
     {
         private readonly AppDbContext _context;
-        private readonly IHtmlSanitizer _sanitizer;
+        private readonly ISanitizerService _sanitizer;
         private readonly ICacheTracker _tracker;
 
-        public SellItemHandler(AppDbContext context, IHtmlSanitizer sanitizer, ICacheTracker tracker)
+        public SellItemHandler(AppDbContext context, ISanitizerService sanitizer, ICacheTracker tracker)
         {
             _context = context;
             _sanitizer = sanitizer;
@@ -36,7 +36,7 @@ namespace INest.Features.Sales.Commands.SellItem
 
             item.Sell();
 
-            var safeComment = !string.IsNullOrEmpty(dto.Comment) ? _sanitizer.Sanitize(dto.Comment) : null;
+            var safeComment = !string.IsNullOrEmpty(dto.Comment) ? _sanitizer.SanitizeHtml(dto.Comment) : null;
 
             decimal purchasePrice = item.PurchasePrice ?? 0;
             decimal platformFee = dto.PlatformFee ?? 0;

@@ -1,7 +1,7 @@
 ﻿using brevo_csharp.Api;
 using brevo_csharp.Model;
-using Ganss.Xss;
 using INest.Infrastructure.Email;
+using INest.Infrastructure.Sanitizer;
 using Microsoft.Extensions.Localization;
 using Configuration = brevo_csharp.Client.Configuration;
 using Task = System.Threading.Tasks.Task;
@@ -14,10 +14,10 @@ namespace INest.Infrastructure
         private readonly IStringLocalizer<SharedResource> _localizer;
         private readonly string _fromEmail;
         private readonly string _fromName;
-        private readonly IHtmlSanitizer _sanitizer;
+        private readonly ISanitizerService _sanitizer;
         private readonly TransactionalEmailsApi _brevoApi;
 
-        public EmailService(IConfiguration config, ILogger<EmailService> logger, IStringLocalizer<SharedResource> localizer, IHtmlSanitizer sanitizer)
+        public EmailService(IConfiguration config, ILogger<EmailService> logger, IStringLocalizer<SharedResource> localizer, ISanitizerService sanitizer)
         {
             _logger = logger;
             _localizer = localizer;
@@ -62,8 +62,8 @@ namespace INest.Infrastructure
             string subject = _localizer[subjectKey].Value;
             string dateStr = returnDate?.ToString("dd.MM.yyyy") ?? _localizer["COMMON_NOT_SPECIFIED"].Value;
 
-            var safeItemName = _sanitizer.Sanitize(itemName);
-            var safePersonName = _sanitizer.Sanitize(personName);
+            var safeItemName = _sanitizer.StripAllHtml(itemName);
+            var safePersonName = _sanitizer.StripAllHtml(personName);
 
             string htmlContent = string.Format(_localizer[bodyKey].Value, safeItemName, safePersonName, dateStr);
 
@@ -74,7 +74,9 @@ namespace INest.Infrastructure
         {
             string subject = _localizer["REMINDER_SUBJECT"].Value;
             string dateStr = triggerAt.ToString("dd.MM.yyyy");
-            string htmlContent = string.Format(_localizer["REMINDER_BODY"].Value, dateStr, title);
+
+            var safeTitle = _sanitizer.StripAllHtml(title);
+            string htmlContent = string.Format(_localizer["REMINDER_BODY"].Value, dateStr, safeTitle);
 
             await SendEmailAsync(toEmail, subject, htmlContent);
         }

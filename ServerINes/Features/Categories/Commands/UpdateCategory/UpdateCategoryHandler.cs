@@ -1,6 +1,6 @@
-﻿using Ganss.Xss;
-using INest.Data.Entities.Core;
+﻿using INest.Data.Entities.Core;
 using INest.Exceptions;
+using INest.Infrastructure.Sanitizer;
 using INest.Infrastructure.Tracker;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -11,10 +11,10 @@ namespace INest.Features.Categories.Commands.UpdateCategory
     public class UpdateCategoryHandler : IRequestHandler<UpdateCategoryCommand, Category>
     {
         private readonly AppDbContext _context;
-        private readonly IHtmlSanitizer _sanitizer;
+        private readonly ISanitizerService _sanitizer;
         private readonly ICacheTracker _tracker;
 
-        public UpdateCategoryHandler(AppDbContext context, IHtmlSanitizer sanitizer, ICacheTracker tracker)
+        public UpdateCategoryHandler(AppDbContext context, ISanitizerService sanitizer, ICacheTracker tracker)
         {
             _context = context;
             _sanitizer = sanitizer;
@@ -32,7 +32,7 @@ namespace INest.Features.Categories.Commands.UpdateCategory
             if (request.Dto.ParentCategoryId == request.CategoryId)
                 throw new AppException(SYSTEM.ERRORS.VALIDATION_FAILED, 400);
 
-            var sanitizedName = _sanitizer.Sanitize(request.Dto.Name);
+            var sanitizedName = _sanitizer.StripAllHtml(request.Dto.Name);
             if (string.IsNullOrWhiteSpace(sanitizedName))
                 throw new AppException(CATEGORIES.ERRORS.INVALID_NAME, 400);
 

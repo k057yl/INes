@@ -11,15 +11,15 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace INest.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260708144916_init")]
-    partial class init
+    [Migration("20260716101214_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.7")
+                .HasAnnotation("ProductVersion", "10.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -244,9 +244,6 @@ namespace INest.Migrations
                     b.Property<DateTime>("DateGiven")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("Direction")
-                        .HasColumnType("integer");
-
                     b.Property<DateTime?>("ExpectedReturnDate")
                         .HasColumnType("timestamp with time zone");
 
@@ -459,6 +456,9 @@ namespace INest.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
 
+                    b.Property<long?>("TelegramChatId")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("TimeZoneId")
                         .IsRequired()
                         .HasColumnType("text");
@@ -531,6 +531,41 @@ namespace INest.Migrations
                     b.HasIndex("UserId", "IsDeleted");
 
                     b.ToTable("ItemHistories");
+                });
+
+            modelBuilder.Entity("INest.Data.Entities.Infrastructure.Notification", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsRead")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("INest.Data.Entities.Infrastructure.Reminder", b =>
@@ -833,6 +868,17 @@ namespace INest.Migrations
                     b.Navigation("Item");
                 });
 
+            modelBuilder.Entity("INest.Data.Entities.Infrastructure.Notification", b =>
+                {
+                    b.HasOne("INest.Data.Entities.Infrastructure.AppUser", "User")
+                        .WithMany("Notifications")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("INest.Data.Entities.Infrastructure.Reminder", b =>
                 {
                     b.HasOne("INest.Data.Entities.Core.Item", "Item")
@@ -923,6 +969,8 @@ namespace INest.Migrations
                     b.Navigation("Items");
 
                     b.Navigation("Locations");
+
+                    b.Navigation("Notifications");
                 });
 #pragma warning restore 612, 618
         }

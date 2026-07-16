@@ -1,8 +1,8 @@
-﻿using Ganss.Xss;
-using INest.Data.Entities.Finances;
+﻿using INest.Data.Entities.Finances;
 using INest.Data.Entities.Infrastructure;
 using INest.Data.Enums;
 using INest.Exceptions;
+using INest.Infrastructure.Sanitizer;
 using INest.Infrastructure.Tracker;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -13,10 +13,10 @@ namespace INest.Features.Lendings.Commands.LendItem
     public class LendItemHandler : IRequestHandler<LendItemCommand, Lending>
     {
         private readonly AppDbContext _context;
-        private readonly IHtmlSanitizer _sanitizer;
+        private readonly ISanitizerService _sanitizer;
         private readonly ICacheTracker _tracker;
 
-        public LendItemHandler(AppDbContext context, IHtmlSanitizer sanitizer, ICacheTracker tracker)
+        public LendItemHandler(AppDbContext context, ISanitizerService sanitizer, ICacheTracker tracker)
         {
             _context = context;
             _sanitizer = sanitizer;
@@ -26,12 +26,13 @@ namespace INest.Features.Lendings.Commands.LendItem
         public async Task<Lending> Handle(LendItemCommand request, CancellationToken cancellationToken)
         {
             var dto = request.Dto;
-            var safePersonName = _sanitizer.Sanitize(dto.PersonName);
+
+            var safePersonName = _sanitizer.StripAllHtml(dto.PersonName);
 
             if (string.IsNullOrWhiteSpace(safePersonName))
                 throw new AppException(SYSTEM.ERRORS.VALIDATION_FAILED, 400);
 
-            var safeComment = !string.IsNullOrEmpty(dto.Comment) ? _sanitizer.Sanitize(dto.Comment) : null;
+            var safeComment = !string.IsNullOrEmpty(dto.Comment) ? _sanitizer.SanitizeHtml(dto.Comment) : null;
 
             var item = await _context.Items
                 .FirstOrDefaultAsync(i => i.Id == dto.ItemId && i.UserId == request.UserId, cancellationToken);

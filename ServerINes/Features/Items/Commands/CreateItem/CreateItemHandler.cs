@@ -1,9 +1,9 @@
-﻿using Ganss.Xss;
-using INest.Data.Entities.Core;
+﻿using INest.Data.Entities.Core;
 using INest.Data.Entities.Finances;
 using INest.Data.Entities.Infrastructure;
 using INest.Data.Enums;
 using INest.Exceptions;
+using INest.Infrastructure.Sanitizer;
 using INest.Infrastructure.Storage;
 using INest.Infrastructure.Tracker;
 using MediatR;
@@ -16,7 +16,7 @@ namespace INest.Features.Items.Commands.CreateItem
         private readonly AppDbContext _context;
         private readonly IPhotoService _photoService;
         private readonly LendingService _lendingService;
-        private readonly IHtmlSanitizer _sanitizer;
+        private readonly ISanitizerService _sanitizer;
         private readonly ILogger<CreateItemHandler> _logger;
         private readonly ICacheTracker _tracker;
 
@@ -24,7 +24,7 @@ namespace INest.Features.Items.Commands.CreateItem
             AppDbContext context,
             IPhotoService photoService,
             LendingService lendingService,
-            IHtmlSanitizer sanitizer,
+            ISanitizerService sanitizer,
             ILogger<CreateItemHandler> logger,
             ICacheTracker tracker)
         {
@@ -39,13 +39,12 @@ namespace INest.Features.Items.Commands.CreateItem
         public async Task<Item> Handle(CreateItemCommand request, CancellationToken cancellationToken)
         {
             var dto = request.Dto;
-
-            var safeName = _sanitizer.Sanitize(dto.Name);
+            var safeName = _sanitizer.StripAllHtml(dto.Name);
             if (string.IsNullOrWhiteSpace(safeName))
                 throw new AppException(SYSTEM.ERRORS.VALIDATION_FAILED);
 
-            var safeDescription = string.IsNullOrWhiteSpace(dto.Description) ? null : _sanitizer.Sanitize(dto.Description);
-            var safePerson = string.IsNullOrWhiteSpace(dto.PersonName) ? "Unknown" : _sanitizer.Sanitize(dto.PersonName);
+            var safeDescription = string.IsNullOrWhiteSpace(dto.Description) ? null : _sanitizer.SanitizeHtml(dto.Description);
+            var safePerson = string.IsNullOrWhiteSpace(dto.PersonName) ? "Unknown" : _sanitizer.StripAllHtml(dto.PersonName);
 
             await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
 
@@ -80,7 +79,7 @@ namespace INest.Features.Items.Commands.CreateItem
 
                 if (request.Photos.Count > 0)
                 {
-                    await HandlePhotosAsync(item, request.Photos, dto.MainPhotoName);
+                    await HandlePhotosAsync(item, request.Photos, dto.MainPhotoName, request.UserId);
                 }
 
                 if (dto.Status == ItemStatus.Lent)
@@ -139,11 +138,11 @@ namespace INest.Features.Items.Commands.CreateItem
             }
         }
 
-        private async Task HandlePhotosAsync(Item item, List<IFormFile> photos, string? mainPhotoName)
+        private async Task HandlePhotosAsync(Item item, List<IFormFile> photos, string? mainPhotoName, Guid userId)
         {
             var uploadTasks = photos.Select(async photo =>
             {
-                var result = await _photoService.AddPhotoAsync(photo);
+                var result = await _photoService.AddPhotoAsync(photo, userId);
                 return new { File = photo, Result = result };
             });
 

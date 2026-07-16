@@ -1,6 +1,6 @@
-﻿using Ganss.Xss;
-using INest.Data.Entities.Finances;
+﻿using INest.Data.Entities.Finances;
 using INest.Exceptions;
+using INest.Infrastructure.Sanitizer;
 using INest.Infrastructure.Tracker;
 using MediatR;
 using static INest.Constants.LocalizationConstants;
@@ -10,10 +10,10 @@ namespace INest.Features.Platforms.Commands.CreatePlatform
     public class CreatePlatformHandler : IRequestHandler<CreatePlatformCommand, Platform>
     {
         private readonly AppDbContext _context;
-        private readonly IHtmlSanitizer _sanitizer;
+        private readonly ISanitizerService _sanitizer;
         private readonly ICacheTracker _tracker;
 
-        public CreatePlatformHandler(AppDbContext context, IHtmlSanitizer sanitizer, ICacheTracker tracker)
+        public CreatePlatformHandler(AppDbContext context, ISanitizerService sanitizer, ICacheTracker tracker)
         {
             _context = context;
             _sanitizer = sanitizer;
@@ -22,7 +22,7 @@ namespace INest.Features.Platforms.Commands.CreatePlatform
 
         public async Task<Platform> Handle(CreatePlatformCommand request, CancellationToken cancellationToken)
         {
-            var sanitizedName = _sanitizer.Sanitize(request.Dto.Name);
+            var sanitizedName = _sanitizer.StripAllHtml(request.Dto.Name);
             if (string.IsNullOrWhiteSpace(sanitizedName))
                 throw new AppException(PLATFORMS.ERRORS.INVALID_NAME, 400);
 
