@@ -47,17 +47,17 @@ export class ItemCardComponent {
   }
 
   get canSell(): boolean {
-    const forbiddenStatuses = [1, 2];
+    const forbiddenStatuses = [1, 2, 4];
     return !forbiddenStatuses.includes(this.item.status);
   }
 
   get canLend(): boolean {
-    const forbiddenStatuses = [1, 2];
+    const forbiddenStatuses = [1, 2, 4];
     return !forbiddenStatuses.includes(this.item.status);
   }
 
   get canReturn(): boolean {
-    return this.item.status === 1;
+    return this.item.status === 1 || this.item.status === 4;
   }
 
   get isDueSoon(): boolean {

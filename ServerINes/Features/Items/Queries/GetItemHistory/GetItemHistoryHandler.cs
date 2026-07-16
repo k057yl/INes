@@ -16,8 +16,11 @@ namespace INest.Features.Items.Queries.GetItemHistory
 
         public async Task<IEnumerable<ItemHistory>> Handle(GetItemHistoryQuery request, CancellationToken cancellationToken)
         {
-            var exists = await _context.Items.AnyAsync(i => i.Id == request.ItemId && i.UserId == request.UserId, cancellationToken);
-            if (!exists) throw new KeyNotFoundException(LocalizationConstants.ITEMS.ERRORS.NOT_FOUND);
+            var exists = await _context.Items
+                .AnyAsync(i => i.Id == request.ItemId && i.UserId == request.UserId && !i.IsDeleted, cancellationToken);
+
+            if (!exists)
+                throw new KeyNotFoundException(LocalizationConstants.ITEMS.ERRORS.NOT_FOUND);
 
             return await _context.ItemHistories
                 .Where(h => h.ItemId == request.ItemId)

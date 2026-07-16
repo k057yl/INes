@@ -9,33 +9,129 @@
     gap: 15px;
 
     .header-left { 
-      display: flex; align-items: center; gap: 12px;
-      h1 { font-size: 1.8rem; font-weight: 800; color: var(--text-main); margin: 0; line-height: 1; }
+      display: flex; 
+      align-items: center; 
+      gap: 12px;
+
+      h1 { 
+        font-size: 1.8rem; 
+        font-weight: 800; 
+        color: var(--text-main); 
+        margin: 0; 
+        line-height: 1; 
+      }
     }
 
     .badge { 
-      background: rgba(var(--accent-rgb), 0.1); color: var(--accent-color); 
-      border: 1px solid rgba(var(--accent-rgb), 0.3); padding: 4px 10px; 
-      border-radius: 20px; font-size: 0.8rem; font-weight: 800; display: flex; align-items: center; gap: 6px;
+      background: rgba(var(--accent-rgb), 0.1); 
+      color: var(--accent-color); 
+      border: 1px solid rgba(var(--accent-rgb), 0.3); 
+      padding: 4px 10px; 
+      border-radius: 20px; 
+      font-size: 0.8rem; 
+      font-weight: 800; 
+      display: flex; 
+      align-items: center; 
+      gap: 6px;
     }
 
     .header-right { 
-      display: flex; align-items: center; gap: 15px;
+      display: flex; 
+      align-items: center; 
+      gap: 15px;
 
-      // Новая кнопка массового удаления
+      // Кнопка массового удаления
       .bulk-delete-btn {
         background: rgba(var(--error-red-rgb, 255, 77, 77), 0.15);
         color: var(--error-red);
         border: 1px solid var(--error-red);
-        padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 0.85rem;
-        cursor: pointer; display: flex; align-items: center; gap: 8px;
+        padding: 10px 18px; 
+        border-radius: 12px; 
+        font-weight: 700; 
+        font-size: 0.85rem;
+        cursor: pointer; 
+        display: flex; 
+        align-items: center; 
+        gap: 8px;
         transition: 0.2s;
         animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        &:hover { background: var(--error-red); color: #fff; }
+
+        &:hover { 
+          background: var(--error-red); 
+          color: #fff; 
+        }
       }
 
       .controls-toolbar {
-        display: flex; align-items: center; gap: 10px;
+        display: flex; 
+        align-items: center; 
+        gap: 15px;
+        flex-wrap: wrap; // Разрешаем перенос элементов на планшетах
+
+        // Группа фильтрации архива
+        .archive-filters-group {
+          display: flex;
+          align-items: center;
+          gap: 15px;
+          flex-shrink: 0; // Запрещаем контейнеру ужиматься
+
+          .custom-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            user-select: none;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            transition: color 0.2s ease;
+            white-space: nowrap; // Железобетонный запрет на перенос текста чекбокса
+
+            &:hover {
+              color: var(--text-main);
+            }
+
+            input:checked ~ .label-text {
+              color: #ffd700; 
+              font-weight: 600;
+            }
+
+            .checkmark {
+              position: relative;
+              width: 18px;
+              height: 18px;
+              border: 2px solid var(--border-color);
+              border-radius: 6px;
+              background-color: transparent;
+              transition: all 0.2s ease;
+              flex-shrink: 0; // Иконка не сожмется
+
+              &:after {
+                content: "";
+                position: absolute;
+                display: none;
+                left: 5px;
+                top: 1px;
+                width: 4px;
+                height: 9px;
+                border: solid #000;
+                border-width: 0 2px 2px 0;
+                transform: rotate(45deg);
+              }
+            }
+
+            input:checked ~ .checkmark {
+              background-color: #ffd700;
+              border-color: #ffd700;
+              &:after {
+                display: block;
+              }
+            }
+
+            input {
+              display: none; 
+            }
+          }
+        }
 
         .reset-filters-btn {
           background: transparent;
@@ -65,10 +161,18 @@
         }
 
         .search-box {
-          position: relative; display: flex; align-items: center;
-          background: var(--bg-card); border: 1px solid var(--border-color);
-          border-radius: 12px; padding: 0 15px; height: 42px; width: 280px; transition: 0.2s;
-          width: 260px;
+          position: relative; 
+          display: flex; 
+          align-items: center;
+          background: var(--bg-card); 
+          border: 1px solid var(--border-color);
+          border-radius: 12px; 
+          padding: 0 15px; 
+          height: 42px; 
+          width: 260px; 
+          transition: 0.2s;
+          flex-shrink: 0;
+          
           &:focus-within { border-color: var(--accent-color); }
           .search-icon { color: var(--text-muted); margin-right: 10px; }
           input { flex: 1; background: transparent; border: none; color: var(--text-main); outline: none; font-size: 0.9rem; }
@@ -89,16 +193,50 @@
 
 // --- Кастомные желтые чекбоксы ---
 .col-check { width: 40px; text-align: center; }
-.custom-checkbox {
-  display: inline-block; position: relative; width: 20px; height: 20px; cursor: pointer; user-select: none;
-  input { position: absolute; opacity: 0; cursor: pointer; height: 0; width: 0; }
-  .checkmark {
-    position: absolute; top: 0; left: 0; height: 20px; width: 20px;
-    background-color: transparent; border: 2px solid var(--border-color); border-radius: 6px; transition: 0.2s;
-    &:after { content: ""; position: absolute; display: none; left: 6px; top: 2px; width: 5px; height: 10px; border: solid #000; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+
+.inest-table {
+  .custom-checkbox {
+    display: inline-block;
+    position: relative;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    user-select: none;
+
+    input { position:absolute; opacity:0; width:0; height:0; }
+
+    .checkmark{
+      position:absolute;
+      inset:0;
+      background:transparent;
+      border:2px solid var(--border-color);
+      border-radius:6px;
+      transition:.2s;
+
+      &:after{
+        content:"";
+        position:absolute;
+        display:none;
+        left:6px;
+        top:2px;
+        width:5px;
+        height:10px;
+        border:solid #000;
+        border-width:0 2px 2px 0;
+        transform:rotate(45deg);
+      }
+    }
+
+    input:checked ~ .checkmark{
+      background:#ffd700;
+      border-color:#ffd700;
+      &:after{display:block;}
+    }
+
+    &:hover .checkmark{
+      border-color:#ffd700;
+    }
   }
-  input:checked ~ .checkmark { background-color: #ffd700; border-color: #ffd700; &:after { display: block; } } // Желтый цвет
-  &:hover input ~ .checkmark { border-color: #ffd700; }
 }
 
 // --- Таблица ---
@@ -155,7 +293,7 @@
   .cat-tag { background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; color: var(--text-muted); }
 }
 
-// --- Выпадающие панели фильтров (из заголовков) ---
+// --- Выпадающие панели фильтров ---
 .th-dropdown-panel {
   position: absolute; top: calc(100% + 5px); left: 0; min-width: 200px;
   background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px;
@@ -186,15 +324,82 @@
 @keyframes popIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 @keyframes dropIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 
-// Для мобилок (скрываем лишнее)
-@media (max-width: 768px) {
-  .items-list-header { flex-direction: column; align-items: stretch !important; gap: 10px; }
-  .header-right { flex-direction: column; align-items: stretch; }
-  .controls-toolbar {
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    .reset-filters-btn { order: 2; height: 30px; }
-    .search-box { order: 1; width: 100% !important; }
+// --- АДАПТИВНЫЙ РАЗДЕЛ ---
+
+// Планшеты
+@media (max-width: 1024px) {
+  .items-list-header {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 15px;
   }
-  .inest-table .col-cat, .inest-table .col-loc, .inest-table .col-price, .inest-table .col-status { display: none !important; }
+  .header-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .controls-toolbar {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+// Мобильные девайсы
+@media (max-width: 768px) {
+  .items-list-header { 
+    flex-direction: column; 
+    align-items: stretch !important; 
+    gap: 15px; 
+  }
+  
+  .header-right { 
+    flex-direction: column; 
+    align-items: stretch; 
+    width: 100%;
+    gap: 12px;
+  }
+
+  .controls-toolbar {
+    flex-direction: column;
+    align-items: stretch !important;
+    width: 100%;
+    gap: 12px !important;
+
+    .archive-filters-group { 
+      order: 0; 
+      width: 100%; 
+      justify-content: space-between; // Распределяем чекбоксы ровно по ширине мобилки
+      margin-bottom: 5px; 
+    }
+
+    .search-box { 
+      order: 1; 
+      width: 100% !important; // Поиск во весь экран
+    }
+
+    .reset-filters-btn { 
+      order: 2; 
+      justify-content: center;
+      width: 100%;
+      height: 38px; 
+    }
+
+    .th-dropdown-wrapper {
+      order: 3;
+      width: 100%;
+      .icon-btn {
+        width: 100% !important; // Кнопка сортировки тоже во всю ширь
+      }
+      .th-dropdown-panel {
+        width: 100%;
+      }
+    }
+  }
+
+  // Скрываем невлезающие столбцы на мобилках
+  .inest-table .col-cat, 
+  .inest-table .col-loc, 
+  .inest-table .col-price, 
+  .inest-table .col-status { 
+    display: none !important; 
+  }
 }

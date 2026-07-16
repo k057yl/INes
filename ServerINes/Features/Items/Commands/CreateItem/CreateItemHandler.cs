@@ -1,5 +1,6 @@
 ﻿using Ganss.Xss;
 using INest.Data.Entities.Core;
+using INest.Data.Entities.Finances;
 using INest.Data.Entities.Infrastructure;
 using INest.Data.Enums;
 using INest.Exceptions;
@@ -82,9 +83,6 @@ namespace INest.Features.Items.Commands.CreateItem
                     await HandlePhotosAsync(item, request.Photos, dto.MainPhotoName);
                 }
 
-                await _context.SaveChangesAsync(cancellationToken);
-                await transaction.CommitAsync(cancellationToken);
-
                 if (dto.Status == ItemStatus.Lent)
                 {
                     await _lendingService.LendAsync(
@@ -93,18 +91,37 @@ namespace INest.Features.Items.Commands.CreateItem
                         dto.ContactEmail,
                         dto.ExpectedReturnDate,
                         dto.SendNotification);
+                }
+                else if (dto.Status == ItemStatus.Borrowed)
+                {
+                    item.Borrow();
 
-                    await _context.SaveChangesAsync(cancellationToken);
+                    var lending = new Lending
+                    {
+                        Id = Guid.NewGuid(),
+                        ItemId = item.Id,
+                        UserId = request.UserId,
+                        PersonName = safePerson,
+                        DateGiven = DateTime.UtcNow,
+                        ExpectedReturnDate = dto.ExpectedReturnDate,
+                        ValueAtLending = item.EstimatedValue,
+                        Comment = safeDescription
+                    };
+
+                    _context.Lendings.Add(lending);
                 }
                 else if (dto.Status == ItemStatus.Sold)
                 {
                     item.Sell();
-                    await _context.SaveChangesAsync(cancellationToken);
                 }
                 else if (dto.Status != ItemStatus.Active)
                 {
                     throw new AppException(ITEMS.ERRORS.INVALID_INITIAL_STATUS);
                 }
+
+                await _context.SaveChangesAsync(cancellationToken);
+
+                await transaction.CommitAsync(cancellationToken);
 
                 _tracker.InvalidateUserCache(request.UserId);
 

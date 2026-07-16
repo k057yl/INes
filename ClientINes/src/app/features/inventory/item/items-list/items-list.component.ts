@@ -97,7 +97,9 @@ export class ItemsListComponent implements OnInit {
     status: [null as number | null],
     sortBy: [0],
     minPrice: [null as number | null],
-    maxPrice: [null as number | null]
+    maxPrice: [null as number | null],
+    showArchived: [false],
+    includeArchived: [false]
   });
 
   trackById = (_: number, item: Item) => item.id;
@@ -116,18 +118,26 @@ export class ItemsListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
     this.loadInitialData();
+
+    this.filterForm.get('showArchived')?.valueChanges.subscribe(val => {
+      if (val) {
+        this.filterForm.get('includeArchived')?.setValue(false, { emitEvent: false });
+      }
+    });
+
+    this.filterForm.get('includeArchived')?.valueChanges.subscribe(val => {
+      if (val) {
+        this.filterForm.get('showArchived')?.setValue(false, { emitEvent: false });
+      }
+    });
 
     this.filterForm.valueChanges.pipe(
       startWith(this.filterForm.getRawValue()),
-      
       debounceTime(300),
-
       tap(() => {
         this.isLoading = true; 
       }),
-
       switchMap(filters => {
         const typedFilters = filters as GetItemFilters;
         
@@ -141,7 +151,6 @@ export class ItemsListComponent implements OnInit {
           })
         );
       })
-
     ).subscribe(items => {
       this.items = items;
       this.syncSelection();
@@ -299,7 +308,6 @@ export class ItemsListComponent implements OnInit {
   }
 
   resetFilters(): void {
-
     this.filterForm.reset({
       searchQuery: '',
       categoryId: null,
@@ -307,7 +315,9 @@ export class ItemsListComponent implements OnInit {
       status: null,
       sortBy: 0,
       minPrice: null,
-      maxPrice: null
+      maxPrice: null,
+      showArchived: false,
+      includeArchived: false
     });
   }
 
@@ -415,9 +425,12 @@ export class ItemsListComponent implements OnInit {
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
 
     if (
-      !this.eRef.nativeElement.contains(event.target)
+      !target.closest('.th-dropdown-panel') && 
+      !target.closest('.filterable') && 
+      !target.closest('.sort-btn')
     ) {
       this.closeDropdown();
     }

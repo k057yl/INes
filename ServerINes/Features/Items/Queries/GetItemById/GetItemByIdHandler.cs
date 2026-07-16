@@ -22,8 +22,9 @@ namespace INest.Features.Items.Queries.GetItemById
                 .Include(i => i.History)
                 .Include(i => i.Photos)
                 .Include(i => i.Reminders)
-                .Where(i => i.UserId == request.UserId && i.Id == request.ItemId)
+                .Where(i => i.UserId == request.UserId && i.Id == request.ItemId && !i.IsDeleted)
                 .AsNoTracking()
+                .AsSplitQuery()
                 .FirstOrDefaultAsync(cancellationToken);
 
             if (item == null)

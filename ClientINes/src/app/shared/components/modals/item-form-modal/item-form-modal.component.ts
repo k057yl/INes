@@ -81,14 +81,14 @@ export class ItemFormModalComponent implements OnInit {
   get isEdit(): boolean { return !!this.item; }
   get isLendingStatus(): boolean {
     const s = Number(this.form.getRawValue().status);
-    return s === 1 || s === 7;
+    return s === 1 || s === 4;
   }
 
   get availableStatuses() {
     if (this.isEdit) {
       return this.statusOptions.filter(opt => opt.value === this.item?.status);
     }
-    return this.statusOptions.filter(opt => [0, 1, 7].includes(opt.value));
+    return this.statusOptions.filter(opt => [0, 1, 4].includes(opt.value));
   }
 
   ngOnInit() {
@@ -137,7 +137,7 @@ export class ItemFormModalComponent implements OnInit {
   private applyLendingLogic(statusId: any) {
     const s = Number(statusId);
     const emailControl = this.form.get('contactEmail');
-    const isLending = (s === 1 || s === 7);
+    const isLending = (s === 1 || s === 4);
 
     if (isLending) {
       this.authService.user$.pipe(

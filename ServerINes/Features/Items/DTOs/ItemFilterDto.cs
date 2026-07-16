@@ -11,5 +11,7 @@ namespace INest.Features.Items.DTOs
         public ItemSortOption SortBy { get; set; } = ItemSortOption.Newest;
         public decimal? MinPrice { get; set; }
         public decimal? MaxPrice { get; set; }
+        public bool ShowArchived { get; set; } = false;
+        public bool IncludeArchived { get; set; } = false;
     }
 }

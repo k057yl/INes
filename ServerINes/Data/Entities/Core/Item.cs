@@ -94,6 +94,26 @@ namespace INest.Data.Entities.Core
             StorageLocationId = targetLocationId;
         }
 
+        public void Borrow()
+        {
+            EnsureStatus(
+                ItemStatus.Active,
+                LocalizationConstants.ITEMS.ERRORS.INVALID_INITIAL_STATUS);
+
+            Status = ItemStatus.Borrowed;
+        }
+
+        public void ReturnBorrowed()
+        {
+            EnsureStatus(
+                ItemStatus.Borrowed,
+                LocalizationConstants.ITEMS.ERRORS.CANNOT_RETURN_BORROWED);
+
+            Status = ItemStatus.Active;
+
+            RemoveFromLocation();
+        }
+
         private void EnsureStatus(ItemStatus expectedStatus, string error)
         {
             if (Status != expectedStatus)

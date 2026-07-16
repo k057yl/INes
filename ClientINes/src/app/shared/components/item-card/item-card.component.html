@@ -36,8 +36,12 @@
         </span>
       }
       <span class="status-badges">
-        <!-- Оставляем только иконку для одолженных вещей -->
-        @if (item.status === 1) { <i class="fa fa-share-square" style="color: var(--g-yellow)"></i> }
+        @if (item.status === 1) { 
+          <i class="fa fa-share-square" style="color: var(--g-yellow)" title="Одолжено"></i> 
+        }
+        @if (item.status === 4) { 
+          <i class="fa fa-reply" style="color: var(--g-blue)" title="Взято в долг"></i> 
+        }
       </span>
     </div>
   </div>

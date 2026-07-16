@@ -99,6 +99,7 @@
                 public const string ALREADY_ARCHIVED = "ITEMS.ERRORS.ALREADY_ARCHIVED";
                 public const string INVALID_INITIAL_STATUS = "ITEMS.ERRORS.INVALID_INITIAL_STATUS";
                 public const string CANNOT_CANCEL_SALE = "ITEMS.ERRORS.CANNOT_CANCEL_SALE";
+                public const string CANNOT_RETURN_BORROWED = "ITEMS.ERRORS.CANNOT_RETURN_BORROWED";
             }
 
             public static class SUCCESS
@@ -168,6 +169,7 @@
             public const string LENT = "STATUS.LENT";
             public const string SOLD = "STATUS.SOLD";
             public const string ARCHIVED = "STATUS.ARCHIVED";
+            public const string BORROWED = "STATUS.BORROWED";
         }
 
         public static class HISTORY
@@ -182,6 +184,7 @@
             public const string PHOTOS_ADDED_COUNT = "HISTORY.PHOTOS_ADDED_COUNT";
             public const string SALES_CANCELED = "HISTORY.SALES_CANCELED";
             public const string SOLD_FOR = "HISTORY.SOLD_FOR";
+            public const string RETURNED_BORROWED = "HISTORY.RETURNED_BORROWED";
 
             public static class REMINDER
             {

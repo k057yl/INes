@@ -20,6 +20,21 @@
 
         <div class="controls-toolbar" [formGroup]="filterForm">
           
+          <!-- Группа фильтрации архива -->
+          <div class="archive-filters-group">
+            <label class="custom-checkbox yellow">
+              <input type="checkbox" formControlName="showArchived">
+              <span class="checkmark"></span>
+              <span class="label-text">Только архив</span>
+            </label>
+
+            <label class="custom-checkbox yellow">
+              <input type="checkbox" formControlName="includeArchived">
+              <span class="checkmark"></span>
+              <span class="label-text">Все + Архивные</span>
+            </label>
+          </div>
+          
           @if (hasActiveFilters) {
             <button type="button" class="reset-filters-btn" (click)="resetFilters()">
               <i class="fa fa-sync-alt"></i>

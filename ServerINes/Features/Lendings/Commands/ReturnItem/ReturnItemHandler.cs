@@ -32,7 +32,16 @@ namespace INest.Features.Lendings.Commands.ReturnItem
             if (lending == null)
                 throw new KeyNotFoundException(LENDING.ERRORS.NOT_LENT);
 
-            item.Return();
+            bool isBorrowed = item.Status == ItemStatus.Borrowed;
+
+            if (isBorrowed)
+            {
+                item.ReturnBorrowed();
+            }
+            else
+            {
+                item.Return();
+            }
 
             _context.ItemHistories.Add(new ItemHistory
             {
@@ -40,11 +49,16 @@ namespace INest.Features.Lendings.Commands.ReturnItem
                 ItemId = item.Id,
                 UserId = request.UserId,
                 Type = ItemHistoryType.Returned,
-                NewValue = HISTORY.RETURNED,
+                NewValue = isBorrowed ? HISTORY.RETURNED_BORROWED : HISTORY.RETURNED,
                 CreatedAt = DateTime.UtcNow
             });
 
             _context.Lendings.Remove(lending);
+
+            if (isBorrowed)
+            {
+                _context.Items.Remove(item);
+            }
 
             await _context.SaveChangesAsync(cancellationToken);
 

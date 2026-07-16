@@ -50,7 +50,16 @@ namespace INest.Features.Lendings.Commands.LendItem
                 _context.Lendings.Remove(existingLending);
             }
 
-            item.Lend();
+            bool isBorrowing = dto.Direction == 1;
+
+            if (isBorrowing)
+            {
+                item.Borrow();
+            }
+            else
+            {
+                item.Lend();
+            }
 
             var lending = new Lending
             {
@@ -71,7 +80,7 @@ namespace INest.Features.Lendings.Commands.LendItem
                 Id = Guid.NewGuid(),
                 ItemId = item.Id,
                 UserId = request.UserId,
-                Type = ItemHistoryType.Lent,
+                Type = isBorrowing ? ItemHistoryType.Lent : ItemHistoryType.Lent,
                 NewValue = $"{safePersonName}|{lending.ValueAtLending}$",
                 CreatedAt = DateTime.UtcNow
             });

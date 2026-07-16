@@ -19,13 +19,19 @@ namespace INest.Features.Items.Queries.GetItems
         {
             var filters = request.Filters;
             var now = DateTime.UtcNow;
-
             var query = _context.Items
-                .Include(i => i.Category)
-                .Include(i => i.StorageLocation)
-                .Where(i => i.UserId == request.UserId)
+                .Where(i => i.UserId == request.UserId && !i.IsDeleted)
                 .AsNoTracking()
                 .AsQueryable();
+
+            if (filters.ShowArchived)
+            {
+                query = query.Where(i => i.Status == ItemStatus.Archived);
+            }
+            else if (!filters.IncludeArchived)
+            {
+                query = query.Where(i => i.Status != ItemStatus.Archived);
+            }
 
             if (!string.IsNullOrWhiteSpace(filters.SearchQuery))
             {
