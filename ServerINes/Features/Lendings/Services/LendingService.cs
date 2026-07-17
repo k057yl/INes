@@ -27,13 +27,15 @@ public class LendingService
     {
         item.Lend();
 
+        var estimatedValue = item.Details?.EstimatedValue;
+
         var lending = new Lending
         {
             Id = Guid.NewGuid(),
             ItemId = item.Id,
             UserId = item.UserId,
             DateGiven = DateTime.UtcNow,
-            ValueAtLending = item.EstimatedValue,
+            ValueAtLending = estimatedValue,
             PersonName = personName,
             ContactEmail = contactEmail,
             ExpectedReturnDate = expectedReturnDate,

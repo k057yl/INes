@@ -30,19 +30,30 @@
       <span class="item-name" [title]="item.name">{{ item.name }}</span>
     </div>
     <div class="item-details">
-      @if (featureService.isSalesModeEnabled() && item.estimatedValue) {
+
+      @if (featureService.isSalesModeEnabled() && details) {
         <span class="price-tag">
-          {{ item.estimatedValue | number:'1.0-0' }} <i class="fa fa-coins"></i>
+          @if (details.estimatedValue != null) {
+            {{ details.estimatedValue | number:'1.0-0' }}
+            {{ details.currency }}
+          }
         </span>
       }
+
       <span class="status-badges">
-        @if (item.status === 1) { 
-          <i class="fa fa-share-square" style="color: var(--g-yellow)" title="Одолжено"></i> 
+        @if (item.status === 1) {
+          <i class="fa fa-share-square"
+            style="color: var(--g-yellow)"
+            title="Одолжено"></i>
         }
-        @if (item.status === 4) { 
-          <i class="fa fa-reply" style="color: var(--g-blue)" title="Взято в долг"></i> 
+
+        @if (item.status === 4) {
+          <i class="fa fa-reply"
+            style="color: var(--g-blue)"
+            title="Взято в долг"></i>
         }
       </span>
+
     </div>
   </div>
 

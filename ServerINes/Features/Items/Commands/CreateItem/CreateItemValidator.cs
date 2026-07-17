@@ -19,13 +19,13 @@ namespace INest.Features.Items.Commands.CreateItem
             RuleFor(x => x.Dto.StorageLocationId)
                 .NotEmpty().WithMessage(LocalizationConstants.ERRORS.REQUIRED_FIELD);
 
-            RuleFor(x => x.Dto.PurchasePrice)
+            RuleFor(x => x.Dto.Details.PurchasePrice)
                 .GreaterThanOrEqualTo(0).WithMessage(LocalizationConstants.ERRORS.NEGATIVE_NUMBER)
-                .When(x => x.Dto.PurchasePrice.HasValue);
+                .When(x => x.Dto.Details.PurchasePrice.HasValue);
 
-            RuleFor(x => x.Dto.PurchaseDate)
+            RuleFor(x => x.Dto.Details.PurchaseDate)
                 .LessThanOrEqualTo(DateTime.UtcNow).WithMessage(LocalizationConstants.ERRORS.FUTURE_DATE)
-                .When(x => x.Dto.PurchaseDate.HasValue);
+                .When(x => x.Dto.Details.PurchaseDate.HasValue);
         }
     }
 }

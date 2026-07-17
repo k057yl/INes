@@ -18,6 +18,7 @@ namespace INest.Features.Reminders.Commands.DeleteReminder
         public async Task<bool> Handle(DeleteReminderCommand request, CancellationToken cancellationToken)
         {
             var reminder = await _context.Reminders
+                .Include(r => r.Item)
                 .FirstOrDefaultAsync(r => r.Id == request.ReminderId && r.Item.UserId == request.UserId, cancellationToken);
 
             if (reminder == null) return false;

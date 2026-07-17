@@ -7,11 +7,12 @@ import { ReminderType } from '../../../../core/enums/reminder-type.enum';
 import { ReminderRecurrence } from '../../../../core/enums/reminder-recurrence.enum';
 import { TranslateModule } from '@ngx-translate/core';
 import { DashboardModalService } from '../../../dashboard/dashboard.modal.service';
+import { ReminderCardComponent } from '../../../../shared/components/reminder-card/reminder-card.component';
 
 @Component({
   selector: 'app-item-reminders',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslateModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule, ReminderCardComponent],
   templateUrl: './item-reminders.component.html',
   styleUrls: ['./item-reminders.component.scss']
 })
@@ -80,27 +81,42 @@ export class ItemRemindersComponent implements OnInit {
       title: ['', [Validators.required, Validators.maxLength(100)]],
       type: [ReminderType.Custom, Validators.required],
       recurrence: [ReminderRecurrence.None, Validators.required],
-      triggerAt: ['', Validators.required]
+      triggerAt: ['', Validators.required],
+      sendNotification: [false]
     });
   }
 
   toggleAdd() {
     this.isAdding = !this.isAdding;
-    if (!this.isAdding) this.reminderForm.reset({ type: ReminderType.Custom, recurrence: ReminderRecurrence.None });
+    if (!this.isAdding) this.reminderForm.reset({ type: ReminderType.Custom, recurrence: ReminderRecurrence.None, sendNotification: false });
   }
 
   onSubmit() {
     if (this.reminderForm.invalid) return;
+
+    const rawDate = this.reminderForm.value.triggerAt;
+    const parsedDate = new Date(rawDate);
+
+    if (isNaN(parsedDate.getTime())) {
+      console.error('Неверный формат даты');
+      return;
+    }
+
     const dto = {
       itemId: this.itemId,
       title: this.reminderForm.value.title,
       type: Number(this.reminderForm.value.type),
       recurrence: Number(this.reminderForm.value.recurrence),
-      triggerAt: new Date(this.reminderForm.value.triggerAt).toISOString()
+      triggerAt: parsedDate.toISOString(),
+      sendNotification: this.reminderForm.value.sendNotification
     };
-    this.reminderService.createReminder(dto).subscribe(newReminder => {
-      this.reminders.unshift(newReminder);
-      this.toggleAdd();
+
+    this.reminderService.createReminder(dto).subscribe({
+      next: (newReminder) => {
+        this.reminders.unshift(newReminder);
+        this.toggleAdd();
+      },
+      error: (err) => console.error('Ошибка создания напоминалки:', err)
     });
   }
 

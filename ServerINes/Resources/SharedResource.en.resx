@@ -191,4 +191,11 @@
   <data name="TG_BTN_FIND_ITEMS" xml:space="preserve">
     <value>🔍 Search items</value>
   </data>
+  <data name="TG_NOTIFICATION_LENDING_ALERT" xml:space="preserve">
+    <value>⚠️ Attention! {0} still hasn't returned: {1} 
+Expected return date: {2}.</value>
+  </data>
+  <data name="TG_NOTIFICATION_REMINDER_ALERT" xml:space="preserve">
+    <value>⏰ Reminder! Event: {0} For item: {1}</value>
+  </data>
 </root>

@@ -1,4 +1,6 @@
-﻿using INest.Data.Enums;
+﻿using INest.Data.Entities.Core;
+using INest.Data.Entities.Infrastructure;
+using INest.Data.Enums;
 
 namespace INest.Features.Items.DTOs
 {
@@ -10,9 +12,7 @@ namespace INest.Features.Items.DTOs
 
         public ItemStatus Status { get; set; }
 
-        public decimal? EstimatedValue { get; set; }
-        public string Currency { get; set; } = "USD";
-        public decimal? PurchasePrice { get; set; }
+        public ItemFinanceDto? Details { get; set; }
 
         public string? PhotoUrl { get; set; }
 
@@ -27,7 +27,12 @@ namespace INest.Features.Items.DTOs
         public string? ContactEmail { get; set; }
         public DateTime? ExpectedReturnDate { get; set; }
         public DateTime? ReturnedDate { get; set; }
+
         public bool IsLendingOverdue { get; set; }
         public bool HasOverdueReminders { get; set; }
+
+        public ICollection<ItemHistory> History { get; set; } = [];
+        public ICollection<ItemPhoto> Photos { get; set; } = [];
+        public ICollection<Reminder> Reminders { get; set; } = [];
     }
 }

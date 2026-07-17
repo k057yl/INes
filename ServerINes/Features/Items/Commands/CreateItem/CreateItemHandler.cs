@@ -58,16 +58,20 @@ namespace INest.Features.Items.Commands.CreateItem
                     Description = safeDescription,
                     CategoryId = dto.CategoryId,
                     StorageLocationId = dto.StorageLocationId,
-                    PurchaseDate = dto.PurchaseDate,
-                    PurchasePrice = dto.PurchasePrice,
-                    EstimatedValue = dto.EstimatedValue ?? dto.PurchasePrice,
-                    Currency = dto.Currency ?? "USD",
-                    CreatedAt = DateTime.UtcNow
+                    CreatedAt = DateTime.UtcNow,
+                    Details = new ItemDetails
+                    {
+                        PurchasePrice = dto.Details.PurchasePrice,
+                        EstimatedValue = dto.Details.EstimatedValue,
+                        Currency = dto.Details.Currency ?? "USD",
+                        PurchaseDate = dto.Details.PurchaseDate,
+                        WarrantyExpiration = dto.Details.WarrantyExpiration
+                    }
                 };
 
                 _context.Items.Add(item);
 
-                _context.ItemHistories.Add(new ItemHistory
+                item.History.Add(new ItemHistory
                 {
                     Id = Guid.NewGuid(),
                     ItemId = item.Id,
@@ -103,7 +107,7 @@ namespace INest.Features.Items.Commands.CreateItem
                         PersonName = safePerson,
                         DateGiven = DateTime.UtcNow,
                         ExpectedReturnDate = dto.ExpectedReturnDate,
-                        ValueAtLending = item.EstimatedValue,
+                        ValueAtLending = item.Details?.EstimatedValue,
                         Comment = safeDescription
                     };
 
@@ -119,7 +123,6 @@ namespace INest.Features.Items.Commands.CreateItem
                 }
 
                 await _context.SaveChangesAsync(cancellationToken);
-
                 await transaction.CommitAsync(cancellationToken);
 
                 _tracker.InvalidateUserCache(request.UserId);
@@ -132,7 +135,6 @@ namespace INest.Features.Items.Commands.CreateItem
                 {
                     await transaction.RollbackAsync(cancellationToken);
                 }
-
                 _logger.LogError(ex, "Error while creating item.");
                 throw;
             }

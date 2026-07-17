@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { RemindCreateDto } from '../dtos/remind-create.dto';
 import { Reminder } from '../contracts/reminder';
@@ -22,7 +22,9 @@ export class ReminderService {
   }
 
   createReminder(dto: RemindCreateDto): Observable<Reminder> {
-    return this.http.post<Reminder>(this.apiUrl, dto);
+    return this.http.post<{ data: Reminder, message: string }>(this.apiUrl, dto).pipe(
+      map(response => response.data)
+    );
   }
 
   completeReminder(id: string): Observable<void> {

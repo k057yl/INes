@@ -8,6 +8,7 @@
             public const string VALIDATION_FAILED = "SYSTEM.VALIDATION_FAILED";
             public const string EMAIL_SEND_FAILED = "SYSTEM.EMAIL_SEND_FAILED";
             public const string CONFIG_ERROR = "SYSTEM.CONFIG_ERROR";
+            public const string LOCATION_QR_PATH = "{0}/dashboard?locationId={1}";
 
             public static class ERRORS
             {
@@ -42,6 +43,10 @@
             public const string CONFIRM_BODY = "EMAILS.CONFIRM_BODY";
             public const string RESET_SUBJECT = "EMAILS.RESET_SUBJECT";
             public const string RESET_BODY = "EMAILS.RESET_BODY";
+            public const string LENDING_SUBJECT = "EMAILS.LENDING_SUBJECT";
+            public const string LENDING_BODY = "EMAILS.LENDING_BODY";
+            public const string REMINDER_SUBJECT = "EMAILS.REMINDER_SUBJECT";
+            public const string REMINDER_BODY = "EMAILS.REMINDER_BODY";
         }
 
         public static class AUTH
@@ -203,6 +208,11 @@
             public const string MEDICAL = "REMINDERS.MEDICAL";
             public const string TAX = "REMINDERS.TAX";
             public const string SUBSCRIPTION = "REMINDERS.SUBSCRIPTION";
+
+            public static class ERRORS
+            {
+                public const string NOT_FOUND = "ERRORS.NOT_FOUND";
+            }
 
             public static class SUCCESS
             {

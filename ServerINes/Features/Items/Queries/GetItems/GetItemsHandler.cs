@@ -19,26 +19,22 @@ namespace INest.Features.Items.Queries.GetItems
         {
             var filters = request.Filters;
             var now = DateTime.UtcNow;
+
             var query = _context.Items
+                .Include(i => i.Details)
                 .Where(i => i.UserId == request.UserId && !i.IsDeleted)
                 .AsNoTracking()
                 .AsQueryable();
 
             if (filters.ShowArchived)
-            {
                 query = query.Where(i => i.Status == ItemStatus.Archived);
-            }
             else if (!filters.IncludeArchived)
-            {
                 query = query.Where(i => i.Status != ItemStatus.Archived);
-            }
 
             if (!string.IsNullOrWhiteSpace(filters.SearchQuery))
             {
                 var search = filters.SearchQuery.Trim().ToLower();
-                query = query.Where(i =>
-                    i.Name.ToLower().Contains(search) ||
-                    (i.Description != null && i.Description.ToLower().Contains(search)));
+                query = query.Where(i => i.Name.ToLower().Contains(search) || (i.Description != null && i.Description.ToLower().Contains(search)));
             }
 
             if (filters.CategoryId.HasValue)
@@ -51,17 +47,17 @@ namespace INest.Features.Items.Queries.GetItems
                 query = query.Where(i => i.Status == filters.Status);
 
             if (filters.MinPrice.HasValue)
-                query = query.Where(i => i.PurchasePrice >= filters.MinPrice);
+                query = query.Where(i => i.Details != null && i.Details.PurchasePrice >= filters.MinPrice);
 
             if (filters.MaxPrice.HasValue)
-                query = query.Where(i => i.PurchasePrice <= filters.MaxPrice);
+                query = query.Where(i => i.Details != null && i.Details.PurchasePrice <= filters.MaxPrice);
 
             query = filters.SortBy switch
             {
                 ItemSortOption.NameAsc => query.OrderBy(i => i.Name),
                 ItemSortOption.NameDesc => query.OrderByDescending(i => i.Name),
-                ItemSortOption.PriceAsc => query.OrderBy(i => i.PurchasePrice),
-                ItemSortOption.PriceDesc => query.OrderByDescending(i => i.PurchasePrice),
+                ItemSortOption.PriceAsc => query.OrderBy(i => i.Details != null ? i.Details.PurchasePrice : 0),
+                ItemSortOption.PriceDesc => query.OrderByDescending(i => i.Details != null ? i.Details.PurchasePrice : 0),
                 ItemSortOption.Oldest => query.OrderBy(i => i.CreatedAt),
                 _ => query.OrderByDescending(i => i.CreatedAt)
             };
@@ -73,9 +69,14 @@ namespace INest.Features.Items.Queries.GetItems
                     Name = item.Name,
                     Description = item.Description,
                     Status = item.Status,
-                    PurchasePrice = item.PurchasePrice,
-                    EstimatedValue = item.EstimatedValue,
-                    Currency = item.Currency,
+                    Details = item.Details != null ? new ItemFinanceDto
+                    {
+                        PurchasePrice = item.Details.PurchasePrice,
+                        EstimatedValue = item.Details.EstimatedValue,
+                        Currency = item.Details.Currency,
+                        WarrantyExpiration = item.Details.WarrantyExpiration
+                    } : null,
+
                     PhotoUrl = item.PhotoUrl,
                     StorageLocationId = item.StorageLocationId,
                     StorageLocationName = item.StorageLocation != null ? item.StorageLocation.Name : null,
@@ -87,16 +88,8 @@ namespace INest.Features.Items.Queries.GetItems
                     ExpectedReturnDate = _context.Lendings.Where(l => l.ItemId == item.Id).Select(l => l.ExpectedReturnDate).FirstOrDefault(),
                     ReturnedDate = _context.Lendings.Where(l => l.ItemId == item.Id).Select(l => l.ReturnedDate).FirstOrDefault(),
 
-                    IsLendingOverdue = _context.Lendings.Any(l =>
-                        l.ItemId == item.Id &&
-                        l.ReturnedDate == null &&
-                        l.ExpectedReturnDate != null &&
-                        l.ExpectedReturnDate <= now),
-
-                    HasOverdueReminders = _context.Reminders.Any(r =>
-                        r.ItemId == item.Id &&
-                        !r.IsCompleted &&
-                        r.TriggerAt <= now)
+                    IsLendingOverdue = _context.Lendings.Any(l => l.ItemId == item.Id && l.ReturnedDate == null && l.ExpectedReturnDate != null && l.ExpectedReturnDate <= now),
+                    HasOverdueReminders = _context.Reminders.Any(r => r.ItemId == item.Id && !r.IsCompleted && r.TriggerAt <= now)
                 })
                 .ToListAsync(cancellationToken);
         }

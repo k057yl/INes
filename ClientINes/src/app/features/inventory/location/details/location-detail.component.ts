@@ -7,6 +7,7 @@ import { environment } from '../../../../../environments/environment';
 import { StorageLocation } from '../../../../core/contracts/storage-location';
 import { ItemStatus } from '../../../../core/enums/item-status.enum';
 import { ItemService } from '../../../../core/services/item.service';
+import { LocationService } from '../../../../core/services/location.service';
 import { DashboardModalService } from '../../../dashboard/dashboard.modal.service';
 
 @Component({
@@ -19,6 +20,7 @@ import { DashboardModalService } from '../../../dashboard/dashboard.modal.servic
 export class LocationDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private itemService = inject(ItemService);
+  public locationService = inject(LocationService);
   private ngLocation = inject(NgLocation);
   private modal = inject(DashboardModalService);
   
@@ -53,6 +55,44 @@ export class LocationDetailComponent implements OnInit {
     });
   }
 
+  // Нативный метод печати только карточки QR кода
+  printQrCode() {
+    const printContent = document.getElementById('location-qr-zone')?.innerHTML;
+    if (!printContent) return;
+
+    const windowPrint = window.open('', '', 'left=0,top=0,width=600,height=600,toolbar=0,scrollbars=0,status=0');
+    if (!windowPrint) return;
+
+    windowPrint.document.write(`
+      <html>
+        <head>
+          <title>Print QR Code</title>
+          <style>
+            body { 
+              margin: 0; display: flex; justify-content: center; align-items: center; 
+              height: 100vh; font-family: sans-serif; background: #fff; color: #000;
+            }
+            .qr-wrapper-card { text-align: center; border: 2px solid #000; padding: 20px; border-radius: 12px; }
+            .qr-card-title { font-size: 1.2rem; font-weight: bold; margin-bottom: 12px; text-transform: uppercase; }
+            .qr-image { width: 200px; height: 200px; }
+            .qr-card-footer { font-size: 0.75rem; color: #666; margin-top: 10px; letter-spacing: 1px; }
+          </style>
+        </head>
+        <body>
+          \${printContent}
+          <script>
+            setTimeout(() => {
+              window.print();
+              window.close();
+            }, 300);
+          </script>
+        </body>
+      </html>
+    `);
+    windowPrint.document.close();
+    windowPrint.focus();
+  }
+
   private buildBreadcrumbs(current: StorageLocation) {
     const path: StorageLocation[] = [];
     let temp: StorageLocation | undefined = current;
@@ -66,12 +106,10 @@ export class LocationDetailComponent implements OnInit {
 
   onEditItem(item: any) {
     this.modal.openItemForm(item).subscribe(res => {
-
       if (res && this.location) {
         const index = this.location.items.findIndex(i => i.id === item.id);
         if (index !== -1) {
           this.location.items[index] = { ...this.location.items[index], ...res };
-          
           this.location = { ...this.location };
         }
       }

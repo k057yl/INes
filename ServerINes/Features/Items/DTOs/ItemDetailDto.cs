@@ -20,9 +20,10 @@ namespace INest.Features.Items.DTOs
         public string Currency { get; set; } = "USD";
         public string? PhotoUrl { get; set; }
 
+        public DateTime? WarrantyExpiration { get; set; }
+
         public Guid? StorageLocationId { get; set; }
         public StorageLocation? StorageLocation { get; set; }
-
         public Guid CategoryId { get; set; }
         public CategoryEntity Category { get; set; } = null!;
 

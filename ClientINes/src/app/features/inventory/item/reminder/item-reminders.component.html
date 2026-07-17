@@ -10,10 +10,12 @@
     <div class="add-form-container">
       <form [formGroup]="reminderForm" (ngSubmit)="onSubmit()">
         <div class="form-fields-stack">
+          
           <div class="field-group">
             <label>{{ 'REMINDS_PAGE.NAME_LABEL' | translate }}</label>
             <input type="text" formControlName="title" [placeholder]="'REMINDS_PAGE.NAME_PHL' | translate" class="inest-input-styled">
           </div>
+          
           <div class="field-group">
             <label>{{ 'REMINDS_PAGE.TYPE_LABEL' | translate }}</label>
             <select formControlName="type" class="inest-input-styled">
@@ -24,6 +26,7 @@
               }
             </select>
           </div>
+          
           <div class="field-group">
             <label>{{ 'REMINDS_PAGE.RECURRENCE' | translate }}</label>
             <select formControlName="recurrence" class="inest-input-styled">
@@ -34,13 +37,24 @@
               }
             </select>
           </div>
+          
           <div class="field-group">
             <label>{{ 'REMINDS_PAGE.DATE_LABEL' | translate }}</label>
             <input type="date" formControlName="triggerAt" class="inest-input-styled">
           </div>
+
+          <div class="field-group checkbox-group">
+            <label class="checkbox-label">
+              <input type="checkbox" formControlName="sendNotification" class="inest-checkbox">
+              <i class="fa fa-bell text-accent-icon"></i>
+              <span>{{ 'REMINDS_PAGE.SEND_NOTIFICATION' | translate }}</span>
+            </label>
+          </div>
+          
           <button type="submit" class="save-btn" [disabled]="reminderForm.invalid">
             <i class="fa fa-save"></i> {{ 'COMMON.SAVE' | translate }}
           </button>
+
         </div>
       </form>
     </div>
@@ -53,42 +67,12 @@
       </div>
     }
 
-    @for (r of reminders; track r) {
-      <div class="reminder-item" [class.completed]="r.isCompleted">
-        <div class="r-info">
-          <div class="r-title-row">
-            <strong class="r-title">{{ r.title }}</strong>
-            @if (r.isCompleted) {
-              <span class="completed-label">
-                <i class="fa fa-check-double"></i> {{ 'REMINDS_PAGE.STATUS_COMPLETED' | translate }}
-              </span>
-            }
-          </div>
-          <div class="r-meta-row">
-            @if (!r.isCompleted) {
-              <span [style.color]="getReminderInfo(r.type).color">
-                <i class="fa" [ngClass]="getReminderInfo(r.type).icon"></i>
-                {{ getReminderInfo(r.type).label | translate }}
-              </span>
-            }
-            @if (!r.isCompleted) {
-              <span class="r-date">
-                <i class="fa fa-calendar-alt"></i> {{ r.triggerAt | date:'dd.MM.yyyy' }}
-              </span>
-            }
-          </div>
-        </div>
-        @if (!r.isCompleted) {
-          <div class="r-actions">
-            <button class="icon-btn success" (click)="requestComplete(r.id)">
-              <i class="fa fa-check"></i>
-            </button>
-            <button class="icon-btn danger" (click)="requestDelete(r.id)">
-              <i class="fa fa-trash"></i>
-            </button>
-          </div>
-        }
-      </div>
+    @for (r of reminders; track r.id) {
+      <app-reminder-card 
+        [reminder]="r"
+        (onComplete)="requestComplete($event)"
+        (onDelete)="requestDelete($event)">
+      </app-reminder-card>
     }
   </div>
 </div>

@@ -29,6 +29,7 @@ namespace INest.Features.Sales.Commands.SellItem
 
             var item = await _context.Items
                 .Include(i => i.Category)
+                .Include(i => i.Details)
                 .FirstOrDefaultAsync(i => i.Id == dto.ItemId && i.UserId == request.UserId, cancellationToken);
 
             if (item == null)
@@ -38,7 +39,9 @@ namespace INest.Features.Sales.Commands.SellItem
 
             var safeComment = !string.IsNullOrEmpty(dto.Comment) ? _sanitizer.SanitizeHtml(dto.Comment) : null;
 
-            decimal purchasePrice = item.PurchasePrice ?? 0;
+            decimal purchasePrice = item.Details?.PurchasePrice ?? 0;
+            string currency = item.Details?.Currency ?? "USD";
+
             decimal platformFee = dto.PlatformFee ?? 0;
             decimal profit = dto.SalePrice - purchasePrice;
 
@@ -51,7 +54,7 @@ namespace INest.Features.Sales.Commands.SellItem
                 CategoryNameSnapshot = item.Category?.Name,
                 CategoryId = item.CategoryId,
                 PurchasePriceSnapshot = purchasePrice,
-                Currency = item.Currency ?? "USD",
+                Currency = currency,
                 PlatformFee = platformFee,
                 SalePrice = dto.SalePrice,
                 Profit = profit,
@@ -67,7 +70,7 @@ namespace INest.Features.Sales.Commands.SellItem
                 UserId = request.UserId,
                 Type = ItemHistoryType.Sold,
                 Comment = HISTORY.SOLD_FOR,
-                OldValue = item.PurchasePrice?.ToString() ?? "0",
+                OldValue = item.Details?.PurchasePrice?.ToString() ?? "0",
                 NewValue = dto.SalePrice.ToString(),
                 CreatedAt = DateTime.UtcNow
             });

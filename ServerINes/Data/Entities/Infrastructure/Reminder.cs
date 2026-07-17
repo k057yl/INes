@@ -13,5 +13,7 @@ namespace INest.Data.Entities.Infrastructure
         public bool IsCompleted { get; set; }
         public Item Item { get; set; } = null!;
         public bool IsNotificationSent { get; set; }
+        public bool SendTelegram { get; set; }
+        public bool SendNotification { get; set; }
     }
 }

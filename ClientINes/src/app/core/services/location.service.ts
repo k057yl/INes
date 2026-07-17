@@ -26,6 +26,10 @@ export class LocationService {
     return this.http.get<StorageLocation>(`${this.apiUrl}/${id}`);
   }
 
+  getQrCodeUrl(id: string): string {
+    return `${this.apiUrl}/${id}/qr`;
+  }
+
   move(id: string, newParentId: string | null) {
     return this.http.patch(`${environment.apiBaseUrl}/locations/${id}/move`, { newParentId });
   }

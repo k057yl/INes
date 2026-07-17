@@ -3,36 +3,21 @@ import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { Reminder } from '../../../core/contracts/reminder';
 import { ReminderType } from '../../../core/enums/reminder-type.enum';
+import { ReminderRecurrence } from '../../../core/enums/reminder-recurrence.enum';
 
 @Component({
   selector: 'app-reminder-card',
   standalone: true,
   imports: [CommonModule, TranslateModule],
-  template: `
-    <div class="reminder-card" [style.border-left-color]="info.color" [class.is-completed]="reminder.isCompleted">
-      <div class="reminder-icon" [style.color]="info.color">
-        <i class="fa" [ngClass]="info.icon"></i>
-      </div>
-      <div class="reminder-body">
-        <h4>{{ reminder.title }}</h4>
-        <small>{{ reminder.triggerAt | date:'dd.MM.yyyy HH:mm' }}</small>
-      </div>
-      <div class="reminder-actions">
-        <button *ngIf="!reminder.isCompleted" (click)="onComplete.emit(reminder.id)" class="btn-check">
-          <i class="fa fa-check"></i>
-        </button>
-        <button (click)="onDelete.emit(reminder.id)" class="btn-trash">
-          <i class="fa fa-trash"></i>
-        </button>
-      </div>
-    </div>
-  `,
+  templateUrl: './reminder-card.component.html',
   styleUrls: ['./reminder-card.component.scss']
 })
 export class ReminderCardComponent {
   @Input({ required: true }) reminder!: Reminder;
   @Output() onComplete = new EventEmitter<string>();
   @Output() onDelete = new EventEmitter<string>();
+
+  ReminderRecurrence = ReminderRecurrence;
 
   get info() {
     const types: Record<number, { icon: string, color: string }> = {
@@ -46,5 +31,15 @@ export class ReminderCardComponent {
       [ReminderType.Subscription]: { icon: 'fa-calendar-alt', color: 'var(--g-blue)' }
     };
     return types[this.reminder.type] || types[ReminderType.Custom];
+  }
+
+  getRecurrenceLabel(recurrence: number): string {
+    const labels: Record<number, string> = {
+      [ReminderRecurrence.Daily]: 'RECURRENCE.DAILY',
+      [ReminderRecurrence.Weekly]: 'RECURRENCE.WEEKLY',
+      [ReminderRecurrence.Monthly]: 'RECURRENCE.MONTHLY',
+      [ReminderRecurrence.Yearly]: 'RECURRENCE.YEARLY'
+    };
+    return labels[recurrence] || '';
   }
 }

@@ -10,6 +10,7 @@ using INest.Infrastructure.Behaviors;
 using INest.Infrastructure.Dispatcher;
 using INest.Infrastructure.Email;
 using INest.Infrastructure.Identity;
+using INest.Infrastructure.QrCode;
 using INest.Infrastructure.Sanitizer;
 using INest.Infrastructure.Storage;
 using INest.Infrastructure.Telegram;
@@ -145,6 +146,8 @@ namespace INest
 
             services.AddSingleton<ICacheTracker, CacheTracker>();
             services.AddSingleton<ISanitizerService, SanitizerService>();
+
+            services.AddTransient<IQrCodeService, QrCodeService>();
 
             services.AddScoped<IEmailService, EmailService>();
 

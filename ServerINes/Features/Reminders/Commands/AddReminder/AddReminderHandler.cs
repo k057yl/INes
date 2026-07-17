@@ -25,7 +25,8 @@ namespace INest.Features.Reminders.Commands.AddReminder
         {
             var dto = request.Dto;
 
-            var itemExists = await _context.Items.AsNoTracking().AnyAsync(i => i.Id == dto.ItemId && i.UserId == request.UserId, cancellationToken);
+            var itemExists = await _context.Items
+                .AnyAsync(i => i.Id == dto.ItemId && i.UserId == request.UserId, cancellationToken);
             if (!itemExists) throw new KeyNotFoundException(ITEMS.ERRORS.NOT_FOUND);
 
             var safeTitle = _sanitizer.StripAllHtml(dto.Title);

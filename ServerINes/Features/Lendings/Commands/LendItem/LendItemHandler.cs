@@ -35,6 +35,7 @@ namespace INest.Features.Lendings.Commands.LendItem
             var safeComment = !string.IsNullOrEmpty(dto.Comment) ? _sanitizer.SanitizeHtml(dto.Comment) : null;
 
             var item = await _context.Items
+                .Include(i => i.Details)
                 .FirstOrDefaultAsync(i => i.Id == dto.ItemId && i.UserId == request.UserId, cancellationToken);
 
             if (item == null)
@@ -70,7 +71,7 @@ namespace INest.Features.Lendings.Commands.LendItem
                 PersonName = safePersonName,
                 DateGiven = DateTime.UtcNow,
                 ExpectedReturnDate = dto.ExpectedReturnDate,
-                ValueAtLending = dto.ValueAtLending ?? item.EstimatedValue,
+                ValueAtLending = dto.ValueAtLending ?? item.Details?.EstimatedValue,
                 Comment = safeComment
             };
 

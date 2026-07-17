@@ -43,12 +43,12 @@ namespace INest.Features.Reminders.Commands.CompleteReminder
                 {
                     Id = Guid.NewGuid(),
                     ItemId = reminder.ItemId,
-                    UserId = request.UserId,
                     Title = reminder.Title,
                     Type = reminder.Type,
                     Recurrence = reminder.Recurrence,
                     TriggerAt = nextTrigger,
-                    IsCompleted = false
+                    IsCompleted = false,
+                    IsNotificationSent = false
                 });
             }
 

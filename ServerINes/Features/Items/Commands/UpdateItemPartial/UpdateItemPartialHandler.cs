@@ -36,15 +36,19 @@ namespace INest.Features.Items.Commands.UpdateItemPartial
         public async Task<bool> Handle(UpdateItemPartialCommand request, CancellationToken cancellationToken)
         {
             var dto = request.Dto;
+
             var item = await _context.Items
                 .Include(i => i.Photos)
                 .Include(i => i.StorageLocation)
+                .Include(i => i.Details)
                 .FirstOrDefaultAsync(i => i.Id == request.ItemId && i.UserId == request.UserId, cancellationToken);
 
             if (item == null) throw new KeyNotFoundException(ITEMS.ERRORS.NOT_FOUND);
 
             if (item.Status != ItemStatus.Active)
                 throw new AppException(ITEMS.ERRORS.ONLY_ACTIVE_CAN_BE_EDITED);
+
+            item.Details ??= new ItemDetails { Id = Guid.NewGuid(), ItemId = item.Id };
 
             try
             {
@@ -67,7 +71,6 @@ namespace INest.Features.Items.Commands.UpdateItemPartial
                 {
                     var safeName = _sanitizer.StripAllHtml(dto.Name);
                     if (string.IsNullOrWhiteSpace(safeName)) throw new AppException(SYSTEM.ERRORS.VALIDATION_FAILED, 400);
-
                     if (safeName != item.Name)
                     {
                         LogChange(ItemHistoryType.ValueUpdated, item.Name, safeName);
@@ -101,30 +104,35 @@ namespace INest.Features.Items.Commands.UpdateItemPartial
                         .FirstOrDefaultAsync(l => l.Id == targetLocationId, cancellationToken);
 
                     LogChange(ItemHistoryType.Moved, oldLocName, targetLoc?.Name);
-
                     item.MoveToLocation(targetLocationId);
                 }
 
-                if (dto.PurchaseDate.HasValue && dto.PurchaseDate != item.PurchaseDate)
+                if (dto.PurchaseDate.HasValue && dto.PurchaseDate != item.Details.PurchaseDate)
                 {
-                    item.PurchaseDate = dto.PurchaseDate;
+                    item.Details.PurchaseDate = dto.PurchaseDate;
                 }
 
-                if (dto.PurchasePrice.HasValue && dto.PurchasePrice != item.PurchasePrice)
+                if (dto.PurchasePrice.HasValue && dto.PurchasePrice != item.Details.PurchasePrice)
                 {
-                    LogChange(ItemHistoryType.ValueUpdated, item.PurchasePrice?.ToString(), dto.PurchasePrice.Value.ToString());
-                    item.PurchasePrice = dto.PurchasePrice;
+                    LogChange(ItemHistoryType.ValueUpdated, item.Details.PurchasePrice?.ToString(), dto.PurchasePrice.Value.ToString());
+                    item.Details.PurchasePrice = dto.PurchasePrice.Value;
                 }
 
-                if (dto.EstimatedValue.HasValue && dto.EstimatedValue != item.EstimatedValue)
+                if (dto.EstimatedValue.HasValue && dto.EstimatedValue != item.Details.EstimatedValue)
                 {
-                    LogChange(ItemHistoryType.ValueUpdated, item.EstimatedValue?.ToString(), dto.EstimatedValue.Value.ToString());
-                    item.EstimatedValue = dto.EstimatedValue;
+                    LogChange(ItemHistoryType.ValueUpdated, item.Details.EstimatedValue?.ToString(), dto.EstimatedValue.Value.ToString());
+                    item.Details.EstimatedValue = dto.EstimatedValue.Value;
                 }
 
                 if (dto.Currency != null)
                 {
-                    item.Currency = dto.Currency;
+                    item.Details.Currency = dto.Currency;
+                }
+
+                if (dto.WarrantyExpiration.HasValue && dto.WarrantyExpiration != item.Details.WarrantyExpiration)
+                {
+                    item.Details.WarrantyExpiration = dto.WarrantyExpiration;
+                    item.Details.WarrantyAlertSent = false;
                 }
 
                 if (request.Photos != null && request.Photos.Count > 0)
@@ -134,7 +142,6 @@ namespace INest.Features.Items.Commands.UpdateItemPartial
                 }
 
                 await _context.SaveChangesAsync(cancellationToken);
-
                 _tracker.InvalidateUserCache(request.UserId);
                 return true;
             }

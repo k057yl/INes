@@ -1,11 +1,12 @@
-﻿using INest.Features.Items.DTOs;
+﻿using INest.Constants;
+using INest.Features.Items.DTOs;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using static INest.Constants.LocalizationConstants;
 
 namespace INest.Features.Items.Queries.GetItemById
 {
-    public class GetItemByIdHandler : IRequestHandler<GetItemByIdQuery, ItemDetailDto?>
+    public class GetItemByIdHandler : IRequestHandler<GetItemByIdQuery, ItemDto?>
     {
         private readonly AppDbContext _context;
 
@@ -14,7 +15,7 @@ namespace INest.Features.Items.Queries.GetItemById
             _context = context;
         }
 
-        public async Task<ItemDetailDto?> Handle(GetItemByIdQuery request, CancellationToken cancellationToken)
+        public async Task<ItemDto?> Handle(GetItemByIdQuery request, CancellationToken cancellationToken)
         {
             var item = await _context.Items
                 .Include(i => i.Category)
@@ -22,7 +23,10 @@ namespace INest.Features.Items.Queries.GetItemById
                 .Include(i => i.History)
                 .Include(i => i.Photos)
                 .Include(i => i.Reminders)
-                .Where(i => i.UserId == request.UserId && i.Id == request.ItemId && !i.IsDeleted)
+                .Include(i => i.Details)
+                .Where(i => i.UserId == request.UserId &&
+                            i.Id == request.ItemId &&
+                            !i.IsDeleted)
                 .AsNoTracking()
                 .AsSplitQuery()
                 .FirstOrDefaultAsync(cancellationToken);
@@ -36,33 +40,52 @@ namespace INest.Features.Items.Queries.GetItemById
 
             var now = DateTime.UtcNow;
 
-            bool isLendingOverdue = lending != null &&
-                                    lending.ReturnedDate == null &&
-                                    lending.ExpectedReturnDate.HasValue &&
-                                    lending.ExpectedReturnDate.Value <= now;
+            bool isLendingOverdue =
+                lending != null &&
+                lending.ReturnedDate == null &&
+                lending.ExpectedReturnDate.HasValue &&
+                lending.ExpectedReturnDate.Value <= now;
 
-            bool hasOverdueReminders = item.Reminders.Any(r => !r.IsCompleted && r.TriggerAt <= now);
+            bool hasOverdueReminders =
+                item.Reminders.Any(r => !r.IsCompleted && r.TriggerAt <= now);
 
-            return new ItemDetailDto
+            return new ItemDto
             {
                 Id = item.Id,
                 Name = item.Name,
                 Description = item.Description,
                 Status = item.Status,
-                PurchasePrice = item.PurchasePrice,
-                EstimatedValue = item.EstimatedValue,
-                Currency = item.Currency,
+
+                Details = item.Details == null
+                    ? null
+                    : new ItemFinanceDto
+                    {
+                        PurchasePrice = item.Details.PurchasePrice,
+                        EstimatedValue = item.Details.EstimatedValue,
+                        Currency = item.Details.Currency ?? "USD",
+                        PurchaseDate = item.Details.PurchaseDate,
+                        WarrantyExpiration = item.Details.WarrantyExpiration
+                    },
+
                 PhotoUrl = item.PhotoUrl,
+
                 StorageLocationId = item.StorageLocationId,
-                StorageLocation = item.StorageLocation,
+                StorageLocationName = item.StorageLocation?.Name,
+
                 CategoryId = item.CategoryId,
-                Category = item.Category,
+                CategoryName = item.Category?.Name ?? SharedConstants.CATEGORY_NONE,
+
+                IsLendingOverdue = isLendingOverdue,
+                HasOverdueReminders = hasOverdueReminders,
+
+                PersonName = lending?.PersonName,
+                ContactEmail = lending?.ContactEmail,
+                ExpectedReturnDate = lending?.ExpectedReturnDate,
+                ReturnedDate = lending?.ReturnedDate,
+
                 History = item.History.ToList(),
                 Photos = item.Photos.ToList(),
-                Reminders = item.Reminders.ToList(),
-                Lending = lending,
-                IsLendingOverdue = isLendingOverdue,
-                HasOverdueReminders = hasOverdueReminders
+                Reminders = item.Reminders.ToList()
             };
         }
     }

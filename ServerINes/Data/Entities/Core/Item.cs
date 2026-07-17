@@ -20,10 +20,8 @@ namespace INest.Data.Entities.Core
 
         public AppUser User { get; set; } = null!;
 
-        public decimal? PurchasePrice { get; set; }
-        public decimal? EstimatedValue { get; set; }
-        public string Currency { get; set; } = "USD";
-        public DateTime? PurchaseDate { get; set; }
+        // Связь 1-к-1 с вынесенными деталями
+        public ItemDetails? Details { get; set; }
 
         public string? PhotoUrl { get; set; }
         public string? PublicId { get; set; }

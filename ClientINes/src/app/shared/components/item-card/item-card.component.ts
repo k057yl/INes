@@ -89,6 +89,10 @@ export class ItemCardComponent {
     return returnDate.getTime() <= now.getTime();
   }
 
+  get details() {
+    return this.item.details;
+  }
+
   getCardBackground(): string {
     if (this.item.isLendingOverdue) return 'rgba(255, 69, 58, 0.15)';
     if (this.isDueSoon) return 'rgba(255, 214, 10, 0.15)';

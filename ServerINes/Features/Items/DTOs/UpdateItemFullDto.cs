@@ -14,6 +14,8 @@ namespace INest.Features.Items.DTOs
         public decimal? EstimatedValue { get; set; }
         public string? Currency { get; set; }
 
+        public DateTime? WarrantyExpiration { get; set; }
+
         public string? PersonName { get; set; }
         public string? ContactEmail { get; set; }
         public DateTime? ExpectedReturnDate { get; set; }

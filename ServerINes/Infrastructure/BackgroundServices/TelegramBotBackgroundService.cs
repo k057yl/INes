@@ -25,7 +25,8 @@ namespace INest.Infrastructure.Telegram
             _serviceProvider = serviceProvider;
             _logger = logger;
 
-            var token = configuration["TelegramBotSettings:BotToken"]
+            var token = configuration["Telegram:BotToken"]
+                        ?? configuration["TelegramBotSettings:BotToken"]
                         ?? Environment.GetEnvironmentVariable("TelegramBotSettings__BotToken");
 
             if (!string.IsNullOrWhiteSpace(token))

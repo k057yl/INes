@@ -51,14 +51,22 @@ namespace INest.Controllers
         [HttpPatch("{id}/complete")]
         public async Task<IActionResult> Complete(Guid id)
         {
-            await _mediator.Send(new CompleteReminderCommand(GetUserId(), id));
+            var success = await _mediator.Send(new CompleteReminderCommand(GetUserId(), id));
+            if (!success)
+            {
+                return NotFound(new { message = REMINDERS.ERRORS.NOT_FOUND });
+            }
             return Ok(new { message = REMINDERS.SUCCESS.COMPLETE });
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            await _mediator.Send(new DeleteReminderCommand(GetUserId(), id));
+            var success = await _mediator.Send(new DeleteReminderCommand(GetUserId(), id));
+            if (!success)
+            {
+                return NotFound(new { message = REMINDERS.ERRORS.NOT_FOUND });
+            }
             return Ok(new { message = REMINDERS.SUCCESS.DELETE });
         }
     }

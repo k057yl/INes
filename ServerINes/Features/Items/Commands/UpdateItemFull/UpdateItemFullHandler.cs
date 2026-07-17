@@ -46,6 +46,7 @@ namespace INest.Features.Items.Commands.UpdateItemFull
             {
                 var item = await _context.Items
                     .Include(i => i.Photos)
+                    .Include(i => i.Details)
                     .FirstOrDefaultAsync(i => i.Id == request.ItemId && i.UserId == request.UserId, cancellationToken);
 
                 if (item == null) throw new KeyNotFoundException(ITEMS.ERRORS.NOT_FOUND);
@@ -57,10 +58,27 @@ namespace INest.Features.Items.Commands.UpdateItemFull
                 item.Description = safeDesc;
                 item.CategoryId = dto.CategoryId;
                 item.MoveToLocation(dto.StorageLocationId);
-                item.PurchaseDate = dto.PurchaseDate;
-                item.PurchasePrice = dto.PurchasePrice;
-                item.EstimatedValue = dto.EstimatedValue;
-                item.Currency = dto.Currency ?? item.Currency;
+
+                if (item.Details == null)
+                {
+                    item.Details = new ItemDetails
+                    {
+                        Id = Guid.NewGuid(),
+                        ItemId = item.Id,
+                        Currency = dto.Currency ?? "USD"
+                    };
+                }
+
+                item.Details.PurchaseDate = dto.PurchaseDate;
+                item.Details.PurchasePrice = dto.PurchasePrice;
+                item.Details.EstimatedValue = dto.EstimatedValue;
+                item.Details.Currency = dto.Currency ?? item.Details.Currency;
+                item.Details.WarrantyExpiration = dto.WarrantyExpiration;
+
+                if (dto.WarrantyExpiration.HasValue && dto.WarrantyExpiration != item.Details.WarrantyExpiration)
+                {
+                    item.Details.WarrantyAlertSent = false;
+                }
 
                 if (request.Photos != null && request.Photos.Count > 0)
                 {

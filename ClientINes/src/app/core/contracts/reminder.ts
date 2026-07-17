@@ -6,9 +6,9 @@ export interface Reminder {
   id: string;
   itemId: string;
   title: string;
-  type: ReminderType;
-  recurrence: ReminderRecurrence;
+  type: number;
+  recurrence: number;
   triggerAt: string;
   isCompleted: boolean;
-  item?: Item;
+  sendNotification: boolean;
 }

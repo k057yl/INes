@@ -194,14 +194,28 @@
             </div>
           </div>
 
-          @if (form.get('contactEmail')?.value) {
-            <div class="inest-form-group">
-              <label class="inest-checkbox-label">
-                <input type="checkbox" formControlName="sendNotification">
-                <span>{{ 'CREATE_ITEM_PAGE.SEND_NOTIFICATION' | translate }}</span>
-              </label>
-            </div>
-          }
+          <div class="notification-channels-wrapper">
+            <label class="channels-title">{{ 'CREATE_ITEM_PAGE.REMIND_CHANNELS_TITLE' | translate }}</label>
+            
+            <!-- Канал 1: Telegram -->
+            <label class="channel-box-vertical">
+              <input type="checkbox" formControlName="sendTelegramNotification" class="channel-checkbox">
+              <div class="channel-content">
+                <i class="fab fa-telegram-plane channel-icon tg-brand-color"></i>
+                <span>{{ 'CREATE_ITEM_PAGE.CHANNEL_TELEGRAM' | translate }}</span>
+              </div>
+            </label>
+
+            <!-- Канал 2: Email -->
+            <label class="channel-box-vertical" [class.is-disabled]="!form.get('contactEmail')?.value">
+              <input type="checkbox" formControlName="sendNotification" class="channel-checkbox">
+              <div class="channel-content">
+                <i class="fa fa-envelope channel-icon email-brand-color"></i>
+                <span>{{ 'CREATE_ITEM_PAGE.CHANNEL_EMAIL' | translate }}</span>
+              </div>
+            </label>
+          </div>
+
         </div>
       }
 

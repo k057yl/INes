@@ -8,6 +8,7 @@ using INest.Features.Locations.Commands.ReorderLocations;
 using INest.Features.Locations.Queries.GetLocationById;
 using INest.Features.Locations.Queries.GetLocations;
 using INest.Features.Locations.Queries.GetLocationTree;
+using INest.Infrastructure.QrCode;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -22,7 +23,15 @@ namespace INest.Controllers
     public class LocationsController : ControllerBase
     {
         private readonly IMediator _mediator;
-        public LocationsController(IMediator mediator) => _mediator = mediator;
+        private readonly IQrCodeService _qrCodeService;
+        private readonly IConfiguration _configuration;
+
+        public LocationsController(IMediator mediator, IQrCodeService qrCodeService, IConfiguration configuration)
+        {
+            _mediator = mediator;
+            _qrCodeService = qrCodeService;
+            _configuration = configuration;
+        }
 
         private Guid GetUserId()
         {
@@ -46,6 +55,25 @@ namespace INest.Controllers
             var loc = await _mediator.Send(new GetLocationByIdQuery(GetUserId(), id));
             if (loc == null) throw new AppException(LOCATIONS.ERRORS.NOT_FOUND, 404);
             return Ok(loc);
+        }
+
+        [HttpGet("{id}/qr")]
+        public async Task<IActionResult> GetQrCode(Guid id)
+        {
+            var loc = await _mediator.Send(new GetLocationByIdQuery(GetUserId(), id));
+            if (loc == null) throw new AppException(LOCATIONS.ERRORS.NOT_FOUND, 404);
+
+            var frontendUrl = _configuration["Frontend:Url"];
+            if (string.IsNullOrWhiteSpace(frontendUrl))
+            {
+                throw new AppException(SYSTEM.CONFIG_ERROR, 500);
+            }
+
+            var locationUrl = string.Format(SYSTEM.LOCATION_QR_PATH, frontendUrl, id);
+
+            var qrCodeBytes = _qrCodeService.GeneratePngCode(locationUrl);
+
+            return File(qrCodeBytes, "image/png");
         }
 
         [HttpPost]

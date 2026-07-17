@@ -10,6 +10,7 @@ public class AppDbContext
     : IdentityDbContext<AppUser, IdentityRole<Guid>, Guid>
 {
     public DbSet<Item> Items => Set<Item>();
+    public DbSet<ItemDetails> ItemDetails => Set<ItemDetails>();
     public DbSet<ItemPhoto> ItemPhotos => Set<ItemPhoto>();
     public DbSet<ItemHistory> ItemHistories => Set<ItemHistory>();
     public DbSet<Reminder> Reminders => Set<Reminder>();

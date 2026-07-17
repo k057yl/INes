@@ -13,6 +13,9 @@ namespace INest.Features.Items.DTOs
         public decimal? PurchasePrice { get; set; }
         public decimal? EstimatedValue { get; set; }
         public string? Currency { get; set; }
+
+        public DateTime? WarrantyExpiration { get; set; }
+
         public List<IFormFile>? Photos { get; set; }
         public string? MainPhotoName { get; set; }
     }

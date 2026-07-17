@@ -6,10 +6,15 @@ export interface ItemCreateDto {
   categoryId: string;
   storageLocationId?: string;
   status: ItemStatus;
-  purchaseDate?: string;
-  purchasePrice?: number;
-  estimatedValue?: number;
-  currency: string;
+  
+  details: {
+    purchaseDate?: string;
+    purchasePrice?: number;
+    estimatedValue?: number;
+    currency: string;
+    warrantyExpiration?: string;
+  };
+
   personName?: string;
   contactEmail?: string;
   expectedReturnDate?: string;

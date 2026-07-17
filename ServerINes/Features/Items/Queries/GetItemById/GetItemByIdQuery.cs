@@ -5,9 +5,9 @@ using MediatR;
 
 namespace INest.Features.Items.Queries.GetItemById
 {
-    public record GetItemByIdQuery(Guid UserId, Guid ItemId) : IRequest<ItemDetailDto?>, ICacheableQuery
+    public record GetItemByIdQuery(Guid UserId, Guid ItemId) : IRequest<ItemDto?>, ICacheableQuery
     {
-        public string CacheKey => CacheConstants.GET_ITEM_HISTORY_KEY(UserId, ItemId);
+        public string CacheKey => CacheConstants.GET_ITEM_DETAIL_KEY(UserId, ItemId);
         public TimeSpan? Expiration => TimeSpan.FromMinutes(30);
     }
 }

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -10,9 +11,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace INest.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260717112055_Addreminderfield")]
+    partial class Addreminderfield
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -72,8 +75,17 @@ namespace INest.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)");
+
                     b.Property<string>("Description")
                         .HasColumnType("text");
+
+                    b.Property<decimal?>("EstimatedValue")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
@@ -88,6 +100,13 @@ namespace INest.Migrations
 
                     b.Property<string>("PublicId")
                         .HasColumnType("text");
+
+                    b.Property<DateTime?>("PurchaseDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal?>("PurchasePrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
@@ -110,45 +129,6 @@ namespace INest.Migrations
                     b.HasIndex("UserId", "IsDeleted");
 
                     b.ToTable("Items");
-                });
-
-            modelBuilder.Entity("INest.Data.Entities.Core.ItemDetails", b =>
-                {
-                    b.Property<Guid>("ItemId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Currency")
-                        .IsRequired()
-                        .HasMaxLength(3)
-                        .HasColumnType("character varying(3)");
-
-                    b.Property<decimal?>("EstimatedValue")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("numeric(18,2)");
-
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("PurchaseDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<decimal?>("PurchasePrice")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("numeric(18,2)");
-
-                    b.Property<string>("ReceiptDocumentPath")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<bool>("WarrantyAlertSent")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime?>("WarrantyExpiration")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("ItemId");
-
-                    b.ToTable("ItemDetails");
                 });
 
             modelBuilder.Entity("INest.Data.Entities.Core.ItemPhoto", b =>
@@ -853,17 +833,6 @@ namespace INest.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("INest.Data.Entities.Core.ItemDetails", b =>
-                {
-                    b.HasOne("INest.Data.Entities.Core.Item", "Item")
-                        .WithOne("Details")
-                        .HasForeignKey("INest.Data.Entities.Core.ItemDetails", "ItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Item");
-                });
-
             modelBuilder.Entity("INest.Data.Entities.Core.ItemPhoto", b =>
                 {
                     b.HasOne("INest.Data.Entities.Core.Item", "Item")
@@ -1023,8 +992,6 @@ namespace INest.Migrations
 
             modelBuilder.Entity("INest.Data.Entities.Core.Item", b =>
                 {
-                    b.Navigation("Details");
-
                     b.Navigation("History");
 
                     b.Navigation("Photos");

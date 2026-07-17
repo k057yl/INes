@@ -18,9 +18,10 @@ namespace INest.Data.Configurations.Core
                 .IsRequired()
                 .HasMaxLength(200);
 
-            builder.Property(x => x.PurchasePrice).HasPrecision(18, 2);
-            builder.Property(x => x.EstimatedValue).HasPrecision(18, 2);
-            builder.Property(x => x.Currency).HasMaxLength(3);
+            builder.HasOne(x => x.Details)
+                .WithOne(x => x.Item)
+                .HasForeignKey<ItemDetails>(x => x.ItemId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasMany(x => x.Photos)
                 .WithOne(x => x.Item)

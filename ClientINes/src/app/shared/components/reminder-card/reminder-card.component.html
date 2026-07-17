@@ -1,0 +1,40 @@
+<div class="reminder-card" [style.border-left-color]="info.color" [class.is-completed]="reminder.isCompleted">
+  <!-- Иконка категории -->
+  <div class="reminder-icon" [style.color]="info.color">
+    <i class="fa" [ngClass]="info.icon"></i>
+  </div>
+  
+  <!-- Основной контент карточки -->
+  <div class="reminder-body">
+    <div class="title-row">
+      <h4>{{ reminder.title }}</h4>
+      
+      <!-- Индикатор активных нотификаций (колокольчик вместо уёбищных чекбоксов) -->
+      <i *ngIf="reminder.sendNotification && !reminder.isCompleted" 
+         class="fa fa-bell tg-active-badge" 
+         [title]="'REMINDS_PAGE.SEND_NOTIFICATION' | translate"></i>
+    </div>
+    
+    <div class="meta-row">
+      <!-- Дата срабатывания -->
+      <span class="date">
+        <i class="fa fa-calendar-alt"></i> {{ reminder.triggerAt | date:'dd.MM.yyyy HH:mm' }}
+      </span>
+      
+      <!-- Повторение (если есть) -->
+      <span *ngIf="reminder.recurrence !== ReminderRecurrence.None" class="recurrence-badge">
+        <i class="fa fa-sync-alt"></i> {{ getRecurrenceLabel(reminder.recurrence) | translate }}
+      </span>
+    </div>
+  </div>
+  
+  <!-- Кнопки управления -->
+  <div class="reminder-actions">
+    <button *ngIf="!reminder.isCompleted" (click)="onComplete.emit(reminder.id)" class="btn-action btn-check" [title]="'COMMON.SAVE' | translate">
+      <i class="fa fa-check"></i>
+    </button>
+    <button (click)="onDelete.emit(reminder.id)" class="btn-action btn-trash" [title]="'COMMON.DELETE' | translate">
+      <i class="fa fa-trash"></i>
+    </button>
+  </div>
+</div>

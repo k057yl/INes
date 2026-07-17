@@ -75,6 +75,7 @@ export class ItemFormModalComponent implements OnInit {
     contactEmail: ['', [Validators.email]],
     expectedReturnDate: [null as string | null],
     sendNotification: [false],
+    sendTelegramNotification: [false],
     addPhoto: [false]
   });
 
@@ -182,10 +183,10 @@ export class ItemFormModalComponent implements OnInit {
       categoryId: item.categoryId,
       storageLocationId: item.storageLocationId,
       status: item.status,
-      currency: item.currency || 'USD',
-      purchaseDate: item.purchaseDate ? item.purchaseDate.split('T')[0] : '',
-      purchasePrice: item.purchasePrice,
-      estimatedValue: item.estimatedValue
+      currency: item.details?.currency || 'USD',
+      purchaseDate: item.details?.purchaseDate ? item.details.purchaseDate.split('T')[0] : '',
+      purchasePrice: item.details?.purchasePrice,
+      estimatedValue: item.details?.estimatedValue
     });
 
     if (item.lending) {
@@ -193,7 +194,8 @@ export class ItemFormModalComponent implements OnInit {
         personName: item.lending.personName,
         contactEmail: item.lending.contactEmail,
         expectedReturnDate: item.lending.expectedReturnDate?.split('T')[0],
-        sendNotification: item.lending.sendNotification
+        sendNotification: item.lending.sendNotification,
+        sendTelegramNotification: (item.lending as any).sendTelegramNotification
       });
     }
 
@@ -252,19 +254,21 @@ export class ItemFormModalComponent implements OnInit {
     formData.append('categoryId', val.categoryId!);
     formData.append('storageLocationId', val.storageLocationId!);
     formData.append('status', val.status!.toString());
-    formData.append('currency', val.currency!);
+    formData.append('details.currency', val.currency!);
+
+    formData.append('details.currency', val.currency!);
 
     if (val.purchaseDate) {
-      formData.append('purchaseDate', val.purchaseDate);
+      formData.append('details.purchaseDate', val.purchaseDate);
     }
 
     if (val.purchasePrice != null) {
-      formData.append('purchasePrice', val.purchasePrice.toString());
+      formData.append('details.purchasePrice', val.purchasePrice.toString());
     }
 
     const estValue = val.estimatedValue ?? val.purchasePrice;
     if (estValue != null) {
-      formData.append('estimatedValue', estValue.toString());
+      formData.append('details.estimatedValue', estValue.toString());
     }
 
     if (this.isLendingStatus) {
@@ -274,6 +278,7 @@ export class ItemFormModalComponent implements OnInit {
         formData.append('expectedReturnDate', val.expectedReturnDate);
       }
       formData.append('sendNotification', (!!val.sendNotification).toString());
+      formData.append('sendTelegramNotification', (!!val.sendTelegramNotification).toString());
     }
 
     if ((!this.isEdit || val.addPhoto) && this.selectedPhotos.length > 0) {

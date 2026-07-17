@@ -68,11 +68,11 @@
         <div class="finance-grid">
           <div class="finance-card">
             <label>{{ 'ITEM_DETAILS.PURCHASE_PRICE' | translate }}</label>
-            <div class="price-val">{{ item.purchasePrice | price:item.currency }}</div>
+            <div class="price-val">{{ item.details?.purchasePrice | price:item.details?.currency }}</div>
           </div>
           <div class="finance-card">
             <label>{{ 'ITEM_DETAILS.ESTIMATED_VALUE' | translate }}</label>
-            <div class="price-val">{{ item.estimatedValue | price:item.currency }}</div>
+            <div class="price-val">{{ item.details?.estimatedValue | price:item.details?.currency }}</div>
           </div>
         </div>
         <div class="history-section">
