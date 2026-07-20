@@ -10,9 +10,7 @@ namespace INest.Data.Configurations.Core
         {
             builder.HasKey(x => x.Id);
 
-            builder.HasQueryFilter(x => !x.IsDeleted);
-
-            builder.HasIndex(x => new { x.UserId, x.IsDeleted });
+            builder.HasIndex(x => x.UserId);
 
             builder.Property(x => x.Name)
                 .IsRequired()

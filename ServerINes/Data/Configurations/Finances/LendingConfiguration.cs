@@ -10,8 +10,6 @@ namespace INest.Data.Configurations.Finances
         {
             builder.HasKey(x => x.Id);
 
-            builder.HasQueryFilter(x => !x.IsDeleted);
-
             builder.Property(x => x.PersonName)
                 .IsRequired()
                 .HasMaxLength(200);

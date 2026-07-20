@@ -37,16 +37,9 @@ public class AppDbContext
             {
                 case EntityState.Added:
                     entry.Entity.CreatedAt = DateTime.UtcNow;
-                    entry.Entity.IsDeleted = false;
                     break;
 
                 case EntityState.Modified:
-                    entry.Entity.UpdatedAt = DateTime.UtcNow;
-                    break;
-
-                case EntityState.Deleted:
-                    entry.State = EntityState.Modified;
-                    entry.Entity.IsDeleted = true;
                     entry.Entity.UpdatedAt = DateTime.UtcNow;
                     break;
             }

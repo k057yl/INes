@@ -1,4 +1,5 @@
-﻿using INest.Features.Telegram.Dtos;
+﻿using INest.Data.Enums;
+using INest.Features.Telegram.Dtos;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,7 +25,9 @@ namespace INest.Features.Telegram.Queries.SearchItems
 
             var items = await _context.Items
                 .Include(i => i.StorageLocation)
-                .Where(i => i.UserId == user.Id && !i.IsDeleted)
+                .Where(i => i.UserId == user.Id
+                         && i.Status != ItemStatus.Archived
+                         && i.Status != ItemStatus.Sold)
                 .Where(i => EF.Functions.Like(i.Name.ToLower(), $"%{term}%")
                          || (i.Description != null && EF.Functions.Like(i.Description.ToLower(), $"%{term}%")))
                 .Take(5)

@@ -22,7 +22,7 @@ namespace INest.Features.Items.Queries.GetItems
 
             var query = _context.Items
                 .Include(i => i.Details)
-                .Where(i => i.UserId == request.UserId && !i.IsDeleted)
+                .Where(i => i.UserId == request.UserId)
                 .AsNoTracking()
                 .AsQueryable();
 

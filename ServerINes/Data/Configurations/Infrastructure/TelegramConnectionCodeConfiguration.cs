@@ -10,8 +10,6 @@ namespace INest.Data.Configurations.Infrastructure
         {
             builder.HasKey(x => x.Id);
 
-            builder.HasQueryFilter(x => !x.IsDeleted);
-
             builder.Property(x => x.Code)
                 .IsRequired()
                 .HasMaxLength(64);

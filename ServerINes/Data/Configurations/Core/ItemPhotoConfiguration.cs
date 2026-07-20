@@ -10,8 +10,6 @@ namespace INest.Data.Configurations.Core
         {
             builder.HasKey(x => x.Id);
 
-            builder.HasQueryFilter(x => !x.IsDeleted);
-
             builder.Property(x => x.FilePath)
                 .IsRequired()
                 .HasMaxLength(500);

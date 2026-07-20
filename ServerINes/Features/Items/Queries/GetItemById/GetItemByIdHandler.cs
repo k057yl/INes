@@ -25,8 +25,7 @@ namespace INest.Features.Items.Queries.GetItemById
                 .Include(i => i.Reminders)
                 .Include(i => i.Details)
                 .Where(i => i.UserId == request.UserId &&
-                            i.Id == request.ItemId &&
-                            !i.IsDeleted)
+                            i.Id == request.ItemId)
                 .AsNoTracking()
                 .AsSplitQuery()
                 .FirstOrDefaultAsync(cancellationToken);

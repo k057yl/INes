@@ -10,8 +10,7 @@ namespace INest.Data.Configurations.Finances
         {
             builder.HasKey(x => x.Id);
 
-            builder.HasQueryFilter(x => !x.IsDeleted);
-            builder.HasIndex(x => new { x.UserId, x.IsDeleted });
+            builder.HasIndex(x => x.UserId);
 
             builder.Property(x => x.SalePrice).HasPrecision(18, 2);
             builder.Property(x => x.PurchasePriceSnapshot).HasPrecision(18, 2);

@@ -105,6 +105,7 @@
                 public const string INVALID_INITIAL_STATUS = "ITEMS.ERRORS.INVALID_INITIAL_STATUS";
                 public const string CANNOT_CANCEL_SALE = "ITEMS.ERRORS.CANNOT_CANCEL_SALE";
                 public const string CANNOT_RETURN_BORROWED = "ITEMS.ERRORS.CANNOT_RETURN_BORROWED";
+                public const string ONLY_ARCHIVED_CAN_BE_DELETED = "ITEMS.ERRORS.ONLY_ARCHIVED_CAN_BE_DELETED"; // <--- Добавили
             }
 
             public static class SUCCESS

@@ -20,7 +20,6 @@ namespace INest.Data.Entities.Core
 
         public AppUser User { get; set; } = null!;
 
-        // Связь 1-к-1 с вынесенными деталями
         public ItemDetails? Details { get; set; }
 
         public string? PhotoUrl { get; set; }
