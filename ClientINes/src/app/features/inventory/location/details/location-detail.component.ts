@@ -55,7 +55,6 @@ export class LocationDetailComponent implements OnInit {
     });
   }
 
-  // Нативный метод печати только карточки QR кода
   printQrCode() {
     const printContent = document.getElementById('location-qr-zone')?.innerHTML;
     if (!printContent) return;
@@ -123,7 +122,7 @@ export class LocationDetailComponent implements OnInit {
       message: 'ITEM_CARD.MODAL.YOU_SURE_MSG'
     }).subscribe((res: any) => {
       if (res) {
-        this.itemService.delete(item.id).subscribe({
+        this.itemService.archive(item.id).subscribe({
           next: () => {
             if (this.location) {
               this.location = {

@@ -58,7 +58,7 @@ export class DashboardFacade {
   }
 
   deleteItem(id: string): Observable<any> {
-    return this.itemService.delete(id);
+    return this.itemService.archive(id);
   }
 
   renameLocation(id: string, newName: string): Observable<any> {

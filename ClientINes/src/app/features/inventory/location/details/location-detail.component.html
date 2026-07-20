@@ -51,14 +51,14 @@
 
             <div class="location-qr-section">
               <div class="qr-header">
-                <h3 class="panel-title"><i class="fa fa-qrcode"></i> QR Метка локации</h3>
+                <i class="fa fa-qrcode"></i> {{ 'LOCATION_DETAILS.QR_LABEL' | translate }}
               </div>
               
               <div class="qr-print-zone" id="location-qr-zone">
                 <div class="qr-wrapper-card">
                   <div class="qr-card-title">{{ location.name }}</div>
                   <img [src]="locationService.getQrCodeUrl(location.id)" class="qr-image" alt="QR Code">
-                  <div class="qr-card-footer">INest Склад</div>
+                  <div class="qr-card-footer">{{ 'LOCATION_DETAILS.STORAGE_PLACE' | translate }}</div>
                 </div>
               </div>
 

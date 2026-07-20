@@ -23,13 +23,18 @@
     "FUTURE_DATE": "Date cannot be in the future",
     "FILE_TOO_LARGE": "File is too large",
     "IMAGE_PROCESSING_FAILED": "Image processing error",
-    "MAX_NESTING_REACHED": "Maximum nesting limit reached"
+    "MAX_NESTING_REACHED": "Maximum nesting limit reached",
+    "EMPTY_LIST": "List cannot be empty"
   },
   "EMAILS": {
     "CONFIRM_SUBJECT": "INest Registration Confirmation",
     "CONFIRM_BODY": "Your confirmation code: {0}",
     "RESET_SUBJECT": "INest Password Reset",
-    "RESET_BODY": "To reset your password, follow the link: {0}"
+    "RESET_BODY": "To reset your password, follow the link: {0}",
+    "LENDING_SUBJECT": "INest Item Lending Notification",
+    "LENDING_BODY": "Notification regarding lent item: {0}",
+    "REMINDER_SUBJECT": "INest Reminder Notification",
+    "REMINDER_BODY": "Reminder: {0}"
   },
   "AUTH": {
     "ERRORS": {
@@ -48,7 +53,8 @@
     "SUCCESS": {
       "OTP_SENT": "Confirmation code sent to email",
       "RESET_EMAIL_SENT": "Password reset instructions sent to email",
-      "PASSWORD_CHANGED": "Password changed successfully"
+      "PASSWORD_CHANGED": "Password changed successfully",
+      "LOGIN": "Log in successful"
     }
   },
   "CATEGORIES": {
@@ -56,15 +62,32 @@
       "NOT_FOUND": "Category not found",
       "CANNOT_DELETE_DEFAULT": "Cannot delete default category",
       "INVALID_NAME": "Invalid category name"
+    },
+    "SUCCESS": {
+      "CREATE": "Category created successfully",
+      "UPDATE": "Category updated successfully",
+      "DELETE": "Category deleted successfully"
     }
   },
   "ITEMS": {
     "ERRORS": {
       "NOT_FOUND": "Item not found",
-      "ONLY_ACTIVE_CAN_BE_EDITED": "Only active items can be edited"
+      "ONLY_ACTIVE_CAN_BE_EDITED": "Only active items can be edited",
+      "CANNOT_LEND": "Cannot lend this item",
+      "CANNOT_RETURN": "Cannot return this item",
+      "CANNOT_SELL": "Cannot sell this item",
+      "ALREADY_ARCHIVED": "Item is already archived",
+      "INVALID_INITIAL_STATUS": "Invalid initial status",
+      "CANNOT_CANCEL_SALE": "Cannot cancel this sale",
+      "CANNOT_RETURN_BORROWED": "Cannot return borrowed item",
+      "ONLY_ARCHIVED_CAN_BE_DELETED": "Only archived items can be permanently deleted",
+      "CANNOT_DELETE_SOLD": "Cannot delete sold items"
     },
     "SUCCESS": {
-      "DELETE": "Item deleted successfully"
+      "DELETE": "Item deleted successfully",
+      "CREATE": "Item created successfully",
+      "UPDATE": "Item updated successfully",
+      "ARCHIVED": "Item archived successfully"
     }
   },
   "LOCATIONS": {
@@ -72,13 +95,26 @@
       "NOT_FOUND": "Location not found",
       "SELF_NESTING": "Location cannot be nested within itself",
       "CIRCULAR_DEPENDENCY": "Circular dependency detected",
-      "INVALID_NAME": "Invalid location name"
+      "INVALID_NAME": "Invalid location name",
+      "NOT_EMPTY": "Cannot delete a location that contains items"
+    },
+    "SUCCESS": {
+      "CREATE": "Location created successfully",
+      "MOVE": "Location moved successfully",
+      "REORDER": "Locations reordered successfully",
+      "RENAME": "Location renamed successfully",
+      "DELETE": "Location deleted successfully"
     }
   },
   "PLATFORMS": {
     "ERRORS": {
       "NOT_FOUND": "Platform not found",
       "INVALID_NAME": "Invalid platform name"
+    },
+    "SUCCESS": {
+      "CREATE": "Platform created successfully",
+      "UPDATE": "Platform updated successfully",
+      "DELETE": "Platform deleted successfully"
     }
   },
   "SALES": {
@@ -86,6 +122,11 @@
       "ITEM_NOT_FOUND": "Item for sale not found",
       "ALREADY_SOLD": "Item already sold",
       "NOT_FOUND": "Sale record not found"
+    },
+    "SUCCESS": {
+      "SELL": "Item sold successfully",
+      "CANCEL": "Sale canceled successfully",
+      "DELETE": "Sale record deleted successfully"
     }
   },
   "STATUS": {
@@ -96,6 +137,7 @@
     "SOLD": "Sold",
     "GIFTED": "Gifted",
     "LISTED": "Listed for sale",
+    "ARCHIVED": "Archived",
     "BORROWED": "Borrowed"
   },
   "HISTORY": {
@@ -107,6 +149,9 @@
     "RETURNED": "Returned to storage",
     "VALUE_UPDATED": "Price updated: {0}",
     "PHOTOS_ADDED_COUNT": "Photos added: {0}",
+    "SALES_CANCELED": "Sale canceled",
+    "SOLD_FOR": "Sold for: {0}",
+    "RETURNED_BORROWED": "Returned borrowed item",
     "REMINDER": {
       "COMPLETED": "Reminder completed: {0}",
       "SCHEDULED": "Reminder scheduled: {0}"
@@ -120,13 +165,25 @@
     "INSURANCE": "Insurance",
     "MEDICAL": "Medical",
     "TAX": "Taxes",
-    "SUBSCRIPTION": "Subscription"
+    "SUBSCRIPTION": "Subscription",
+    "ERRORS": {
+      "NOT_FOUND": "Reminder not found"
+    },
+    "SUCCESS": {
+      "CREATE": "Reminder created successfully",
+      "COMPLETE": "Reminder completed successfully",
+      "DELETE": "Reminder deleted successfully"
+    }
   },
   "LENDING": {
     "ERRORS": {
       "NOT_FOUND": "Lending record not found",
       "ALREADY_LENT": "Item already lent",
       "NOT_LENT": "Item is not currently lent"
+    },
+    "SUCCESS": {
+      "LEND": "Item lent successfully",
+      "RETURN": "Item returned successfully"
     }
   },
   "COMMON": {
@@ -135,6 +192,7 @@
     "CANCEL": "Cancel",
     "CLOSE": "Close",
     "DELETE": "Delete",
+    "ARCHIVE": "Archive",
     "DELETE_ASK": "Delete?",
     "M_YOU_SURE": "Are you sure?",
     "ENTER_NAME": "Enter name",
@@ -159,10 +217,11 @@
     "PAGE": "Page: ",
     "SELECT": "Select",
     "RETURN": "Return",
+    "PRINT": "Print",
     "SMART_DELETE": "Smart Delete",
     "SMART_DELETE_TEXT": "Delete the sale but keep the history record",
     "HARD_DELETE": "Hard Delete",
-    "HARD_DELETE_TEXT": "Permanently delete the sale and all its records. This action is irreversible!",
+    "HARD_DELETE_TEXT": "Permanently delete the record. This action is irreversible!",
     "CHANGE_THEME_TOOLTIP": "Change theme",
     "EXIT": "Exit",
     "CHANGE_LANGUAGE_TOOLTIP": "Change language"
@@ -257,12 +316,13 @@
     }
   },
   "LOCATION_DETAILS": {
-    "STORAGE_PLACE": "Storage place",
+    "STORAGE_PLACE": "INest Warehouse",
     "UPPER_LEVEL": "Go level up",
     "NESTED": "Nested locations",
     "ITEMS_COUNT": "Total items",
     "NO_ITEMS": "No items in this location",
-    "NO_DESCRIPTION": "No description"
+    "NO_DESCRIPTION": "No description",
+    "QR_LABEL": "Location QR Code"
   },
   "ITEM_CARD": {
     "MODAL": {
@@ -389,6 +449,12 @@
   "ITEMS_LIST": {
     "TITLE": "Item Management",
     "EMPTY_RESULT": "No items found",
+    "BULK_DELETE_COUNT_CONFIRM": "Are you sure you want to move {{count}} selected items to the archive?",
+    "BULK_HARD_DELETE_CONFIRM": "Are you sure you want to permanently delete {{count}} selected items? This action is irreversible!",
+    "DROP_MENU": {
+      "ALL_CATEGORIES": "All categories",
+      "ALL_LOCATIONS": "All locations"
+    },
     "TABLE": {
       "PHOTO": "Photo",
       "NAME": "Name",

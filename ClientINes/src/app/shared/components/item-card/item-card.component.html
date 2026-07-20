@@ -94,7 +94,6 @@
 
           <div class="dropdown-divider"></div>
 
-          <!-- Секция перемещения между локациями (только для активных предметов) -->
           @if (item.status === 0) {
             <div class="move-section">
               <label><i class="fa fa-exchange-alt"></i> {{'DROP_MENU.MOVE_MSG' | translate}}</label>
@@ -111,9 +110,15 @@
             <div class="dropdown-divider"></div>
           }
 
-          <button class="dropdown-item btn-delete" (click)="delete.emit(item); closeMenu()">
-            <i class="fa fa-trash-alt"></i> {{ 'COMMON.DELETE' | translate }}
-          </button>
+          @if (item.status === 3) {
+            <button class="dropdown-item btn-delete hard-delete" (click)="delete.emit(item); closeMenu()">
+              <i class="fa fa-fire"></i> {{ 'COMMON.HARD_DELETE' | translate }}
+            </button>
+          } @else {
+            <button class="dropdown-item btn-delete" (click)="delete.emit(item); closeMenu()">
+              <i class="fa fa-archive"></i> {{ 'COMMON.ARCHIVE' | translate }}
+            </button>
+          }
         </div>
       }
     </div>

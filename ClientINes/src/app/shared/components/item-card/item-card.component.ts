@@ -13,7 +13,7 @@ import { InestModalComponent } from '../modals/inest-modal/inest-modal.component
 @Component({
   selector: 'app-item-card',
   standalone: true,
-  imports: [CommonModule, RouterModule, DragDropModule, TranslateModule, InestModalComponent],
+  imports: [CommonModule, RouterModule, DragDropModule, TranslateModule],
   templateUrl: './item-card.component.html',
   styleUrl: './item-card.component.scss'
 })
@@ -47,12 +47,12 @@ export class ItemCardComponent {
   }
 
   get canSell(): boolean {
-    const forbiddenStatuses = [1, 2, 4];
+    const forbiddenStatuses = [1, 2, 3, 4];
     return !forbiddenStatuses.includes(this.item.status);
   }
 
   get canLend(): boolean {
-    const forbiddenStatuses = [1, 2, 4];
+    const forbiddenStatuses = [1, 2, 3, 4];
     return !forbiddenStatuses.includes(this.item.status);
   }
 

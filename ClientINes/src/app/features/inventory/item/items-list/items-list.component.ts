@@ -327,9 +327,9 @@ export class ItemsListComponent implements OnInit {
       return;
     }
 
-    const hasSoldItems = this.items
-      .filter(x => this.selectedIds.has(x.id))
-      .some(x => x.status === 2);
+    const selectedItems = this.items.filter(x => this.selectedIds.has(x.id));
+
+    const hasSoldItems = selectedItems.some(x => x.status === 2);
 
     if (hasSoldItems) {
       this.toastr.error(
@@ -340,16 +340,25 @@ export class ItemsListComponent implements OnInit {
       return;
     }
 
+    const isArchiveView = this.filterForm.get('showArchived')?.value === true;
+    const isOnlyArchivedSelected = selectedItems.every(x => x.status === 3);
+
+    // Жесткое физическое удаление только если сносим предметы, находящиеся в архиве
+    const isHardDelete = isArchiveView || isOnlyArchivedSelected;
+
+    const confirmTitle = isHardDelete ? 'COMMON.HARD_DELETE' : 'COMMON.DELETE';
+    const confirmMessageKey = isHardDelete 
+      ? 'ITEMS_LIST.BULK_HARD_DELETE_CONFIRM' 
+      : 'ITEMS_LIST.BULK_DELETE_COUNT_CONFIRM';
+
     const message = this.translate.instant(
-      'ITEMS_LIST.BULK_DELETE_COUNT_CONFIRM',
-      {
-        count: this.selectedIds.size
-      }
+      confirmMessageKey,
+      { count: this.selectedIds.size }
     );
 
     this.modalService.openConfirm({
       mode: 'delete',
-      title: 'COMMON.DELETE',
+      title: confirmTitle,
       message
     })
     .subscribe(res => {
@@ -359,35 +368,34 @@ export class ItemsListComponent implements OnInit {
       }
 
       this.isLoading = true;
+      const ids = Array.from(this.selectedIds);
 
-      this.itemService
-        .deleteBatch(
-          Array.from(this.selectedIds)
-        )
-        .subscribe({
+      const request$ = isHardDelete
+        ? this.itemService.deleteArchivedBatch(ids)
+        : this.itemService.deleteBatch(ids);
 
-          next: () => {
+      request$.subscribe({
+        next: () => {
+          this.toastr.success(
+            this.translate.instant(
+              'ITEMS.SUCCESS.DELETE'
+            )
+          );
 
-            this.toastr.success(
-              this.translate.instant(
-                'ITEMS.SUCCESS.DELETE'
-              )
-            );
+          this.selectedIds.clear();
+          this.loadData();
+        },
 
-            this.loadData();
-          },
+        error: () => {
+          this.toastr.error(
+            this.translate.instant(
+              'SYSTEM.DEFAULT_ERROR'
+            )
+          );
 
-          error: () => {
-
-            this.toastr.error(
-              this.translate.instant(
-                'SYSTEM.DEFAULT_ERROR'
-              )
-            );
-
-            this.isLoading = false;
-          }
-        });
+          this.isLoading = false;
+        }
+      });
     });
   }
 
