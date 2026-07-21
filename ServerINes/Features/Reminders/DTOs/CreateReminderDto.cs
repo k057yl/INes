@@ -7,6 +7,8 @@ namespace INest.Features.Reminders.DTOs
         string Title,
         ReminderType Type,
         ReminderRecurrence Recurrence,
-        DateTime TriggerAt
+        DateTime TriggerAt,
+        bool SendNotification = false,
+        bool SendTelegram = false
     );
 }

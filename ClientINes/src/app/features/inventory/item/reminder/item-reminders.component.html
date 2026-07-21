@@ -40,14 +40,22 @@
           
           <div class="field-group">
             <label>{{ 'REMINDS_PAGE.DATE_LABEL' | translate }}</label>
-            <input type="date" formControlName="triggerAt" class="inest-input-styled">
+            <input type="datetime-local" formControlName="triggerAt" class="inest-input-styled">
           </div>
 
           <div class="field-group checkbox-group">
             <label class="checkbox-label">
               <input type="checkbox" formControlName="sendNotification" class="inest-checkbox">
-              <i class="fa fa-bell text-accent-icon"></i>
-              <span>{{ 'REMINDS_PAGE.SEND_NOTIFICATION' | translate }}</span>
+              <i class="fa fa-envelope text-accent-icon"></i>
+              <span>Email</span>
+            </label>
+          </div>
+
+          <div class="field-group checkbox-group">
+            <label class="checkbox-label">
+              <input type="checkbox" formControlName="sendTelegram" class="inest-checkbox">
+              <i class="fab fa-telegram text-accent-icon"></i>
+              <span>Telegram</span>
             </label>
           </div>
           

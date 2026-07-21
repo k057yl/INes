@@ -47,6 +47,8 @@ namespace INest.Features.Reminders.Commands.CompleteReminder
                     Type = reminder.Type,
                     Recurrence = reminder.Recurrence,
                     TriggerAt = nextTrigger,
+                    SendNotification = reminder.SendNotification,
+                    SendTelegram = reminder.SendTelegram,
                     IsCompleted = false,
                     IsNotificationSent = false
                 });

@@ -82,13 +82,21 @@ export class ItemRemindersComponent implements OnInit {
       type: [ReminderType.Custom, Validators.required],
       recurrence: [ReminderRecurrence.None, Validators.required],
       triggerAt: ['', Validators.required],
-      sendNotification: [false]
+      sendNotification: [false],
+      sendTelegram: [false]
     });
   }
 
   toggleAdd() {
     this.isAdding = !this.isAdding;
-    if (!this.isAdding) this.reminderForm.reset({ type: ReminderType.Custom, recurrence: ReminderRecurrence.None, sendNotification: false });
+    if (!this.isAdding) {
+      this.reminderForm.reset({ 
+        type: ReminderType.Custom, 
+        recurrence: ReminderRecurrence.None, 
+        sendNotification: false,
+        sendTelegram: false 
+      });
+    }
   }
 
   onSubmit() {
@@ -108,7 +116,8 @@ export class ItemRemindersComponent implements OnInit {
       type: Number(this.reminderForm.value.type),
       recurrence: Number(this.reminderForm.value.recurrence),
       triggerAt: parsedDate.toISOString(),
-      sendNotification: this.reminderForm.value.sendNotification
+      sendNotification: !!this.reminderForm.value.sendNotification,
+      sendTelegram: !!this.reminderForm.value.sendTelegram
     };
 
     this.reminderService.createReminder(dto).subscribe({
@@ -122,7 +131,7 @@ export class ItemRemindersComponent implements OnInit {
 
   // --- ЛОГИКА ЧЕРЕЗ ГЛОБАЛЬНЫЙ СЕРВИС ---
 
-requestComplete(id: string) {
+  requestComplete(id: string) {
     this.modal.openConfirm({
       mode: 'confirm',
       title: 'REMINDS_PAGE.MODAL.TITLE_DONE',

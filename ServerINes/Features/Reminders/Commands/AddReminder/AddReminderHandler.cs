@@ -40,7 +40,9 @@ namespace INest.Features.Reminders.Commands.AddReminder
                 Title = safeTitle,
                 Type = dto.Type,
                 Recurrence = dto.Recurrence,
-                TriggerAt = dto.TriggerAt,
+                TriggerAt = dto.TriggerAt.ToUniversalTime(),
+                SendNotification = dto.SendNotification,
+                SendTelegram = dto.SendTelegram,
                 IsCompleted = false,
                 IsNotificationSent = false
             };
