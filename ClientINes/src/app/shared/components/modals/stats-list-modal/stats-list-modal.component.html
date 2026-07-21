@@ -1,0 +1,54 @@
+@if (type) {
+  <div class="modal-backdrop" (click)="close.emit()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3><i class="fa fa-list-ul"></i> {{ modalTitleKey | translate }}</h3>
+        <button class="close-btn" (click)="close.emit()"><i class="fa fa-times"></i></button>
+      </div>
+
+      <div class="modal-body">
+        <!-- СПИСОК ЛОКАЦИЙ -->
+        @if (type === 'locations') {
+          <div class="stats-list">
+            @for (loc of locationsList; track loc.id) {
+              <div class="stats-item clickable" (click)="onLocationClick(loc.id)">
+                <div class="item-icon" [style.color]="loc.color">
+                  <i [className]="'fa ' + (loc.icon || 'fa-folder')"></i>
+                </div>
+                <div class="item-info">
+                  <span class="item-title">{{ loc.name }}</span>
+                  <span class="item-sub">{{ loc.items.length || 0 }} вещей</span>
+                </div>
+                <i class="fa fa-chevron-right arrow-icon"></i>
+              </div>
+            }
+            @if (locationsList.length === 0) {
+              <div class="empty-state">Локаций пока нет</div>
+            }
+          </div>
+        }
+
+        <!-- СПИСОК ОДОЛЖЕННЫХ ВЕЩЕЙ -->
+        @if (type === 'lent') {
+          <div class="stats-list">
+            @for (data of lentItems; track data.item.id) {
+              <div class="stats-item clickable" (click)="onItemClick(data.item.id)">
+                <div class="item-icon">
+                  <i class="fa fa-hand-holding"></i>
+                </div>
+                <div class="item-info">
+                  <span class="item-title">{{ data.item.name }}</span>
+                  <span class="item-sub">Локация: {{ data.locationName }}</span>
+                </div>
+                <i class="fa fa-chevron-right arrow-icon"></i>
+              </div>
+            }
+            @if (lentItems.length === 0) {
+              <div class="empty-state">Нет одолженных вещей</div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+}

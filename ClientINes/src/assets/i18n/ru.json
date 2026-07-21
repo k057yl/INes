@@ -503,5 +503,15 @@
     "WEEKLY": "Еженедельно",
     "MONTHLY": "Ежемесячно",
     "YEARLY": "Ежегодно"
+  },
+  "DASHBOARD_STATS": {
+    "TOTAL_ITEMS": "Всего вещей",
+    "LOCATIONS": "Локаций",
+    "ATTENTION": "Внимание",
+    "LENT": "Одолжено",
+    "ARCHIVE_SOLD": "Архив / Продано",
+    "EXPIRED_SHORT": "{{ count }} просроч.",
+    "WARRANTY_SHORT": "{{ count }} гарантия",
+    "ALL_OK": "Всё в порядке"
   }
 }

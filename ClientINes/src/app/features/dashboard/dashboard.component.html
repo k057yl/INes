@@ -1,8 +1,10 @@
 <div class="main-page-container">
 
+  <app-dashboard-stats [stats]="facade.stats"></app-dashboard-stats>
+
   <app-location-ribbon
-    [locations]="facade.locations"
-    [currentPage]="currentPageRibbon"
+    [locations]="facade.locations.locations"
+    [currentPage]="facade.nav.currentPageRibbon"
     [activeBoardIds]="activeBoardIds"
     (pageChange)="onRibbonPageChange($event)"
     (reorder)="onRibbonReorder($event)"
@@ -10,10 +12,11 @@
   </app-location-ribbon>
 
   <div class="board-grid-3"
-    [class.board-dragging-active]="!!facade.draggedLocationId" cdkDropList
+    [class.board-dragging-active]="!!facade.locations.draggedLocationId" 
+    cdkDropList
     id="root-loc-list"
     [cdkDropListData]="pagedBoardLocations"
-    [cdkDropListConnectedTo]="visibleConnectedLocationLists"
+    [cdkDropListConnectedTo]="facade.visibleConnectedLocationLists"
     [cdkDropListSortingDisabled]="true"
     [cdkDropListEnterPredicate]="canDropRootLocation"
     (cdkDropListDropped)="onLocationDropped({event: $event, targetId: 'root'})">
@@ -29,16 +32,19 @@
         cdkDrag
         [cdkDragData]="loc"
         [cdkDragDisabled]="isMobile"
-        (cdkDragStarted)="onLocationDragStart(loc)" (cdkDragEnded)="onLocationDragEnd()">
+        (cdkDragStarted)="onLocationDragStart(loc)" 
+        (cdkDragEnded)="onLocationDragEnd()">
+        
         <div *cdkDragPreview class="custom-drag-preview" [style.border-color]="loc.color">
           <i [className]="'fa ' + (loc.icon || 'fa-folder')" [style.color]="loc.color"></i>
           <span class="preview-title">{{ loc.name }}</span>
         </div>
+
         <app-location-card
           [location]="loc"
-          [flatLocations]="facade.flatLocations"
-          [connectedLists]="visibleConnectedLists"
-          [connectedLocationLists]="visibleConnectedLocationLists"
+          [flatLocations]="facade.locations.flatLocations"
+          [connectedLists]="facade.visibleConnectedLists"
+          [connectedLocationLists]="facade.visibleConnectedLocationLists"
           (itemDropped)="onItemDropped($event)"
           (locationDropped)="onLocationDropped($event)"
           (lendItem)="onLendRequest($event)"
@@ -57,7 +63,7 @@
       </div>
     }
 
-    @if (!facade.isLoading && facade.locations.length === 0) {
+    @if (!facade.isLoading && facade.locations.locations.length === 0) {
       <div class="zero-state-container">
         <div class="zero-state-content">
           <i class="fa fa-box-open zero-icon"></i>
@@ -74,10 +80,18 @@
   @if (totalBoardPages > 1) {
     <div class="board-pager-row">
       <div class="board-pager-nav">
-        <button (click)="changeBoardPage(-1)" [disabled]="currentPageBoard === 0"><i class="fa fa-angle-left"></i></button>
-        <span class="page-info">{{'COMMON.PAGE' | translate }} {{ currentPageBoard + 1 }}/{{ totalBoardPages }}</span>
-        <button (click)="changeBoardPage(1)" [disabled]="currentPageBoard === totalBoardPages - 1"><i class="fa fa-angle-right"></i></button>
+        <button (click)="changeBoardPage(-1)" [disabled]="facade.nav.currentPageBoard === 0"><i class="fa fa-angle-left"></i></button>
+        <span class="page-info">{{'COMMON.PAGE' | translate }} {{ facade.nav.currentPageBoard + 1 }}/{{ totalBoardPages }}</span>
+        <button (click)="changeBoardPage(1)" [disabled]="facade.nav.currentPageBoard === totalBoardPages - 1"><i class="fa fa-angle-right"></i></button>
       </div>
     </div>
   }
 </div>
+
+@if (modal.activeModal === 'statsList' && modal.statsType) {
+  <app-stats-list-modal
+    [type]="modal.statsType"
+    (close)="modal.close()"
+    (selectLocation)="jumpToLocation($any($event))">
+  </app-stats-list-modal>
+}

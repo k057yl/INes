@@ -1,0 +1,61 @@
+@if (stats) {
+  <div class="stats-ribbon">
+    <!-- 1. Всего вещей -> переход на страницу предметов /items-list -->
+    <div class="stat-card clickable" [routerLink]="['/items-list']">
+      <div class="stat-icon"><i class="fa fa-boxes"></i></div>
+      <div class="stat-body">
+        <span class="stat-label">{{ 'DASHBOARD_STATS.TOTAL_ITEMS' | translate }}</span>
+        <span class="stat-value">{{ stats.totalItemsCount }}</span>
+      </div>
+    </div>
+
+    <!-- 2. Локаций -> клик открывает список локаций через modalService -->
+    <div class="stat-card clickable" (click)="openStats('locations')">
+      <div class="stat-icon"><i class="fa fa-folder-open"></i></div>
+      <div class="stat-body">
+        <span class="stat-label">{{ 'DASHBOARD_STATS.LOCATIONS' | translate }}</span>
+        <span class="stat-value">{{ stats.totalLocationsCount }}</span>
+      </div>
+    </div>
+
+    <!-- 3. Одолжено -> клик открывает список одолженных вещей через modalService -->
+    <div class="stat-card info clickable" (click)="openStats('lent')">
+      <div class="stat-icon"><i class="fa fa-hand-holding"></i></div>
+      <div class="stat-body">
+        <span class="stat-label">{{ 'DASHBOARD_STATS.LENT' | translate }}</span>
+        <span class="stat-value">{{ stats.lentItemsCount }}</span>
+      </div>
+    </div>
+
+    <!-- 4. Архив / Продано -> переход на /items-list с фильтром -->
+    <div class="stat-card muted clickable" [routerLink]="['/items-list']" [queryParams]="{ showArchived: true }">
+      <div class="stat-icon"><i class="fa fa-archive"></i></div>
+      <div class="stat-body">
+        <span class="stat-label">{{ 'DASHBOARD_STATS.ARCHIVE_SOLD' | translate }}</span>
+        <span class="stat-value">{{ stats.archivedAndSoldItemsCount }}</span>
+      </div>
+    </div>
+
+    <!-- 5. АХТУНГ! Справа -->
+    @if (stats.expiredRemindersCount > 0 || stats.expiringWarrantiesCount > 0) {
+      <div class="stat-card danger attention-card clickable" (click)="openStats('attention')">
+        <div class="stat-icon"><i class="fa fa-exclamation-triangle"></i></div>
+        <div class="stat-body">
+          <span class="stat-label">{{ 'DASHBOARD_STATS.ATTENTION' | translate }}</span>
+          <div class="stat-badges">
+            @if (stats.expiredRemindersCount > 0) {
+              <span class="badge-danger">
+                {{ 'DASHBOARD_STATS.EXPIRED_SHORT' | translate:{ count: stats.expiredRemindersCount } }}
+              </span>
+            }
+            @if (stats.expiringWarrantiesCount > 0) {
+              <span class="badge-warning">
+                {{ 'DASHBOARD_STATS.WARRANTY_SHORT' | translate:{ count: stats.expiringWarrantiesCount } }}
+              </span>
+            }
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+}

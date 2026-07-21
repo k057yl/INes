@@ -503,5 +503,15 @@
     "WEEKLY": "Щотижня",
     "MONTHLY": "Щомісяця",
     "YEARLY": "Щороку"
+  },
+  "DASHBOARD_STATS": {
+    "TOTAL_ITEMS": "Усього речей",
+    "LOCATIONS": "Локацій",
+    "ATTENTION": "Увага",
+    "LENT": "Позичено",
+    "ARCHIVE_SOLD": "Архів / Продано",
+    "EXPIRED_SHORT": "{{ count }} простроч.",
+    "WARRANTY_SHORT": "{{ count }} гарантія",
+    "ALL_OK": "Усе в порядку"
   }
 }

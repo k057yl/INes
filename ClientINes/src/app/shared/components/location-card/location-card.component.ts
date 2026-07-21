@@ -7,7 +7,7 @@ import { StorageLocation } from '../../../core/contracts/storage-location';
 import { Item } from '../../../core/contracts/item';
 import { DashboardModalService } from '../../../features/dashboard/dashboard.modal.service';
 import { DashboardFacade } from '../../../features/dashboard/dashboard.facade';
-import { DashboardTreeService } from '../../../features/dashboard/dashboard-tree.service';
+import { DashboardTreeService } from '../../../features/dashboard/services/dashboard-tree.service';
 import { ItemCardComponent } from '../item-card/item-card.component';
 
 @Component({
@@ -67,18 +67,18 @@ export class LocationCardComponent implements OnInit {
   }
 
   onDragStart(child: StorageLocation) {
-    this.facade.draggedLocationId = child.id;
+    this.facade.locations.draggedLocationId = child.id;
   }
 
   onDragEnd() {
-    this.facade.draggedLocationId = null;
+    this.facade.locations.draggedLocationId = null;
   }
 
   private _checkIfValidTarget(draggedData: any): boolean {
     if (!draggedData || !('children' in draggedData)) return false;
     if (draggedData.id === this.location.id) return false;
     if (this.treeService.isChildOf(this.location.id, draggedData)) return false;
-    return this.treeService.canMoveLocation(this.facade.flatLocations, draggedData.id, this.location.id);
+    return this.treeService.canMoveLocation(this.facade.locations.flatLocations, draggedData.id, this.location.id);
   }
 
   @HostListener('window:resize')
@@ -93,27 +93,27 @@ export class LocationCardComponent implements OnInit {
   };
 
   get isValidDropTarget(): boolean {
-    const draggedId = this.facade.draggedLocationId;
+    const draggedId = this.facade.locations.draggedLocationId;
     if (!draggedId) return false;
-    const draggedLoc = this.facade.flatLocations.find(l => l.id === draggedId);
+    const draggedLoc = this.facade.locations.flatLocations.find(l => l.id === draggedId);
     if (!draggedLoc) return false;
     return this._checkIfValidTarget(draggedLoc);
   }
 
   get isInvalidDropTarget(): boolean {
-    const draggedId = this.facade.draggedLocationId;
+    const draggedId = this.facade.locations.draggedLocationId;
     if (!draggedId) return false;
     if (draggedId === this.location.id) return false;
     
-    const draggedLoc = this.facade.flatLocations.find(l => l.id === draggedId);
+    const draggedLoc = this.facade.locations.flatLocations.find(l => l.id === draggedId);
     if (!draggedLoc) return false;
     
     return !this._checkIfValidTarget(draggedLoc);
   }
 
   private getSiblings(): StorageLocation[] {
-    const parent = this.facade.flatLocations.find(l => l.children?.some(c => c.id === this.location.id));
-    return parent && parent.children ? parent.children : this.facade.locations;
+    const parent = this.facade.locations.flatLocations.find(l => l.children?.some(c => c.id === this.location.id));
+    return parent && parent.children ? parent.children : this.facade.locations.locations;
   }
 
   get isFirst(): boolean {
@@ -152,7 +152,7 @@ export class LocationCardComponent implements OnInit {
     const select = event.target as HTMLSelectElement;
     const targetId = select.value === 'root' ? null : select.value;
 
-    if (!this.treeService.canMoveLocation(this.facade.flatLocations, this.location.id, targetId)) {
+    if (!this.treeService.canMoveLocation(this.facade.locations.flatLocations, this.location.id, targetId)) {
       select.value = "";
       return;
     }

@@ -1,0 +1,88 @@
+.stats-ribbon {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+
+  .stat-card {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 0.9rem;
+    background: rgba(22, 27, 34, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    backdrop-filter: blur(8px);
+    transition: transform 0.2s ease, border-color 0.2s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .stat-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      color: #8b949e;
+    }
+
+    .stat-body {
+      display: flex;
+      flex-direction: column;
+
+      .stat-label {
+        font-size: 0.68rem;
+        color: #8b949e;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .stat-value {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #f0f6fc;
+      }
+
+      .stat-badges {
+        display: flex;
+        gap: 0.3rem;
+        margin-top: 0.2rem;
+
+        .badge-danger {
+          font-size: 0.65rem;
+          background: rgba(248, 81, 73, 0.2);
+          color: #f85149;
+          padding: 1px 5px;
+          border-radius: 4px;
+        }
+
+        .badge-warning {
+          font-size: 0.65rem;
+          background: rgba(210, 153, 34, 0.2);
+          color: #d29922;
+          padding: 1px 5px;
+          border-radius: 4px;
+        }
+
+        .badge-ok {
+          font-size: 0.65rem;
+          color: #3fb950;
+        }
+      }
+    }
+
+    &.has-issues {
+      border-color: rgba(248, 81, 73, 0.3);
+      .stat-icon {
+        color: #f85149;
+        background: rgba(248, 81, 73, 0.1);
+      }
+    }
+  }
+}

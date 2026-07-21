@@ -3,7 +3,9 @@ import { Subject, Observable } from 'rxjs';
 import { StorageLocation } from '../../core/contracts/storage-location';
 import { Item } from '../../core/contracts/item';
 
-export type DashboardModalType = 'itemForm' | 'locationForm' | 'categoryForm' | 'platformForm' | 'confirm' | 'sell' | 'lend' | null;
+export type DashboardModalType = 'itemForm' | 'locationForm' | 'categoryForm' | 'platformForm' | 'confirm' | 'sell' | 'lend' | 'statsList' | null;
+
+export type StatsListType = 'locations' | 'lent' | 'attention';
 
 @Injectable({ providedIn: 'root' })
 export class DashboardModalService {
@@ -14,10 +16,19 @@ export class DashboardModalService {
   selectedItem: Item | null = null;
   selectedLocation: StorageLocation | null = null;
   selectedEntity: any = null; 
+
+  statsType: StatsListType | null = null;
   
   private confirmSubj = new Subject<any>();
   private refreshDataSubj = new Subject<void>();
   public refreshData$ = this.refreshDataSubj.asObservable();
+
+  openStatsList(type: StatsListType): Observable<any> {
+    console.log('СЕРВИС ПОЛУЧИЛ КОМАНДУ:', type);
+    this.statsType = type;
+    this.activeModal = 'statsList';
+    return this.resetSubject();
+  }
 
   openItemForm(item: Item | null = null, locationId: string | null = null): Observable<any> {
     this.selectedItem = item;
@@ -80,6 +91,7 @@ export class DashboardModalService {
     this.selectedLocation = null;
     this.currentParentId = null;
     this.selectedEntity = null;
+    this.statsType = null;
     if (!this.confirmSubj.closed) this.confirmSubj.complete();
   }
 

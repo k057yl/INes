@@ -1,307 +1,223 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { DragDropModule, CdkDragDrop, moveItemInArray, CdkDrag } from '@angular/cdk/drag-drop';
+import { TranslateModule } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
-import { ToastrService } from 'ngx-toastr';
+
 import { DashboardFacade } from './dashboard.facade';
 import { DashboardModalService } from './dashboard.modal.service';
-import { DashboardTreeService } from './dashboard-tree.service';
+import { DashboardTreeService } from './services/dashboard-tree.service';
+import { DashboardLocationService } from './services/dashboard-location.service';
+import { DashboardItemService } from './services/dashboard-item.service';
+import { DashboardNavigationService } from './services/dashboard-navigation.service';
+import { DashboardActionExecutor } from './services/dashboard-action-executor.service';
+import { DashboardStatsComponent } from '../../shared/components/dashboard-stats/dashboard-stats.component';
+import { StatsListModalComponent } from '../../shared/components/modals/stats-list-modal/stats-list-modal.component';
+
 import { LocationCardComponent } from '../../shared/components/location-card/location-card.component';
 import { LocationRibbonComponent } from '../../shared/components/location-ribbon/location-ribbon.component';
-import { RIBBON_CONFIG, BOARD_CONFIG } from '../../shared/constants/ui.constants';
 import { StorageLocation } from '../../core/contracts/storage-location';
 import { Item } from '../../core/contracts/item';
-import { CdkDrag } from '@angular/cdk/drag-drop';
-import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [RouterModule, DragDropModule, LocationCardComponent, LocationRibbonComponent, TranslateModule],
-  providers: [DashboardTreeService, DashboardFacade],
+  imports: [RouterModule, DragDropModule, LocationCardComponent, LocationRibbonComponent, DashboardStatsComponent, StatsListModalComponent, TranslateModule],
+  providers: [
+    DashboardTreeService,
+    DashboardLocationService,
+    DashboardItemService,
+    DashboardNavigationService,
+    DashboardActionExecutor,
+    DashboardFacade
+  ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
 export class DashboardComponent implements OnInit, OnDestroy {
-  public facade = inject(DashboardFacade); 
+  public facade = inject(DashboardFacade);
   public modal = inject(DashboardModalService);
-  public treeService = inject(DashboardTreeService);
-  
-  private translate = inject(TranslateService);
-  private toastr = inject(ToastrService);
+
   private sub = new Subscription();
-
   isMobile = window.innerWidth <= 768;
-  currentPageBoard = 0;
-  currentPageRibbon = 0;
 
-  onLocationDragStart(loc: StorageLocation) { this.facade.draggedLocationId = loc.id; }
-  onLocationDragEnd() { this.facade.draggedLocationId = null; }
-  onLocationMoveUp(loc: StorageLocation) { this.facade.moveLocationUpDown(loc.id, 'up'); }
-  onLocationMoveDown(loc: StorageLocation) { this.facade.moveLocationUpDown(loc.id, 'down'); }
-
-  get ribbonPageSize(): number { return window.innerWidth <= RIBBON_CONFIG.BREAKPOINT_MOBILE ? RIBBON_CONFIG.PAGE_SIZE_MOBILE : RIBBON_CONFIG.PAGE_SIZE_DESKTOP; }
-  get pagedBoardLocations(): StorageLocation[] { const start = this.currentPageBoard * BOARD_CONFIG.PAGE_SIZE; return this.facade.locations.slice(start, start + BOARD_CONFIG.PAGE_SIZE); }
-  get activeBoardIds(): string[] { return this.pagedBoardLocations.map(l => l.id); }
-  get totalBoardPages(): number { return Math.ceil(this.facade.locations.length / BOARD_CONFIG.PAGE_SIZE); }
-  
-  get visibleConnectedLists(): string[] { return this.facade.flatLocations.filter(l => this.pagedBoardLocations.some(p => p.id === l.id || this.treeService.isChildOf(l.id, p))).map(l => l.id); }
-  get visibleConnectedLocationLists(): string[] { 
-    return this.visibleConnectedLists.map(id => 'list-loc-' + id); 
+  ngOnInit() {
+    this.loadData();
+    this.sub.add(this.modal.refreshData$.subscribe(() => this.loadData()));
   }
 
-  ngOnInit() { 
-    this.loadData(); 
-    this.sub.add(this.modal.refreshData$.subscribe(() => this.loadData())); 
-  }
-  
-  ngOnDestroy() { 
-    this.sub.unsubscribe(); 
-  }
-  
-  loadData() { 
-    this.facade.loadData().subscribe(); 
+  ngOnDestroy() {
+    this.sub.unsubscribe();
   }
 
-  changeBoardPage(delta: number) { this.currentPageBoard += delta; this.syncRibbonWithBoard(); }
-  private syncRibbonWithBoard() { const firstVisibleIndex = this.currentPageBoard * BOARD_CONFIG.PAGE_SIZE; this.currentPageRibbon = Math.floor(firstVisibleIndex / this.ribbonPageSize); }
-  jumpToLocation(locId: string) { const index = this.facade.locations.findIndex(l => l.id === locId); if (index !== -1) { this.currentPageBoard = Math.floor(index / BOARD_CONFIG.PAGE_SIZE); this.syncRibbonWithBoard(); } }
-  onRibbonPageChange(newPage: number) { this.currentPageRibbon = newPage; const firstItemIndex = newPage * this.ribbonPageSize; this.currentPageBoard = Math.floor(firstItemIndex / BOARD_CONFIG.PAGE_SIZE); }
+  loadData() {
+    this.facade.loadData().subscribe();
+  }
 
+  // --- Навигация и пагинация ---
+  get pagedBoardLocations(): StorageLocation[] {
+    return this.facade.nav.getBoardPageLocations(this.facade.locations.locations);
+  }
+
+  get activeBoardIds(): string[] {
+    return this.pagedBoardLocations.map(l => l.id);
+  }
+
+  get totalBoardPages(): number {
+    return this.facade.nav.getTotalBoardPages(this.facade.locations.locations.length);
+  }
+
+  changeBoardPage(delta: number) {
+    this.facade.nav.changeBoardPage(delta, this.facade.locations.locations.length);
+  }
+
+  jumpToLocation(locId: string) {
+    this.facade.nav.jumpToLocation(locId, this.facade.locations.locations);
+  }
+
+  onRibbonPageChange(newPage: number) {
+    this.facade.nav.onRibbonPageChange(newPage);
+  }
+
+  // --- Действия с локациями ---
+  onRename(loc: StorageLocation) {
+    loc.showMenu = false;
+    this.modal.openConfirm({ mode: 'input', title: 'COMMON.RENAME', message: '', confirmText: 'COMMON.SAVE', name: loc.name })
+      .subscribe(newName => {
+        if (newName) {
+          this.facade.executor.run(this.facade.locations.rename(loc.id, newName), 'LOCATIONS.SUCCESS.RENAME');
+        }
+      });
+  }
+
+  onDeleteLocation(loc: StorageLocation) {
+    loc.showMenu = false;
+    this.modal.openConfirm({ mode: 'delete', title: 'COMMON.DELETE', message: 'LOCATION_CARD.MODAL.YOU_SURE_MSG' })
+      .subscribe(confirmed => {
+        if (confirmed) {
+          this.facade.executor.run(
+            this.facade.locations.delete(loc.id),
+            'LOCATIONS.SUCCESS.DELETE',
+            () => {
+              this.facade.nav.adjustPageAfterDelete(this.pagedBoardLocations.length);
+              this.loadData();
+            }
+          );
+        }
+      });
+  }
+
+  onLocationMoveUp(loc: StorageLocation) {
+    this.facade.executor.run(this.facade.locations.moveUpDown(loc.id, 'up'), null);
+  }
+
+  onLocationMoveDown(loc: StorageLocation) {
+    this.facade.executor.run(this.facade.locations.moveUpDown(loc.id, 'down'), null);
+  }
+
+  // --- Действия с предметами ---
   onEditItem(item: Item) { this.modal.openItemForm(item).subscribe(); }
   onCreateItem(locId?: string) { this.modal.openItemForm(null, locId).subscribe(); }
-  
-  onRename(loc: StorageLocation) { 
-    loc.showMenu = false; 
-    this.modal.openConfirm({ mode: 'input', title: 'COMMON.RENAME', message: '', confirmText: 'COMMON.SAVE', name: loc.name }).subscribe(newName => { 
-      if (newName) {
-        this.facade.renameLocation(loc.id, newName).subscribe({
-          next: () => this.toastr.success(this.translate.instant('LOCATIONS.SUCCESS.RENAME')),
-          error: () => this.toastr.error(this.translate.instant('SYSTEM.DEFAULT_ERROR'))
-        }); 
-      }
-    }); 
-  }
-  
-  onDeleteLocation(loc: StorageLocation) {
-    loc.showMenu = false; 
-    this.modal.openConfirm({ 
-      mode: 'delete', 
-      title: 'COMMON.DELETE', 
-      message: 'LOCATION_CARD.MODAL.YOU_SURE_MSG' 
-    }).subscribe((confirmed) => { 
-      if (confirmed) this.executeDeleteLocation(loc);
-    }); 
+
+  onDeleteItem(item: Item) {
+    this.modal.openConfirm({ mode: 'delete', title: 'COMMON.DELETE', message: 'ITEM_CARD.MODAL.YOU_SURE_MSG' })
+      .subscribe(confirmed => {
+        if (confirmed) {
+          this.facade.executor.run(this.facade.items.delete(item.id), 'ITEMS.SUCCESS.DELETE', () => this.loadData());
+        }
+      });
   }
 
-  private executeDeleteLocation(loc: StorageLocation) {
-    this.facade.deleteLocation(loc.id).subscribe({
-      next: () => {
-        this.toastr.success(this.translate.instant('LOCATIONS.SUCCESS.DELETE'));
-        if (this.currentPageBoard > 0 && this.pagedBoardLocations.length === 0) {
-          this.currentPageBoard--; 
-        }
-        this.syncRibbonWithBoard(); 
-        this.loadData();
-      },
-      error: (err) => {
-        if (err.error?.message === 'LOCATIONS.ERRORS.NOT_EMPTY') {
-          this.toastr.warning(this.translate.instant('LOCATIONS.ERRORS.NOT_EMPTY'));
-        } else {
-          this.toastr.error(this.translate.instant('SYSTEM.DEFAULT_ERROR'));
-        }
+  onSellRequest(item: Item) {
+    this.modal.openSell(item).subscribe(dto => {
+      if (dto) {
+        this.facade.executor.run(this.facade.items.sell(dto), 'SALES.SUCCESS.SELL');
       }
     });
   }
-  
-  onDeleteItem(item: Item) { 
-    this.modal.openConfirm({ mode: 'delete', title: 'COMMON.DELETE', message: 'ITEM_CARD.MODAL.YOU_SURE_MSG' }).subscribe(confirmed => { 
-      if (confirmed) this.executeDeleteItem(item);
-    }); 
-  }
 
-  private executeDeleteItem(item: Item) {
-    this.facade.deleteItem(item.id).subscribe({
-      next: () => {
-        this.toastr.success(this.translate.instant('ITEMS.SUCCESS.DELETE'));
-        this.loadData();
-      },
-      error: () => this.toastr.error(this.translate.instant('SYSTEM.DEFAULT_ERROR')) 
-    }); 
-  }
-  
-  onSellRequest(item: Item) { 
-    this.modal.openSell(item).subscribe(dto => { 
+  onLendRequest(item: Item) {
+    this.modal.openLend(item).subscribe(dto => {
       if (dto) {
-        this.facade.sellItem(dto).subscribe({
-          next: () => this.toastr.success(this.translate.instant('SALES.SUCCESS.SELL')),
-          error: (err) => this.toastr.error(this.translate.instant(err.error?.error || 'SYSTEM.DEFAULT_ERROR'))
-        }); 
+        this.facade.executor.run(this.facade.items.lend(dto), 'LENDING.SUCCESS.LEND', () => this.loadData());
       }
-    }); 
-  }
-  
-  onLendRequest(item: Item) { 
-    this.modal.openLend(item).subscribe(dto => { 
-      if (dto) {
-        this.facade.lendItem(dto).subscribe({
-          next: () => {
-            this.toastr.success(this.translate.instant('LENDING.SUCCESS.LEND'));
-            this.loadData();
-          },
-          error: (err: HttpErrorResponse) =>
-            this.toastr.error(this.translate.instant(err.error?.error || 'SYSTEM.DEFAULT_ERROR'))
-        }); 
-      }
-    }); 
+    });
   }
 
-  onItemMoveManual(data: {item: Item, targetLocationId: string}) { 
-    const targetLoc = this.facade.flatLocations.find(l => l.id === data.targetLocationId); 
-    this.modal.openConfirm({ mode: 'confirm', title: 'ITEM_CARD.MODAL.MOVE_TITLE', message: targetLoc?.name || '...', confirmText: 'COMMON.YES' }).subscribe(confirmed => { 
-      if (confirmed) this.executeManualItemMove(data);
-    }); 
+  onReturnRequest(item: Item) {
+    this.modal.openConfirm({ mode: 'confirm', title: 'COMMON.RETURN', message: 'LENDING_MODAL.MODAL.RETURN_MSG', confirmText: 'COMMON.YES' })
+      .subscribe(confirmed => {
+        if (confirmed) {
+          this.facade.executor.run(this.facade.items.returnItem(item.id), 'LENDING_MODAL.SUCCESS_TOASTER', () => this.loadData());
+        }
+      });
   }
 
-  private executeManualItemMove(data: {item: Item, targetLocationId: string}) {
-    this.facade.moveItemLocally(data.item, data.targetLocationId); 
-    this.facade.moveItemApi(data.item.id, data.targetLocationId).subscribe({ 
-      next: () => {
-        this.toastr.success(this.translate.instant('ITEM_CARD.MODAL.MOVE_SUCCESS'));
-        this.jumpToLocation(data.targetLocationId);
-      }, 
-      error: () => {
-        this.toastr.error(this.translate.instant('SYSTEM.DEFAULT_ERROR'));
-        this.loadData();
-      } 
-    }); 
+  onItemStatusChange(event: { item: Item, newStatus: number }) {
+    this.facade.executor.run(this.facade.items.changeStatus(event.item.id, event.newStatus), 'COMMON.CHANGE_STATUS', () => this.loadData());
   }
-  
-  onRibbonReorder(event: CdkDragDrop<StorageLocation[]>) { 
-    const offset = this.currentPageRibbon * this.ribbonPageSize; 
-    moveItemInArray(this.facade.locations, event.previousIndex + offset, event.currentIndex + offset); 
-    this.facade.reorderLocations(this.facade.locations.map(l => l.id)).subscribe({
-      next: () => {
-        this.toastr.success(this.translate.instant('LOCATIONS.SUCCESS.REORDER'));
-        this.loadData();
-      },
-      error: () => {
-        this.toastr.error(this.translate.instant('SYSTEM.DEFAULT_ERROR'));
-        this.loadData();
-      }
-    }); 
+
+  onItemMoveManual(data: { item: Item, targetLocationId: string }) {
+    const targetLoc = this.facade.locations.flatLocations.find(l => l.id === data.targetLocationId);
+    this.modal.openConfirm({ mode: 'confirm', title: 'ITEM_CARD.MODAL.MOVE_TITLE', message: targetLoc?.name || '...', confirmText: 'COMMON.YES' })
+      .subscribe(confirmed => {
+        if (confirmed) {
+          this.facade.items.moveLocally(data.item, data.targetLocationId, this.facade.locations.flatLocations);
+          this.facade.executor.run(
+            this.facade.items.moveApi(data.item.id, data.targetLocationId),
+            'ITEM_CARD.MODAL.MOVE_SUCCESS',
+            () => this.jumpToLocation(data.targetLocationId),
+            'SYSTEM.DEFAULT_ERROR'
+          );
+        }
+      });
+  }
+
+  // --- Drag & Drop ---
+  onLocationDragStart(loc: StorageLocation) { this.facade.locations.draggedLocationId = loc.id; }
+  onLocationDragEnd() { this.facade.locations.draggedLocationId = null; }
+
+  onRibbonReorder(event: CdkDragDrop<StorageLocation[]>) {
+    const offset = this.facade.nav.currentPageRibbon * this.facade.nav.ribbonPageSize;
+    moveItemInArray(this.facade.locations.locations, event.previousIndex + offset, event.currentIndex + offset);
+    this.facade.executor.run(
+      this.facade.locations.reorder(this.facade.locations.locations.map(l => l.id)),
+      'LOCATIONS.SUCCESS.REORDER',
+      () => this.loadData()
+    );
   }
 
   onLocationMove(event: { loc: StorageLocation, targetId: string }) {
     const normalizedTargetId = event.targetId === 'root' ? null : event.targetId;
-    this.facade.moveLocationApi(event.loc.id, normalizedTargetId).subscribe({
-      next: () => {
-        this.toastr.success(this.translate.instant('LOCATIONS.SUCCESS.MOVE'));
-        this.loadData();
-      },
-      error: (err) => { 
-        if (err === 'TOO_DEEP') {
-          this.toastr.error(this.translate.instant('ERRORS.MAX_NESTING_REACHED'));
-        } else {
-          this.toastr.error(this.translate.instant('SYSTEM.DEFAULT_ERROR'));
-        }
-        this.loadData(); 
-      }
-    });
+    this.facade.executor.run(this.facade.locations.move(event.loc.id, normalizedTargetId), 'LOCATIONS.SUCCESS.MOVE', () => this.loadData());
   }
 
   canDropRootLocation = (drag: CdkDrag): boolean => {
     const data = drag.data;
     if (!data || !('children' in data)) return false;
-    return this.treeService.canMoveLocation(this.facade.flatLocations, data.id, null);
+    return this.facade.tree.canMoveLocation(this.facade.locations.flatLocations, data.id, null);
   };
 
-  onLocationDropped(data: {event: CdkDragDrop<StorageLocation[]>, targetId: string | null}) {
+  onLocationDropped(data: { event: CdkDragDrop<StorageLocation[]>, targetId: string | null }) {
     const { event, targetId } = data;
     if (event.previousContainer === event.container) return;
-    this.executeLocationDrop(event, targetId);
-  }
-
-  private executeLocationDrop(event: CdkDragDrop<StorageLocation[]>, targetId: string | null) {
-    const normalizedTargetId = (targetId === 'root' || !targetId) ? null : targetId;
     const loc = event.previousContainer.data[event.previousIndex];
-
-    if (event.previousContainer === event.container) return;
-
-    this.facade.moveLocation(loc.id, normalizedTargetId).subscribe({
-      next: () => {
-        this.toastr.success(this.translate.instant('LOCATIONS.SUCCESS.MOVE'));
-        this.loadData();
-      },
-      error: (err) => {
-        if (err === 'TOO_DEEP') {
-          this.toastr.error(this.translate.instant('ERRORS.MAX_NESTING_REACHED'));
-        } else {
-          this.toastr.error(this.translate.instant('SYSTEM.DEFAULT_ERROR'));
-        }
-        this.loadData();
-      }
-    });
+    this.facade.executor.run(this.facade.locations.move(loc.id, targetId), 'LOCATIONS.SUCCESS.MOVE', () => this.loadData());
   }
 
-  onItemDropped(data: {event: CdkDragDrop<Item[]>, loc: StorageLocation}) {
+  onItemDropped(data: { event: CdkDragDrop<Item[]>, loc: StorageLocation }) {
     const { event, loc } = data;
-    if (!event.container.data) {
-      event.container.data = [];
-    }
+    if (!event.container.data) event.container.data = [];
 
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
       return;
     }
-    this.executeItemDrop(event, loc);
-  }
 
-  private executeItemDrop(event: CdkDragDrop<Item[]>, loc: StorageLocation) {
     const item = event.previousContainer.data[event.previousIndex];
-    this.facade.moveItemLocally(item, loc.id);
-    this.facade.moveItemApi(item.id, loc.id).subscribe({ 
-      next: () => {
-        this.toastr.success(this.translate.instant('ITEM_CARD.MODAL.MOVE_SUCCESS'));
-        this.loadData();
-      },
-      error: () => {
-        this.toastr.error(this.translate.instant('SYSTEM.DEFAULT_ERROR'));
-        this.loadData();
-      } 
-    });
+    this.facade.items.moveLocally(item, loc.id, this.facade.locations.flatLocations);
+    this.facade.executor.run(this.facade.items.moveApi(item.id, loc.id), 'ITEM_CARD.MODAL.MOVE_SUCCESS', () => this.loadData());
   }
 
-  onReturnRequest(item: Item) {
-    const message = 'LENDING_MODAL.MODAL.RETURN_MSG';
-
-    this.modal.openConfirm({ 
-      mode: 'confirm', 
-      title: 'COMMON.RETURN', 
-      message: message, 
-      confirmText: 'COMMON.YES' 
-    }).subscribe(confirmed => {
-      if (confirmed) this.executeReturnItem(item);
-    });
-  }
-
-  private executeReturnItem(item: Item) {
-    this.facade.returnItem(item.id).subscribe({
-      next: () => {
-        this.toastr.success(this.translate.instant('LENDING_MODAL.SUCCESS_TOASTER'));
-        this.loadData();
-      },
-      error: () => this.toastr.error(this.translate.instant('SYSTEM.DEFAULT_ERROR'))
-    });
-  }
-
-  onItemStatusChange(event: {item: Item, newStatus: number}) {
-    this.facade.changeItemStatus(event.item.id, event.newStatus).subscribe({
-      next: () => this.toastr.success(this.translate.instant('COMMON.CHANGE_STATUS')), 
-      error: () => this.toastr.error(this.translate.instant('SYSTEM.DEFAULT_ERROR'))
-    });
-  }
-
-  trackById = (index: number, item: any) => item.id;
+  trackById = (_: number, item: any) => item.id;
 }

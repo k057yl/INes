@@ -2,13 +2,13 @@ import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
-import { Item } from '../../../core/contracts/item';
-import { SaleCreateDto } from '../../../core/dtos/sale-item-create.dto';
-import { Platform } from '../../../core/contracts/platform';
-import { SalesService } from '../../../core/services/sales.service';
-import { InestModalComponent } from '../modals/inest-modal/inest-modal.component';
+import { Item } from '../../../../core/contracts/item';
+import { SaleCreateDto } from '../../../../core/dtos/sale-item-create.dto';
+import { Platform } from '../../../../core/contracts/platform';
+import { SalesService } from '../../../../core/services/sales.service';
+import { InestModalComponent } from '../inest-modal/inest-modal.component';
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
-import { FORM_VALIDATION } from '../../constants/form-defaults.constants';
+import { FORM_VALIDATION } from '../../../constants/form-defaults.constants';
 
 @Component({
   selector: 'app-sell-modal',

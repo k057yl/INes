@@ -8,7 +8,7 @@ import { AuthService } from './core/services/auth.service';
 
 import { DashboardModalService } from './features/dashboard/dashboard.modal.service';
 import { InestModalComponent } from './shared/components/modals/inest-modal/inest-modal.component';
-import { SellModalComponent } from './shared/components/sell-modal/sell-modal.component';
+import { SellModalComponent } from './shared/components/modals/sell-modal/sell-modal.component';
 import { LendItemModalComponent } from './shared/components/modals/lend-modal/lend-item-modal.component';
 import { ItemFormModalComponent } from './shared/components/modals/item-form-modal/item-form-modal.component';
 import { LocationFormModalComponent } from './shared/components/modals/location-form-modal/location-form-modal.component';

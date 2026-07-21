@@ -503,5 +503,15 @@
     "WEEKLY": "Weekly",
     "MONTHLY": "Monthly",
     "YEARLY": "Yearly"
+  },
+  "DASHBOARD_STATS": {
+    "TOTAL_ITEMS": "Total Items",
+    "LOCATIONS": "Locations",
+    "ATTENTION": "Attention",
+    "LENT": "Lent Out",
+    "ARCHIVE_SOLD": "Archive / Sold",
+    "EXPIRED_SHORT": "{{ count }} expired",
+    "WARRANTY_SHORT": "{{ count }} warranty",
+    "ALL_OK": "All good"
   }
 }

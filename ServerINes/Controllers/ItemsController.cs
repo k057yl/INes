@@ -1,6 +1,6 @@
 ﻿using INest.Data.Enums;
 using INest.Exceptions;
-using INest.Features.Items.DTOs;
+using INest.Features.Dashboard.Queries.GetDashboardStats;
 using INest.Features.Items.Commands.ChangeItemStatus;
 using INest.Features.Items.Commands.CreateItem;
 using INest.Features.Items.Commands.DeleteArchivedItem;
@@ -10,6 +10,7 @@ using INest.Features.Items.Commands.DeleteItemsBatch;
 using INest.Features.Items.Commands.MoveItem;
 using INest.Features.Items.Commands.UpdateItemFull;
 using INest.Features.Items.Commands.UpdateItemPartial;
+using INest.Features.Items.DTOs;
 using INest.Features.Items.Queries.GetItemById;
 using INest.Features.Items.Queries.GetItemHistory;
 using INest.Features.Items.Queries.GetItems;
@@ -137,6 +138,14 @@ namespace INest.Controllers
             var query = new GetItemHistoryQuery(GetUserId(), id);
             var history = await _mediator.Send(query);
             return Ok(history);
+        }
+
+        [HttpGet("stats")]
+        public async Task<IActionResult> GetStats()
+        {
+            var query = new GetDashboardStatsQuery(GetUserId());
+            var stats = await _mediator.Send(query);
+            return Ok(stats);
         }
     }
 }
