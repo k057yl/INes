@@ -3,6 +3,8 @@ using INest.Exceptions;
 using INest.Features.Items.DTOs;
 using INest.Features.Items.Commands.ChangeItemStatus;
 using INest.Features.Items.Commands.CreateItem;
+using INest.Features.Items.Commands.DeleteArchivedItem;
+using INest.Features.Items.Commands.DeleteArchivedItemsBatch;
 using INest.Features.Items.Commands.DeleteItem;
 using INest.Features.Items.Commands.DeleteItemsBatch;
 using INest.Features.Items.Commands.MoveItem;
@@ -97,8 +99,8 @@ namespace INest.Controllers
             return Ok();
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        [HttpPost("{id}/archive")]
+        public async Task<IActionResult> Archive(Guid id)
         {
             var command = new DeleteItemCommand(GetUserId(), id);
             await _mediator.Send(command);
@@ -109,6 +111,22 @@ namespace INest.Controllers
         public async Task<IActionResult> DeleteBatch([FromBody] List<Guid> ids)
         {
             var command = new DeleteItemsBatchCommand(GetUserId(), ids);
+            await _mediator.Send(command);
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var command = new DeleteArchivedItemCommand(GetUserId(), id);
+            await _mediator.Send(command);
+            return Ok(new { message = ITEMS.SUCCESS.DELETE });
+        }
+
+        [HttpDelete("archived/batch")]
+        public async Task<IActionResult> DeleteArchivedBatch([FromBody] List<Guid> ids)
+        {
+            var command = new DeleteArchivedItemsBatchCommand(GetUserId(), ids);
             await _mediator.Send(command);
             return NoContent();
         }
