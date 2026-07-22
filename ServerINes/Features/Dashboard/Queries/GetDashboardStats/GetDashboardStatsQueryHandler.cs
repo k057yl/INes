@@ -19,7 +19,6 @@ namespace INest.Features.Dashboard.Queries.GetDashboardStats
             var nowUtc = DateTime.UtcNow;
             var warningThreshold = nowUtc.AddDays(3);
 
-            // 1. Счётчики
             var totalItems = await _context.Items
                 .AsNoTracking()
                 .CountAsync(i => i.UserId == request.UserId && i.Status != ItemStatus.Archived && i.Status != ItemStatus.Sold, cancellationToken);
@@ -52,9 +51,9 @@ namespace INest.Features.Dashboard.Queries.GetDashboardStats
                 .AsNoTracking()
                 .CountAsync(l => l.UserId == request.UserId && l.ReturnedDate == null, cancellationToken);
 
-            var archivedAndSoldCount = await _context.Items
+            var soldCount = await _context.Items
                 .AsNoTracking()
-                .CountAsync(i => i.UserId == request.UserId && (i.Status == ItemStatus.Archived || i.Status == ItemStatus.Sold), cancellationToken);
+                .CountAsync(i => i.UserId == request.UserId && i.Status == ItemStatus.Sold, cancellationToken);
 
             var remindersList = await _context.Reminders
                 .AsNoTracking()
@@ -98,7 +97,7 @@ namespace INest.Features.Dashboard.Queries.GetDashboardStats
                 ExpiringWarrantiesCount = expiringWarranties + expiringLendings,
                 ActiveRemindersCount = activeReminders,
                 LentItemsCount = lentCount,
-                ArchivedAndSoldItemsCount = archivedAndSoldCount,
+                SoldItemsCount = soldCount,
                 AttentionItems = attentionItems
             };
         }

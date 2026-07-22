@@ -18,7 +18,6 @@ export class DashboardStatsComponent {
   public modal = inject(DashboardModalService);
 
   openStats(type: StatsListType) {
-    console.log('КЛИК СРАБОТАЛ! Тип:', type);
     this.modal.openStatsList(type);
   }
 }

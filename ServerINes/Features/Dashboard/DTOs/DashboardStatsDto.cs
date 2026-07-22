@@ -10,7 +10,7 @@
         public int ActiveRemindersCount { get; set; }
 
         public int LentItemsCount { get; set; }
-        public int ArchivedAndSoldItemsCount { get; set; }
+        public int SoldItemsCount { get; set; }
 
         public List<AttentionItemDto> AttentionItems { get; set; } = new();
     }

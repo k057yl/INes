@@ -1,15 +1,6 @@
 @if (stats) {
   <div class="stats-ribbon">
-    <!-- 1. Всего вещей -> переход на страницу предметов /items-list -->
-    <div class="stat-card clickable" [routerLink]="['/items-list']">
-      <div class="stat-icon"><i class="fa fa-boxes"></i></div>
-      <div class="stat-body">
-        <span class="stat-label">{{ 'DASHBOARD_STATS.TOTAL_ITEMS' | translate }}</span>
-        <span class="stat-value">{{ stats.totalItemsCount }}</span>
-      </div>
-    </div>
-
-    <!-- 2. Локаций -> клик открывает список локаций через modalService -->
+    <!-- 1. ЛОКАЦИИ (ОСНОВА) -->
     <div class="stat-card clickable" (click)="openStats('locations')">
       <div class="stat-icon"><i class="fa fa-folder-open"></i></div>
       <div class="stat-body">
@@ -18,7 +9,16 @@
       </div>
     </div>
 
-    <!-- 3. Одолжено -> клик открывает список одолженных вещей через modalService -->
+    <!-- 2. ВСЕГО ВЕЩЕЙ -->
+    <div class="stat-card clickable" [routerLink]="['/items-list']">
+      <div class="stat-icon"><i class="fa fa-boxes"></i></div>
+      <div class="stat-body">
+        <span class="stat-label">{{ 'DASHBOARD_STATS.TOTAL_ITEMS' | translate }}</span>
+        <span class="stat-value">{{ stats.totalItemsCount }}</span>
+      </div>
+    </div>
+
+    <!-- 3. ОДОЛЖЕНО -->
     <div class="stat-card info clickable" (click)="openStats('lent')">
       <div class="stat-icon"><i class="fa fa-hand-holding"></i></div>
       <div class="stat-body">
@@ -27,16 +27,16 @@
       </div>
     </div>
 
-    <!-- 4. Продано -> переход на /sales -->
+    <!-- 4. ПРОДАНО -->
     <div class="stat-card muted clickable" [routerLink]="['/sales']">
       <div class="stat-icon"><i class="fa fa-shopping-bag"></i></div>
       <div class="stat-body">
         <span class="stat-label">{{ 'DASHBOARD_STATS.SOLD' | translate }}</span>
-        <span class="stat-value">{{ stats.archivedAndSoldItemsCount }}</span>
+        <span class="stat-value">{{ stats.soldItemsCount }}</span>
       </div>
     </div>
 
-    <!-- 5. АХТУНГ! Справа -->
+    <!-- 5. АХТУНГ / ВНИМАНИЕ -->
     @if (stats.expiredRemindersCount > 0 || stats.expiringWarrantiesCount > 0 || (stats.activeRemindersCount && stats.activeRemindersCount > 0)) {
       <div class="stat-card danger attention-card clickable" (click)="openStats('attention')">
         <div class="stat-icon"><i class="fa fa-exclamation-triangle"></i></div>
