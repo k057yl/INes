@@ -27,17 +27,17 @@
       </div>
     </div>
 
-    <!-- 4. Архив / Продано -> переход на /items-list с фильтром -->
-    <div class="stat-card muted clickable" [routerLink]="['/items-list']" [queryParams]="{ showArchived: true }">
-      <div class="stat-icon"><i class="fa fa-archive"></i></div>
+    <!-- 4. Продано -> переход на /sales -->
+    <div class="stat-card muted clickable" [routerLink]="['/sales']">
+      <div class="stat-icon"><i class="fa fa-shopping-bag"></i></div>
       <div class="stat-body">
-        <span class="stat-label">{{ 'DASHBOARD_STATS.ARCHIVE_SOLD' | translate }}</span>
+        <span class="stat-label">{{ 'DASHBOARD_STATS.SOLD' | translate }}</span>
         <span class="stat-value">{{ stats.archivedAndSoldItemsCount }}</span>
       </div>
     </div>
 
     <!-- 5. АХТУНГ! Справа -->
-    @if (stats.expiredRemindersCount > 0 || stats.expiringWarrantiesCount > 0) {
+    @if (stats.expiredRemindersCount > 0 || stats.expiringWarrantiesCount > 0 || (stats.activeRemindersCount && stats.activeRemindersCount > 0)) {
       <div class="stat-card danger attention-card clickable" (click)="openStats('attention')">
         <div class="stat-icon"><i class="fa fa-exclamation-triangle"></i></div>
         <div class="stat-body">
@@ -51,6 +51,11 @@
             @if (stats.expiringWarrantiesCount > 0) {
               <span class="badge-warning">
                 {{ 'DASHBOARD_STATS.WARRANTY_SHORT' | translate:{ count: stats.expiringWarrantiesCount } }}
+              </span>
+            }
+            @if (stats.activeRemindersCount && stats.activeRemindersCount > 0) {
+              <span class="badge-info">
+                {{ 'DASHBOARD_STATS.REMINDERS_SHORT' | translate:{ count: stats.activeRemindersCount } }}
               </span>
             }
           </div>

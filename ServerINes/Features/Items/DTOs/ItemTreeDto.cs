@@ -1,4 +1,5 @@
 ﻿using INest.Data.Enums;
+using INest.Features.Reminders.DTOs;
 
 namespace INest.Features.Items.DTOs
 {
@@ -11,5 +12,7 @@ namespace INest.Features.Items.DTOs
         public ItemFinanceDto? Details { get; set; }
 
         public string? PhotoUrl { get; set; }
+
+        public List<ReminderDto> Reminders { get; set; } = new();
     }
 }

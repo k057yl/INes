@@ -52,6 +52,15 @@ namespace INest.Features.Lendings.Commands.LendItem
                 _context.Lendings.Remove(existingLending);
             }
 
+            var oldReminders = await _context.Reminders
+                .Where(r => r.ItemId == item.Id && r.Type == ReminderType.ReturnItem)
+                .ToListAsync(cancellationToken);
+
+            if (oldReminders.Any())
+            {
+                _context.Reminders.RemoveRange(oldReminders);
+            }
+
             bool isBorrowing = dto.Direction == 1;
 
             if (isBorrowing)
@@ -76,6 +85,25 @@ namespace INest.Features.Lendings.Commands.LendItem
             };
 
             _context.Lendings.Add(lending);
+
+            if (dto.ExpectedReturnDate.HasValue)
+            {
+                var reminder = new Reminder
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = request.UserId,
+                    ItemId = item.Id,
+                    Title = REMINDERS.RETURN_ITEM,
+                    Type = ReminderType.ReturnItem,
+                    Recurrence = ReminderRecurrence.None,
+                    TriggerAt = dto.ExpectedReturnDate.Value,
+                    IsCompleted = false,
+                    SendNotification = dto.SendNotification,
+                    SendTelegram = true
+                };
+
+                _context.Reminders.Add(reminder);
+            }
 
             _context.ItemHistories.Add(new ItemHistory
             {

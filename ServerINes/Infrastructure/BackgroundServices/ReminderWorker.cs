@@ -130,8 +130,8 @@ namespace INest.Infrastructure.BackgroundServices
                 var tzInfo = TimeZoneInfo.FindSystemTimeZoneById(userTzId);
                 var userLocalTime = TimeZoneInfo.ConvertTimeFromUtc(nowUtc, tzInfo);
 
-                var startTime = new TimeSpan(9, 0, 0);
-                var endTime = new TimeSpan(10, 0, 0);
+                var startTime = new TimeSpan(9, 0, 0);//9, 0, 0
+                var endTime = new TimeSpan(10, 0, 0);//10, 0, 0
 
                 return userLocalTime.TimeOfDay >= startTime && userLocalTime.TimeOfDay < endTime;
             }

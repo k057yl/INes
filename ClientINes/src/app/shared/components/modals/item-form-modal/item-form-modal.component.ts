@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, Input} from '@angular/core';
+import { Component, inject, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -17,6 +17,8 @@ import { InestModalComponent } from '../inest-modal/inest-modal.component';
 
 import { ITEM_STATUS_OPTIONS } from '../../../../core/constants/item-status.constants';
 import { Item } from '../../../../core/contracts/item';
+import { ReminderType } from '../../../../core/enums/reminder-type.enum';
+import { ReminderRecurrence } from '../../../../core/enums/reminder-recurrence.enum';
 
 import { take, filter } from 'rxjs/operators';
 import { FormErrorService } from '../../../../core/services/form-error.service';
@@ -61,6 +63,25 @@ export class ItemFormModalComponent implements OnInit {
   todayMax = new Date().toISOString().split('T')[0];
   readonly statusOptions = ITEM_STATUS_OPTIONS;
 
+  // Опции для тиков и циклов напоминаний
+  readonly reminderTypeOptions = [
+    { value: ReminderType.Custom, label: 'REMINDERS.CUSTOM' },
+    { value: ReminderType.Warranty, label: 'REMINDERS.WARRANTY' },
+    { value: ReminderType.Maintenance, label: 'REMINDERS.MAINTENANCE' },
+    { value: ReminderType.Insurance, label: 'REMINDERS.INSURANCE' },
+    { value: ReminderType.Medical, label: 'REMINDERS.MEDICAL' },
+    { value: ReminderType.Tax, label: 'REMINDERS.TAX' },
+    { value: ReminderType.Subscription, label: 'REMINDERS.SUBSCRIPTION' }
+  ];
+
+  readonly reminderRecurrenceOptions = [
+    { value: ReminderRecurrence.None, label: 'REMINDERS.RECURRENCE.NONE' },
+    { value: ReminderRecurrence.Daily, label: 'REMINDERS.RECURRENCE.DAILY' },
+    { value: ReminderRecurrence.Weekly, label: 'REMINDERS.RECURRENCE.WEEKLY' },
+    { value: ReminderRecurrence.Monthly, label: 'REMINDERS.RECURRENCE.MONTHLY' },
+    { value: ReminderRecurrence.Yearly, label: 'REMINDERS.RECURRENCE.YEARLY' }
+  ];
+
   form = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(2)]],
     description: [''],
@@ -76,7 +97,16 @@ export class ItemFormModalComponent implements OnInit {
     expectedReturnDate: [null as string | null],
     sendNotification: [false],
     sendTelegramNotification: [false],
-    addPhoto: [false]
+    addPhoto: [false],
+
+    // Блок Напоминания / Обслуживания
+    addReminder: [false],
+    reminderTitle: [''],
+    reminderType: [ReminderType.Custom],
+    reminderRecurrence: [ReminderRecurrence.None],
+    reminderTriggerAt: [null as string | null],
+    reminderSendNotification: [false],
+    reminderSendTelegramNotification: [true]
   });
 
   get isEdit(): boolean { return !!this.item; }
@@ -96,6 +126,7 @@ export class ItemFormModalComponent implements OnInit {
     this.loadInitialData();
 
     this.form.get('status')?.valueChanges.subscribe(val => this.applyLendingLogic(val));
+    this.form.get('addReminder')?.valueChanges.subscribe(val => this.updateReminderValidators(!!val));
 
     if (this.isEdit && this.item) {
       this.patchFormValues(this.item);
@@ -145,7 +176,6 @@ export class ItemFormModalComponent implements OnInit {
         filter(u => !!u && Object.keys(u).length > 0),
         take(1)
       ).subscribe(user => {
-        
         const u = user as any;
         const foundEmail = u.email || 
                            u.Email || 
@@ -166,6 +196,21 @@ export class ItemFormModalComponent implements OnInit {
     }
 
     this.updateLendingValidators(isLending);
+  }
+
+  private updateReminderValidators(isEnabled: boolean) {
+    const titleControl = this.form.get('reminderTitle');
+    const dateControl = this.form.get('reminderTriggerAt');
+
+    if (isEnabled) {
+      titleControl?.setValidators([Validators.required]);
+      dateControl?.setValidators([Validators.required]);
+    } else {
+      titleControl?.clearValidators();
+      dateControl?.clearValidators();
+    }
+    titleControl?.updateValueAndValidity();
+    dateControl?.updateValueAndValidity();
   }
 
   private setupNewItemDefaults() {
@@ -256,8 +301,6 @@ export class ItemFormModalComponent implements OnInit {
     formData.append('status', val.status!.toString());
     formData.append('details.currency', val.currency!);
 
-    formData.append('details.currency', val.currency!);
-
     if (val.purchaseDate) {
       formData.append('details.purchaseDate', val.purchaseDate);
     }
@@ -271,6 +314,7 @@ export class ItemFormModalComponent implements OnInit {
       formData.append('details.estimatedValue', estValue.toString());
     }
 
+    // Логика одолжения
     if (this.isLendingStatus) {
       formData.append('personName', val.personName || '');
       formData.append('contactEmail', val.contactEmail || '');
@@ -279,6 +323,16 @@ export class ItemFormModalComponent implements OnInit {
       }
       formData.append('sendNotification', (!!val.sendNotification).toString());
       formData.append('sendTelegramNotification', (!!val.sendTelegramNotification).toString());
+    }
+
+    // Блок напоминания
+    if (val.addReminder && val.reminderTriggerAt) {
+      formData.append('reminder.title', val.reminderTitle || '');
+      formData.append('reminder.type', (val.reminderType ?? ReminderType.Custom).toString());
+      formData.append('reminder.recurrence', (val.reminderRecurrence ?? ReminderRecurrence.None).toString());
+      formData.append('reminder.triggerAt', val.reminderTriggerAt);
+      formData.append('reminder.sendNotification', (!!val.reminderSendNotification).toString());
+      formData.append('reminder.sendTelegram', (!!val.reminderSendTelegramNotification).toString());
     }
 
     if ((!this.isEdit || val.addPhoto) && this.selectedPhotos.length > 0) {

@@ -53,6 +53,15 @@ namespace INest.Features.Lendings.Commands.ReturnItem
                 CreatedAt = DateTime.UtcNow
             });
 
+            var returnReminders = await _context.Reminders
+                .Where(r => r.ItemId == item.Id && r.Type == ReminderType.ReturnItem)
+                .ToListAsync(cancellationToken);
+
+            if (returnReminders.Any())
+            {
+                _context.Reminders.RemoveRange(returnReminders);
+            }
+
             _context.Lendings.Remove(lending);
 
             if (isBorrowed)

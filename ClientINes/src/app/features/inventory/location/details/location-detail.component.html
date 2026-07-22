@@ -4,6 +4,9 @@
       <div class="container">
         <header class="location-simple-header">
           <div class="breadcrumb-trail">
+            <button class="back-btn" (click)="goBack()" [title]="'COMMON.BACK' | translate">
+              <i class="fa fa-arrow-left"></i>
+            </button>
             @for (crumb of breadcrumbs; track crumb; let last = $last) {
               <a [routerLink]="['/location', crumb.id]" [class.active]="last">
                 @if (last) {

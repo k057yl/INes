@@ -9,7 +9,7 @@
   background: var(--bg-card); 
   border-bottom: 1px solid var(--border-color);
   padding: 0 1.5rem;
-  height: 80px;
+  height: 70px;
   display: flex;
   align-items: center;
   transition: background 0.3s ease;
@@ -25,23 +25,6 @@
   margin: 0 auto;
 }
 
-/* --- СТИЛИ ДЛЯ КНОПКИ МЕНЮ --- */
-.menu-toggle {
-  display: none;
-  background: var(--bg-input);
-  border: 1px solid var(--border-color);
-  color: var(--accent-color);
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  cursor: pointer;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2rem;
-  z-index: 1100;
-  transition: 0.3s;
-}
-
 /* --- ЛОГОТИП --- */
 .brand-section {
   display: flex;
@@ -49,8 +32,8 @@
 }
 
 .logo-icon {
-  width: 80px; 
-  height: 80px;
+  width: 65px; 
+  height: 65px;
   background-image: var(--logo-url);
   background-size: contain;
   background-repeat: no-repeat;
@@ -58,43 +41,10 @@
   cursor: pointer;
   transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   
-  &:hover { transform: scale(1.1); }
+  &:hover { transform: scale(1.08); }
 }
 
-/* --- НАВИГАЦИЯ --- */
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex: 1;
-  justify-content: center;
-
-  a {
-    color: var(--text-main);
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 0.9rem;
-    padding: 8px 12px;
-    border-radius: 8px;
-    transition: 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    white-space: nowrap;
-
-    i { color: var(--text-muted); font-size: 1rem; }
-
-    &:hover, &.active {
-      color: var(--accent-color);
-      background: rgba(0, 184, 148, 0.1); 
-      i { color: var(--accent-color); }
-    }
-  }
-}
-
-.mobile-divider, .mobile-only { display: none; }
-
-/* --- ДЕЙСТВИЯ (ПРАВАЯ ЧАСТЬ) --- */
+/* --- ПРАВАЯ ЧАСТЬ --- */
 .actions {
   display: flex;
   align-items: center;
@@ -102,10 +52,34 @@
   flex-shrink: 0;
 }
 
-/* --- КНОПКА СОЗДАНИЯ (ОБНОВЛЕННАЯ) --- */
-.create-dropdown {
-  position: relative;
+/* Ссылка на настройки */
+.settings-link {
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  text-decoration: none;
+  border-radius: 10px;
+  padding: 0 12px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: 0.2s;
+
+  i { color: var(--text-muted); font-size: 0.95rem; }
+
+  &:hover, &.active {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+    i { color: var(--accent-color); }
+    transform: translateY(-2px);
+  }
 }
+
+/* Дропдаун "Создать" */
+.create-dropdown { position: relative; }
 
 .create-trigger {
   background: var(--bg-input);
@@ -143,7 +117,7 @@
   border: 1px solid var(--border-color);
   border-radius: 14px;
   padding: 6px;
-  min-width: 200px;
+  min-width: 180px;
   box-shadow: 0 15px 40px rgba(0,0,0,0.5);
   z-index: 1200;
   display: flex;
@@ -175,7 +149,7 @@
   }
 }
 
-/* --- ОБЩИЕ СТИЛИ КНОПОК --- */
+/* Общие элементы */
 .user-box, .theme-toggle, .lang-trigger, .logout-icon-btn {
   background: var(--bg-input);
   border: 1px solid var(--border-color);
@@ -199,7 +173,6 @@
 .user-box {
   padding: 0 12px;
   color: var(--accent-color);
-  min-width: fit-content;
   i { font-size: 1.1rem; opacity: 0.8; }
   strong {
     font-size: 0.85rem;
@@ -227,7 +200,7 @@
 .lang-menu {
   position: absolute; top: calc(100% + 10px); right: 0;
   background: var(--bg-card); border: 1px solid var(--border-color);
-  border-radius: 12px; padding: 6px; min-width: 160px;
+  border-radius: 12px; padding: 6px; min-width: 150px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.4); z-index: 1100;
   button {
     width: 100%; padding: 10px 12px; background: transparent; border: none;
@@ -238,35 +211,13 @@
   }
 }
 
-/* --- АНИМАЦИИ И МОБИЛКИ --- */
 @keyframes slideIn {
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-@media (max-width: 950px) {
-  .header { height: 70px; padding: 0 1rem; }
-  .logo-icon { width: 55px; height: 55px; }
-  
-  /* ВКЛЮЧАЕМ КНОПКУ МЕНЮ */
-  .menu-toggle { display: flex; margin-right: 15px; }
-  
-  .nav-links {
-    position: fixed; top: 0; left: -100%; width: 280px; height: 100vh;
-    background: var(--bg-card); flex-direction: column; justify-content: flex-start;
-    padding: 80px 20px; transition: 0.4s; box-shadow: 15px 0 30px rgba(0,0,0,0.3);
-    &.mobile-open { left: 0; }
-    a { width: 100%; padding: 15px; font-size: 1.1rem; }
-  }
-
-  .mobile-only { display: flex; }
-  .mobile-divider { display: block; width: 100%; margin: 10px 0; border-top: 1px solid var(--border-color); }
+@media (max-width: 650px) {
+  .header { padding: 0 1rem; }
   .user-box strong { display: none; }
-}
-
-@media (max-width: 600px) {
-  .create-trigger {
-    width: 38px; padding: 0; justify-content: center;
-    .desktop-only { display: none; }
-  }
+  .desktop-only { display: none; }
 }

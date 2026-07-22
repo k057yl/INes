@@ -1,6 +1,7 @@
 ﻿using INest.Data.Enums;
 using INest.Features.Items.DTOs;
 using INest.Features.Locations.DTOs;
+using INest.Features.Reminders.DTOs;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,6 +24,8 @@ namespace INest.Features.Locations.Queries.GetLocationTree
                 .Where(x => x.UserId == request.UserId)
                 .Include(x => x.Items.Where(i => i.Status != ItemStatus.Sold))
                     .ThenInclude(i => i.Details)
+                .Include(x => x.Items.Where(i => i.Status != ItemStatus.Sold))
+                    .ThenInclude(i => i.Reminders)
                 .AsNoTracking()
                 .OrderBy(x => x.SortOrder)
                 .ToListAsync(cancellationToken);
@@ -53,7 +56,17 @@ namespace INest.Features.Locations.Queries.GetLocationTree
                         EstimatedValue = i.Details.EstimatedValue,
                         Currency = i.Details.Currency ?? "USD",
                         PurchaseDate = i.Details.PurchaseDate
-                    } : null
+                    } : null,
+
+                    Reminders = i.Reminders.Select(r => new ReminderDto
+                    {
+                        Id = r.Id,
+                        ItemId = r.ItemId,
+                        Type = r.Type,
+                        Recurrence = r.Recurrence,
+                        TriggerAt = r.TriggerAt,
+                        IsCompleted = r.IsCompleted
+                    }).ToList()
                 })
                 .ToList()
                 })

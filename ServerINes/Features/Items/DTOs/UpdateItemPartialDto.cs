@@ -1,4 +1,5 @@
 ﻿using INest.Data.Enums;
+using INest.Features.Reminders.DTOs;
 
 namespace INest.Features.Items.DTOs
 {
@@ -15,6 +16,8 @@ namespace INest.Features.Items.DTOs
         public string? Currency { get; set; }
 
         public DateTime? WarrantyExpiration { get; set; }
+
+        public CreateReminderDto? Reminder { get; set; }
 
         public List<IFormFile>? Photos { get; set; }
         public string? MainPhotoName { get; set; }

@@ -24,7 +24,6 @@ export class HeaderComponent {
   public modalService = inject(DashboardModalService);
   private locationService = inject(LocationService);
 
-  isMenuOpen = signal(false);
   isLangMenuOpen = signal(false);
   isCreateMenuOpen = signal(false);
   hasLocations = signal<boolean>(false);
@@ -35,7 +34,6 @@ export class HeaderComponent {
 
   ngOnInit() {
     this.checkLocations();
-
     this.modalService.refreshData$.subscribe(() => this.checkLocations());
   }
 
@@ -53,7 +51,6 @@ export class HeaderComponent {
   }
 
   private handleLogoutRedirect() {
-    this.isMenuOpen.set(false);
     this.router.navigate(['/login']);
   }
 
@@ -71,9 +68,7 @@ export class HeaderComponent {
   @HostListener('document:click', ['$event'])
   onClickOutside(event: MouseEvent) {
     const target = event.target as HTMLElement;
-    
     if (!this.el.nativeElement.contains(target)) {
-      this.isMenuOpen.set(false);
       this.isLangMenuOpen.set(false);
       this.isCreateMenuOpen.set(false);
     }
@@ -94,18 +89,13 @@ export class HeaderComponent {
     this.isLangMenuOpen.set(false);
   }
 
-  toggleTheme() { this.themeService.toggleTheme(); }
-
-  toggleMenu(event?: Event): void {
-    if (event) event.stopPropagation();
-    this.isMenuOpen.update(v => !v);
+  toggleTheme() { 
+    this.themeService.toggleTheme(); 
   }
-  
-  closeMenu() { this.isMenuOpen.set(false); }
 
   languages = [
-  { code: 'en', label: 'English', flag: '🇺🇸' },
-  { code: 'ru', label: 'Русский', flag: '🇷🇺' },
-  { code: 'uk', label: 'Українська', flag: '🇺🇦' }
-];
+    { code: 'en', label: 'English', flag: '🇺🇸' },
+    { code: 'ru', label: 'Русский', flag: '🇷🇺' },
+    { code: 'uk', label: 'Українська', flag: '🇺🇦' }
+  ];
 }

@@ -122,6 +122,30 @@ namespace INest.Features.Items.Commands.CreateItem
                     throw new AppException(ITEMS.ERRORS.INVALID_INITIAL_STATUS);
                 }
 
+                if (dto.Reminder != null && dto.Reminder.TriggerAt != DateTime.MinValue)
+                {
+                    var safeReminderTitle = string.IsNullOrWhiteSpace(dto.Reminder.Title)
+                        ? REMINDERS.CUSTOM
+                        : _sanitizer.StripAllHtml(dto.Reminder.Title);
+
+                    var reminder = new Reminder
+                    {
+                        Id = Guid.NewGuid(),
+                        UserId = request.UserId,
+                        ItemId = item.Id,
+                        Title = safeReminderTitle,
+                        Type = dto.Reminder.Type,
+                        Recurrence = dto.Reminder.Recurrence,
+                        TriggerAt = dto.Reminder.TriggerAt.ToUniversalTime(),
+                        SendNotification = dto.Reminder.SendNotification,
+                        SendTelegram = dto.Reminder.SendTelegram,
+                        IsCompleted = false,
+                        IsNotificationSent = false
+                    };
+
+                    _context.Reminders.Add(reminder);
+                }
+
                 await _context.SaveChangesAsync(cancellationToken);
                 await transaction.CommitAsync(cancellationToken);
 

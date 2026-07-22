@@ -1,52 +1,31 @@
 <header class="header">
   <div class="header-main">
 
-    <button class="menu-toggle" (click)="toggleMenu($event)" [class.active]="isMenuOpen()">
-      <i class="fa" [class.fa-bars]="!isMenuOpen()" [class.fa-times]="isMenuOpen()"></i>
-    </button>
-
+    <!-- ЛОГОТИП (Переход на главную) -->
     <div class="brand-section">
-      <div class="logo" routerLink="/main">
+      <div class="logo" [routerLink]="['/dashboard']" title="INest / Karakaţsya">
         <div class="logo-icon"></div>
       </div>
     </div>
 
-    <nav class="nav-links" [class.mobile-open]="isMenuOpen()">
-      <a routerLink="/main" routerLinkActive="active" (click)="closeMenu()">
-        <i class="fa fa-th-large"></i> {{ 'HEADER.HOME' | translate }}
-      </a>
-
-      @if (user$ | async) {
-        <a routerLink="/items-list" routerLinkActive="active" (click)="closeMenu()">
-          <i class="fa fa-boxes"></i> {{ 'HEADER.ITEMS' | translate }}
-        </a>
-        <a routerLink="/sales" routerLinkActive="active" (click)="closeMenu()">
-          <i class="fa fa-chart-line"></i> {{ 'HEADER.SALES' | translate }}
-        </a>
-        <a routerLink="/settings" routerLinkActive="active" (click)="closeMenu()">
-          <i class="fa fa-cog"></i> {{ 'HEADER.SETTINGS' | translate }}
-        </a>
-      }
-
-      <hr class="mobile-divider">
-
-      @if (!(user$ | async);) {
-        <a routerLink="/login" routerLinkActive="active" (click)="closeMenu()" class="auth-link mobile-only">
-          <i class="fa fa-sign-in-alt"></i> {{ 'HEADER.LOGIN' | translate }}
-        </a>
-        <a routerLink="/register" routerLinkActive="active" (click)="closeMenu()" class="auth-link mobile-only">
-          <i class="fa fa-sign-in-alt"></i> {{ 'HEADER.REGISTERATION' | translate }}
-        </a>
-      }
-    </nav>
-
+    <!-- ПРАВАЯ ЧАСТЬ С ДЕЙСТВИЯМИ И НАСТРОЙКАМИ -->
     <div class="actions">
+      <!-- Настройки (если залогинен) -->
+      @if (user$ | async) {
+        <a routerLink="/settings" routerLinkActive="active" class="settings-link" [title]="'HEADER.SETTINGS' | translate">
+          <i class="fa fa-cog"></i>
+          <span class="desktop-only">{{ 'HEADER.SETTINGS' | translate }}</span>
+        </a>
+      }
+
+      <!-- Кнопка + Создать -->
       @if ((user$ | async) && hasLocations()) {
         <div class="create-dropdown" [class.open]="isCreateMenuOpen()">
           <button class="create-trigger" (click)="toggleCreateMenu($event)" [title]="'COMMON.CREATE' | translate">
             <i class="fa fa-plus"></i>
             <span class="desktop-only">{{ 'COMMON.CREATE' | translate }}</span>
           </button>
+
           @if (isCreateMenuOpen()) {
             <div class="create-menu" (click)="$event.stopPropagation()">
               <button (click)="openCreateItem()">
@@ -62,6 +41,7 @@
         </div>
       }
 
+      <!-- Данные юзера -->
       @if (user$ | async; as user) {
         <div class="user-box" [title]="user.email">
           <i class="fa fa-user-circle"></i>
@@ -69,10 +49,12 @@
         </div>
       }
 
+      <!-- Переключатель темы -->
       <button class="theme-toggle" (click)="toggleTheme()" [title]="'COMMON.CHANGE_THEME_TOOLTIP' | translate">
         {{ themeService.isDarkTheme() ? '🌙' : '☀️' }}
       </button>
 
+      <!-- Выбор языка -->
       <div class="lang-dropdown" [class.open]="isLangMenuOpen()">
         <button class="lang-trigger" (click)="toggleLangMenu($event)" [title]="'COMMON.CHANGE_LANGUAGE_TOOLTIP' | translate">
           <i class="fa fa-globe"></i>
@@ -82,7 +64,7 @@
 
         @if (isLangMenuOpen()) {
           <div class="lang-menu" (click)="$event.stopPropagation()">
-            @for (lang of languages; track lang) {
+            @for (lang of languages; track lang.code) {
               <button (click)="changeLang(lang.code)" [class.selected]="currentLang === lang.code">
                 <span class="flag">{{ lang.flag }}</span>
                 {{ lang.label }}
@@ -92,15 +74,13 @@
         }
       </div>
 
+      <!-- Выход -->
       @if (user$ | async) {
         <button class="logout-icon-btn" (click)="onLogout()" [title]="'COMMON.EXIT' | translate">
           <i class="fa fa-sign-out-alt"></i>
         </button>
       }
     </div>
+
   </div>
 </header>
-
-@if (isMenuOpen()) {
-  <div class="overlay" (click)="closeMenu()"></div>
-}

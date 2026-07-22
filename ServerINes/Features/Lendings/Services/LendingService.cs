@@ -4,6 +4,7 @@ using INest.Data.Entities.Infrastructure;
 using INest.Data.Enums;
 using INest.Infrastructure.Email;
 using Microsoft.EntityFrameworkCore;
+using static INest.Constants.LocalizationConstants;
 
 public class LendingService
 {
@@ -54,15 +55,17 @@ public class LendingService
             NewValue = personName
         });
 
-        if (sendNotification && expectedReturnDate.HasValue)
+        if (expectedReturnDate.HasValue)
         {
-            await CreateOrUpdateReminderAsync(item, expectedReturnDate.Value);
+            await CreateOrUpdateReminderAsync(item, expectedReturnDate.Value, sendNotification);
         }
 
         if (sendNotification && !string.IsNullOrWhiteSpace(contactEmail))
         {
             await TrySendEmailAsync(lending, item.Name, personName, expectedReturnDate);
         }
+
+        await _context.SaveChangesAsync();
     }
 
     public async Task ReturnAsync(Item item)
@@ -75,11 +78,13 @@ public class LendingService
             _context.Lendings.Remove(lending);
         }
 
-        var reminder = await _context.Reminders
-            .FirstOrDefaultAsync(r => r.ItemId == item.Id && r.Type == ReminderType.ReturnItem && !r.IsCompleted);
-        if (reminder != null)
+        var reminders = await _context.Reminders
+            .Where(r => r.ItemId == item.Id && r.Type == ReminderType.ReturnItem)
+            .ToListAsync();
+
+        if (reminders.Any())
         {
-            _context.Reminders.Remove(reminder);
+            _context.Reminders.RemoveRange(reminders);
         }
 
         _context.ItemHistories.Add(new ItemHistory
@@ -89,19 +94,26 @@ public class LendingService
             UserId = item.UserId,
             Type = ItemHistoryType.Returned
         });
+
+        await _context.SaveChangesAsync();
     }
 
-    private async Task CreateOrUpdateReminderAsync(Item item, DateTime expectedReturnDate)
+    private async Task CreateOrUpdateReminderAsync(Item item, DateTime expectedReturnDate, bool sendNotification)
     {
-        var reminderDate = expectedReturnDate.AddDays(-1);
-        if (reminderDate <= DateTime.UtcNow) return;
+        var targetDate = expectedReturnDate.AddDays(-1);
+        if (targetDate <= DateTime.UtcNow)
+        {
+            targetDate = expectedReturnDate;
+        }
 
         var reminder = await _context.Reminders
             .FirstOrDefaultAsync(r => r.ItemId == item.Id && r.Type == ReminderType.ReturnItem && !r.IsCompleted);
 
         if (reminder != null)
         {
-            reminder.TriggerAt = reminderDate;
+            reminder.TriggerAt = targetDate;
+            reminder.SendNotification = sendNotification;
+            reminder.Title = REMINDERS.RETURN_ITEM;
         }
         else
         {
@@ -110,9 +122,12 @@ public class LendingService
                 Id = Guid.NewGuid(),
                 ItemId = item.Id,
                 UserId = item.UserId,
-                TriggerAt = reminderDate,
+                Title = REMINDERS.RETURN_ITEM,
+                TriggerAt = targetDate,
                 Type = ReminderType.ReturnItem,
-                IsCompleted = false
+                IsCompleted = false,
+                SendNotification = sendNotification,
+                SendTelegram = true
             });
         }
     }

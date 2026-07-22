@@ -7,7 +7,7 @@
       </div>
 
       <div class="modal-body">
-        <!-- СПИСОК ЛОКАЦИЙ -->
+        <!-- 1. СПИСОК ЛОКАЦИЙ -->
         @if (type === 'locations') {
           <div class="stats-list">
             @for (loc of locationsList; track loc.id) {
@@ -17,34 +17,85 @@
                 </div>
                 <div class="item-info">
                   <span class="item-title">{{ loc.name }}</span>
-                  <span class="item-sub">{{ loc.items.length || 0 }} вещей</span>
+                  <span class="item-sub">
+                    {{ loc.items.length }} {{ 'DASHBOARD_STATS.TOTAL_ITEMS' | translate }}
+                  </span>
                 </div>
                 <i class="fa fa-chevron-right arrow-icon"></i>
               </div>
             }
             @if (locationsList.length === 0) {
-              <div class="empty-state">Локаций пока нет</div>
+              <div class="empty-state">
+                {{ 'DASHBOARD_STATS.ALL_OK' | translate }}
+              </div>
             }
           </div>
         }
 
-        <!-- СПИСОК ОДОЛЖЕННЫХ ВЕЩЕЙ -->
+        <!-- 2. СПИСОК ОДОЛЖЕННЫХ ВЕЩЕЙ -->
         @if (type === 'lent') {
           <div class="stats-list">
             @for (data of lentItems; track data.item.id) {
               <div class="stats-item clickable" (click)="onItemClick(data.item.id)">
-                <div class="item-icon">
+                <div class="item-icon lent-icon">
                   <i class="fa fa-hand-holding"></i>
                 </div>
                 <div class="item-info">
                   <span class="item-title">{{ data.item.name }}</span>
-                  <span class="item-sub">Локация: {{ data.locationName }}</span>
+                  <span class="item-sub">
+                    {{ 'DASHBOARD_STATS.LOCATIONS' | translate }}: {{ data.locationName }}
+                  </span>
+                  @if (data.item.lending; as lending) {
+                    @if (lending.personName) {
+                      <span class="item-sub borrower">
+                        {{ 'LENDING.PERSON' | translate }}: {{ lending.personName }}
+                      </span>
+                    }
+                  }
                 </div>
                 <i class="fa fa-chevron-right arrow-icon"></i>
               </div>
             }
             @if (lentItems.length === 0) {
-              <div class="empty-state">Нет одолженных вещей</div>
+              <div class="empty-state">
+                {{ 'DASHBOARD_STATS.ALL_OK' | translate }}
+              </div>
+            }
+          </div>
+        }
+
+        <!-- 3. СПИСОК ВНИМАНИЕ / АХТУНГ -->
+        @if (type === 'attention') {
+          <div class="stats-list">
+            @for (item of attentionItems; track $index) {
+              <div class="stats-item clickable" (click)="onItemClick(item.itemId)">
+                <div class="item-icon" [ngClass]="'icon-' + item.severity">
+                  <i class="fa" 
+                     [class.fa-exclamation-circle]="item.severity === 'danger'" 
+                     [class.fa-clock]="item.severity === 'warning'"
+                     [class.fa-bell]="item.severity === 'info'"></i>
+                </div>
+                <div class="item-info">
+                  <div class="item-title-row">
+                    <span class="item-title">{{ item.itemName }}</span>
+                    <span class="status-badge" [ngClass]="'badge-' + item.severity">
+                      {{ item.typeKey | translate }}
+                    </span>
+                  </div>
+                  <span class="item-sub">
+                    {{ item.date | date:'dd.MM.yyyy' }}
+                  </span>
+                  <span class="item-sub">
+                    {{ 'DASHBOARD_STATS.LOCATIONS' | translate }}: {{ item.locationName }}
+                  </span>
+                </div>
+                <i class="fa fa-chevron-right arrow-icon"></i>
+              </div>
+            }
+            @if (attentionItems.length === 0) {
+              <div class="empty-state">
+                {{ 'DASHBOARD_STATS.ALL_OK' | translate }}
+              </div>
             }
           </div>
         }

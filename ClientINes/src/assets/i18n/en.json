@@ -509,9 +509,10 @@
     "LOCATIONS": "Locations",
     "ATTENTION": "Attention",
     "LENT": "Lent Out",
-    "ARCHIVE_SOLD": "Archive / Sold",
+    "SOLD": "Sold",
     "EXPIRED_SHORT": "{{ count }} expired",
     "WARRANTY_SHORT": "{{ count }} warranty",
+    "REMINDERS_SHORT": "{{ count }} reminders",
     "ALL_OK": "All good"
   }
 }

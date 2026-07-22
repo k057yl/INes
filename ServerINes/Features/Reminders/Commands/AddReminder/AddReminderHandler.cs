@@ -1,4 +1,5 @@
 ﻿using INest.Data.Entities.Infrastructure;
+using INest.Data.Enums;
 using INest.Exceptions;
 using INest.Infrastructure.Sanitizer;
 using INest.Infrastructure.Tracker;
@@ -33,12 +34,15 @@ namespace INest.Features.Reminders.Commands.AddReminder
             if (string.IsNullOrWhiteSpace(safeTitle))
                 throw new AppException(SYSTEM.ERRORS.VALIDATION_FAILED, 400);
 
+            var reminderType = dto.Type == ReminderType.ReturnItem ? ReminderType.Custom : dto.Type;
+
             var reminder = new Reminder
             {
                 Id = Guid.NewGuid(),
+                UserId = request.UserId,
                 ItemId = dto.ItemId,
                 Title = safeTitle,
-                Type = dto.Type,
+                Type = reminderType,
                 Recurrence = dto.Recurrence,
                 TriggerAt = dto.TriggerAt.ToUniversalTime(),
                 SendNotification = dto.SendNotification,

@@ -1,4 +1,5 @@
 ﻿using INest.Data.Entities.Core;
+using INest.Data.Entities.Infrastructure;
 using INest.Data.Enums;
 using INest.Exceptions;
 using INest.Infrastructure.Sanitizer;
@@ -78,6 +79,30 @@ namespace INest.Features.Items.Commands.UpdateItemFull
                 if (dto.WarrantyExpiration.HasValue && dto.WarrantyExpiration != item.Details.WarrantyExpiration)
                 {
                     item.Details.WarrantyAlertSent = false;
+                }
+
+                if (dto.Reminder != null && dto.Reminder.TriggerAt != DateTime.MinValue)
+                {
+                    var safeReminderTitle = string.IsNullOrWhiteSpace(dto.Reminder.Title)
+                        ? REMINDERS.CUSTOM
+                        : _sanitizer.StripAllHtml(dto.Reminder.Title);
+
+                    var reminder = new Reminder
+                    {
+                        Id = Guid.NewGuid(),
+                        UserId = request.UserId,
+                        ItemId = item.Id,
+                        Title = safeReminderTitle,
+                        Type = dto.Reminder.Type,
+                        Recurrence = dto.Reminder.Recurrence,
+                        TriggerAt = dto.Reminder.TriggerAt.ToUniversalTime(),
+                        SendNotification = dto.Reminder.SendNotification,
+                        SendTelegram = dto.Reminder.SendTelegram,
+                        IsCompleted = false,
+                        IsNotificationSent = false
+                    };
+
+                    _context.Reminders.Add(reminder);
                 }
 
                 if (request.Photos != null && request.Photos.Count > 0)

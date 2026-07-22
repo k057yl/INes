@@ -506,12 +506,13 @@
   },
   "DASHBOARD_STATS": {
     "TOTAL_ITEMS": "Всего вещей",
-    "LOCATIONS": "Локаций",
+    "LOCATIONS": "Локации",
     "ATTENTION": "Внимание",
     "LENT": "Одолжено",
-    "ARCHIVE_SOLD": "Архив / Продано",
+    "SOLD": "Продано",
     "EXPIRED_SHORT": "{{ count }} просроч.",
     "WARRANTY_SHORT": "{{ count }} гарантия",
+    "REMINDERS_SHORT": "{{ count }} напом.",
     "ALL_OK": "Всё в порядке"
   }
 }

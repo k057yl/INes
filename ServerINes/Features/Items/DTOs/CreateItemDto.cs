@@ -1,5 +1,5 @@
 ﻿using INest.Data.Enums;
-using Microsoft.AspNetCore.Http;
+using INest.Features.Reminders.DTOs;
 
 namespace INest.Features.Items.DTOs
 {
@@ -12,6 +12,8 @@ namespace INest.Features.Items.DTOs
         public ItemStatus Status { get; set; } = ItemStatus.Active;
 
         public ItemFinanceDto Details { get; set; } = new();
+
+        public CreateReminderDto? Reminder { get; set; }
 
         public string? PersonName { get; set; }
         public string? ContactEmail { get; set; }

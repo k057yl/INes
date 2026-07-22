@@ -30,18 +30,21 @@ namespace INest.Features.Reminders.Commands.CompleteReminder
 
             if (reminder.Recurrence != ReminderRecurrence.None)
             {
+                var baseDate = reminder.TriggerAt < DateTime.UtcNow ? DateTime.UtcNow : reminder.TriggerAt;
+
                 DateTime nextTrigger = reminder.Recurrence switch
                 {
-                    ReminderRecurrence.Daily => reminder.TriggerAt.AddDays(1),
-                    ReminderRecurrence.Weekly => reminder.TriggerAt.AddDays(7),
-                    ReminderRecurrence.Monthly => reminder.TriggerAt.AddMonths(1),
-                    ReminderRecurrence.Yearly => reminder.TriggerAt.AddYears(1),
-                    _ => reminder.TriggerAt
+                    ReminderRecurrence.Daily => baseDate.AddDays(1),
+                    ReminderRecurrence.Weekly => baseDate.AddDays(7),
+                    ReminderRecurrence.Monthly => baseDate.AddMonths(1),
+                    ReminderRecurrence.Yearly => baseDate.AddYears(1),
+                    _ => baseDate
                 };
 
                 _context.Reminders.Add(new Reminder
                 {
                     Id = Guid.NewGuid(),
+                    UserId = request.UserId,
                     ItemId = reminder.ItemId,
                     Title = reminder.Title,
                     Type = reminder.Type,

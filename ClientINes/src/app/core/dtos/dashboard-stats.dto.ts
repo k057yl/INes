@@ -5,4 +5,5 @@ export interface DashboardStatsDto {
   expiringWarrantiesCount: number;
   lentItemsCount: number;
   archivedAndSoldItemsCount: number;
+  activeRemindersCount?: number;
 }

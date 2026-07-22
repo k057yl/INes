@@ -505,13 +505,14 @@
     "YEARLY": "Щороку"
   },
   "DASHBOARD_STATS": {
-    "TOTAL_ITEMS": "Усього речей",
-    "LOCATIONS": "Локацій",
+    "TOTAL_ITEMS": "Всього речей",
+    "LOCATIONS": "Локації",
     "ATTENTION": "Увага",
     "LENT": "Позичено",
-    "ARCHIVE_SOLD": "Архів / Продано",
+    "SOLD": "Продано",
     "EXPIRED_SHORT": "{{ count }} простроч.",
     "WARRANTY_SHORT": "{{ count }} гарантія",
+    "REMINDERS_SHORT": "{{ count }} нагад.",
     "ALL_OK": "Усе в порядку"
   }
 }

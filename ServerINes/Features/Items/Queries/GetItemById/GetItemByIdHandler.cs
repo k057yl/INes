@@ -39,14 +39,9 @@ namespace INest.Features.Items.Queries.GetItemById
 
             var now = DateTime.UtcNow;
 
-            bool isLendingOverdue =
-                lending != null &&
-                lending.ReturnedDate == null &&
-                lending.ExpectedReturnDate.HasValue &&
-                lending.ExpectedReturnDate.Value <= now;
+            bool isLendingOverdue = lending is { ReturnedDate: null, ExpectedReturnDate: { } exp } && exp <= now;
 
-            bool hasOverdueReminders =
-                item.Reminders.Any(r => !r.IsCompleted && r.TriggerAt <= now);
+            bool hasOverdueReminders = item.Reminders.Any(r => !r.IsCompleted && r.TriggerAt <= now);
 
             return new ItemDto
             {

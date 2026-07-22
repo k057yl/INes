@@ -135,6 +135,30 @@ namespace INest.Features.Items.Commands.UpdateItemPartial
                     item.Details.WarrantyAlertSent = false;
                 }
 
+                if (dto.Reminder != null && dto.Reminder.TriggerAt != DateTime.MinValue)
+                {
+                    var safeReminderTitle = string.IsNullOrWhiteSpace(dto.Reminder.Title)
+                        ? REMINDERS.CUSTOM
+                        : _sanitizer.StripAllHtml(dto.Reminder.Title);
+
+                    var reminder = new Reminder
+                    {
+                        Id = Guid.NewGuid(),
+                        UserId = request.UserId,
+                        ItemId = item.Id,
+                        Title = safeReminderTitle,
+                        Type = dto.Reminder.Type,
+                        Recurrence = dto.Reminder.Recurrence,
+                        TriggerAt = dto.Reminder.TriggerAt.ToUniversalTime(),
+                        SendNotification = dto.Reminder.SendNotification,
+                        SendTelegram = dto.Reminder.SendTelegram,
+                        IsCompleted = false,
+                        IsNotificationSent = false
+                    };
+
+                    _context.Reminders.Add(reminder);
+                }
+
                 if (request.Photos != null && request.Photos.Count > 0)
                 {
                     await HandlePhotosAsync(item, request.Photos, request.UserId);

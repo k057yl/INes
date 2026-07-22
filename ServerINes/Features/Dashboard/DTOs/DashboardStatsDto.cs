@@ -6,7 +6,12 @@
         public int TotalLocationsCount { get; set; }
         public int ExpiredRemindersCount { get; set; }
         public int ExpiringWarrantiesCount { get; set; }
+
+        public int ActiveRemindersCount { get; set; }
+
         public int LentItemsCount { get; set; }
         public int ArchivedAndSoldItemsCount { get; set; }
+
+        public List<AttentionItemDto> AttentionItems { get; set; } = new();
     }
 }

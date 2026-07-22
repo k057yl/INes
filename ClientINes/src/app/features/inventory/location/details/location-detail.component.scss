@@ -367,3 +367,66 @@
     }
   }
 }
+
+.location-simple-header {
+  margin-bottom: 25px;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--border-color);
+
+  .breadcrumb-trail {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.1rem;
+
+    // Стили для нашей кнопки "Назад"
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      border-radius: 8px;
+      cursor: pointer;
+      margin-right: 4px;
+      transition: all 0.2s ease;
+
+      i {
+        font-size: 0.85rem;
+      }
+
+      &:hover {
+        background: rgba(var(--accent-rgb), 0.15);
+        border-color: var(--accent-color);
+        color: var(--accent-color);
+        transform: translateX(-2px); // Микро-сдвиг влево
+      }
+    }
+
+    a {
+      color: var(--text-muted);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+
+      &:hover { color: var(--accent-color); }
+      &.active { 
+        color: var(--text-main); 
+        font-weight: 700; 
+        pointer-events: none; 
+      }
+      .icon-start { font-size: 0.9rem; }
+    }
+
+    .separator {
+      font-size: 0.7rem;
+      color: var(--border-color);
+      opacity: 0.6;
+    }
+  }
+}
