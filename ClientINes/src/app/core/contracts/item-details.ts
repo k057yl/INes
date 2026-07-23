@@ -5,4 +5,5 @@ export interface ItemDetails {
   currency: string;
   warrantyExpiration?: string;
   warrantyAlertSent: boolean;
+  receiptDocumentPath?: string;
 }

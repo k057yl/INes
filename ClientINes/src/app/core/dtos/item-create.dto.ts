@@ -13,6 +13,8 @@ export interface ItemCreateDto {
     estimatedValue?: number;
     currency: string;
     warrantyExpiration?: string;
+    receiptDocumentPath?: string;
+    receiptFile?: File | null;
   };
 
   personName?: string;

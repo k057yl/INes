@@ -121,6 +121,13 @@ export class ItemDetailComponent implements OnInit {
     this.activePhotoUrl = path;
   }
 
+  getReceiptUrl(details: any): string | null {
+    if (!details) return null;
+    const path = details.receiptDocumentPath || details.receiptUrl || details.receiptPath;
+    if (!path) return null;
+    return path.startsWith('http') ? path : `${this.baseUrl}/${path}`;
+  }
+
   goBack() {
     if (window.history.length > 1) {
       window.history.back();

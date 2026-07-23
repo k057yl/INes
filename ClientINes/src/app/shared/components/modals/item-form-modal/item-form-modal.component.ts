@@ -58,6 +58,9 @@ export class ItemFormModalComponent implements OnInit {
   selectedPhotos: PhotoSlot[] = [];
   isLocationPredefined = false;
   showCategoryModal = false;
+
+  selectedReceiptFile: File | null = null;
+  selectedReceiptFileName: string | null = null;
   
   readonly MAX_PHOTOS = 5;
   todayMax = new Date().toISOString().split('T')[0];
@@ -99,7 +102,11 @@ export class ItemFormModalComponent implements OnInit {
     sendTelegramNotification: [false],
     addPhoto: [false],
 
-    // Блок Напоминания / Обслуживания
+    // ОПЦИОНАЛЬНЫЙ БЛОК ГАРАНТИИ И ЧЕКА:
+    addReceipt: [false],
+    warrantyExpiration: [null as string | null],
+
+    // Напоминания
     addReminder: [false],
     reminderTitle: [''],
     reminderType: [ReminderType.Custom],
@@ -127,6 +134,13 @@ export class ItemFormModalComponent implements OnInit {
 
     this.form.get('status')?.valueChanges.subscribe(val => this.applyLendingLogic(val));
     this.form.get('addReminder')?.valueChanges.subscribe(val => this.updateReminderValidators(!!val));
+    this.form.get('addReceipt')?.valueChanges.subscribe(val => {
+      if (!val) {
+        this.form.patchValue({ warrantyExpiration: null });
+        this.selectedReceiptFile = null;
+        this.selectedReceiptFileName = null;
+      }
+    });
 
     if (this.isEdit && this.item) {
       this.patchFormValues(this.item);
@@ -231,8 +245,13 @@ export class ItemFormModalComponent implements OnInit {
       currency: item.details?.currency || 'USD',
       purchaseDate: item.details?.purchaseDate ? item.details.purchaseDate.split('T')[0] : '',
       purchasePrice: item.details?.purchasePrice,
-      estimatedValue: item.details?.estimatedValue
+      estimatedValue: item.details?.estimatedValue,
+      warrantyExpiration: item.details?.warrantyExpiration ? item.details.warrantyExpiration.split('T')[0] : null
     });
+
+    if (item.details?.warrantyExpiration || item.details?.receiptDocumentPath) {
+      this.form.patchValue({ addReceipt: true });
+    }
 
     if (item.lending) {
       this.form.patchValue({
@@ -285,6 +304,21 @@ export class ItemFormModalComponent implements OnInit {
     if (removedWasMain && this.selectedPhotos.length > 0) this.selectedPhotos[0].isMain = true;
   }
 
+  onReceiptSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (!input.files?.length) return;
+
+    const file = input.files[0];
+    this.selectedReceiptFile = file;
+    this.selectedReceiptFileName = file.name;
+  }
+
+  removeReceipt(event: Event) {
+    event.stopPropagation();
+    this.selectedReceiptFile = null;
+    this.selectedReceiptFileName = null;
+  }
+
   onSubmit() {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -312,6 +346,15 @@ export class ItemFormModalComponent implements OnInit {
     const estValue = val.estimatedValue ?? val.purchasePrice;
     if (estValue != null) {
       formData.append('details.estimatedValue', estValue.toString());
+    }
+
+    if (val.addReceipt) {
+      if (val.warrantyExpiration) {
+        formData.append('details.warrantyExpiration', val.warrantyExpiration);
+      }
+      if (this.selectedReceiptFile) {
+        formData.append('details.receiptFile', this.selectedReceiptFile, this.selectedReceiptFile.name);
+      }
     }
 
     // Логика одолжения

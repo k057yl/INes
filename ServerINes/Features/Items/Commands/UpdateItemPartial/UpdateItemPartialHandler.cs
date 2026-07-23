@@ -135,6 +135,23 @@ namespace INest.Features.Items.Commands.UpdateItemPartial
                     item.Details.WarrantyAlertSent = false;
                 }
 
+                if (dto.ReceiptDocumentPath != null && dto.ReceiptDocumentPath != item.Details.ReceiptDocumentPath)
+                {
+                    LogChange(ItemHistoryType.ValueUpdated, item.Details.ReceiptDocumentPath, dto.ReceiptDocumentPath);
+                    item.Details.ReceiptDocumentPath = dto.ReceiptDocumentPath;
+                }
+
+                if (request.ReceiptFile != null)
+                {
+                    var receiptResult = await _photoService.AddReceiptAsync(request.ReceiptFile, request.UserId);
+                    if (receiptResult.Error != null)
+                        throw new AppException(ERRORS.IMAGE_PROCESSING_FAILED);
+
+                    var newPath = receiptResult.SecureUrl.ToString();
+                    LogChange(ItemHistoryType.ValueUpdated, item.Details.ReceiptDocumentPath, newPath);
+                    item.Details.ReceiptDocumentPath = newPath;
+                }
+
                 if (dto.Reminder != null && dto.Reminder.TriggerAt != DateTime.MinValue)
                 {
                     var safeReminderTitle = string.IsNullOrWhiteSpace(dto.Reminder.Title)

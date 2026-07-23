@@ -21,5 +21,6 @@ namespace INest.Features.Items.DTOs
 
         public List<IFormFile>? Photos { get; set; }
         public string? MainPhotoName { get; set; }
+        public string? ReceiptDocumentPath { get; set; }
     }
 }

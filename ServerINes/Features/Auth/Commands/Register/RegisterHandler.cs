@@ -50,12 +50,20 @@ namespace INest.Features.Auth.Commands.Register
                     Email = normalizedEmail,
                     UserName = normalizedEmail,
                     DisplayName = sanitizedUsername,
-                    EmailConfirmed = false
+                    EmailConfirmed = false,
+                    TimeZoneId = string.IsNullOrWhiteSpace(request.TimeZoneId) ? "Europe/Kyiv" : request.TimeZoneId
                 };
                 var result = await _userManager.CreateAsync(user, request.Password);
 
                 if (!result.Succeeded)
                     throw new AppException(AUTH.ERRORS.REGISTRATION_FAILED, 400);
+            }
+            else
+            {
+                if (!string.IsNullOrWhiteSpace(request.TimeZoneId))
+                {
+                    user.TimeZoneId = request.TimeZoneId;
+                }
             }
 
             var code = RandomNumberGenerator.GetInt32(100000, 1000000).ToString();

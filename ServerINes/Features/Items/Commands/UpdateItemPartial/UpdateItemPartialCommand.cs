@@ -7,6 +7,7 @@ namespace INest.Features.Items.Commands.UpdateItemPartial
         Guid UserId,
         Guid ItemId,
         UpdateItemPartialDto Dto,
-        List<IFormFile>? Photos
+        List<IFormFile>? Photos,
+        IFormFile? ReceiptFile = null
     ) : IRequest<bool>;
 }

@@ -58,7 +58,8 @@ namespace INest.Features.Items.Queries.GetItemById
                         EstimatedValue = item.Details.EstimatedValue,
                         Currency = item.Details.Currency ?? "USD",
                         PurchaseDate = item.Details.PurchaseDate,
-                        WarrantyExpiration = item.Details.WarrantyExpiration
+                        WarrantyExpiration = item.Details.WarrantyExpiration,
+                        ReceiptDocumentPath = item.Details.ReceiptDocumentPath
                     },
 
                 PhotoUrl = item.PhotoUrl,

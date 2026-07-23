@@ -42,12 +42,20 @@ namespace INest.Features.Auth.Commands.GoogleLogin
                         Email = payload.Email,
                         UserName = payload.Email,
                         DisplayName = payload.Name ?? payload.Email.Split('@')[0],
-                        EmailConfirmed = true
+                        EmailConfirmed = true,
+                        TimeZoneId = string.IsNullOrWhiteSpace(request.TimeZoneId) ? "Europe/Kyiv" : request.TimeZoneId
                     };
                     var result = await _userManager.CreateAsync(user);
                     if (result.Succeeded)
                     {
                         await _userManager.AddToRoleAsync(user, SharedConstants.DEFAULT_ROLE);
+                    }
+                }
+                else
+                {
+                    if (!string.IsNullOrWhiteSpace(request.TimeZoneId) && user.TimeZoneId != request.TimeZoneId)
+                    {
+                        user.TimeZoneId = request.TimeZoneId;
                     }
                 }
 

@@ -318,3 +318,146 @@
     }
   }
 }
+
+/* --- ИНТЕРАКТИВНАЯ ЗОНА ЗАГРУЗКИ ЧЕКА --- */
+.receipt-dropzone-canvas {
+  width: 100%;
+  min-height: 100px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 2px dashed var(--border-color);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.3s ease;
+  overflow: hidden;
+
+  &:hover:not(.has-file) {
+    border-color: var(--accent-color);
+    background: rgba(var(--accent-rgb), 0.03);
+  }
+
+  &.has-file {
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.25);
+    border-style: solid;
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+
+  .receipt-hidden-input {
+    position: absolute;
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    z-index: -1;
+  }
+
+  .receipt-dropzone-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    padding: 16px;
+    cursor: pointer;
+    color: var(--text-muted);
+    user-select: none;
+
+    .dropzone-icon {
+      font-size: 2rem;
+      margin-bottom: 8px;
+      color: var(--accent-color);
+      transition: transform 0.2s ease;
+    }
+
+    .dropzone-text {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .dropzone-sub {
+      font-size: 0.7rem;
+      margin-top: 2px;
+      opacity: 0.6;
+    }
+
+    &:hover .dropzone-icon {
+      transform: translateY(-3px) scale(1.05);
+    }
+  }
+
+  .receipt-attached-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 10px 14px;
+
+    .file-icon-badge {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: rgba(var(--accent-rgb), 0.15);
+      color: var(--accent-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+
+    .file-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+
+      .file-name {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--text-main);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .file-status-tag {
+        font-size: 0.65rem;
+        font-weight: 600;
+        color: var(--g-green);
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        margin-top: 2px;
+      }
+    }
+
+    .btn-remove-receipt {
+      background: rgba(255, 0, 0, 0.1);
+      border: 1px solid rgba(255, 0, 0, 0.2);
+      color: var(--error-red);
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+
+      &:hover {
+        background: var(--error-red);
+        color: #fff;
+        transform: scale(1.05);
+      }
+    }
+  }
+}

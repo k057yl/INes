@@ -81,6 +81,20 @@ namespace INest.Features.Items.Commands.UpdateItemFull
                     item.Details.WarrantyAlertSent = false;
                 }
 
+                if (dto.ReceiptDocumentPath != null)
+                {
+                    item.Details.ReceiptDocumentPath = dto.ReceiptDocumentPath;
+                }
+
+                if (request.ReceiptFile != null)
+                {
+                    var receiptResult = await _photoService.AddReceiptAsync(request.ReceiptFile, request.UserId);
+                    if (receiptResult.Error != null)
+                        throw new AppException(ERRORS.IMAGE_PROCESSING_FAILED);
+
+                    item.Details.ReceiptDocumentPath = receiptResult.SecureUrl.ToString();
+                }
+
                 if (dto.Reminder != null && dto.Reminder.TriggerAt != DateTime.MinValue)
                 {
                     var safeReminderTitle = string.IsNullOrWhiteSpace(dto.Reminder.Title)

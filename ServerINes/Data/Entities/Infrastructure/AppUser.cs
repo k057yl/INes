@@ -19,7 +19,7 @@ namespace INest.Data.Entities.Infrastructure
 
         public string? RefreshToken { get; set; }
         public DateTime RefreshTokenExpiryTime { get; set; }
-        public string TimeZoneId { get; set; } = "UTC";
+        public string TimeZoneId { get; set; } = "Europe/Kyiv";
 
         public long? TelegramChatId { get; set; }
         public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();

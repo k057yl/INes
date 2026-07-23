@@ -31,6 +31,7 @@
 
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
 
+      <!-- 1. ФОТОГРАФИИ ПРЕДМЕТА -->
       @if (!isEdit || form.get('addPhoto')?.value) {
         <div class="photo-hero-section">
           <div class="photo-upload-canvas" [class.has-photos]="selectedPhotos.length > 0">
@@ -79,6 +80,7 @@
         </div>
       }
 
+      <!-- 2. ОСНОВНАЯ ИНФОРМАЦИЯ -->
       <div class="inest-form-group">
         <label>{{ 'CREATE_ITEM_PAGE.NAME' | translate }} *</label>
         <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('name')" [class.is-readonly]="isEdit && item?.status !== 0">
@@ -162,7 +164,65 @@
         </div>
       </div>
 
-      <!-- БЛОК ОДОЛЖЕНИЯ -->
+      <!-- 3. ДЕТАЛИ ПОКУПКИ И ФИНАНСЫ -->
+      <div class="form-row-multi">
+        <div class="inest-form-group">
+          <label>{{ 'CREATE_ITEM_PAGE.PURCHASE_DATE' | translate }}</label>
+          <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('purchaseDate')" [class.is-readonly]="isEdit && item?.status !== 0">
+            <i class="fa fa-calendar-alt inest-field-icon-left"></i>
+            <input type="date" formControlName="purchaseDate" [max]="todayMax">
+          </div>
+          @if (isControlInvalid('purchaseDate')) {
+            <div class="error-hint-msg">
+              <i class="fa fa-exclamation-circle"></i>
+              <span>{{ (form.get('purchaseDate')?.errors?.['serverError'] || 'ERRORS.FUTURE_DATE') | translate }}</span>
+            </div>
+          }
+        </div>
+
+        <div class="inest-form-group">
+          <label>{{ 'CREATE_ITEM_PAGE.PRICE' | translate }}</label>
+          <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('purchasePrice')" [class.is-readonly]="isEdit && item?.status !== 0">
+            <i class="fa fa-wallet inest-field-icon-left"></i>
+            <input formControlName="purchasePrice" type="number" placeholder="0.00">
+          </div>
+          @if (isControlInvalid('purchasePrice')) {
+            <div class="error-hint-msg">
+              <i class="fa fa-exclamation-circle"></i>
+              <span>{{ (form.get('purchasePrice')?.errors?.['serverError'] || 'ERRORS.NEGATIVE_NUMBER') | translate }}</span>
+            </div>
+          }
+        </div>
+
+        <div class="inest-form-group">
+          <label>{{ 'CREATE_ITEM_PAGE.ESTIMATED' | translate }}</label>
+          <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('estimatedValue')" [class.is-readonly]="isEdit && item?.status !== 0">
+            <i class="fa fa-chart-line inest-field-icon-left"></i>
+            <input formControlName="estimatedValue" type="number" placeholder="0.00">
+          </div>
+          @if (isControlInvalid('estimatedValue')) {
+            <div class="error-hint-msg">
+              <i class="fa fa-exclamation-circle"></i>
+              <span>{{ (form.get('estimatedValue')?.errors?.['serverError'] || 'ERRORS.NEGATIVE_NUMBER') | translate }}</span>
+            </div>
+          }
+        </div>
+
+        <div class="inest-form-group">
+          <label>{{ 'CREATE_ITEM_PAGE.CURRENCY' | translate }}</label>
+          <div class="inest-input-wrapper" [class.is-readonly]="isEdit && item?.status !== 0">
+            <i class="fa fa-coins inest-field-icon-left"></i>
+            <select formControlName="currency">
+              <option value="UAH">UAH (₴)</option>
+              <option value="USD">USD ($)</option>
+              <option value="EUR">EUR (€)</option>
+              <option value="USDT">USDT (₮)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. БЛОК ОДОЛЖЕНИЯ (ЕСЛИ СТАТУС LENT / BORROWED) -->
       @if (isLendingStatus) {
         <div class="lending-info-section">
           <div class="divider-text">
@@ -197,7 +257,7 @@
 
           <div class="notification-channels-wrapper">
             <label class="channels-title">{{ 'CREATE_ITEM_PAGE.REMIND_CHANNELS_TITLE' | translate }}</label>
-            
+
             <label class="channel-box-vertical">
               <input type="checkbox" formControlName="sendTelegramNotification" class="channel-checkbox">
               <div class="channel-content">
@@ -214,11 +274,65 @@
               </div>
             </label>
           </div>
-
         </div>
       }
 
-      <!-- БЛОК ОПЦИОНАЛЬНОГО НАПОМИНАНИЯ / СЕРВИСА -->
+      <!-- 5. ОПЦИОНАЛЬНЫЙ БЛОК ГАРАНТИИ И ЧЕКА -->
+      @if (!isLendingStatus && (!isEdit || item?.status === 0)) {
+        <div class="reminder-toggle-section">
+          <div class="inest-form-group">
+            <label class="inest-checkbox-label highlight">
+              <input type="checkbox" formControlName="addReceipt">
+              <span><i class="fa fa-shield-alt"></i> {{ 'CREATE_ITEM_PAGE.ADD_WARRANTY_RECEIPT' | translate }}</span>
+            </label>
+          </div>
+
+          @if (form.get('addReceipt')?.value) {
+            <div class="lending-info-section">
+              <div class="inest-form-group">
+                <label>{{ 'CREATE_ITEM_PAGE.WARRANTY_EXPIRATION' | translate }}</label>
+                <div class="inest-input-wrapper">
+                  <i class="fa fa-shield-alt inest-field-icon-left"></i>
+                  <input type="date" formControlName="warrantyExpiration">
+                </div>
+              </div>
+
+              <!-- КРАСИВАЯ ЗОНА ЗАГРУЗКИ ЧЕКА -->
+              <div class="inest-form-group">
+                <label>{{ 'CREATE_ITEM_PAGE.RECEIPT' | translate }} (PDF / Photo)</label>
+                
+                <div class="receipt-dropzone-canvas" [class.has-file]="!!selectedReceiptFileName">
+                  <input type="file" #receiptInput accept="image/*,.pdf" (change)="onReceiptSelected($event)" class="receipt-hidden-input" id="receiptFileInput">
+
+                  @if (!selectedReceiptFileName) {
+                    <label for="receiptFileInput" class="receipt-dropzone-label">
+                      <i class="fa fa-file-invoice-dollar dropzone-icon"></i>
+                      <span class="dropzone-text">{{ 'CREATE_ITEM_PAGE.ATTACH_RECEIPT' | translate }}</span>
+                      <small class="dropzone-sub">PDF, PNG, JPG</small>
+                    </label>
+                  } @else {
+                    <div class="receipt-attached-card">
+                      <div class="file-icon-badge">
+                        <i class="fa" [ngClass]="selectedReceiptFileName.endsWith('.pdf') ? 'fa-file-pdf' : 'fa-file-image'"></i>
+                      </div>
+                      <div class="file-info">
+                        <span class="file-name" [title]="selectedReceiptFileName">{{ selectedReceiptFileName }}</span>
+                        <span class="file-status-tag"><i class="fa fa-check-circle"></i> Загружен</span>
+                      </div>
+                      <button type="button" class="btn-remove-receipt" (click)="removeReceipt($event)" title="Удалить файл">
+                        <i class="fa fa-trash-alt"></i>
+                      </button>
+                    </div>
+                  }
+                </div>
+              </div>
+
+            </div>
+          }
+        </div>
+      }
+
+      <!-- 6. ОПЦИОНАЛЬНЫЙ БЛОК НАПОМИНАНИЯ / СЕРВИСА -->
       @if (!isLendingStatus && (!isEdit || item?.status === 0)) {
         <div class="reminder-toggle-section">
           <div class="inest-form-group">
@@ -298,64 +412,6 @@
           }
         </div>
       }
-
-      <!-- ДЕТАЛИ ПОКУПКИ И ЦЕНЫ -->
-      <div class="form-row-multi">
-        <div class="inest-form-group">
-          <label>{{ 'CREATE_ITEM_PAGE.PURCHASE_DATE' | translate }}</label>
-          <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('purchaseDate')" [class.is-readonly]="isEdit && item?.status !== 0">
-            <i class="fa fa-calendar-alt inest-field-icon-left"></i>
-            <input type="date" formControlName="purchaseDate" [max]="todayMax">
-          </div>
-          @if (isControlInvalid('purchaseDate')) {
-            <div class="error-hint-msg">
-              <i class="fa fa-exclamation-circle"></i>
-              <span>{{ (form.get('purchaseDate')?.errors?.['serverError'] || 'ERRORS.FUTURE_DATE') | translate }}</span>
-            </div>
-          }
-        </div>
-
-        <div class="inest-form-group">
-          <label>{{ 'CREATE_ITEM_PAGE.PRICE' | translate }}</label>
-          <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('purchasePrice')" [class.is-readonly]="isEdit && item?.status !== 0">
-            <i class="fa fa-wallet inest-field-icon-left"></i>
-            <input formControlName="purchasePrice" type="number" placeholder="0.00">
-          </div>
-          @if (isControlInvalid('purchasePrice')) {
-            <div class="error-hint-msg">
-              <i class="fa fa-exclamation-circle"></i>
-              <span>{{ (form.get('purchasePrice')?.errors?.['serverError'] || 'ERRORS.NEGATIVE_NUMBER') | translate }}</span>
-            </div>
-          }
-        </div>
-
-        <div class="inest-form-group">
-          <label>{{ 'CREATE_ITEM_PAGE.ESTIMATED' | translate }}</label>
-          <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('estimatedValue')" [class.is-readonly]="isEdit && item?.status !== 0">
-            <i class="fa fa-chart-line inest-field-icon-left"></i>
-            <input formControlName="estimatedValue" type="number" placeholder="0.00">
-          </div>
-          @if (isControlInvalid('estimatedValue')) {
-            <div class="error-hint-msg">
-              <i class="fa fa-exclamation-circle"></i>
-              <span>{{ (form.get('estimatedValue')?.errors?.['serverError'] || 'ERRORS.NEGATIVE_NUMBER') | translate }}</span>
-            </div>
-          }
-        </div>
-
-        <div class="inest-form-group">
-          <label>{{ 'CREATE_ITEM_PAGE.CURRENCY' | translate }}</label>
-          <div class="inest-input-wrapper" [class.is-readonly]="isEdit && item?.status !== 0">
-            <i class="fa fa-coins inest-field-icon-left"></i>
-            <select formControlName="currency">
-              <option value="UAH">UAH (₴)</option>
-              <option value="USD">USD ($)</option>
-              <option value="EUR">EUR (€)</option>
-              <option value="USDT">USDT (₮)</option>
-            </select>
-          </div>
-        </div>
-      </div>
 
       <div class="form-actions-row">
         <button type="button" class="inest-btn-cancel" (click)="cancel()">

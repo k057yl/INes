@@ -23,6 +23,7 @@ namespace INest.Features.Items.Commands.DeleteItem
         {
             var item = await _context.Items
                 .Include(i => i.Photos)
+                .Include(i => i.Details)
                 .FirstOrDefaultAsync(i => i.Id == request.ItemId && i.UserId == request.UserId, cancellationToken);
 
             if (item == null)
@@ -39,6 +40,11 @@ namespace INest.Features.Items.Commands.DeleteItem
                 }
 
                 _context.ItemPhotos.RemoveRange(item.Photos);
+            }
+
+            if (item.Details != null && !string.IsNullOrEmpty(item.Details.ReceiptDocumentPath))
+            {
+                item.Details.ReceiptDocumentPath = null;
             }
 
             item.Archive();

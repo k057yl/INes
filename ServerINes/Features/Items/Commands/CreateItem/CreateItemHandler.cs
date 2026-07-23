@@ -46,6 +46,19 @@ namespace INest.Features.Items.Commands.CreateItem
             var safeDescription = string.IsNullOrWhiteSpace(dto.Description) ? null : _sanitizer.SanitizeHtml(dto.Description);
             var safePerson = string.IsNullOrWhiteSpace(dto.PersonName) ? "Unknown" : _sanitizer.StripAllHtml(dto.PersonName);
 
+            var fileToUpload = dto.Details?.ReceiptFile;
+            string? receiptUrl = dto.Details?.ReceiptDocumentPath;
+
+            if (fileToUpload != null && fileToUpload.Length > 0)
+            {
+                var receiptResult = await _photoService.AddReceiptAsync(fileToUpload, request.UserId);
+
+                if (receiptResult.Error != null)
+                    throw new AppException(receiptResult.Error.Message);
+
+                receiptUrl = receiptResult.SecureUrl?.ToString();
+            }
+
             await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
 
             try
@@ -65,7 +78,8 @@ namespace INest.Features.Items.Commands.CreateItem
                         EstimatedValue = dto.Details.EstimatedValue,
                         Currency = dto.Details.Currency ?? "USD",
                         PurchaseDate = dto.Details.PurchaseDate,
-                        WarrantyExpiration = dto.Details.WarrantyExpiration
+                        WarrantyExpiration = dto.Details.WarrantyExpiration,
+                        ReceiptDocumentPath = receiptUrl
                     }
                 };
 

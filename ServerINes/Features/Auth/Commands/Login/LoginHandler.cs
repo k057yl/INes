@@ -35,6 +35,12 @@ namespace INest.Features.Auth.Commands.Login
 
             user.RefreshToken = _tokenService.HashRefreshToken(refreshToken);
             user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(30);
+
+            if (!string.IsNullOrWhiteSpace(request.TimeZoneId) && user.TimeZoneId != request.TimeZoneId)
+            {
+                user.TimeZoneId = request.TimeZoneId;
+            }
+
             await _userManager.UpdateAsync(user);
 
             return new AuthResponseDto

@@ -21,20 +21,23 @@ namespace INest.Features.Items.Queries.GetItems
             var now = DateTime.UtcNow;
 
             var query = _context.Items
-                .Include(i => i.Details)
                 .Where(i => i.UserId == request.UserId)
-                .AsNoTracking()
-                .AsQueryable();
+                .AsNoTracking();
 
             if (filters.ShowArchived)
+            {
                 query = query.Where(i => i.Status == ItemStatus.Archived);
-            else if (!filters.IncludeArchived)
-                query = query.Where(i => i.Status != ItemStatus.Archived);
+            }
+            else if (!filters.IncludeArchived && !filters.Status.HasValue)
+            {
+                query = query.Where(i => i.Status != ItemStatus.Archived && i.Status != ItemStatus.Sold);
+            }
 
             if (!string.IsNullOrWhiteSpace(filters.SearchQuery))
             {
-                var search = filters.SearchQuery.Trim().ToLower();
-                query = query.Where(i => i.Name.ToLower().Contains(search) || (i.Description != null && i.Description.ToLower().Contains(search)));
+                var search = filters.SearchQuery.Trim();
+                query = query.Where(i => EF.Functions.ILike(i.Name, $"%{search}%") ||
+                                         (i.Description != null && EF.Functions.ILike(i.Description, $"%{search}%")));
             }
 
             if (filters.CategoryId.HasValue)
@@ -63,33 +66,38 @@ namespace INest.Features.Items.Queries.GetItems
             };
 
             return await query
-                .Select(item => new ItemDto
+                .Select(item => new
                 {
-                    Id = item.Id,
-                    Name = item.Name,
-                    Description = item.Description,
-                    Status = item.Status,
-                    Details = item.Details != null ? new ItemFinanceDto
+                    Item = item,
+                    Lending = _context.Lendings.FirstOrDefault(l => l.ItemId == item.Id)
+                })
+                .Select(x => new ItemDto
+                {
+                    Id = x.Item.Id,
+                    Name = x.Item.Name,
+                    Description = x.Item.Description,
+                    Status = x.Item.Status,
+                    Details = x.Item.Details != null ? new ItemFinanceDto
                     {
-                        PurchasePrice = item.Details.PurchasePrice,
-                        EstimatedValue = item.Details.EstimatedValue,
-                        Currency = item.Details.Currency,
-                        WarrantyExpiration = item.Details.WarrantyExpiration
+                        PurchasePrice = x.Item.Details.PurchasePrice,
+                        EstimatedValue = x.Item.Details.EstimatedValue,
+                        Currency = x.Item.Details.Currency,
+                        WarrantyExpiration = x.Item.Details.WarrantyExpiration,
+                        ReceiptDocumentPath = x.Item.Details.ReceiptDocumentPath
                     } : null,
 
-                    PhotoUrl = item.PhotoUrl,
-                    StorageLocationId = item.StorageLocationId,
-                    StorageLocationName = item.StorageLocation != null ? item.StorageLocation.Name : null,
-                    CategoryId = item.CategoryId,
-                    CategoryName = item.Category != null ? item.Category.Name : SharedConstants.CATEGORY_NONE,
+                    PhotoUrl = x.Item.PhotoUrl,
+                    StorageLocationId = x.Item.StorageLocationId,
+                    StorageLocationName = x.Item.StorageLocation != null ? x.Item.StorageLocation.Name : null,
+                    CategoryId = x.Item.CategoryId,
+                    CategoryName = x.Item.Category != null ? x.Item.Category.Name : SharedConstants.CATEGORY_NONE,
+                    PersonName = x.Lending != null ? x.Lending.PersonName : null,
+                    ContactEmail = x.Lending != null ? x.Lending.ContactEmail : null,
+                    ExpectedReturnDate = x.Lending != null ? x.Lending.ExpectedReturnDate : null,
+                    ReturnedDate = x.Lending != null ? x.Lending.ReturnedDate : null,
 
-                    PersonName = _context.Lendings.Where(l => l.ItemId == item.Id).Select(l => l.PersonName).FirstOrDefault(),
-                    ContactEmail = _context.Lendings.Where(l => l.ItemId == item.Id).Select(l => l.ContactEmail).FirstOrDefault(),
-                    ExpectedReturnDate = _context.Lendings.Where(l => l.ItemId == item.Id).Select(l => l.ExpectedReturnDate).FirstOrDefault(),
-                    ReturnedDate = _context.Lendings.Where(l => l.ItemId == item.Id).Select(l => l.ReturnedDate).FirstOrDefault(),
-
-                    IsLendingOverdue = _context.Lendings.Any(l => l.ItemId == item.Id && l.ReturnedDate == null && l.ExpectedReturnDate != null && l.ExpectedReturnDate <= now),
-                    HasOverdueReminders = _context.Reminders.Any(r => r.ItemId == item.Id && !r.IsCompleted && r.TriggerAt <= now)
+                    IsLendingOverdue = x.Lending != null && x.Lending.ReturnedDate == null && x.Lending.ExpectedReturnDate != null && x.Lending.ExpectedReturnDate <= now,
+                    HasOverdueReminders = x.Item.Reminders.Any(r => !r.IsCompleted && r.TriggerAt <= now)
                 })
                 .ToListAsync(cancellationToken);
         }

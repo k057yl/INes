@@ -7,5 +7,7 @@
         public string Currency { get; set; } = "USD";
         public DateTime? PurchaseDate { get; set; }
         public DateTime? WarrantyExpiration { get; set; }
+        public string? ReceiptDocumentPath { get; set; }
+        public IFormFile? ReceiptFile { get; set; }
     }
 }

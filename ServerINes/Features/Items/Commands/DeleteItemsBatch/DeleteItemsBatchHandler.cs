@@ -24,6 +24,7 @@ namespace INest.Features.Items.Commands.DeleteItemsBatch
 
             var items = await _context.Items
                 .Include(i => i.Photos)
+                .Include(i => i.Details)
                 .Where(i => i.UserId == request.UserId && request.ItemIds.Contains(i.Id))
                 .ToListAsync(cancellationToken);
 
@@ -46,6 +47,10 @@ namespace INest.Features.Items.Commands.DeleteItemsBatch
 
             foreach (var item in items)
             {
+                if (item.Details != null)
+                {
+                    item.Details.ReceiptDocumentPath = null;
+                }
                 item.Archive();
             }
 

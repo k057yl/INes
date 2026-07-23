@@ -25,6 +25,7 @@ namespace INest.Features.Items.Commands.DeleteArchivedItemsBatch
 
             var archivedItems = await _context.Items
                 .Include(i => i.Photos)
+                .Include(i => i.Details)
                 .Where(i => i.UserId == request.UserId
                          && request.ItemIds.Contains(i.Id)
                          && i.Status == ItemStatus.Archived)

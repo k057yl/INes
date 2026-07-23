@@ -74,6 +74,40 @@
             <label>{{ 'ITEM_DETAILS.ESTIMATED_VALUE' | translate }}</label>
             <div class="price-val">{{ item.details?.estimatedValue | price:item.details?.currency }}</div>
           </div>
+          <!-- ГАРАНТИЯ И ЧЕК -->
+          @if (item.details; as details) {
+            @if (details.warrantyExpiration || getReceiptUrl(details)) {
+              <div class="warranty-and-receipt-banner">
+                <div class="banner-header">
+                  <i class="fa fa-shield-alt"></i>
+                  <span>{{ 'ITEM_DETAILS.WARRANTY_AND_RECEIPT' | translate }}</span>
+                </div>
+
+                <div class="banner-body">
+                  @if (details.warrantyExpiration) {
+                    <div class="warranty-badge">
+                      <label>Гарантия активна до</label>
+                      <span class="warranty-date-text">
+                        <i class="fa fa-calendar-check"></i> {{ details.warrantyExpiration | date:'dd.MM.yyyy' }}
+                      </span>
+                    </div>
+                  }
+
+                  @if (getReceiptUrl(details); as receiptUrl) {
+                    <a [href]="receiptUrl" 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      class="receipt-action-btn"
+                      title="Открыть документ чека">
+                      <i class="fa fa-file-invoice-dollar"></i>
+                      <span>{{ 'ITEM_DETAILS.VIEW_RECEIPT' | translate }}</span>
+                      <i class="fa fa-external-link-alt external-icon"></i>
+                    </a>
+                  }
+                </div>
+              </div>
+            }
+          }
         </div>
         <div class="history-section">
           <h3>{{ 'ITEM_HISTORY.TITLE' | translate }}</h3>

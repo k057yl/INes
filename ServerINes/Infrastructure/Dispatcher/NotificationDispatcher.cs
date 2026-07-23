@@ -23,10 +23,17 @@ namespace INest.Infrastructure.Dispatcher
             _emailService = emailService;
             _logger = logger;
 
-            var token = configuration["Telegram:BotToken"];
+            var token = configuration["Telegram:BotToken"]
+                        ?? configuration["TelegramBotSettings:BotToken"]
+                        ?? Environment.GetEnvironmentVariable("TelegramBotSettings__BotToken");
+
             if (!string.IsNullOrWhiteSpace(token))
             {
                 _botClient = new TelegramBotClient(token);
+            }
+            else
+            {
+                _logger.LogWarning("[NotificationDispatcher] Токен Telegram бота не найден в конфигурации!");
             }
         }
 
@@ -46,32 +53,50 @@ namespace INest.Infrastructure.Dispatcher
                 .AsNoTracking()
                 .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
 
-            if (user == null || string.IsNullOrEmpty(user.Email)) return;
+            if (user == null)
+            {
+                _logger.LogWarning("[NotificationDispatcher] Пользователь с Id={UserId} не найден.", userId);
+                return;
+            }
 
-            if (user.TelegramChatId.HasValue && _botClient != null)
+            bool telegramSent = false;
+
+            if (user.TelegramChatId.HasValue && user.TelegramChatId.Value != 0 && _botClient != null)
             {
                 try
                 {
+                    _logger.LogInformation("[NotificationDispatcher] Отправка TG сообщения на ChatId: {ChatId}", user.TelegramChatId.Value);
+
                     await _botClient.SendMessage(
                         chatId: user.TelegramChatId.Value,
                         text: message,
                         cancellationToken: cancellationToken
                     );
-                    return;
+
+                    telegramSent = true;
+                    _logger.LogInformation("[NotificationDispatcher] Сообщение в TG успешно отправлено на ChatId: {ChatId}", user.TelegramChatId.Value);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogWarning(ex, "Не удалось отправить TG пуш для ChatId: {ChatId}. Переключаемся на Email.", user.TelegramChatId.Value);
+                    _logger.LogError(ex, "[NotificationDispatcher] Ошибка отправки TG сообщения для ChatId: {ChatId}", user.TelegramChatId.Value);
                 }
             }
-
-            try
+            else
             {
-                await _emailService.SendEmailAsync(user.Email, emailSubjectKey, emailBodyKey);
+                _logger.LogWarning("[NotificationDispatcher] Пропуск TG отправки: ChatId у юзера {UserId} отсутствует или _botClient не инициализирован.", userId);
             }
-            catch (Exception ex)
+
+            if (!telegramSent && !string.IsNullOrEmpty(user.Email))
             {
-                _logger.LogError(ex, "Ошибка отправки резервного письма на {Email}", user.Email);
+                try
+                {
+                    _logger.LogInformation("[NotificationDispatcher] Отправка резервного Email на {Email}", user.Email);
+                    await _emailService.SendEmailAsync(user.Email, emailSubjectKey, emailBodyKey);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "[NotificationDispatcher] Ошибка отправки резервного письма на {Email}", user.Email);
+                }
             }
         }
     }

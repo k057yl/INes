@@ -191,3 +191,95 @@
 }
 
 .loader-overlay { height: 60vh; display: flex; align-items: center; justify-content: center; font-size: 3rem; color: var(--accent-color); }
+
+/* --- БАННЕР ГАРАНТИИ И ЧЕКА В ДЕТАЛЯХ --- */
+.warranty-and-receipt-banner {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 18px;
+  padding: 20px;
+  margin-bottom: 35px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+
+  .banner-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--accent-color);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 14px;
+
+    i {
+      font-size: 0.95rem;
+    }
+  }
+
+  .banner-body {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+
+    .warranty-badge {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+
+      label {
+        font-size: 0.65rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        font-weight: 700;
+      }
+
+      .warranty-date-text {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        i {
+          color: var(--g-green);
+          font-size: 0.95rem;
+        }
+      }
+    }
+
+    .receipt-action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(var(--accent-rgb), 0.12);
+      border: 1px solid var(--accent-color);
+      color: var(--accent-color);
+      padding: 10px 18px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.2s ease;
+
+      .external-icon {
+        font-size: 0.75rem;
+        opacity: 0.7;
+      }
+
+      &:hover {
+        background: var(--accent-color);
+        color: #000;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.3);
+
+        .external-icon {
+          opacity: 1;
+        }
+      }
+    }
+  }
+}
