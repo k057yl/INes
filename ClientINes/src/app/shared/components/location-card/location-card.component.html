@@ -23,17 +23,17 @@
         </div>
 
         <div class="button-group">
-          <button class="tool-btn add-item"
-            (click)="onAddItem($event)"
-            [title]="'LOCATION_CARD.BTN.ITEM' | translate">
-            <i class="fa fa-plus"></i>
-          </button>
-
           <button class="tool-btn add-loc"
             [disabled]="treeService.getLocationLevel(facade.locations.flatLocations, location.id) >= 3"
             (click)="onAddLocation($event)"
-            [title]="'LOCATION_CARD.BTN.LOCATION' | translate">
+            [title]="'LOCATION_CARD.BTN.LOCATION_TOOLTIP' | translate">
             <i class="fa fa-folder-plus"></i>
+          </button>
+
+          <button class="tool-btn add-item"
+            (click)="onAddItem($event)"
+            [title]="'LOCATION_CARD.BTN.ITEM_TOOLTIP' | translate">
+            <i class="fa fa-plus"></i>
           </button>
 
           <button class="tool-btn move-select" (click)="location.showMenu = !location.showMenu; $event.stopPropagation()" [title]="'LOCATION_CARD.BTN.CHANGE_LOC_TOOLTIP' | translate">
