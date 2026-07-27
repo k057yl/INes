@@ -514,5 +514,21 @@
     "WARRANTY_SHORT": "{{ count }} warranty",
     "REMINDERS_SHORT": "{{ count }} reminders",
     "ALL_OK": "All good"
+  },
+  "FEEDBACK": {
+    "TITLE": "Have an idea or found a bug?",
+    "BUG": "Bug",
+    "IDEA": "Idea",
+    "OTHER": "Other",
+    "MESSAGE_PLACEHOLDER": "Describe in detail...",
+    "SEND": "Send",
+    "SENDING": "Sending...",
+    "MESSAGE_EMPTY": "Message cannot be empty",
+    
+    "RATING_TITLE": "Thanks! How useful is the app?",
+    "MISSING_PLACEHOLDER": "What's missing? (optional)",
+    "SKIP": "Skip",
+    "DONE": "Done",
+    "SAVING": "Saving..."
   }
 }

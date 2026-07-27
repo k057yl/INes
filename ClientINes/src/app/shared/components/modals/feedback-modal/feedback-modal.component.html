@@ -1,0 +1,66 @@
+<div class="modal-backdrop" *ngIf="isOpen" (click)="close()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    
+    <button class="close-btn" (click)="close()">&times;</button>
+
+    <!-- ШАГ 1 -->
+    <ng-container *ngIf="step === 1">
+      <h3>{{ 'FEEDBACK.TITLE' | translate }}</h3>
+      
+      <div class="type-selector">
+        <label>
+          <input type="radio" name="fType" [value]="feedbackTypes.Bug" [(ngModel)]="feedbackType">
+          <span>🐛 {{ 'FEEDBACK.BUG' | translate }}</span>
+        </label>
+        <label>
+          <input type="radio" name="fType" [value]="feedbackTypes.Idea" [(ngModel)]="feedbackType">
+          <span>💡 {{ 'FEEDBACK.IDEA' | translate }}</span>
+        </label>
+        <label>
+          <input type="radio" name="fType" [value]="feedbackTypes.Other" [(ngModel)]="feedbackType">
+          <span>💬 {{ 'FEEDBACK.OTHER' | translate }}</span>
+        </label>
+      </div>
+
+      <textarea 
+        rows="4" 
+        [placeholder]="'FEEDBACK.MESSAGE_PLACEHOLDER' | translate" 
+        [(ngModel)]="message">
+      </textarea>
+
+      <div class="actions">
+        <button class="btn-primary" [disabled]="!message.trim() || isLoading" (click)="submitStep1()">
+          {{ (isLoading ? 'FEEDBACK.SENDING' : 'FEEDBACK.SEND') | translate }}
+        </button>
+      </div>
+    </ng-container>
+
+    <!-- ШАГ 2 -->
+    <ng-container *ngIf="step === 2">
+      <h3>{{ 'FEEDBACK.RATING_TITLE' | translate }}</h3>
+
+      <div class="stars">
+        <span 
+          *ngFor="let star of [1,2,3,4,5]" 
+          class="star" 
+          [class.active]="star <= rating"
+          (click)="setRating(star)">
+          ★
+        </span>
+      </div>
+
+      <input 
+        type="text" 
+        [placeholder]="'FEEDBACK.MISSING_PLACEHOLDER' | translate" 
+        [(ngModel)]="missingFeatures" />
+
+      <div class="actions space-between">
+        <button class="btn-link" (click)="close()">{{ 'FEEDBACK.SKIP' | translate }}</button>
+        <button class="btn-primary" [disabled]="isLoading" (click)="submitStep2()">
+          {{ (isLoading ? 'FEEDBACK.SAVING' : 'FEEDBACK.DONE') | translate }}
+        </button>
+      </div>
+    </ng-container>
+
+  </div>
+</div>

@@ -238,5 +238,13 @@
                 public const string RETURN = "LENDING.SUCCESS.RETURN";
             }
         }
+
+        public static class FEEDBACK
+        {
+            public static class ERRORS
+            {
+                public const string MESSAGE_EMPTY = "LENDING.ERRORS.MESSAGE_EMPTY";
+            }
+        }
     }
 }

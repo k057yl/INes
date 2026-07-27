@@ -20,7 +20,8 @@ public class AppDbContext
     public DbSet<Sale> Sales => Set<Sale>();
     public DbSet<Platform> Platforms => Set<Platform>();
     public DbSet<Notification> Notifications => Set<Notification>();
-    public DbSet<TelegramConnectionCode> TelegramConnectionCodes { get; set; }
+    public DbSet<TelegramConnectionCode> TelegramConnectionCodes => Set<TelegramConnectionCode>();
+    public DbSet<Feedback> Feedbacks => Set<Feedback>();
 
     public AppDbContext(DbContextOptions<AppDbContext> options)
         : base(options)
