@@ -1,17 +1,23 @@
 <header class="header">
   <div class="header-main">
 
-    <!-- ЛОГОТИП (Переход на главную) -->
+    <!-- ЛОГОТИП -->
     <div class="brand-section">
       <div class="logo" [routerLink]="['/dashboard']" title="INest / Karakaţsya">
         <div class="logo-icon"></div>
       </div>
     </div>
 
-    <!-- ПРАВАЯ ЧАСТЬ С ДЕЙСТВИЯМИ И НАСТРОЙКАМИ -->
+    <!-- ПРАВАЯ ЧАСТЬ -->
     <div class="actions">
-      <!-- Настройки (если залогинен) -->
-      @if (user$ | async) {
+      @if (user$ | async; as user) {
+        @if (isAdmin(user)) {
+          <a routerLink="/admin/feedback" routerLinkActive="active" class="icon-btn admin-trigger" title="Админка отзывов">
+            <i class="fa fa-shield-alt"></i>
+          </a>
+        }
+
+        <!-- Настройки -->
         <a routerLink="/settings" routerLinkActive="active" class="settings-link" [title]="'HEADER.SETTINGS' | translate">
           <i class="fa fa-cog"></i>
           <span class="desktop-only">{{ 'HEADER.SETTINGS' | translate }}</span>

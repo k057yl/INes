@@ -1,10 +1,10 @@
-<div class="modal-backdrop" *ngIf="isOpen" (click)="close()">
+<div class="modal-backdrop" (click)="close()">
   <div class="modal-card" (click)="$event.stopPropagation()">
     
     <button class="close-btn" (click)="close()">&times;</button>
 
     <!-- ШАГ 1 -->
-    <ng-container *ngIf="step === 1">
+    @if (step === 1) {
       <h3>{{ 'FEEDBACK.TITLE' | translate }}</h3>
       
       <div class="type-selector">
@@ -33,20 +33,21 @@
           {{ (isLoading ? 'FEEDBACK.SENDING' : 'FEEDBACK.SEND') | translate }}
         </button>
       </div>
-    </ng-container>
+    }
 
     <!-- ШАГ 2 -->
-    <ng-container *ngIf="step === 2">
+    @if (step === 2) {
       <h3>{{ 'FEEDBACK.RATING_TITLE' | translate }}</h3>
 
       <div class="stars">
-        <span 
-          *ngFor="let star of [1,2,3,4,5]" 
-          class="star" 
-          [class.active]="star <= rating"
-          (click)="setRating(star)">
-          ★
-        </span>
+        @for (star of [1, 2, 3, 4, 5]; track star) {
+          <span 
+            class="star" 
+            [class.active]="star <= rating"
+            (click)="setRating(star)">
+            ★
+          </span>
+        }
       </div>
 
       <input 
@@ -60,7 +61,7 @@
           {{ (isLoading ? 'FEEDBACK.SAVING' : 'FEEDBACK.DONE') | translate }}
         </button>
       </div>
-    </ng-container>
+    }
 
   </div>
 </div>

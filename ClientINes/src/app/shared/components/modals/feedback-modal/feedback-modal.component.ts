@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FeedbackService } from '../../../../core/services/feedback.service';
 import { FeedbackType } from '../../../../core/enums/feedback-type.enum';
 import { TranslateModule } from '@ngx-translate/core';
+import { DashboardModalService } from '../../../../features/dashboard/dashboard.modal.service';
 
 @Component({
   selector: 'app-feedback-modal',
@@ -12,8 +13,10 @@ import { TranslateModule } from '@ngx-translate/core';
   templateUrl: './feedback-modal.component.html',
   styleUrls: ['./feedback-modal.component.scss']
 })
-export class FeedbackModalComponent {
-  isOpen = false;
+export class FeedbackModalComponent implements OnInit {
+  private feedbackService = inject(FeedbackService);
+  private modalService = inject(DashboardModalService);
+
   step: 1 | 2 = 1;
   isLoading = false;
 
@@ -25,19 +28,21 @@ export class FeedbackModalComponent {
   rating = 5;
   missingFeatures = '';
 
-  constructor(private feedbackService: FeedbackService) {}
+  ngOnInit(): void {
+    this.resetForm();
+  }
 
-  open(): void {
+  resetForm(): void {
     this.step = 1;
     this.message = '';
     this.missingFeatures = '';
     this.rating = 5;
     this.feedbackType = FeedbackType.Bug;
-    this.isOpen = true;
+    this.createdFeedbackId = null;
   }
 
   close(): void {
-    this.isOpen = false;
+    this.modalService.close();
   }
 
   submitStep1(): void {

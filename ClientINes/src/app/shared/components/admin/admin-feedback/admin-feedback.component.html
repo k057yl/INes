@@ -1,0 +1,67 @@
+<div class="admin-feedback-container">
+  <h2>Управление фидбэком ({{ totalCount }})</h2>
+
+  <!-- Фильтры -->
+  <div class="filters">
+    <select [(ngModel)]="filterProcessed" (change)="loadFeedbacks()">
+      <option [ngValue]="null">Все статусы</option>
+      <option [ngValue]="false">Новые (Не обработанные)</option>
+      <option [ngValue]="true">Обработанные</option>
+    </select>
+
+    <select [(ngModel)]="filterType" (change)="loadFeedbacks()">
+      <option [ngValue]="null">Все типы</option>
+      <option [value]="feedbackTypes.Bug">🐛 Баги</option>
+      <option [value]="feedbackTypes.Idea">💡 Идеи</option>
+      <option [value]="feedbackTypes.Other">💬 Другое</option>
+    </select>
+  </div>
+
+  <!-- Таблица -->
+  <div class="table-wrapper" *ngIf="!isLoading">
+    <table>
+      <thead>
+        <tr>
+          <th>Статус</th>
+          <th>Тип</th>
+          <th>Пользователь</th>
+          <th>Сообщение</th>
+          <th>Оценка</th>
+          <th>Чего не хватает</th>
+          <th>Дата</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of feedbacks" [class.processed]="item.isProcessed">
+          <td>
+            <input 
+              type="checkbox" 
+              [checked]="item.isProcessed" 
+              (change)="toggleProcessed(item)" />
+          </td>
+          <td>
+            <span class="badge" [class]="'type-' + item.type">
+              {{ getTypeLabel(item.type) }}
+            </span>
+          </td>
+          <td>
+            <div class="user-info">
+              <strong>{{ item.userName }}</strong>
+              <small>{{ item.userEmail }}</small>
+            </div>
+          </td>
+          <td class="message-cell">{{ item.message }}</td>
+          <td>
+            <span class="rating" *ngIf="item.rating">★ {{ item.rating }}/5</span>
+            <span class="no-data" *ngIf="!item.rating">—</span>
+          </td>
+          <td>{{ item.missingFeatures || '—' }}</td>
+          <td>{{ item.createdAt | date:'short' }}</td>
+        </tr>
+        <tr *ngIf="feedbacks.length === 0">
+          <td colspan="7" class="empty">Отзывов пока нет</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

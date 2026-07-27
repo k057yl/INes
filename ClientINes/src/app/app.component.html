@@ -49,3 +49,7 @@
     [parentId]="modal.currentParentId">
   </app-location-form-modal>
 }
+
+@if (modal.activeModal === 'feedback') {
+  <app-feedback-modal></app-feedback-modal>
+}

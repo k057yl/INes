@@ -150,7 +150,7 @@
 }
 
 /* Общие элементы */
-.user-box, .theme-toggle, .lang-trigger, .logout-icon-btn {
+.user-box, .theme-toggle, .lang-trigger, .logout-icon-btn, .icon-btn {
   background: var(--bg-input);
   border: 1px solid var(--border-color);
   color: var(--text-main);
@@ -167,6 +167,28 @@
     border-color: var(--accent-color);
     color: var(--accent-color);
     transform: translateY(-2px);
+  }
+}
+
+/* Иконка перехода в Админку */
+.icon-btn.admin-trigger {
+  width: 38px;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  text-decoration: none;
+
+  i {
+    transition: color 0.2s ease, transform 0.2s ease;
+  }
+
+  &:hover, &.active {
+    color: #e11d48;
+    border-color: #e11d48;
+    background: rgba(225, 29, 72, 0.08);
+
+    i {
+      transform: scale(1.1);
+    }
   }
 }
 

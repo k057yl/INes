@@ -12,6 +12,7 @@ import { SellModalComponent } from './shared/components/modals/sell-modal/sell-m
 import { LendItemModalComponent } from './shared/components/modals/lend-modal/lend-item-modal.component';
 import { ItemFormModalComponent } from './shared/components/modals/item-form-modal/item-form-modal.component';
 import { LocationFormModalComponent } from './shared/components/modals/location-form-modal/location-form-modal.component';
+import { FeedbackModalComponent } from './shared/components/modals/feedback-modal/feedback-modal.component';
 
 
 @Component({
@@ -25,7 +26,8 @@ import { LocationFormModalComponent } from './shared/components/modals/location-
     SellModalComponent,
     LendItemModalComponent,
     ItemFormModalComponent,
-    LocationFormModalComponent
+    LocationFormModalComponent,
+    FeedbackModalComponent
 ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']

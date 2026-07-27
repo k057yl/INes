@@ -74,18 +74,26 @@
     }
   }
 
+  /* Четкая кнопка фидбэка */
   .feedback-btn {
-    background: transparent;
-    border: none;
-    padding: 0;
-    margin: 0;
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
     color: var(--text-muted);
-    font-size: 0.85rem;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
     cursor: pointer;
-    transition: color 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
 
     &:hover {
-      color: var(--accent-color);
+      color: #f59e0b;
+      border-color: #f59e0b;
+      background: rgba(245, 158, 11, 0.08);
+      transform: translateY(-2px);
     }
   }
 }

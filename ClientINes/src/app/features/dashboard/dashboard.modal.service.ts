@@ -3,7 +3,7 @@ import { Subject, Observable } from 'rxjs';
 import { StorageLocation } from '../../core/contracts/storage-location';
 import { Item } from '../../core/contracts/item';
 
-export type DashboardModalType = 'itemForm' | 'locationForm' | 'categoryForm' | 'platformForm' | 'confirm' | 'sell' | 'lend' | 'statsList' | null;
+export type DashboardModalType = 'itemForm' | 'locationForm' | 'categoryForm' | 'platformForm' | 'confirm' | 'sell' | 'lend' | 'statsList' | 'feedback' | null;
 
 export type StatsListType = 'locations' | 'lent' | 'attention';
 
@@ -22,6 +22,11 @@ export class DashboardModalService {
   private confirmSubj = new Subject<any>();
   private refreshDataSubj = new Subject<void>();
   public refreshData$ = this.refreshDataSubj.asObservable();
+
+  openFeedback(): Observable<any> {
+    this.activeModal = 'feedback';
+    return this.resetSubject();
+  }
 
   openStatsList(type: StatsListType): Observable<any> {
     console.log('СЕРВИС ПОЛУЧИЛ КОМАНДУ:', type);

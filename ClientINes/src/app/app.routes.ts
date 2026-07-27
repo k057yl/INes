@@ -8,6 +8,7 @@ import { SalesListComponent } from './features/sales/sales-list.component';
 import { SettingsComponent } from './features/setting/settings.component';
 import { ItemDetailComponent } from './features/inventory/item/details/item-detail.component';
 import { ItemsListComponent } from './features/inventory/item/items-list/items-list.component';
+import { AdminFeedbackComponent } from './shared/components/admin/admin-feedback/admin-feedback.component';
 import { authGuard, guestGuard } from './core/guards/auth.guard';
 import { locationResolver } from './features/inventory/location/location.resolver';
 
@@ -28,5 +29,6 @@ export const routes: Routes = [
   { path: 'settings', component: SettingsComponent, canActivate: [authGuard] },
   { path: 'item/:id', component: ItemDetailComponent, canActivate: [authGuard] },
   { path: 'items-list', component: ItemsListComponent, canActivate: [authGuard] },
+  { path: 'admin/feedback', component: AdminFeedbackComponent, canActivate: [authGuard] },
   { path: '**', redirectTo: 'dashboard' }
 ];

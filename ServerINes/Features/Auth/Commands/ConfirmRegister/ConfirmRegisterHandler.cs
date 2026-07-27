@@ -35,9 +35,6 @@ namespace INest.Features.Auth.Commands.ConfirmRegister
             user.VerificationCode = null;
             user.VerificationCodeExpiryTime = null;
 
-            var updateResult = await _userManager.UpdateAsync(user);
-            if (!updateResult.Succeeded) throw new AppException(SYSTEM.DEFAULT_ERROR, 500);
-
             if (!await _userManager.IsInRoleAsync(user, SharedConstants.DEFAULT_ROLE))
             {
                 var roleResult = await _userManager.AddToRoleAsync(user, SharedConstants.DEFAULT_ROLE);
@@ -50,7 +47,9 @@ namespace INest.Features.Auth.Commands.ConfirmRegister
 
             user.RefreshToken = _tokenService.HashRefreshToken(refreshToken);
             user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(30);
-            await _userManager.UpdateAsync(user);
+
+            var updateResult = await _userManager.UpdateAsync(user);
+            if (!updateResult.Succeeded) throw new AppException(SYSTEM.DEFAULT_ERROR, 500);
 
             return new AuthResponseDto
             {

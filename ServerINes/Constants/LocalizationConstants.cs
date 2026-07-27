@@ -243,7 +243,8 @@
         {
             public static class ERRORS
             {
-                public const string MESSAGE_EMPTY = "LENDING.ERRORS.MESSAGE_EMPTY";
+                public const string MESSAGE_EMPTY = "FEEDBACK.ERRORS.MESSAGE_EMPTY";
+                public const string NOT_FOUND = "FEEDBACK.ERRORS.NOT_FOUND";
             }
         }
     }

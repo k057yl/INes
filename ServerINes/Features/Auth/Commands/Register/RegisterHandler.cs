@@ -1,4 +1,5 @@
-﻿using INest.Data.Entities.Infrastructure;
+﻿using INest.Constants;
+using INest.Data.Entities.Infrastructure;
 using INest.Exceptions;
 using INest.Infrastructure.Email;
 using INest.Infrastructure.Sanitizer;
@@ -31,14 +32,13 @@ namespace INest.Features.Auth.Commands.Register
 
         public async Task Handle(RegisterCommand request, CancellationToken cancellationToken)
         {
-            var normalizedEmail = request.Email.Trim().ToUpperInvariant();
-
+            var rawEmail = request.Email.Trim();
             var sanitizedUsername = _sanitizer.StripAllHtml(request.Username).Trim();
 
             if (string.IsNullOrWhiteSpace(sanitizedUsername))
                 throw new AppException(AUTH.ERRORS.INVALID_USERNAME, 400);
 
-            var user = await _userManager.FindByEmailAsync(normalizedEmail);
+            var user = await _userManager.FindByEmailAsync(rawEmail);
 
             if (user != null && user.EmailConfirmed)
                 throw new AppException(AUTH.ERRORS.EMAIL_ALREADY_EXISTS, 400);
@@ -47,22 +47,40 @@ namespace INest.Features.Auth.Commands.Register
             {
                 user = new AppUser
                 {
-                    Email = normalizedEmail,
-                    UserName = normalizedEmail,
+                    Email = rawEmail,
+                    UserName = rawEmail,
                     DisplayName = sanitizedUsername,
                     EmailConfirmed = false,
                     TimeZoneId = string.IsNullOrWhiteSpace(request.TimeZoneId) ? "Europe/Kyiv" : request.TimeZoneId
                 };
+
                 var result = await _userManager.CreateAsync(user, request.Password);
 
                 if (!result.Succeeded)
-                    throw new AppException(AUTH.ERRORS.REGISTRATION_FAILED, 400);
+                {
+                    var errorDescription = string.Join(", ", result.Errors.Select(e => e.Description));
+                    throw new AppException($"{AUTH.ERRORS.REGISTRATION_FAILED}: {errorDescription}", 400);
+                }
+
+                await _userManager.AddToRoleAsync(user, SharedConstants.DEFAULT_ROLE);
             }
             else
             {
+                user.DisplayName = sanitizedUsername;
                 if (!string.IsNullOrWhiteSpace(request.TimeZoneId))
                 {
                     user.TimeZoneId = request.TimeZoneId;
+                }
+
+                var removePwdResult = await _userManager.RemovePasswordAsync(user);
+                if (removePwdResult.Succeeded)
+                {
+                    var addPwdResult = await _userManager.AddPasswordAsync(user, request.Password);
+                    if (!addPwdResult.Succeeded)
+                    {
+                        var errorDescription = string.Join(", ", addPwdResult.Errors.Select(e => e.Description));
+                        throw new AppException($"{AUTH.ERRORS.REGISTRATION_FAILED}: {errorDescription}", 400);
+                    }
                 }
             }
 
@@ -76,10 +94,9 @@ namespace INest.Features.Auth.Commands.Register
 
             string subject = _emailT[EMAILS.CONFIRM_SUBJECT].Value;
             string bodyTemplate = _emailT[EMAILS.CONFIRM_BODY].Value;
-
             string htmlBody = string.Format(bodyTemplate, code);
 
-            await _emailService.SendEmailAsync(normalizedEmail, subject, htmlBody);
+            await _emailService.SendEmailAsync(rawEmail, subject, htmlBody);
         }
     }
 }

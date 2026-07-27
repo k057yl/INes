@@ -32,6 +32,10 @@ export class HeaderComponent {
 
   get currentLang() { return this.loc.currentLang; }
 
+  isAdmin(user: any): boolean {
+    return user?.roles?.includes('inest_admin') ?? false;
+  }
+
   ngOnInit() {
     this.checkLocations();
     this.modalService.refreshData$.subscribe(() => this.checkLocations());
