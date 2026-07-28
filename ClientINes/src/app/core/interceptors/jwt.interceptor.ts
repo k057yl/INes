@@ -44,7 +44,7 @@ function handle401Error(req: HttpRequest<any>, next: HttpHandlerFn, authService:
         refreshTokenSubject.next(false);
         
         authService.clearLocalSession(); 
-        
+
         return throwError(() => err);
       })
     );

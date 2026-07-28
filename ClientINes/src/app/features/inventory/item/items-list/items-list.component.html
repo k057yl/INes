@@ -3,6 +3,9 @@
     
     <header class="items-list-header">
       <div class="header-left">
+        <button type="button" class="icon-btn back-btn" (click)="goBack()" title="{{ 'COMMON.BACK' | translate }}">
+          <i class="fa fa-arrow-left"></i>
+        </button>
         <h1>{{ 'ITEMS_LIST.TITLE' | translate }}</h1>
         @if (items.length > 0) {
           <div class="badge">
@@ -24,13 +27,13 @@
             <label class="custom-checkbox yellow">
               <input type="checkbox" formControlName="showArchived">
               <span class="checkmark"></span>
-              <span class="label-text">Только архив</span>
+              <span class="label-text">{{ 'ITEMS_LIST.ONLY_ARCHIVE' | translate }}</span>
             </label>
 
             <label class="custom-checkbox yellow">
               <input type="checkbox" formControlName="includeArchived">
               <span class="checkmark"></span>
-              <span class="label-text">Все + Архивные</span>
+              <span class="label-text">{{ 'ITEMS_LIST.ALL_AND_ARCHIVE' | translate }}</span>
             </label>
           </div>
           
@@ -171,10 +174,17 @@
             <div class="empty-icon"><i class="fa fa-search-minus"></i></div>
             <h3>{{ 'ITEMS_LIST.EMPTY_RESULT' | translate }}</h3>
             <p>{{ 'ITEMS_LIST.EMPTY_RESULT_DESC' | translate }}</p>
+            <button type="button" class="reset-filters-btn" (click)="resetFilters()" style="margin-top: 10px;">
+              <i class="fa fa-sync-alt"></i>
+              <span>{{ 'FILTERS.RESET_SHORT' | translate }}</span>
+            </button>
           } @else {
             <div class="empty-icon"><i class="fa fa-box-open"></i></div>
-            <h3>{{ 'HINTS.ITEMS_EMPTY_TITLE' | translate }}</h3>
-            <p>{{ 'HINTS.ITEMS_EMPTY_DESC' | translate }}</p>
+            <h3>{{ 'ITEMS_LIST.EMPTY_TITLE' | translate }}</h3>
+            <button class="inest-btn-primary" (click)="modal.openItemForm()" style="margin-top: 15px;">
+              <i class="fa fa-plus-circle"></i>
+              {{ 'ITEMS_LIST.CREATE_FIRST_BTN' | translate }}
+            </button>
           }
         </div>
       }

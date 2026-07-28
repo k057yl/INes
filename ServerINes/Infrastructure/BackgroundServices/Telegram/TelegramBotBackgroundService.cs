@@ -4,12 +4,13 @@ using MediatR;
 using Microsoft.Extensions.Localization;
 using System.Globalization;
 using Telegram.Bot;
+using Telegram.Bot.Exceptions;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
-namespace INest.Infrastructure.Telegram
+namespace INest.Infrastructure.BackgroundServices.Telegram
 {
     public class TelegramBotBackgroundService : BackgroundService
     {
@@ -54,31 +55,37 @@ namespace INest.Infrastructure.Telegram
                 DropPendingUpdates = true
             };
 
-            try
-            {
-                using var scope = _serviceProvider.CreateScope();
-                var localizer = scope.ServiceProvider.GetRequiredService<IStringLocalizer<SharedResource>>();
-
-                await _botClient.SetMyCommands(new[]
-                {
-                    new BotCommand { Command = "find", Description = localizer["TG_MENU_FIND"].Value },
-                    new BotCommand { Command = "status", Description = localizer["TG_MENU_STATUS"].Value },
-                    new BotCommand { Command = "help", Description = localizer["TG_MENU_HELP"].Value }
-                }, cancellationToken: stoppingToken);
-
-                _logger.LogInformation("[TG BOT] Кнопка меню команд успешно настроена.");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "[TG BOT] Не удалось настроить кнопку меню команд.");
-            }
-
             _logger.LogInformation("Фоновый сервис Telegram Bot успешно запущен. Начинаем Long Polling...");
+
+            bool isCommandsConfigured = false;
 
             while (!stoppingToken.IsCancellationRequested)
             {
                 try
                 {
+                    if (!isCommandsConfigured)
+                    {
+                        try
+                        {
+                            using var scope = _serviceProvider.CreateScope();
+                            var localizer = scope.ServiceProvider.GetRequiredService<IStringLocalizer<SharedResource>>();
+
+                            await _botClient.SetMyCommands(new[]
+                            {
+                                new BotCommand { Command = "find", Description = localizer["TG_MENU_FIND"].Value },
+                                new BotCommand { Command = "status", Description = localizer["TG_MENU_STATUS"].Value },
+                                new BotCommand { Command = "help", Description = localizer["TG_MENU_HELP"].Value }
+                            }, cancellationToken: stoppingToken);
+
+                            _logger.LogInformation("[TG BOT] Кнопка меню команд успешно настроена.");
+                            isCommandsConfigured = true;
+                        }
+                        catch (Exception ex) when (IsNetworkError(ex))
+                        {
+                            _logger.LogWarning("[TG BOT] Не удалось настроить меню команд из-за отсутствия сети. Попробуем позже.");
+                        }
+                    }
+
                     await _botClient.ReceiveAsync(
                         updateHandler: HandleUpdateAsync,
                         errorHandler: HandlePollingErrorAsync,
@@ -86,10 +93,22 @@ namespace INest.Infrastructure.Telegram
                         cancellationToken: stoppingToken
                     );
                 }
+                catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
+                {
+                    break;
+                }
                 catch (Exception ex) when (ex is not OperationCanceledException)
                 {
-                    _logger.LogError(ex, "Критическая ошибка в цикле Long Polling Телеграм-бота. Перезапуск через 5 секунд...");
-                    await Task.Delay(5000, stoppingToken);
+                    if (IsNetworkError(ex))
+                    {
+                        _logger.LogWarning("[TG BOT] Сеть недоступна. Повторная попытка подключения через 10 секунд...");
+                        await Task.Delay(10000, stoppingToken);
+                    }
+                    else
+                    {
+                        _logger.LogError(ex, "[TG BOT] Критическая ошибка в цикле Long Polling. Перезапуск через 5 секунд...");
+                        await Task.Delay(5000, stoppingToken);
+                    }
                 }
             }
         }
@@ -149,7 +168,6 @@ namespace INest.Infrastructure.Telegram
                     await botClient.SendMessage(chatId, localizer["TG_LINK_ERROR"].Value, cancellationToken: ct);
                 }
             }
-
             else if (command == "/find")
             {
                 if (parts.Length < 2)
@@ -183,12 +201,10 @@ namespace INest.Infrastructure.Telegram
 
                 await botClient.SendMessage(chatId, responseText, parseMode: ParseMode.Markdown, cancellationToken: ct);
             }
-
             else if (command == "/help")
             {
                 await botClient.SendMessage(chatId, localizer["TG_HELP_TEXT"].Value, parseMode: ParseMode.Markdown, cancellationToken: ct);
             }
-
             else if (command == "/status")
             {
                 await botClient.SendMessage(chatId, localizer["TG_STATUS_OK"].Value, cancellationToken: ct);
@@ -197,8 +213,24 @@ namespace INest.Infrastructure.Telegram
 
         private Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken ct)
         {
-            _logger.LogError(exception, "Ошибка Long Polling со стороны Telegram API.");
+            if (IsNetworkError(exception))
+            {
+                _logger.LogWarning("[TG BOT] Ошибка сети при контакте с Telegram API: {Message}", exception.Message);
+            }
+            else
+            {
+                _logger.LogError(exception, "[TG BOT] Ошибка Long Polling со стороны Telegram API.");
+            }
+
             return Task.CompletedTask;
+        }
+
+        private static bool IsNetworkError(Exception ex)
+        {
+            return ex is RequestException
+                || ex is HttpRequestException
+                || ex is System.Net.Sockets.SocketException
+                || ex.InnerException is System.Net.Sockets.SocketException;
         }
     }
 }

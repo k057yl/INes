@@ -4,8 +4,11 @@ using Ganss.Xss;
 using INest.Constants;
 using INest.Data.Entities;
 using INest.Data.Entities.Infrastructure;
+using INest.Features.Reminders.Services;
 using INest.Infrastructure;
-using INest.Infrastructure.BackgroundServices;
+using INest.Infrastructure.BackgroundServices.Cleanup;
+using INest.Infrastructure.BackgroundServices.Reminder;
+using INest.Infrastructure.BackgroundServices.Telegram;
 using INest.Infrastructure.Behaviors;
 using INest.Infrastructure.Dispatcher;
 using INest.Infrastructure.Email;
@@ -13,7 +16,7 @@ using INest.Infrastructure.Identity;
 using INest.Infrastructure.QrCode;
 using INest.Infrastructure.Sanitizer;
 using INest.Infrastructure.Storage;
-using INest.Infrastructure.Telegram;
+using INest.Infrastructure.Time;
 using INest.Infrastructure.Tracker;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -129,10 +132,12 @@ namespace INest
                 options.AddPolicy("AllowAngular", policy =>
                     policy.WithOrigins(
                         SharedConstants.LOCALHOST,
+                        SharedConstants.LOCALHOST_HTTPS,
                         SharedConstants.PWA,
+                        SharedConstants.PWA_HTTPS,
                         SharedConstants.PWA_FROM_IP,
                         SharedConstants.PWA_MOBILE,
-                        SharedConstants.WSL_IP
+                        SharedConstants.PWA_MOBILE_HTTPS
                     )
                     .AllowAnyMethod()
                     .AllowAnyHeader()
@@ -146,16 +151,18 @@ namespace INest
 
             services.AddSingleton<ICacheTracker, CacheTracker>();
             services.AddSingleton<ISanitizerService, SanitizerService>();
+            services.AddSingleton<IUserTimeService, UserTimeService>();
+            services.AddSingleton<IReminderScheduler, ReminderScheduler>();
 
             services.AddTransient<IQrCodeService, QrCodeService>();
 
             services.AddScoped<IEmailService, EmailService>();
-
             services.AddScoped<INotificationDispatcher, NotificationDispatcher>();
-
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IPhotoService, PhotoService>();
             services.AddScoped<LendingService>();
+
+            services.AddScoped<IReminderProcessor, ReminderProcessor>();
 
             services.AddMediatR(cfg =>
             {
@@ -164,9 +171,9 @@ namespace INest
                 cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
             });
 
+            // Background Services
             services.AddHostedService<ReminderWorker>();
             services.AddHostedService<UnconfirmedUserCleanupWorker>();
-
             services.AddHostedService<TelegramBotBackgroundService>();
 
             return services;

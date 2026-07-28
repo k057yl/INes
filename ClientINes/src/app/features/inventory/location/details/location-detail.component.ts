@@ -4,7 +4,6 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { environment } from '../../../../../environments/environment';
-import { StorageLocation } from '../../../../core/contracts/storage-location';
 import { ItemStatus } from '../../../../core/enums/item-status.enum';
 import { ItemService } from '../../../../core/services/item.service';
 import { LocationService } from '../../../../core/services/location.service';
@@ -27,9 +26,9 @@ export class LocationDetailComponent implements OnInit {
   private readonly baseUrl = environment.apiBaseUrl.replace('/api', '');
   private readonly googleColors = ['var(--g-blue)', 'var(--g-red)', 'var(--g-yellow)', 'var(--g-green)'];
 
-  location: StorageLocation | null = null;
+  location: any = null;
   isLoading = true;
-  breadcrumbs: StorageLocation[] = [];
+  breadcrumbs: any[] = [];
 
   readonly statusKeys: Record<number, string> = {
     [ItemStatus.Active]: 'STATUS.ACTIVE',
@@ -92,9 +91,9 @@ export class LocationDetailComponent implements OnInit {
     windowPrint.focus();
   }
 
-  private buildBreadcrumbs(current: StorageLocation) {
-    const path: StorageLocation[] = [];
-    let temp: StorageLocation | undefined = current;
+  private buildBreadcrumbs(current: any) {
+    const path: any[] = [];
+    let temp: any = current;
     
     while (temp) {
       path.unshift(temp);
@@ -106,7 +105,7 @@ export class LocationDetailComponent implements OnInit {
   onEditItem(item: any) {
     this.modal.openItemForm(item).subscribe(res => {
       if (res && this.location) {
-        const index = this.location.items.findIndex(i => i.id === item.id);
+        const index = this.location.items.findIndex((i: any) => i.id === item.id);
         if (index !== -1) {
           this.location.items[index] = { ...this.location.items[index], ...res };
           this.location = { ...this.location };
@@ -127,7 +126,7 @@ export class LocationDetailComponent implements OnInit {
             if (this.location) {
               this.location = {
                 ...this.location,
-                items: this.location.items.filter(i => i.id !== item.id)
+                items: this.location.items.filter((i: any) => i.id !== item.id)
               };
             }
           }

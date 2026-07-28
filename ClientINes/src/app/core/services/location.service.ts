@@ -22,8 +22,16 @@ export class LocationService {
     return this.http.get<StorageLocation[]>(`${this.apiUrl}/tree`);
   }
 
-  getById(id: string): Observable<StorageLocation> {
-    return this.http.get<StorageLocation>(`${this.apiUrl}/${id}`);
+  getLocationHeader(id: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/${id}/header`);
+  }
+
+  getLocationItems(id: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/${id}/items`);
+  }
+
+  getLocationChildren(id: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/${id}/children`);
   }
 
   getQrCodeUrl(id: string): string {
@@ -31,11 +39,11 @@ export class LocationService {
   }
 
   move(id: string, newParentId: string | null) {
-    return this.http.patch(`${environment.apiBaseUrl}/locations/${id}/move`, { newParentId });
+    return this.http.patch(`${this.apiUrl}/${id}/move`, { newParentId });
   }
 
   rename(id: string, name: string) {
-    return this.http.patch(`${environment.apiBaseUrl}/locations/${id}/rename`, { name });
+    return this.http.patch(`${this.apiUrl}/${id}/rename`, { name });
   }
 
   reorder(payload: { parentId: string | null, orderedIds: string[] }): Observable<void> {

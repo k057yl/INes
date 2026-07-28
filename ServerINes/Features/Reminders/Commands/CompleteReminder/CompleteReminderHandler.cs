@@ -1,5 +1,6 @@
 ﻿using INest.Data.Entities.Infrastructure;
 using INest.Data.Enums;
+using INest.Features.Reminders.Services;
 using INest.Infrastructure.Tracker;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -11,11 +12,13 @@ namespace INest.Features.Reminders.Commands.CompleteReminder
     {
         private readonly AppDbContext _context;
         private readonly ICacheTracker _tracker;
+        private readonly IReminderScheduler _scheduler;
 
-        public CompleteReminderHandler(AppDbContext context, ICacheTracker tracker)
+        public CompleteReminderHandler(AppDbContext context, ICacheTracker tracker, IReminderScheduler scheduler)
         {
             _context = context;
             _tracker = tracker;
+            _scheduler = scheduler;
         }
 
         public async Task<bool> Handle(CompleteReminderCommand request, CancellationToken cancellationToken)
@@ -28,33 +31,10 @@ namespace INest.Features.Reminders.Commands.CompleteReminder
 
             reminder.IsCompleted = true;
 
-            if (reminder.Recurrence != ReminderRecurrence.None)
+            var nextReminder = _scheduler.CreateNext(reminder, DateTime.UtcNow);
+            if (nextReminder != null)
             {
-                var baseDate = reminder.TriggerAt < DateTime.UtcNow ? DateTime.UtcNow : reminder.TriggerAt;
-
-                DateTime nextTrigger = reminder.Recurrence switch
-                {
-                    ReminderRecurrence.Daily => baseDate.AddDays(1),
-                    ReminderRecurrence.Weekly => baseDate.AddDays(7),
-                    ReminderRecurrence.Monthly => baseDate.AddMonths(1),
-                    ReminderRecurrence.Yearly => baseDate.AddYears(1),
-                    _ => baseDate
-                };
-
-                _context.Reminders.Add(new Reminder
-                {
-                    Id = Guid.NewGuid(),
-                    UserId = request.UserId,
-                    ItemId = reminder.ItemId,
-                    Title = reminder.Title,
-                    Type = reminder.Type,
-                    Recurrence = reminder.Recurrence,
-                    TriggerAt = nextTrigger,
-                    SendNotification = reminder.SendNotification,
-                    SendTelegram = reminder.SendTelegram,
-                    IsCompleted = false,
-                    IsNotificationSent = false
-                });
+                _context.Reminders.Add(nextReminder);
             }
 
             _context.ItemHistories.Add(new ItemHistory
@@ -67,8 +47,8 @@ namespace INest.Features.Reminders.Commands.CompleteReminder
             });
 
             await _context.SaveChangesAsync(cancellationToken);
-
             _tracker.InvalidateUserCache(request.UserId);
+
             return true;
         }
     }

@@ -2,13 +2,22 @@
 {
     public static class SharedConstants
     {
-        public const string LOCALHOST = "https://localhost:4200";
-        public const string PWA = "https://localhost:8080";
-        public const string PWA_FROM_IP = "https://127.0.0.1:8080";
-        public const string PWA_MOBILE = "https://192.168.0.104:8080";
-        public const string WSL_IP = "https://172.27.128.1:8080";
+        // Angular dev server по умолчанию работает по HTTP!
+        public const string LOCALHOST = "http://localhost:4200";
+        public const string LOCALHOST_HTTPS = "https://localhost:4200";
 
-        public const string PWA_MOBILE_API = "https://192.168.0.104:7068";
+        public const string PWA = "http://localhost:8080";
+        public const string PWA_HTTPS = "https://localhost:8080";
+
+        public const string PWA_FROM_IP = "http://127.0.0.1:8080";
+        public const string PWA_FROM_IP_HTTPS = "https://127.0.0.1:8080";
+
+        // Твой текущий IP Wi-Fi
+        public const string PWA_MOBILE = "http://192.168.0.103:8080";
+        public const string PWA_MOBILE_HTTPS = "https://192.168.0.103:8080";
+
+        public const string WSL_IP = "http://172.27.128.1:8080";
+        public const string PWA_MOBILE_API = "https://192.168.0.103:7068";
 
         public const string DEFAULT_RESET_PASSWORD_PATH = "{0}/reset-password?email={1}&token={2}";
 

@@ -63,7 +63,7 @@
     </button>
 
     <div class="card-actions-wrapper">
-      <button class="inest-action-btn menu-toggle-btn" (click)="toggleMenu($event); $event.stopPropagation()" [class.active]="showMenu">
+      <button class="inest-action-btn menu-toggle-btn" (click)="toggleMenu($event); $event.stopPropagation()" [class.active]="showMenu" [title]="'COMMON.MORE_DETAILS' | translate">
         <i class="fa fa-ellipsis-v"></i>
       </button>
 
@@ -127,7 +127,7 @@
   @if (!isMobile) {
     <div class="handle-section">
         <div class="v-divider"></div>
-        <div class="drag-handle" cdkDragHandle>
+        <div class="drag-handle" cdkDragHandle [title]="'ITEM_CARD.HOLD_TOOLTIP' | translate">
             <i class="fa fa-grip-vertical"></i>
         </div>
     </div>

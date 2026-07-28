@@ -1,11 +1,13 @@
 ﻿using INest.Exceptions;
-using INest.Features.Locations.DTOs;
 using INest.Features.Locations.Commands.CreateLocation;
 using INest.Features.Locations.Commands.DeleteLocation;
 using INest.Features.Locations.Commands.MoveLocation;
 using INest.Features.Locations.Commands.RenameLocation;
 using INest.Features.Locations.Commands.ReorderLocations;
-using INest.Features.Locations.Queries.GetLocationById;
+using INest.Features.Locations.DTOs;
+using INest.Features.Locations.Queries.GetLocationChildren;
+using INest.Features.Locations.Queries.GetLocationHeader;
+using INest.Features.Locations.Queries.GetLocationItems;
 using INest.Features.Locations.Queries.GetLocations;
 using INest.Features.Locations.Queries.GetLocationTree;
 using INest.Infrastructure.QrCode;
@@ -49,18 +51,33 @@ namespace INest.Controllers
         [HttpGet("tree")]
         public async Task<IActionResult> GetTree() => Ok(await _mediator.Send(new GetLocationTreeQuery(GetUserId())));
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(Guid id)
+
+        [HttpGet("{id}/header")]
+        public async Task<IActionResult> GetHeader(Guid id)
         {
-            var loc = await _mediator.Send(new GetLocationByIdQuery(GetUserId(), id));
-            if (loc == null) throw new AppException(LOCATIONS.ERRORS.NOT_FOUND, 404);
-            return Ok(loc);
+            var header = await _mediator.Send(new GetLocationHeaderQuery(GetUserId(), id));
+            if (header == null) throw new AppException(LOCATIONS.ERRORS.NOT_FOUND, 404);
+            return Ok(header);
+        }
+
+        [HttpGet("{id}/items")]
+        public async Task<IActionResult> GetItems(Guid id)
+        {
+            var items = await _mediator.Send(new GetLocationItemsQuery(GetUserId(), id));
+            return Ok(items);
+        }
+
+        [HttpGet("{id}/children")]
+        public async Task<IActionResult> GetChildren(Guid id)
+        {
+            var children = await _mediator.Send(new GetLocationChildrenQuery(GetUserId(), id));
+            return Ok(children);
         }
 
         [HttpGet("{id}/qr")]
         public async Task<IActionResult> GetQrCode(Guid id)
         {
-            var loc = await _mediator.Send(new GetLocationByIdQuery(GetUserId(), id));
+            var loc = await _mediator.Send(new GetLocationHeaderQuery(GetUserId(), id));
             if (loc == null) throw new AppException(LOCATIONS.ERRORS.NOT_FOUND, 404);
 
             var frontendUrl = _configuration["Frontend:Url"];
@@ -70,7 +87,6 @@ namespace INest.Controllers
             }
 
             var locationUrl = string.Format(SYSTEM.LOCATION_QR_PATH, frontendUrl, id);
-
             var qrCodeBytes = _qrCodeService.GeneratePngCode(locationUrl);
 
             return File(qrCodeBytes, "image/png");
@@ -107,7 +123,7 @@ namespace INest.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var result = await _mediator.Send(new DeleteLocationCommand(GetUserId(), id));
+            await _mediator.Send(new DeleteLocationCommand(GetUserId(), id));
             return Ok(new { message = LOCATIONS.SUCCESS.DELETE });
         }
     }

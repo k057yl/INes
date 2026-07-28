@@ -1,7 +1,7 @@
 @if (stats) {
   <div class="stats-ribbon">
     <!-- 1. ЛОКАЦИИ (ОСНОВА) -->
-    <div class="stat-card clickable" (click)="openStats('locations')">
+    <div class="stat-card clickable" (click)="openStats('locations')" [title]="'DASHBOARD_STATS.LOCATIONS_TOOLTIP' | translate">
       <div class="stat-icon"><i class="fa fa-folder-open"></i></div>
       <div class="stat-body">
         <span class="stat-label">{{ 'DASHBOARD_STATS.LOCATIONS' | translate }}</span>
@@ -10,7 +10,7 @@
     </div>
 
     <!-- 2. ВСЕГО ВЕЩЕЙ -->
-    <div class="stat-card clickable" [routerLink]="['/items-list']">
+    <div class="stat-card clickable" [routerLink]="['/items-list']" [title]="'DASHBOARD_STATS.TOTAL_ITEMS_TOOLTIP' | translate">
       <div class="stat-icon"><i class="fa fa-boxes"></i></div>
       <div class="stat-body">
         <span class="stat-label">{{ 'DASHBOARD_STATS.TOTAL_ITEMS' | translate }}</span>
@@ -19,7 +19,7 @@
     </div>
 
     <!-- 3. ОДОЛЖЕНО -->
-    <div class="stat-card info clickable" (click)="openStats('lent')">
+    <div class="stat-card info clickable" (click)="openStats('lent')" [title]="'DASHBOARD_STATS.LENT_TOOLTIP' | translate">
       <div class="stat-icon"><i class="fa fa-hand-holding"></i></div>
       <div class="stat-body">
         <span class="stat-label">{{ 'DASHBOARD_STATS.LENT' | translate }}</span>
@@ -28,7 +28,7 @@
     </div>
 
     <!-- 4. ПРОДАНО -->
-    <div class="stat-card muted clickable" [routerLink]="['/sales']">
+    <div class="stat-card muted clickable" [routerLink]="['/sales']" [title]="'DASHBOARD_STATS.SOLD_TOOLTIP' | translate">
       <div class="stat-icon"><i class="fa fa-shopping-bag"></i></div>
       <div class="stat-body">
         <span class="stat-label">{{ 'DASHBOARD_STATS.SOLD' | translate }}</span>
@@ -38,7 +38,7 @@
 
     <!-- 5. АХТУНГ / ВНИМАНИЕ -->
     @if (stats.expiredRemindersCount > 0 || stats.expiringWarrantiesCount > 0 || (stats.activeRemindersCount && stats.activeRemindersCount > 0)) {
-      <div class="stat-card danger attention-card clickable" (click)="openStats('attention')">
+      <div class="stat-card danger attention-card clickable" (click)="openStats('attention')" [title]="'DASHBOARD_STATS.ATTENTION_TOOLTIP' | translate">
         <div class="stat-icon"><i class="fa fa-exclamation-triangle"></i></div>
         <div class="stat-body">
           <span class="stat-label">{{ 'DASHBOARD_STATS.ATTENTION' | translate }}</span>

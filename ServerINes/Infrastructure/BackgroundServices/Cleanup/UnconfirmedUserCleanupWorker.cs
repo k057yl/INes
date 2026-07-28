@@ -1,7 +1,7 @@
 ﻿using INest.Data.Entities.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 
-namespace INest.Infrastructure.BackgroundServices
+namespace INest.Infrastructure.BackgroundServices.Cleanup
 {
     public class UnconfirmedUserCleanupWorker : BackgroundService
     {

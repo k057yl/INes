@@ -72,9 +72,6 @@
     <Content Include="Features\Locations\Commands\UpdateLocationSortOrder\UpdateLocationSortOrderCommand.cs" />
     <Content Include="Features\Locations\Commands\UpdateLocationSortOrder\UpdateLocationSortOrderHandler.cs" />
     <Content Include="Features\Locations\Commands\UpdateLocationSortOrder\UpdateLocationSortOrderValidator.cs" />
-    <Content Include="Features\Locations\DTOs\StorageLocationDetailDto.cs" />
-    <Content Include="Features\Locations\Queries\GetLocationById\GetLocationByIdHandler.cs" />
-    <Content Include="Features\Locations\Queries\GetLocationById\GetLocationByIdQuery.cs" />
     <Content Include="Features\Locations\Queries\GetLocations\GetLocationsHandler.cs" />
     <Content Include="Features\Locations\Queries\GetLocations\GetLocationsQuery.cs" />
     <Content Include="Features\Locations\Queries\GetLocationTree\GetLocationTreeHandler.cs" />
@@ -122,13 +119,14 @@
 
   <ItemGroup>
     <PackageReference Include="AngleSharp" Version="1.6.0" />
+    <PackageReference Include="AngleSharp.Css" Version="1.0.0" />
     <PackageReference Include="brevo_csharp" Version="1.1.2" />
     <PackageReference Include="CloudinaryDotNet" Version="1.29.2" />
     <PackageReference Include="DotNetEnv" Version="3.2.0" />
     <PackageReference Include="FluentValidation" Version="12.1.1" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
     <PackageReference Include="Google.Apis.Auth" Version="1.75.0" />
-    <PackageReference Include="HtmlSanitizer" Version="9.0.967" />
+    <PackageReference Include="HtmlSanitizer" Version="9.1.973" />
     <PackageReference Include="MediatR" Version="14.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.10" />

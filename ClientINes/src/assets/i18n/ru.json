@@ -224,7 +224,8 @@
     "HARD_DELETE_TEXT": "Окончательно удалить запись. Это действие безвозвратно!",
     "CHANGE_THEME_TOOLTIP": "Сменить тему",
     "EXIT": "Выход",
-    "CHANGE_LANGUAGE_TOOLTIP": "Сменить язык"
+    "CHANGE_LANGUAGE_TOOLTIP": "Сменить язык",
+    "MORE_DETAILS": "Подробнее"
   },
   "ITEM_HISTORY": {
     "TITLE": "История",
@@ -314,7 +315,8 @@
       "ITEM_TOOLTIP": "Создать предмет",
       "CHANGE_LOC_TOOLTIP": "Переместить локацию",
       "UP_TOOLTIP": "Переместить локацию вверх",
-      "DOWN_TOOLTIP": "Переместить локацию вниз"
+      "DOWN_TOOLTIP": "Переместить локацию вниз",
+      "HOLD_TOOLTIP": "Зажми и тяни"
     },
     "EMPTY": "Пока пусто",
     "RIBBON": {
@@ -331,6 +333,7 @@
     "QR_LABEL": "QR Метка локации"
   },
   "ITEM_CARD": {
+    "HOLD_TOOLTIP": "Зажми и тяни",
     "MODAL": {
       "YOU_SURE_MSG": "Вы уверены, что хотите окончательно удалить этот предмет? Это действие необратимо!",
       "MOVE_TITLE": "Перемещение",
@@ -457,6 +460,10 @@
     "EMPTY_RESULT": "Ничего не найдено",
     "BULK_DELETE_COUNT_CONFIRM": "Вы уверены, что хотите переместить в архив выбранные предметы ({{count}} шт.)?",
     "BULK_HARD_DELETE_CONFIRM": "Вы уверены, что хотите окончательно удалить выбранные предметы ({{count}} шт.)? Это действие необратимо!",
+    "ONLY_ARCHIVE": "Только архив",
+    "ALL_AND_ARCHIVE": "Всё + архив",
+    "EMPTY_TITLE": "Тут будут отображаться ваши предметы",
+    "CREATE_FIRST_BTN": "Создайте свой первый предмет",
     "DROP_MENU": {
       "ALL_CATEGORIES": "Все категории",
       "ALL_LOCATIONS": "Все локации"
@@ -511,11 +518,16 @@
     "YEARLY": "Ежегодно"
   },
   "DASHBOARD_STATS": {
-    "TOTAL_ITEMS": "Всего вещей",
     "LOCATIONS": "Локации",
-    "ATTENTION": "Внимание",
+    "LOCATIONS_TOOLTIP": "Открыть список локаций",
+    "TOTAL_ITEMS": "Всего вещей",
+    "TOTAL_ITEMS_TOOLTIP": "Открыть список предметов",
     "LENT": "Одолжено",
+    "LENT_TOOLTIP": "Открыть список одолженных предметов",
     "SOLD": "Продано",
+    "SOLD_TOOLTIP": "Открыть список проданных предметов",
+    "ATTENTION": "Внимание",
+    "ATTENTION_TOOLTIP": "Открыть список предупреждений",
     "EXPIRED_SHORT": "{{ count }} просроч.",
     "WARRANTY_SHORT": "{{ count }} гарантия",
     "REMINDERS_SHORT": "{{ count }} напом.",

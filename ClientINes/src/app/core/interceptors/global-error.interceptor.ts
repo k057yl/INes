@@ -14,7 +14,7 @@ export const globalErrorInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
-      if (error.status === 401 && req.url.includes('/auth/')) {
+      if (error.status === 401 || error.status === 403) {
         return throwError(() => error);
       }
 

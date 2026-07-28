@@ -11,12 +11,15 @@ Env.Load();
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddInfrastructure(builder.Configuration);
-
 builder.Services.AddBusinessServices();
 
 var app = builder.Build();
 
 app.UseMiddleware<ExceptionMiddleware>();
+
+app.UseRouting();
+
+app.UseCors("AllowAngular");
 
 app.Use(async (context, next) =>
 {
@@ -24,8 +27,10 @@ app.Use(async (context, next) =>
     await next();
 });
 
-app.UseCors("AllowAngular");
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 using (var scope = app.Services.CreateScope())
 {
@@ -35,10 +40,6 @@ using (var scope = app.Services.CreateScope())
 
     await AdminSeeder.SeedAsync(userManager, roleManager, config);
 }
-
-app.UseRouting();
-app.UseAuthentication();
-app.UseAuthorization();
 
 app.MapControllers();
 

@@ -1,6 +1,6 @@
 ﻿using INest.Data.Entities.Core;
 using INest.Data.Entities.Infrastructure;
-using INest.Infrastructure.BackgroundServices;
+using INest.Infrastructure.BackgroundServices.Reminder;
 using INest.Infrastructure.Dispatcher;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

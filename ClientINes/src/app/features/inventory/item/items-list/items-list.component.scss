@@ -1,5 +1,5 @@
 .items-list-page {
-  padding: 5px 0 20px 0; // Подняли Управление предметами выше
+  padding: 5px 0 20px 0;
   
   .items-list-header {
     display: flex;
@@ -12,6 +12,26 @@
       display: flex; 
       align-items: center; 
       gap: 12px;
+
+      .back-btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        color: var(--text-main);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+
+        &:hover {
+          border-color: var(--accent-color);
+          color: var(--accent-color);
+          transform: translateX(-3px);
+        }
+      }
 
       h1 { 
         font-size: 1.8rem; 
@@ -40,7 +60,6 @@
       align-items: center; 
       gap: 15px;
 
-      // Кнопка массового удаления
       .bulk-delete-btn {
         background: rgba(var(--error-red-rgb, 255, 77, 77), 0.15);
         color: var(--error-red);
@@ -66,14 +85,13 @@
         display: flex; 
         align-items: center; 
         gap: 15px;
-        flex-wrap: wrap; // Разрешаем перенос элементов на планшетах
+        flex-wrap: wrap;
 
-        // Группа фильтрации архива
         .archive-filters-group {
           display: flex;
           align-items: center;
           gap: 15px;
-          flex-shrink: 0; // Запрещаем контейнеру ужиматься
+          flex-shrink: 0;
 
           .custom-checkbox {
             display: flex;
@@ -84,16 +102,10 @@
             font-size: 0.85rem;
             color: var(--text-muted);
             transition: color 0.2s ease;
-            white-space: nowrap; // Железобетонный запрет на перенос текста чекбокса
+            white-space: nowrap;
 
-            &:hover {
-              color: var(--text-main);
-            }
-
-            input:checked ~ .label-text {
-              color: #ffd700; 
-              font-weight: 600;
-            }
+            &:hover { color: var(--text-main); }
+            input:checked ~ .label-text { color: #ffd700; font-weight: 600; }
 
             .checkmark {
               position: relative;
@@ -103,7 +115,7 @@
               border-radius: 6px;
               background-color: transparent;
               transition: all 0.2s ease;
-              flex-shrink: 0; // Иконка не сожмется
+              flex-shrink: 0;
 
               &:after {
                 content: "";
@@ -122,14 +134,9 @@
             input:checked ~ .checkmark {
               background-color: #ffd700;
               border-color: #ffd700;
-              &:after {
-                display: block;
-              }
+              &:after { display: block; }
             }
-
-            input {
-              display: none; 
-            }
+            input { display: none; }
           }
         }
 
@@ -149,11 +156,7 @@
           white-space: nowrap;
           animation: fadeInRight 0.3s ease;
 
-          i { 
-            font-size: 0.7rem; 
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-          }
-
+          i { font-size: 0.7rem; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
           &:hover {
             color: var(--error-red);
             i { transform: rotate(-180deg); }
@@ -205,7 +208,7 @@
 
     input { position:absolute; opacity:0; width:0; height:0; }
 
-    .checkmark{
+    .checkmark {
       position:absolute;
       inset:0;
       background:transparent;
@@ -213,7 +216,7 @@
       border-radius:6px;
       transition:.2s;
 
-      &:after{
+      &:after {
         content:"";
         position:absolute;
         display:none;
@@ -227,15 +230,13 @@
       }
     }
 
-    input:checked ~ .checkmark{
+    input:checked ~ .checkmark {
       background:#ffd700;
       border-color:#ffd700;
-      &:after{display:block;}
+      &:after { display:block; }
     }
 
-    &:hover .checkmark{
-      border-color:#ffd700;
-    }
+    &:hover .checkmark { border-color:#ffd700; }
   }
 }
 
@@ -252,7 +253,6 @@
       &:first-child { border-radius: 12px 0 0 12px; }
       &:last-child { border-radius: 0 12px 12px 0; text-align: right; }
 
-      // Фильтруемые заголовки (с дропдауном)
       &.filterable {
         cursor: pointer; transition: 0.2s; user-select: none; position: relative;
         i { margin-left: 5px; opacity: 0.5; transition: 0.2s; }
@@ -293,6 +293,61 @@
   .cat-tag { background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; color: var(--text-muted); }
 }
 
+// --- Пустое состояние (Zero State) ---
+.global-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  background: var(--bg-card);
+  border: 1px dashed var(--border-color);
+  border-radius: 16px;
+  margin-top: 15px;
+
+  .empty-icon {
+    font-size: 3rem;
+    color: var(--text-muted);
+    margin-bottom: 15px;
+    opacity: 0.6;
+  }
+
+  h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0 0 8px 0;
+  }
+
+  p {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin: 0 0 15px 0;
+    max-width: 400px;
+  }
+
+  .inest-btn-primary {
+    background: var(--accent-color);
+    color: #000;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(var(--accent-rgb), 0.4);
+    }
+  }
+}
+
 // --- Выпадающие панели фильтров ---
 .th-dropdown-panel {
   position: absolute; top: calc(100% + 5px); left: 0; min-width: 200px;
@@ -325,8 +380,6 @@
 @keyframes dropIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 
 // --- АДАПТИВНЫЙ РАЗДЕЛ ---
-
-// Планшеты
 @media (max-width: 1024px) {
   .items-list-header {
     flex-direction: column;
@@ -343,7 +396,6 @@
   }
 }
 
-// Мобильные девайсы
 @media (max-width: 768px) {
   .items-list-header { 
     flex-direction: column; 
@@ -367,13 +419,13 @@
     .archive-filters-group { 
       order: 0; 
       width: 100%; 
-      justify-content: space-between; // Распределяем чекбоксы ровно по ширине мобилки
+      justify-content: space-between; 
       margin-bottom: 5px; 
     }
 
     .search-box { 
       order: 1; 
-      width: 100% !important; // Поиск во весь экран
+      width: 100% !important; 
     }
 
     .reset-filters-btn { 
@@ -386,16 +438,11 @@
     .th-dropdown-wrapper {
       order: 3;
       width: 100%;
-      .icon-btn {
-        width: 100% !important; // Кнопка сортировки тоже во всю ширь
-      }
-      .th-dropdown-panel {
-        width: 100%;
-      }
+      .icon-btn { width: 100% !important; }
+      .th-dropdown-panel { width: 100%; }
     }
   }
 
-  // Скрываем невлезающие столбцы на мобилках
   .inest-table .col-cat, 
   .inest-table .col-loc, 
   .inest-table .col-price, 
