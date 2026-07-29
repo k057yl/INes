@@ -1,23 +1,26 @@
 import { Component, inject, OnInit, HostListener, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { debounceTime, finalize, switchMap, tap, startWith, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
-import { FormsModule } from '@angular/forms';
+import { Router} from '@angular/router';
 
 import { SalesService } from '../../core/services/sales.service';
 import { CategoryService } from '../../core/services/category.service';
+import { LocationService } from '../../core/services/location.service';
+import { DashboardModalService } from '../dashboard/dashboard.modal.service';
+
 import { SaleListItem } from '../../core/contracts/sale-list-item';
 import { GetSalesDto } from '../../core/dtos/sales-get.dto';
 import { Platform } from '../../core/contracts/platform';
 import { Category } from '../../core/contracts/category';
+
 import { SaleCardComponent } from '../../shared/components/sale-card/sale-card.component';
 import { InestModalComponent } from '../../shared/components/modals/inest-modal/inest-modal.component';
-import { LocationService } from '../../core/services/location.service';
 
-export type SalesAction = 'undo' | 'delete' | null;
+export type SalesAction = 'undo' | null;
 
 @Component({
   selector: 'app-sales-list',
@@ -29,11 +32,13 @@ export type SalesAction = 'undo' | 'delete' | null;
 export class SalesListComponent implements OnInit {
   private salesService = inject(SalesService);
   private categoryService = inject(CategoryService);
+  private locationService = inject(LocationService);
+  private modalService = inject(DashboardModalService);
   private toastr = inject(ToastrService);
   private translate = inject(TranslateService);
   private fb = inject(FormBuilder);
   private eRef = inject(ElementRef);
-  private locationService = inject(LocationService);
+  private router = inject(Router);
 
   sales: SaleListItem[] = [];
   platforms: Platform[] = [];
@@ -41,7 +46,6 @@ export class SalesListComponent implements OnInit {
   locations: any[] = [];
   selectedReturnLocationId: string | null = null;
   isLoading = true;
-  readonly EMPTY_GUID = '00000000-0000-0000-0000-000000000000';
 
   activeAction: SalesAction = null;
   selectedSale: SaleListItem | null = null;
@@ -75,7 +79,7 @@ export class SalesListComponent implements OnInit {
     return !!(f.searchQuery || f.platformId || f.categoryId || f.minPrice || f.maxPrice || f.minProfit || f.startDate || f.sortBy !== 0);
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.salesService.getPlatforms().subscribe(res => this.platforms = res);
     this.categoryService.getAll().subscribe(res => this.categories = res);
     this.locationService.getAll().subscribe((res: any[]) => this.locations = res);
@@ -106,34 +110,36 @@ export class SalesListComponent implements OnInit {
     });
   }
 
-  handleUndo(sale: SaleListItem) {
-    console.log('UNDO_CLICKED:', sale);
+  handleUndo(sale: SaleListItem): void {
     this.selectedSale = sale;
     this.activeAction = 'undo';
   }
 
-  handleDelete(sale: SaleListItem) {
-    console.log('DELETE_CLICKED:', sale);
-    this.selectedSale = sale;
-    this.activeAction = 'delete';
+  handleDelete(sale: SaleListItem): void {
+    this.modalService.openConfirm({
+      mode: 'delete',
+      title: 'SALES_PAGE.MODALS.DELETE_TITLE',
+      message: this.translate.instant('SALES_PAGE.MODALS.DELETE_MESSAGE')
+    }).subscribe(res => {
+      if (res) {
+        this.executeDelete(sale);
+      }
+    });
   }
 
-  onConfirm(result?: any) {
-    if (!this.selectedSale || !this.activeAction) return;
+  onConfirmUndo(): void {
+    if (!this.selectedSale) return;
 
-    if (this.activeAction === 'undo') {
-      if (!this.selectedReturnLocationId) {
-        this.toastr.error(this.translate.instant('ERRORS.REQUIRED_FIELD'));
-        return;
-      }
-      this.executeUndo(this.selectedSale, this.selectedReturnLocationId);
-    } else if (this.activeAction === 'delete') {
-      this.executeDelete(this.selectedSale, result === 'smart');
+    if (!this.selectedReturnLocationId) {
+      this.toastr.error(this.translate.instant('ERRORS.REQUIRED_FIELD'));
+      return;
     }
+
+    this.executeUndo(this.selectedSale, this.selectedReturnLocationId);
     this.closeModal();
   }
 
-  private executeUndo(sale: SaleListItem, locationId: string) {
+  private executeUndo(sale: SaleListItem, locationId: string): void {
     this.isLoading = true;
     this.salesService.cancelSale(sale.itemId, locationId)
       .pipe(finalize(() => this.isLoading = false))
@@ -143,22 +149,35 @@ export class SalesListComponent implements OnInit {
       });
   }
 
-  private executeDelete(sale: SaleListItem, keepHistory: boolean) {
+  private executeDelete(sale: SaleListItem): void {
     this.isLoading = true;
-    this.salesService.smartDelete(sale.saleId, keepHistory)
+    this.salesService.deleteSale(sale.saleId)
       .pipe(finalize(() => this.isLoading = false))
-      .subscribe(() => {
-        this.toastr.success(this.translate.instant('SALES.SUCCESS.DELETE'));
-        this.refreshData();
+      .subscribe({
+        next: () => {
+          this.toastr.success(this.translate.instant('SALES.SUCCESS.DELETE'));
+          this.refreshData();
+        },
+        error: () => {
+          this.toastr.error(this.translate.instant('SYSTEM.DEFAULT_ERROR'));
+        }
       });
   }
 
-  refreshData() {
+  refreshData(): void {
     this.salesService.getHistory(this.filterForm.getRawValue() as GetSalesDto)
       .subscribe(data => this.sales = data);
   }
 
-  closeModal() {
+  goBack() {
+    if (window.history.length > 1) {
+      window.history.back();
+    } else {
+      this.router.navigate(['/dashboard']);
+    }
+  }
+
+  closeModal(): void {
     this.activeAction = null;
     this.selectedSale = null;
     this.selectedReturnLocationId = null;

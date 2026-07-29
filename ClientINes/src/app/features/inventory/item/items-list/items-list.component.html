@@ -3,7 +3,7 @@
     
     <header class="items-list-header">
       <div class="header-left">
-        <button type="button" class="icon-btn back-btn" (click)="goBack()" title="{{ 'COMMON.BACK' | translate }}">
+        <button type="button" class="icon-btn back-btn" (click)="goBack()" [attr.title]="'COMMON.BACK' | translate">
           <i class="fa fa-arrow-left"></i>
         </button>
         <h1>{{ 'ITEMS_LIST.TITLE' | translate }}</h1>
@@ -40,13 +40,13 @@
           @if (hasActiveFilters) {
             <button type="button" class="reset-filters-btn" (click)="resetFilters()">
               <i class="fa fa-sync-alt"></i>
-              <span>{{ 'FILTERS.RESET_SHORT' | translate }}</span>
+              <span>{{ 'ITEMS_LIST.RESET_SHORT' | translate }}</span>
             </button>
           }
 
           <div class="search-box">
             <i class="fa fa-search search-icon"></i>
-            <input type="text" formControlName="searchQuery" [placeholder]="'FILTERS.SEARCH_PHL' | translate">
+            <input type="text" formControlName="searchQuery" [placeholder]="'ITEMS_LIST.SEARCH_PHL' | translate">
             
             @if (filterForm.get('searchQuery')?.value) {
               <button type="button" class="clear-btn" (click)="setFilter('searchQuery', '')">
@@ -61,10 +61,10 @@
             </button>
             @if (activeDropdown === 'sort') {
               <div class="th-dropdown-panel right-aligned" (click)="$event.stopPropagation()">
-                <div class="filter-item" (click)="setFilter('sortBy', 0)" [class.active]="filterForm.get('sortBy')?.value === 0">{{ 'FILTERS.SORT.NEWEST' | translate }}</div>
-                <div class="filter-item" (click)="setFilter('sortBy', 2)" [class.active]="filterForm.get('sortBy')?.value === 2">{{ 'FILTERS.SORT.NAME_ASC' | translate }}</div>
-                <div class="filter-item" (click)="setFilter('sortBy', 4)" [class.active]="filterForm.get('sortBy')?.value === 4">{{ 'FILTERS.SORT.PRICE_ASC' | translate }}</div>
-                <div class="filter-item" (click)="setFilter('sortBy', 5)" [class.active]="filterForm.get('sortBy')?.value === 5">{{ 'FILTERS.SORT.PRICE_DESC' | translate }}</div>
+                <div class="filter-item" (click)="setFilter('sortBy', 0)" [class.active]="filterForm.get('sortBy')?.value === 0">{{ 'ITEMS_LIST.SORT.NEWEST' | translate }}</div>
+                <div class="filter-item" (click)="setFilter('sortBy', 2)" [class.active]="filterForm.get('sortBy')?.value === 2">{{ 'ITEMS_LIST.SORT.NAME_ASC' | translate }}</div>
+                <div class="filter-item" (click)="setFilter('sortBy', 4)" [class.active]="filterForm.get('sortBy')?.value === 4">{{ 'ITEMS_LIST.SORT.PRICE_ASC' | translate }}</div>
+                <div class="filter-item" (click)="setFilter('sortBy', 5)" [class.active]="filterForm.get('sortBy')?.value === 5">{{ 'ITEMS_LIST.SORT.PRICE_DESC' | translate }}</div>
               </div>
             }
           </div>
@@ -144,7 +144,7 @@
                   <img [src]="item.photoUrl || 'assets/images/no-image.png'" class="mini-thumb">
                 </td>
                 <td class="col-name"><span class="name-text">{{ item.name }}</span></td>
-                <td class="col-cat"><span class="cat-tag">{{ item.categoryName|| '—' }}</span></td>
+                <td class="col-cat"><span class="cat-tag">{{ item.categoryName || '—' }}</span></td>
                 <td class="col-loc">
                   <i class="fa fa-folder-open" style="color: var(--accent-color); margin-right: 5px;"></i>
                   {{ item.storageLocationName || '—' }}
@@ -174,17 +174,10 @@
             <div class="empty-icon"><i class="fa fa-search-minus"></i></div>
             <h3>{{ 'ITEMS_LIST.EMPTY_RESULT' | translate }}</h3>
             <p>{{ 'ITEMS_LIST.EMPTY_RESULT_DESC' | translate }}</p>
-            <button type="button" class="reset-filters-btn" (click)="resetFilters()" style="margin-top: 10px;">
-              <i class="fa fa-sync-alt"></i>
-              <span>{{ 'FILTERS.RESET_SHORT' | translate }}</span>
-            </button>
           } @else {
             <div class="empty-icon"><i class="fa fa-box-open"></i></div>
             <h3>{{ 'ITEMS_LIST.EMPTY_TITLE' | translate }}</h3>
-            <button class="inest-btn-primary" (click)="modal.openItemForm()" style="margin-top: 15px;">
-              <i class="fa fa-plus-circle"></i>
-              {{ 'ITEMS_LIST.CREATE_FIRST_BTN' | translate }}
-            </button>
+            <p>{{ 'ITEMS_LIST.EMPTY_DESC' | translate }}</p>
           }
         </div>
       }

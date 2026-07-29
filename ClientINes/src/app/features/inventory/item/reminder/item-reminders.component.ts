@@ -134,8 +134,8 @@ export class ItemRemindersComponent implements OnInit {
   requestComplete(id: string) {
     this.modal.openConfirm({
       mode: 'confirm',
-      title: 'REMINDS_PAGE.MODAL.TITLE_DONE',
-      message: 'REMINDS_PAGE.MODAL.M_YOU_SURE_DONE',
+      title: 'ITEM_REMINDERS.MODALS.COMPLETE_TITLE',
+      message: 'ITEM_REMINDERS.MODALS.COMPLETE_MSG',
       confirmText: 'COMMON.YES',
       cancelText: 'COMMON.NO'
     }).subscribe((res: any) => {
@@ -157,10 +157,9 @@ export class ItemRemindersComponent implements OnInit {
   requestDelete(id: string) {
     this.modal.openConfirm({
       mode: 'delete',
-      title: 'COMMON.DELETE',
-      message: 'REMINDS_PAGE.MODAL.DELETE_MSG'
+      title: 'ITEM_REMINDERS.MODALS.DELETE_TITLE',
+      message: 'ITEM_REMINDERS.MODALS.DELETE_MSG'
     }).subscribe((res: any) => {
-      
       if (res === true || res === 'delete') {
         this.reminderService.deleteReminder(id).subscribe({
           next: () => {

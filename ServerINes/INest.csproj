@@ -106,9 +106,6 @@
     <Content Include="Features\Sales\Commands\SellItem\SellItemCommand.cs" />
     <Content Include="Features\Sales\Commands\SellItem\SellItemHandler.cs" />
     <Content Include="Features\Sales\Commands\SellItem\SellItemValidator.cs" />
-    <Content Include="Features\Sales\Commands\SmartDeleteSale\SmartDeleteSaleCommand.cs" />
-    <Content Include="Features\Sales\Commands\SmartDeleteSale\SmartDeleteSaleHandler.cs" />
-    <Content Include="Features\Sales\Commands\SmartDeleteSale\SmartDeleteSaleValidator.cs" />
     <Content Include="Features\Sales\Queries\GetSales\GetSalesHandler.cs" />
     <Content Include="Features\Sales\Queries\GetSales\GetSalesQuery.cs" />
     <Content Include="Infrastructure\Identity\CustomUserValidator.cs" />

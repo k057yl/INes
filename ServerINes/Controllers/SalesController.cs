@@ -2,14 +2,14 @@
 using INest.Features.Sales.DTOs;
 using INest.Features.Sales.Commands.DeleteSaleRecord;
 using INest.Features.Sales.Commands.SellItem;
-using INest.Features.Sales.Commands.SmartDeleteSale;
 using INest.Features.Sales.Queries.GetSales;
+using INest.Features.Sales.Commands.CancelSale;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using static INest.Constants.LocalizationConstants;
-using INest.Features.Sales.Commands.CancelSale;
+
 
 namespace INest.Controllers
 {
@@ -56,20 +56,11 @@ namespace INest.Controllers
             return Ok(new { message = SALES.SUCCESS.CANCEL });
         }
 
-        [HttpDelete("smart-delete/{saleId}")]
-        public async Task<IActionResult> SmartDelete(Guid saleId, [FromQuery] bool keepHistory = true)
+        [HttpDelete("{saleId}")]
+        public async Task<IActionResult> DeleteSale(Guid saleId)
         {
             var userId = GetUserId();
-
-            if (keepHistory)
-            {
-                await _mediator.Send(new SmartDeleteSaleCommand(userId, saleId));
-            }
-            else
-            {
-                await _mediator.Send(new DeleteSaleRecordCommand(userId, saleId));
-            }
-
+            await _mediator.Send(new DeleteSaleRecordCommand(userId, saleId));
             return Ok(new { message = SALES.SUCCESS.DELETE });
         }
     }

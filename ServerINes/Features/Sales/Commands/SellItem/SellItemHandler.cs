@@ -37,6 +37,15 @@ namespace INest.Features.Sales.Commands.SellItem
 
             item.Sell();
 
+            var activeReminders = await _context.Reminders
+                .Where(r => r.ItemId == item.Id && r.UserId == request.UserId)
+                .ToListAsync(cancellationToken);
+
+            if (activeReminders.Any())
+            {
+                _context.Reminders.RemoveRange(activeReminders);
+            }
+
             var safeComment = !string.IsNullOrEmpty(dto.Comment) ? _sanitizer.SanitizeHtml(dto.Comment) : null;
 
             decimal purchasePrice = item.Details?.PurchasePrice ?? 0;

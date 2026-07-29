@@ -1,6 +1,6 @@
 <div class="reminders-widget">
   <div class="widget-header">
-    <h3><i class="fa fa-bell"></i> {{ 'REMINDS_PAGE.OPEN_MENU' | translate }}</h3>
+    <h3><i class="fa fa-bell"></i> {{ 'ITEM_REMINDERS.TITLE' | translate }}</h3>
     <button class="add-btn" (click)="toggleAdd()" [title]="'COMMON.ADD' | translate">
       <i class="fa" [ngClass]="isAdding ? 'fa-times' : 'fa-plus'"></i>
     </button>
@@ -12,12 +12,12 @@
         <div class="form-fields-stack">
           
           <div class="field-group">
-            <label>{{ 'REMINDS_PAGE.NAME_LABEL' | translate }}</label>
-            <input type="text" formControlName="title" [placeholder]="'REMINDS_PAGE.NAME_PHL' | translate" class="inest-input-styled">
+            <label>{{ 'ITEM_REMINDERS.NAME_LABEL' | translate }}</label>
+            <input type="text" formControlName="title" [placeholder]="'ITEM_REMINDERS.NAME_PHL' | translate" class="inest-input-styled">
           </div>
           
           <div class="field-group">
-            <label>{{ 'REMINDS_PAGE.TYPE_LABEL' | translate }}</label>
+            <label>{{ 'ITEM_REMINDERS.TYPE_LABEL' | translate }}</label>
             <select formControlName="type" class="inest-input-styled">
               @for (type of availableTypes; track type) {
                 <option [value]="type.value">
@@ -28,7 +28,7 @@
           </div>
           
           <div class="field-group">
-            <label>{{ 'REMINDS_PAGE.RECURRENCE' | translate }}</label>
+            <label>{{ 'ITEM_REMINDERS.RECURRENCE' | translate }}</label>
             <select formControlName="recurrence" class="inest-input-styled">
               @for (rec of availableRecurrences; track rec) {
                 <option [value]="rec.value">
@@ -39,7 +39,7 @@
           </div>
           
           <div class="field-group">
-            <label>{{ 'REMINDS_PAGE.DATE_LABEL' | translate }}</label>
+            <label>{{ 'ITEM_REMINDERS.DATE_LABEL' | translate }}</label>
             <input type="datetime-local" formControlName="triggerAt" class="inest-input-styled">
           </div>
 
@@ -71,7 +71,7 @@
   <div class="reminders-list">
     @if (reminders.length === 0) {
       <div class="empty-state">
-        {{ 'REMINDS_PAGE.EMPTY_LABEL' | translate }}
+        {{ 'ITEM_REMINDERS.EMPTY' | translate }}
       </div>
     }
 

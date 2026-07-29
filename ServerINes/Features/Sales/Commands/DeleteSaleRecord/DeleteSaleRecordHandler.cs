@@ -24,6 +24,17 @@ namespace INest.Features.Sales.Commands.DeleteSaleRecord
             if (sale == null)
                 throw new KeyNotFoundException(SALES.ERRORS.NOT_FOUND);
 
+            if (sale.ItemId.HasValue)
+            {
+                var item = await _context.Items
+                    .FirstOrDefaultAsync(i => i.Id == sale.ItemId.Value && i.UserId == request.UserId, cancellationToken);
+
+                if (item != null)
+                {
+                    _context.Items.Remove(item);
+                }
+            }
+
             _context.Sales.Remove(sale);
             await _context.SaveChangesAsync(cancellationToken);
 

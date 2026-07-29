@@ -1,11 +1,9 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { GetPlatformDto } from '../dtos/platforms-get.dto';
 import { Platform } from '../contracts/platform';
-import { Observable } from 'rxjs';
-import { HttpParams } from '@angular/common/http';
-
 import { GetSalesDto } from '../dtos/sales-get.dto';
 import { SaleListItem } from '../contracts/sale-list-item';
 import { SaleCreateDto } from '../dtos/sale-item-create.dto';
@@ -36,18 +34,13 @@ export class SalesService {
   }
 
   cancelSale(itemId: string, locationId: string): Observable<void> {
-    return this.http.delete<void>(
-      `${this.salesUrl}/cancel/${itemId}`, 
-      {
-        params: { locationId }
-      }
-    );
+    return this.http.delete<void>(`${this.salesUrl}/cancel/${itemId}`, {
+      params: { locationId }
+    });
   }
 
-  smartDelete(saleId: string, keepHistory: boolean): Observable<void> {
-    return this.http.delete<void>(`${this.salesUrl}/smart-delete/${saleId}`, {
-      params: { keepHistory: keepHistory.toString() }
-    });
+  deleteSale(saleId: string): Observable<void> {
+    return this.http.delete<void>(`${this.salesUrl}/${saleId}`);
   }
 
   getPlatforms(): Observable<Platform[]> {

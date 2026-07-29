@@ -9,6 +9,18 @@
     max-width: 1200px;
     margin: 0 auto;
   }
+
+  .nav-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+      &:hover { border-color: var(--accent-color); background: var(--bg-input); }
+    }
 }
 
 // --- Header & Stats ---

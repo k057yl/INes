@@ -10,7 +10,7 @@
         <i class="fa" [ngClass]="isEdit ? 'fa-pen' : 'fa-plus'"></i>
       </div>
       <div class="header-text">
-        <h2>{{ (isEdit ? 'COMMON.EDIT' : 'CREATE_ITEM_PAGE.TITLE') | translate }}</h2>
+        <h2>{{ (isEdit ? 'CREATE_ITEM_PAGE.TITLE_EDIT' : 'CREATE_ITEM_PAGE.TITLE') | translate }}</h2>
         @if (!isEdit) {
           <p>{{ 'CREATE_ITEM_PAGE.TITLE_SUB' | translate }}</p>
         }
@@ -25,7 +25,7 @@
     @if (isEdit && item?.status !== 0) {
       <div class="edit-restricted-banner">
         <i class="fa-solid fa-triangle-exclamation"></i>
-        <span>{{ 'EDIT_ITEM_PAGE.WARNING_EDIT_MSG' | translate }}</span>
+        <span>{{ 'CREATE_ITEM_PAGE.WARNING_EDIT_MSG' | translate }}</span>
       </div>
     }
 
@@ -75,7 +75,7 @@
         <div class="inest-form-group">
           <label class="inest-checkbox-label">
             <input type="checkbox" formControlName="addPhoto">
-            <span>{{ 'EDIT_ITEM_PAGE.ADD_NEW_PHOTO' | translate }}</span>
+            <span>{{ 'CREATE_ITEM_PAGE.ADD_NEW_PHOTO' | translate }}</span>
           </label>
         </div>
       }
@@ -108,7 +108,7 @@
           <label>{{ 'CREATE_ITEM_PAGE.CATEGORY' | translate }} *</label>
           @if (!isEdit || item?.status === 0) {
             <button type="button" class="inline-add-btn" (click)="openCategoryModal()">
-              <i class="fa fa-plus"></i> {{ 'COMMON.ADD' | translate }}
+              <i class="fa fa-plus"></i> {{ 'CREATE_ITEM_PAGE.BUTTON_ADD_INLINE' | translate }}
             </button>
           }
         </div>
@@ -317,9 +317,9 @@
                       </div>
                       <div class="file-info">
                         <span class="file-name" [title]="selectedReceiptFileName">{{ selectedReceiptFileName }}</span>
-                        <span class="file-status-tag"><i class="fa fa-check-circle"></i> Загружен</span>
+                        <span class="file-status-tag"><i class="fa fa-check-circle"></i> {{ 'CREATE_ITEM_PAGE.UPLOADED' | translate }}</span>
                       </div>
-                      <button type="button" class="btn-remove-receipt" (click)="removeReceipt($event)" title="Удалить файл">
+                      <button type="button" class="btn-remove-receipt" (click)="removeReceipt($event)">
                         <i class="fa fa-trash-alt"></i>
                       </button>
                     </div>
@@ -346,15 +346,15 @@
             <div class="lending-info-section">
               <div class="form-row-multi">
                 <div class="inest-form-group">
-                  <label>{{ 'REMINDERS.TITLE' | translate }} *</label>
+                  <label>{{ 'CREATE_ITEM_PAGE.REMINDER_TITLE' | translate }} *</label>
                   <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('reminderTitle')">
                     <i class="fa fa-heading inest-field-icon-left"></i>
-                    <input formControlName="reminderTitle" [placeholder]="'REMINDERS.TITLE_PH' | translate">
+                    <input formControlName="reminderTitle" [placeholder]="'CREATE_ITEM_PAGE.REMINDER_TITLE_PH' | translate">
                   </div>
                 </div>
 
                 <div class="inest-form-group">
-                  <label>{{ 'REMINDERS.TYPE' | translate }}</label>
+                  <label>{{ 'CREATE_ITEM_PAGE.REMINDER_TYPE' | translate }}</label>
                   <div class="inest-input-wrapper">
                     <i class="fa fa-list inest-field-icon-left"></i>
                     <select formControlName="reminderType">
@@ -368,7 +368,7 @@
 
               <div class="form-row-multi">
                 <div class="inest-form-group">
-                  <label>{{ 'REMINDERS.RECURRENCE_TITLE' | translate }}</label>
+                  <label>{{ 'CREATE_ITEM_PAGE.REMINDER_RECURRENCE' | translate }}</label>
                   <div class="inest-input-wrapper">
                     <i class="fa fa-sync-alt inest-field-icon-left"></i>
                     <select formControlName="reminderRecurrence">
@@ -380,7 +380,7 @@
                 </div>
 
                 <div class="inest-form-group">
-                  <label>{{ 'REMINDERS.DATE' | translate }} *</label>
+                  <label>{{ 'CREATE_ITEM_PAGE.REMINDER_DATE' | translate }} *</label>
                   <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('reminderTriggerAt')">
                     <i class="fa fa-clock inest-field-icon-left"></i>
                     <input type="date" formControlName="reminderTriggerAt" [min]="todayMax">
@@ -430,7 +430,7 @@
 @if (showCategoryModal) {
   <app-inest-modal
     mode="input"
-    [title]="'COMMON.CREATE'"
+    [title]="'CREATE_ITEM_PAGE.CREATE_CATEGORY' | translate"
     [name]="''"
     (confirmed)="saveNewCategory($event)"
     (cancelled)="closeCategoryModal()">

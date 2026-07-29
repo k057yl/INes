@@ -78,11 +78,11 @@ export class ItemFormModalComponent implements OnInit {
   ];
 
   readonly reminderRecurrenceOptions = [
-    { value: ReminderRecurrence.None, label: 'REMINDERS.RECURRENCE.NONE' },
-    { value: ReminderRecurrence.Daily, label: 'REMINDERS.RECURRENCE.DAILY' },
-    { value: ReminderRecurrence.Weekly, label: 'REMINDERS.RECURRENCE.WEEKLY' },
-    { value: ReminderRecurrence.Monthly, label: 'REMINDERS.RECURRENCE.MONTHLY' },
-    { value: ReminderRecurrence.Yearly, label: 'REMINDERS.RECURRENCE.YEARLY' }
+    { value: ReminderRecurrence.None, label: 'RECURRENCE.NONE' },
+    { value: ReminderRecurrence.Daily, label: 'RECURRENCE.DAILY' },
+    { value: ReminderRecurrence.Weekly, label: 'RECURRENCE.WEEKLY' },
+    { value: ReminderRecurrence.Monthly, label: 'RECURRENCE.MONTHLY' },
+    { value: ReminderRecurrence.Yearly, label: 'RECURRENCE.YEARLY' }
   ];
 
   form = this.fb.group({
