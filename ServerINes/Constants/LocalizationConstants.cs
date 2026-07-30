@@ -106,6 +106,7 @@
                 public const string CANNOT_CANCEL_SALE = "ITEMS.ERRORS.CANNOT_CANCEL_SALE";
                 public const string CANNOT_RETURN_BORROWED = "ITEMS.ERRORS.CANNOT_RETURN_BORROWED";
                 public const string ONLY_ARCHIVED_CAN_BE_DELETED = "ITEMS.ERRORS.ONLY_ARCHIVED_CAN_BE_DELETED";
+                public const string CANNOT_ARCHIVE_NON_ACTIVE = "ITEMS.ERRORS.CANNOT_ARCHIVE_NON_ACTIVE";
             }
 
             public static class SUCCESS

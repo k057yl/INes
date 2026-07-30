@@ -344,7 +344,11 @@
     "PURCHASE_PRICE": "Цена покупки",
     "ESTIMATED_VALUE": "Оценочная стоимость",
     "STORAGE_PLACE": "Место хранения",
-    "NO_DESCRIPTION": "Без описания"
+    "NO_DESCRIPTION": "Без описания",
+    "RECEIPT": "Чек / Документ",
+    "VIEW_RECEIPT": "Открыть документ",
+    "VIEW_RECEIPT_TOOLTIP": "Открыть документ",
+    "WARRANTY": "Гарантийный срок"
   },
   "DROP_MENU": {
     "MOVE_MSG": "Переместить в другую локацию?",

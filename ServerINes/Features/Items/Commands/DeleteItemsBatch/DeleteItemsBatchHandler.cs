@@ -1,4 +1,5 @@
-﻿using INest.Infrastructure.Storage;
+﻿using INest.Data.Enums;
+using INest.Infrastructure.Storage;
 using INest.Infrastructure.Tracker;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -30,7 +31,13 @@ namespace INest.Features.Items.Commands.DeleteItemsBatch
 
             if (!items.Any()) return true;
 
-            var allPhotos = items.SelectMany(i => i.Photos ?? new List<Data.Entities.Core.ItemPhoto>()).ToList();
+            var deletableItems = items
+                .Where(i => i.Status == ItemStatus.Active || i.Status == ItemStatus.Archived)
+                .ToList();
+
+            if (!deletableItems.Any()) return false;
+
+            var allPhotos = deletableItems.SelectMany(i => i.Photos ?? new List<Data.Entities.Core.ItemPhoto>()).ToList();
 
             if (allPhotos.Any())
             {
@@ -45,7 +52,7 @@ namespace INest.Features.Items.Commands.DeleteItemsBatch
                 _context.ItemPhotos.RemoveRange(allPhotos);
             }
 
-            foreach (var item in items)
+            foreach (var item in deletableItems)
             {
                 if (item.Details != null)
                 {

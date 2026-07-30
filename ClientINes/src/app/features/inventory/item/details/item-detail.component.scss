@@ -131,6 +131,7 @@
       margin-bottom: 25px;
       position: relative;
       z-index: 1;
+
       .history-icon { 
         width: 20px; height: 20px; 
         background: var(--bg-main); 
@@ -138,10 +139,33 @@
         font-size: 0.85rem;
         color: var(--g-green);
       }
+
       .history-content {
         .history-action { font-weight: 700; font-size: 0.95rem; display: block; margin-bottom: 2px; }
-        .history-meta { font-size: 0.8rem; color: var(--text-muted); .history-value { color: var(--accent-color); font-weight: 600; } }
+        .history-meta { 
+          font-size: 0.8rem; 
+          color: var(--text-muted); 
+          .history-value { color: var(--accent-color); font-weight: 600; } 
+        }
         .history-comment { margin: 8px 0 0; font-size: 0.85rem; font-style: italic; opacity: 0.8; }
+      }
+
+      /* ПОДСВЕТКА ДЕНЕЖНЫХ ОПЕРАЦИЙ */
+      &.financial {
+        .history-icon {
+          color: var(--g-yellow);
+        }
+        .money-tag {
+          color: var(--g-yellow);
+          font-weight: 800;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+        }
+        .history-comment {
+          color: var(--g-yellow);
+          opacity: 0.9;
+        }
       }
     }
   }
@@ -166,7 +190,7 @@
       display: flex; justify-content: space-between; align-items: center;
       margin-bottom: 20px;
       .person-name { font-size: 1.2rem; font-weight: 800; }
-      .lending-value { font-weight: 900; font-size: 1.1rem; }
+      .lending-value { font-weight: 900; font-size: 1.1rem; color: var(--g-yellow); }
     }
 
     .lending-dates {

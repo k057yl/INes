@@ -89,6 +89,10 @@ export class ItemCardComponent {
     return returnDate.getTime() <= now.getTime();
   }
 
+  get canDelete(): boolean {
+    return this.item.status === 0 || this.item.status === 3;
+  }
+
   get details() {
     return this.item.details;
   }

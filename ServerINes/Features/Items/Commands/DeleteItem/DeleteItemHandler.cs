@@ -1,4 +1,5 @@
-﻿using INest.Infrastructure.Storage;
+﻿using INest.Data.Enums;
+using INest.Infrastructure.Storage;
 using INest.Infrastructure.Tracker;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -28,6 +29,11 @@ namespace INest.Features.Items.Commands.DeleteItem
 
             if (item == null)
                 throw new KeyNotFoundException(ITEMS.ERRORS.NOT_FOUND);
+
+            if (item.Status != ItemStatus.Active && item.Status != ItemStatus.Archived)
+            {
+                throw new InvalidOperationException(ITEMS.ERRORS.CANNOT_ARCHIVE_NON_ACTIVE);
+            }
 
             if (item.Photos != null && item.Photos.Any())
             {

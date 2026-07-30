@@ -44,13 +44,13 @@
         @if (item.status === 1) {
           <i class="fa fa-share-square"
             style="color: var(--g-yellow)"
-            title="Одолжено"></i>
+            [attr.title]="'STATUS.LENT' | translate"></i>
         }
 
         @if (item.status === 4) {
           <i class="fa fa-reply"
             style="color: var(--g-blue)"
-            title="Взято в долг"></i>
+            [attr.title]="'STATUS.BORROWED' | translate"></i>
         }
       </span>
 
@@ -58,12 +58,12 @@
   </div>
 
   <div class="card-action-bar">
-    <button class="inest-action-btn btn-info" [routerLink]="['/item', item.id]" [title]="'COMMON.INFO' | translate">
+    <button class="inest-action-btn btn-info" [routerLink]="['/item', item.id]" [attr.title]="'COMMON.INFO' | translate">
       <i class="fa fa-info-circle"></i>
     </button>
 
     <div class="card-actions-wrapper">
-      <button class="inest-action-btn menu-toggle-btn" (click)="toggleMenu($event); $event.stopPropagation()" [class.active]="showMenu" [title]="'COMMON.MORE_DETAILS' | translate">
+      <button class="inest-action-btn menu-toggle-btn" (click)="toggleMenu($event); $event.stopPropagation()" [class.active]="showMenu" [attr.title]="'COMMON.MORE_DETAILS' | translate">
         <i class="fa fa-ellipsis-v"></i>
       </button>
 
@@ -96,10 +96,10 @@
 
           @if (item.status === 0) {
             <div class="move-section">
-              <label><i class="fa fa-exchange-alt"></i> {{'DROP_MENU.MOVE_MSG' | translate}}</label>
+              <label><i class="fa fa-exchange-alt"></i> {{ 'ITEM_CARD.MOVE_MSG' | translate }}</label>
               <div class="select-container">
                 <select (change)="onMove($event)">
-                  <option value="" disabled selected>{{'DROP_MENU.SELECT_LOCATION' | translate}}</option>
+                  <option value="" disabled selected>{{ 'ITEM_CARD.SELECT_LOCATION' | translate }}</option>
                   @for (loc of availableLocations; track loc.id) {
                     <option [value]="loc.id">{{ loc.name }}</option>
                   }
@@ -110,14 +110,16 @@
             <div class="dropdown-divider"></div>
           }
 
-          @if (item.status === 3) {
-            <button class="dropdown-item btn-delete hard-delete" (click)="delete.emit(item); closeMenu()">
-              <i class="fa fa-fire"></i> {{ 'COMMON.HARD_DELETE' | translate }}
-            </button>
-          } @else {
-            <button class="dropdown-item btn-delete" (click)="delete.emit(item); closeMenu()">
-              <i class="fa fa-archive"></i> {{ 'COMMON.ARCHIVE' | translate }}
-            </button>
+          @if (canDelete) {
+            @if (item.status === 3) {
+              <button class="dropdown-item btn-delete hard-delete" (click)="delete.emit(item); closeMenu()">
+                <i class="fa fa-fire"></i> {{ 'COMMON.HARD_DELETE' | translate }}
+              </button>
+            } @else {
+              <button class="dropdown-item btn-delete" (click)="delete.emit(item); closeMenu()">
+                <i class="fa fa-archive"></i> {{ 'COMMON.ARCHIVE' | translate }}
+              </button>
+            }
           }
         </div>
       }
@@ -127,7 +129,7 @@
   @if (!isMobile) {
     <div class="handle-section">
         <div class="v-divider"></div>
-        <div class="drag-handle" cdkDragHandle [title]="'ITEM_CARD.HOLD_TOOLTIP' | translate">
+        <div class="drag-handle" cdkDragHandle [attr.title]="'ITEM_CARD.HOLD_TOOLTIP' | translate">
             <i class="fa fa-grip-vertical"></i>
         </div>
     </div>
