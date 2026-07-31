@@ -249,7 +249,9 @@
     "REGISTERATION": "Регистрация",
     "LOGOUT": "Выйти",
     "SETTINGS": "Настройки",
-    "SALES": "Продажи"
+    "SALES": "Продажи",
+    "CREATE_LOCATION": "Создать локацию",
+    "CREATE_ITEM": "Создать предмет"
   },
   "MAIN_PAGE": {
     "LOCATION_EMPTY_MSG": "Начните с создания первой локации",
@@ -552,7 +554,8 @@
     "EXPIRED_SHORT": "{{ count }} просроч.",
     "WARRANTY_SHORT": "{{ count }} гарантия",
     "REMINDERS_SHORT": "{{ count }} напом.",
-    "ALL_OK": "Всё в порядке"
+    "ALL_OK": "Всё в порядке",
+    "EXPIRED": "Просрочено"
   },
   "FEEDBACK": {
     "TITLE": "Есть идея или нашли ошибку?",

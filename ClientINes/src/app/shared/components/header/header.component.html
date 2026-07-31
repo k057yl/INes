@@ -34,14 +34,14 @@
 
           @if (isCreateMenuOpen()) {
             <div class="create-menu" (click)="$event.stopPropagation()">
-              <button (click)="openCreateItem()">
-                <i class="fa fa-box"></i>
-                <span>{{ 'LOCATION_CARD.BTN.ITEM' | translate }}</span>
-              </button>
               <button (click)="openCreateLocation()">
                 <i class="fa fa-folder-plus"></i>
-                <span>{{ 'LOCATION_CARD.BTN.LOCATION' | translate }}</span>
+                <span>{{ 'HEADER.CREATE_LOCATION' | translate }}</span>
               </button>
+              <button (click)="openCreateItem()">
+                <i class="fa fa-box"></i>
+                <span>{{ 'HEADER.CREATE_ITEM' | translate }}</span>
+              </button>  
             </div>
           }
         </div>

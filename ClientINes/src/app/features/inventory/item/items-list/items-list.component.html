@@ -3,8 +3,8 @@
     
     <header class="items-list-header">
       <div class="header-left">
-        <button type="button" class="icon-btn back-btn" (click)="goBack()" [attr.title]="'COMMON.BACK' | translate">
-          <i class="fa fa-arrow-left"></i>
+        <button type="button" class="icon-btn nav-btn" (click)="goBack()" [attr.title]="'COMMON.BACK' | translate">
+          <i class="fa fa-arrow-left"></i>{{ 'COMMON.BACK' | translate }}
         </button>
         <h1>{{ 'ITEMS_LIST.TITLE' | translate }}</h1>
         @if (items.length > 0) {

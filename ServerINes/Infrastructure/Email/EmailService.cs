@@ -72,11 +72,13 @@ namespace INest.Infrastructure
 
         public async Task SendReminderNotificationAsync(string toEmail, string title, DateTime triggerAt)
         {
-            string subject = _localizer["REMINDER_SUBJECT"].Value;
+            string subject = _localizer["EMAILS.REMINDER_SUBJECT"].Value;
             string dateStr = triggerAt.ToString("dd.MM.yyyy");
 
             var safeTitle = _sanitizer.StripAllHtml(title);
-            string htmlContent = string.Format(_localizer["REMINDER_BODY"].Value, dateStr, safeTitle);
+
+            string localizedTitle = _localizer[safeTitle].ResourceNotFound ? safeTitle : _localizer[safeTitle].Value;
+            string htmlContent = string.Format(_localizer["EMAILS.REMINDER_BODY"].Value, dateStr, localizedTitle);
 
             await SendEmailAsync(toEmail, subject, htmlContent);
         }

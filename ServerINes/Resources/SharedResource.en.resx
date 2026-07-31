@@ -198,4 +198,14 @@ Expected return date: {2}.</value>
   <data name="TG_NOTIFICATION_REMINDER_ALERT" xml:space="preserve">
     <value>⏰ Reminder! Event: {0} For item: {1}</value>
   </data>
+  <data name="EMAILS.REMINDER_SUBJECT" xml:space="preserve">
+    <value>INest Reminder: {0}</value>
+  </data>
+  <data name="EMAILS.REMINDER_BODY" xml:space="preserve">
+    <value>&lt;h3&gt;Attention!&lt;/h3&gt;
+&lt;p&gt;Reminder for &lt;b&gt;{0}&lt;/b&gt;:&lt;/p&gt;&lt;p&gt;&lt;b&gt;{1}&lt;/b&gt;&lt;/p&gt;</value>
+  </data>
+  <data name="REMINDERS.RETURN_ITEM" xml:space="preserve">
+    <value>Return item</value>
+  </data>
 </root>

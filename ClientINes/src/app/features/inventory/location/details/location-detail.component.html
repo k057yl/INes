@@ -3,21 +3,15 @@
     @if (location) {
       <div class="container">
         <header class="location-simple-header">
-          <div class="breadcrumb-trail">
-            <button class="back-btn" (click)="goBack()" [title]="'COMMON.BACK' | translate">
-              <i class="fa fa-arrow-left"></i>
-            </button>
-            @for (crumb of breadcrumbs; track crumb; let last = $last) {
-              <a [routerLink]="['/location', crumb.id]" [class.active]="last">
-                @if (last) {
-                  <i [className]="'fa ' + (location.icon || 'fa-folder') + ' icon-start'" [style.color]="location.color"></i>
-                }
-                {{ crumb.name }}
-              </a>
-              @if (!last) {
-                <i class="fa fa-chevron-right separator"></i>
-              }
-            }
+          <button class="nav-btn" (click)="goBack()" [attr.title]="'COMMON.BACK' | translate">
+            <i class="fa fa-chevron-left"></i> {{ 'COMMON.BACK' | translate }}
+          </button>
+          
+          <div class="title-group">
+            <h1>
+              <i [className]="'fa ' + (location.icon || 'fa-folder')" [style.color]="location.color"></i>
+              {{ location.name }}
+            </h1>
           </div>
         </header>
         <div class="content-grid">

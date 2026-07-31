@@ -57,8 +57,11 @@ namespace INest.Infrastructure.BackgroundServices.Reminder
 
                 _logger.LogInformation("[ReminderProcessor] Отправка напоминания Id={Id} для UserId={UserId}", reminder.Id, user.Id);
 
+                var title = reminder.Title;
+                var localizedTitle = _localizer[title].ResourceNotFound ? title : _localizer[title].Value;
+
                 var messageTemplate = _localizer["TG_NOTIFICATION_REMINDER_ALERT"].Value;
-                var message = string.Format(messageTemplate, reminder.Title, reminder.Item.Name);
+                var message = string.Format(messageTemplate, localizedTitle, reminder.Item.Name);
 
                 try
                 {

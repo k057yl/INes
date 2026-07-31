@@ -198,4 +198,14 @@
   <data name="TG_NOTIFICATION_REMINDER_ALERT" xml:space="preserve">
     <value>⏰ Нагадування! Подія: {0} Для речі: {1}</value>
   </data>
+  <data name="EMAILS.REMINDER_SUBJECT" xml:space="preserve">
+    <value>Нагадування: {0}</value>
+  </data>
+  <data name="EMAILS.REMINDER_BODY" xml:space="preserve">
+    <value>&lt;h3&gt;Увага!&lt;/h3&gt;
+&lt;p&gt;Нагадування про дату &lt;b&gt;{0}&lt;/b&gt;:&lt;/p&gt;&lt;p&gt;&lt;b&gt;{1}&lt;/b&gt;&lt;/p&gt;</value>
+  </data>
+  <data name="REMINDERS.RETURN_ITEM" xml:space="preserve">
+    <value>Повернення речі</value>
+  </data>
 </root>

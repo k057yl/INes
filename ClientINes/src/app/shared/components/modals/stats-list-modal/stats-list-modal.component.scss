@@ -89,6 +89,27 @@
           }
         }
 
+        /* КРАСНАЯ ПОДСВЕТКА ДЛЯ ПРОСРОЧЕННЫХ */
+        &.danger-item {
+          background: rgba(248, 81, 73, 0.06);
+          border-color: rgba(248, 81, 73, 0.25);
+
+          &:hover {
+            background: rgba(248, 81, 73, 0.12);
+            border-color: rgba(248, 81, 73, 0.4);
+          }
+
+          .text-danger {
+            color: #f85149;
+            font-weight: 600;
+          }
+
+          .text-danger-sub {
+            color: rgba(248, 81, 73, 0.85);
+            font-weight: 500;
+          }
+        }
+
         .item-icon {
           font-size: 1.2rem;
           width: 36px;
@@ -152,6 +173,29 @@
         .arrow-icon {
           color: #8b949e;
           font-size: 0.8rem;
+        }
+      }
+
+      /* РАЗДЕЛИТЕЛЬ ДЛЯ ПРОСРОЧЕК */
+      .section-divider {
+        display: flex;
+        align-items: center;
+        margin: 0.8rem 0 0.4rem 0;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+
+        &.danger-divider {
+          color: #f85149;
+          border-bottom: 1px solid rgba(248, 81, 73, 0.2);
+          padding-bottom: 0.4rem;
+
+          span {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+          }
         }
       }
 

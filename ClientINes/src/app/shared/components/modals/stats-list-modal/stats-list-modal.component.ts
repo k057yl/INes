@@ -52,6 +52,14 @@ export class StatsListModalComponent {
     return this.facade.stats?.attentionItems || [];
   }
 
+  get upcomingAttentionItems(): AttentionItemDto[] {
+    return this.attentionItems.filter(i => i.severity !== 'danger');
+  }
+
+  get expiredAttentionItems(): AttentionItemDto[] {
+    return this.attentionItems.filter(i => i.severity === 'danger');
+  }
+
   onLocationClick(locId: string) {
     this.router.navigate(['/location', locId]);
     this.close.emit();

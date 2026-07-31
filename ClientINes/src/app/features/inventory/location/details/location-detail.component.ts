@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule, Location as NgLocation } from '@angular/common';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { environment } from '../../../../../environments/environment';
@@ -18,6 +18,7 @@ import { DashboardModalService } from '../../../dashboard/dashboard.modal.servic
 })
 export class LocationDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private itemService = inject(ItemService);
   public locationService = inject(LocationService);
   private ngLocation = inject(NgLocation);
@@ -154,6 +155,6 @@ export class LocationDetailComponent implements OnInit {
   }
 
   goBack(): void {
-    this.ngLocation.back();
+    this.router.navigate(['/dashboard']); // <- Ведёт только на дашборд
   }
 }
