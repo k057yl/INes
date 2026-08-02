@@ -8,8 +8,24 @@
       </div>
     </div>
 
-    <!-- ПРАВАЯ ЧАСТЬ -->
-    <div class="actions">
+    <!-- ПРАВАЯ ЧАСТЬ ХЕДЕРА НА МОБИЛКЕ (НИК + БУРГЕР) -->
+    <div class="mobile-header-right">
+      @if (user$ | async; as user) {
+        <div class="user-box mobile-user-box" [title]="user.displayName || user.email">
+          <i class="fa fa-user-circle"></i>
+          <strong>{{ user.displayName || user.email }}</strong>
+        </div>
+      }
+
+      <button class="mobile-menu-btn" (click)="isMobileMenuOpen = !isMobileMenuOpen" [class.open]="isMobileMenuOpen">
+        <i class="fa" [ngClass]="isMobileMenuOpen ? 'fa-times' : 'fa-bars'"></i>
+      </button>
+    </div>
+
+    <!-- ДЕЙСТВИЯ (В ДЕСКТОПЕ СТРОКА, В МОБИЛКЕ - ВЫПАДАШКА) -->
+    <div class="actions" [class.mobile-open]="isMobileMenuOpen">
+      
+      <!-- 1. АДМИНКА -->
       @if (user$ | async; as user) {
         @if (isAdmin(user)) {
           <a routerLink="/admin/feedback" routerLinkActive="active" class="icon-btn admin-trigger" title="Админка отзывов">
@@ -17,14 +33,14 @@
           </a>
         }
 
-        <!-- Настройки -->
+        <!-- 2. НАСТРОЙКИ -->
         <a routerLink="/settings" routerLinkActive="active" class="settings-link" [title]="'HEADER.SETTINGS' | translate">
           <i class="fa fa-cog"></i>
           <span class="desktop-only">{{ 'HEADER.SETTINGS' | translate }}</span>
         </a>
       }
 
-      <!-- Кнопка + Создать -->
+      <!-- 3. СОЗДАТЬ -->
       @if ((user$ | async) && hasLocations()) {
         <div class="create-dropdown" [class.open]="isCreateMenuOpen()">
           <button class="create-trigger" (click)="toggleCreateMenu($event)" [title]="'COMMON.CREATE' | translate">
@@ -47,20 +63,12 @@
         </div>
       }
 
-      <!-- Данные юзера -->
-      @if (user$ | async; as user) {
-        <div class="user-box" [title]="user.email">
-          <i class="fa fa-user-circle"></i>
-          <strong>{{ user.email }}</strong>
-        </div>
-      }
-
-      <!-- Переключатель темы -->
+      <!-- 4. ТЕМА -->
       <button class="theme-toggle" (click)="toggleTheme()" [title]="'COMMON.CHANGE_THEME_TOOLTIP' | translate">
         {{ themeService.isDarkTheme() ? '🌙' : '☀️' }}
       </button>
 
-      <!-- Выбор языка -->
+      <!-- 5. ЯЗЫК -->
       <div class="lang-dropdown" [class.open]="isLangMenuOpen()">
         <button class="lang-trigger" (click)="toggleLangMenu($event)" [title]="'COMMON.CHANGE_LANGUAGE_TOOLTIP' | translate">
           <i class="fa fa-globe"></i>
@@ -80,7 +88,15 @@
         }
       </div>
 
-      <!-- Выход -->
+      <!-- 6. НИК (Только для Десктопа) -->
+      @if (user$ | async; as user) {
+        <div class="user-box desktop-user-box" [title]="user.displayName || user.email">
+          <i class="fa fa-user-circle"></i>
+          <strong>{{ user.displayName || user.email }}</strong>
+        </div>
+      }
+
+      <!-- 7. ВЫХОД -->
       @if (user$ | async) {
         <button class="logout-icon-btn" (click)="onLogout()" [title]="'COMMON.EXIT' | translate">
           <i class="fa fa-sign-out-alt"></i>

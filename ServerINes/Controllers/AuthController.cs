@@ -8,6 +8,7 @@ using INest.Features.Auth.Commands.Register;
 using INest.Features.Auth.Commands.ResendCode;
 using INest.Features.Auth.DTOs;
 using INest.Features.Auth.Queries.CheckEmail;
+using INest.Features.Auth.Queries.GetMe;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -90,13 +91,14 @@ namespace INest.Controllers
 
         [Authorize]
         [HttpGet("me")]
-        public IActionResult Me()
+        public async Task<IActionResult> Me()
         {
-            return Ok(new
-            {
-                email = User.Identity?.Name,
-                roles = User.FindAll(ClaimTypes.Role).Select(c => c.Value)
-            });
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
+
+            var result = await _mediator.Send(new GetMeQuery(userId));
+            return Ok(result);
         }
 
         [AllowAnonymous]

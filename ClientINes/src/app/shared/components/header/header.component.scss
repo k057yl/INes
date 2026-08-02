@@ -3,6 +3,7 @@
   position: sticky;
   top: 0;
   z-index: 1000;
+  width: 100%;
 }
 
 .header {
@@ -14,6 +15,9 @@
   align-items: center;
   transition: background 0.3s ease;
   backdrop-filter: blur(10px);
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .header-main {
@@ -23,6 +27,46 @@
   width: 100%;
   max-width: 1600px;
   margin: 0 auto;
+}
+
+/* --- ОБЁРТКА ДЛЯ МОБИЛЬНОЙ ШАПКИ (НИК + БУРГЕР) --- */
+.mobile-header-right {
+  display: none;
+  align-items: center;
+  gap: 10px;
+}
+
+.mobile-user-box {
+  display: flex;
+  max-width: 180px;
+  
+  strong {
+    max-width: 110px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+/* --- КНОПКА ГАМБУРГЕРА ДЛЯ МОБИЛКИ --- */
+.mobile-menu-btn {
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  z-index: 1001;
+  transition: all 0.2s ease;
+
+  &.open {
+    color: var(--accent-color);
+    border-color: var(--accent-color);
+  }
 }
 
 /* --- ЛОГОТИП --- */
@@ -240,6 +284,64 @@
 
 @media (max-width: 650px) {
   .header { padding: 0 1rem; }
-  .user-box strong { display: none; }
-  .desktop-only { display: none; }
+}
+
+/* --- СТРОГО В ОДИН СТОЛБИК В МОБИЛКЕ --- */
+@media (max-width: 768px) {
+  .mobile-header-right {
+    display: flex;
+  }
+
+  .desktop-user-box {
+    display: none !important;
+  }
+
+  .actions {
+    display: none;
+    position: absolute;
+    top: 70px;
+    left: 0;
+    right: 0;
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border-color);
+    padding: 16px 20px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+    z-index: 999;
+
+    &.mobile-open {
+      display: flex;
+      animation: slideIn 0.2s ease-out;
+    }
+
+    .create-dropdown,
+    .lang-dropdown,
+    .settings-link,
+    .theme-toggle,
+    .logout-icon-btn,
+    .icon-btn {
+      width: 100%;
+      box-sizing: border-box;
+      justify-content: center;
+    }
+
+    .create-trigger,
+    .lang-trigger {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .desktop-only {
+      display: inline-block !important;
+    }
+
+    .create-menu,
+    .lang-menu {
+      left: 0;
+      right: 0;
+      min-width: auto;
+    }
+  }
 }

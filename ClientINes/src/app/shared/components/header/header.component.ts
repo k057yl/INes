@@ -23,10 +23,13 @@ export class HeaderComponent {
   private router = inject(Router);
   public modalService = inject(DashboardModalService);
   private locationService = inject(LocationService);
+  
+  public isMobileMenuOpen = false;
 
   isLangMenuOpen = signal(false);
   isCreateMenuOpen = signal(false);
   hasLocations = signal<boolean>(false);
+  
 
   user$ = this.authService.user$;
 

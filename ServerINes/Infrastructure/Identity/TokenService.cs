@@ -24,6 +24,7 @@ namespace INest.Infrastructure
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.UserName ?? ""),
+                new Claim(ClaimTypes.GivenName, user.DisplayName ?? user.UserName ?? ""),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 

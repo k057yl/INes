@@ -3,15 +3,15 @@
   background: var(--bg-main); 
   min-height: 100vh;
   width: 100%;
-  overflow-x: hidden; /* ФИКС ОТ ВЫЛЕЗАНИЯ ЗА ЭКРАН */
   transition: background-color 0.3s ease;
 }
 
 .main-page-container {
   width: 100%;
-  box-sizing: border-box; /* ФИКС ОТ ВЫЛЕЗАНИЯ ЗА ЭКРАН */
+  box-sizing: border-box;
 }
 
+/* --- СЕТКА ДАШБОРДА (Правило №2: Grid рулит шириной) --- */
 .board-grid-3 {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -22,8 +22,16 @@
   background: var(--bg-main-card);
   border-bottom-left-radius: 12px;
   border-bottom-right-radius: 12px;
-  width: 100%; /* ФИКС ОТ ВЫЛЕЗАНИЯ ЗА ЭКРАН */
-  box-sizing: border-box; /* ФИКС ОТ ВЫЛЕЗАНИЯ ЗА ЭКРАН */
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* --- КАРТОЧКА И ОБЁРТКА (Правила №1 и №4: Карточка сжимается и слушает родителя) --- */
+.root-loc-wrapper,
+.location-column {
+  width: 100%;
+  min-width: 0; /* Разрешает флексу/гриду сжимать блок меньше содержимого */
+  box-sizing: border-box;
 }
 
 .loader-overlay {
@@ -121,22 +129,52 @@
   .board-grid-3 { grid-template-columns: repeat(2, 1fr); } 
 }
 
-/* --- МОБИЛКА: СТРОГО ОДНА КОЛОНКА --- */
+/* --- МОБИЛЬНЫЙ АДАПТИВ ПО ЧЕКЛИСТУ --- */
 @media (max-width: 768px) {
   .board-grid-3 { 
-    grid-template-columns: 1fr; /* ТЕПЕРЬ ОДНА ПОД ОДНОЙ */
+    grid-template-columns: 1fr; /* Одна колонка */
     gap: 12px; 
-    padding: 10px; 
+    padding: 10px 8px; 
   }
-  .root-loc-wrapper { 
-    width: 100%; /* КАРТОЧКА НА ВСЮ ШИРИНУ */
-    box-sizing: border-box; 
+
+  .zero-state-container { 
+    padding: 30px 10px; 
+    .zero-icon { font-size: 3rem; } 
   }
-  .zero-state-container { padding: 30px 10px; .zero-icon { font-size: 3rem; } }
 }
 
-/* --- МАГИЯ CDK, ПРОБИТАЯ ЧЕРЕЗ NG-DEEP (чтобы не трогать риббон и глобалку) --- */
+/* --- ПРОБИВАЕМ СТИЛИ ВНУТРЕННИХ КОМПОНЕНТОВ (Правила №3, №4, №5) --- */
 ::ng-deep {
+  /* Текстовые блоки сжимаются, а не раздувают родителя */
+  .title-block,
+  .item-content,
+  .item-name,
+  .location-title {
+    min-width: 0 !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Правило №5: Панели кнопок в карточках переносятся, если не влезают */
+  .header-row,
+  .header-row.top,
+  .button-group,
+  .location-actions {
+    flex-wrap: wrap !important;
+    min-width: 0 !important;
+  }
+
+  /* Правило №3: Лечим рекурсивные отступы вложенных локаций */
+  .child-locations,
+  .nested-locations-container {
+    margin-left: 6px !important;
+    padding-left: 8px !important;
+    border-left: 2px dashed var(--border-color, rgba(255, 255, 255, 0.15));
+    min-width: 0 !important;
+    box-sizing: border-box;
+  }
+
+  /* Drag & Drop превьюшки */
   .custom-drag-preview {
     width: 100px;
     height: 100px;
