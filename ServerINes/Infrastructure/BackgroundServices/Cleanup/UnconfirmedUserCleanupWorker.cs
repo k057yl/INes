@@ -5,42 +5,31 @@ namespace INest.Infrastructure.BackgroundServices.Cleanup
 {
     public class UnconfirmedUserCleanupWorker : BackgroundService
     {
-        private readonly IServiceProvider _services;
+        private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<UnconfirmedUserCleanupWorker> _logger;
 
-        public UnconfirmedUserCleanupWorker(IServiceProvider services, ILogger<UnconfirmedUserCleanupWorker> logger)
+        public UnconfirmedUserCleanupWorker(IServiceProvider serviceProvider, ILogger<UnconfirmedUserCleanupWorker> logger)
         {
-            _services = services;
+            _serviceProvider = serviceProvider;
             _logger = logger;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            _logger.LogInformation("UnconfirmedUserCleanupWorker запущен.");
+
             while (!stoppingToken.IsCancellationRequested)
             {
                 try
                 {
-                    using var scope = _services.CreateScope();
-                    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
+                    using var scope = _serviceProvider.CreateScope();
+                    var cleanupService = scope.ServiceProvider.GetRequiredService<UnconfirmedUserCleanupService>();
 
-                    var cutoffTime = DateTime.UtcNow.AddHours(-24);
-
-                    var unconfirmedUsers = userManager.Users
-                        .Where(u => !u.EmailConfirmed && u.CreatedAt < cutoffTime)
-                        .ToList();
-
-                    foreach (var user in unconfirmedUsers)
-                    {
-                        var result = await userManager.DeleteAsync(user);
-                        if (result.Succeeded)
-                        {
-                            _logger.LogInformation("Deleted unconfirmed user: {Email}", user.Email);
-                        }
-                    }
+                    await cleanupService.CleanupAsync(stoppingToken);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Error occurred while cleaning up unconfirmed users.");
+                    _logger.LogError(ex, "Ошибка в процессе фоновой очистки неподтвержденных пользователей.");
                 }
 
                 await Task.Delay(TimeSpan.FromHours(24), stoppingToken);

@@ -28,12 +28,6 @@ namespace INest.Features.Locations.Commands.MoveLocation
             if (request.LocationId == request.NewParentId)
                 throw new InvalidOperationException(LOCATIONS.ERRORS.SELF_NESTING);
 
-            int movingSubtreeDepth = await GetSubtreeDepthAsync(request.UserId, request.LocationId, cancellationToken);
-            int targetLevel = await GetLocationLevelAsync(request.UserId, request.NewParentId, cancellationToken);
-
-            if (targetLevel + movingSubtreeDepth > 3)
-                throw new AppException(ERRORS.MAX_NESTING_REACHED, 400);
-
             if (request.NewParentId.HasValue)
             {
                 var currentParentId = request.NewParentId;
@@ -49,6 +43,12 @@ namespace INest.Features.Locations.Commands.MoveLocation
                         .FirstOrDefaultAsync(cancellationToken);
                 }
             }
+
+            int movingSubtreeDepth = await GetSubtreeDepthAsync(request.UserId, request.LocationId, cancellationToken);
+            int targetLevel = await GetLocationLevelAsync(request.UserId, request.NewParentId, cancellationToken);
+
+            if (targetLevel + movingSubtreeDepth > 3)
+                throw new AppException(ERRORS.MAX_NESTING_REACHED, 400);
 
             var maxSortOrder = await _context.StorageLocations
                 .Where(l => l.UserId == request.UserId && l.ParentLocationId == request.NewParentId)

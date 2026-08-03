@@ -18,9 +18,14 @@ namespace INest.Features.Telegram.Commands.GenerateTelegramToken
 
         public async Task<TelegramStatusDto> Handle(GenerateTelegramTokenCommand request, CancellationToken ct)
         {
-            await _db.Set<TelegramConnectionCode>()
+            var oldCodes = await _db.Set<TelegramConnectionCode>()
                 .Where(c => c.UserId == request.UserId)
-                .ExecuteDeleteAsync(ct);
+                .ToListAsync(ct);
+
+            if (oldCodes.Count > 0)
+            {
+                _db.Set<TelegramConnectionCode>().RemoveRange(oldCodes);
+            }
 
             var token = Guid.NewGuid().ToString("N");
 

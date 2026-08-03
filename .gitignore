@@ -10,6 +10,12 @@
 *.userosscache
 *.sln.docstates
 
+# Test Results & Code Coverage
+**/TestResults/
+**/coverage/
+*.coverage
+*.coveragexml
+
 # =========================
 # Secrets & Local Configuration
 # =========================

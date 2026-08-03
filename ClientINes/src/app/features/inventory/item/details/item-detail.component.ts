@@ -139,7 +139,7 @@ export class ItemDetailComponent implements OnInit {
   onReturn() {
     if (!this.item) return;
 
-    const message = 'LENDING_MODAL.MODAL.RETURN_MSG';
+    const message = 'LENDING.RETURN_MSG';
 
     this.modalService.openConfirm({
       mode: 'confirm',

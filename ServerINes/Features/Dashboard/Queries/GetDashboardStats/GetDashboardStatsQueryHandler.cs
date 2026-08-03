@@ -25,7 +25,7 @@ namespace INest.Features.Dashboard.Queries.GetDashboardStats
 
             var attentionItems = reminders.Items
                 .Concat(lendings.Items)
-                .OrderBy(x => x.Severity == "danger" ? 1 : 0)
+                .OrderByDescending(x => x.Severity == "danger")
                 .ThenBy(x => x.Date)
                 .ToList();
 

@@ -23,16 +23,15 @@ namespace INest.Features.Telegram.Commands.ConnectTelegram
 
             if (connectionCode == null) return false;
 
-            var updatedRows = await _db.Users
-                .Where(u => u.Id == connectionCode.UserId)
-                .ExecuteUpdateAsync(s => s.SetProperty(u => u.TelegramChatId, request.ChatId), ct);
+            var user = await _db.Users
+                .FirstOrDefaultAsync(u => u.Id == connectionCode.UserId, ct);
 
-            if (updatedRows > 0)
+            if (user != null)
             {
-                await _db.Set<TelegramConnectionCode>()
-                    .Where(c => c.Id == connectionCode.Id)
-                    .ExecuteDeleteAsync(ct);
+                user.TelegramChatId = request.ChatId;
+                _db.Set<TelegramConnectionCode>().Remove(connectionCode);
 
+                await _db.SaveChangesAsync(ct);
                 return true;
             }
 
