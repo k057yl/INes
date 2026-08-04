@@ -75,7 +75,6 @@ namespace INest.Features.Items.Commands.CreateItem
                     Details = new ItemDetails
                     {
                         PurchasePrice = dto.Details.PurchasePrice,
-                        EstimatedValue = dto.Details.EstimatedValue,
                         Currency = dto.Details.Currency ?? "USD",
                         PurchaseDate = dto.Details.PurchaseDate,
                         WarrantyExpiration = dto.Details.WarrantyExpiration,
@@ -121,7 +120,6 @@ namespace INest.Features.Items.Commands.CreateItem
                         PersonName = safePerson,
                         DateGiven = DateTime.UtcNow,
                         ExpectedReturnDate = dto.ExpectedReturnDate,
-                        ValueAtLending = item.Details?.EstimatedValue,
                         Comment = safeDescription
                     };
 

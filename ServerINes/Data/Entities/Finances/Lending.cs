@@ -20,8 +20,6 @@ namespace INest.Data.Entities.Finances
 
         public bool NotificationSent { get; set; }
 
-        public decimal? ValueAtLending { get; set; }
-
         public string? Comment { get; set; }
 
         public Item Item { get; set; } = null!;

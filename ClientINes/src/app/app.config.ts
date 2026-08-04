@@ -11,7 +11,7 @@ import { cultureInterceptor } from './core/interceptors/culture.interceptor';
 import { jwtInterceptor } from './core/interceptors/jwt.interceptor';
 import { globalErrorInterceptor } from './core/interceptors/global-error.interceptor';
 
-import { AuthService } from './core/services/auth.service';
+import { AuthService } from './features/auth/services/auth.service';
 
 import { provideTranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';

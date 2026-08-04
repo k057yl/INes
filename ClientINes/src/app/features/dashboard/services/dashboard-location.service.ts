@@ -1,8 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { StorageLocation } from '../../../core/contracts/storage-location';
-import { LocationService } from '../../../core/services/location.service';
+import { StorageLocation } from '../../location/contracts/storage-location';
+import { LocationService } from '../../location/services/location.service';
 import { DashboardTreeService } from './dashboard-tree.service';
 
 @Injectable()

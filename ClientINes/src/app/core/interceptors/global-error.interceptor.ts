@@ -19,7 +19,7 @@ export const globalErrorInterceptor: HttpInterceptorFn = (req, next) => {
       }
 
       const translate = injector.get(TranslateService);
-      const errorKey = error.error?.error || 'SYSTEM.DEFAULT_ERROR';
+      const errorKey = error.error?.message || error.error?.error || 'SYSTEM.DEFAULT_ERROR';
       const translatedMessage = translate.instant(errorKey);
       const translatedTitle = translate.instant('SYSTEM.DEFAULT_ERROR');
 

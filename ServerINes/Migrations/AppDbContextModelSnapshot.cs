@@ -116,10 +116,6 @@ namespace INest.Migrations
                         .HasMaxLength(3)
                         .HasColumnType("character varying(3)");
 
-                    b.Property<decimal?>("EstimatedValue")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("numeric(18,2)");
-
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
 
@@ -277,9 +273,6 @@ namespace INest.Migrations
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
-
-                    b.Property<decimal?>("ValueAtLending")
-                        .HasColumnType("numeric");
 
                     b.HasKey("Id");
 

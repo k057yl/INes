@@ -72,7 +72,6 @@ namespace INest.Features.Items.Commands.UpdateItemFull
 
                 item.Details.PurchaseDate = dto.PurchaseDate;
                 item.Details.PurchasePrice = dto.PurchasePrice;
-                item.Details.EstimatedValue = dto.EstimatedValue;
                 item.Details.Currency = dto.Currency ?? item.Details.Currency;
                 item.Details.WarrantyExpiration = dto.WarrantyExpiration;
 

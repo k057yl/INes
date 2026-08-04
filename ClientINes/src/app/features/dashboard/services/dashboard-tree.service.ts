@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { StorageLocation } from '../../../core/contracts/storage-location';
+import { StorageLocation } from '../../location/contracts/storage-location';
 
 @Injectable()
 export class DashboardTreeService {

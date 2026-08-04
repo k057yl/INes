@@ -11,7 +11,6 @@ namespace INest.Data.Configurations.Core
             builder.HasKey(x => x.ItemId);
 
             builder.Property(x => x.PurchasePrice).HasPrecision(18, 2);
-            builder.Property(x => x.EstimatedValue).HasPrecision(18, 2);
             builder.Property(x => x.Currency).HasMaxLength(3);
 
             builder.Property(x => x.ReceiptDocumentPath).HasMaxLength(500);

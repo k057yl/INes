@@ -1,12 +1,12 @@
 import { Component, inject, signal, HostListener, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { AuthService } from '../../../core/services/auth.service';
+import { AuthService } from '../../../features/auth/services/auth.service';
 import { LocalizationService } from '../../../core/services/localization.service';
 import { ThemeService } from '../../../core/services/theme.service';
 import { TranslateModule } from '@ngx-translate/core';
-import { DashboardModalService } from '../../../features/dashboard/dashboard.modal.service';
-import { LocationService } from '../../../core/services/location.service';
+import { DashboardModalService } from '../../../features/dashboard/components/dashboard/dashboard.modal.service';
+import { LocationService } from '../../../features/location/services/location.service';
 
 @Component({
   selector: 'app-header',

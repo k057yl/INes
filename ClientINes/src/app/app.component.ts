@@ -4,15 +4,15 @@ import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './shared/components/header/header.component';
 import { FooterComponent } from './shared/components/footer/footer.component';
 import { LocalizationService } from './core/services/localization.service';
-import { AuthService } from './core/services/auth.service';
+import { AuthService } from './features/auth/services/auth.service';
 
-import { DashboardModalService } from './features/dashboard/dashboard.modal.service';
-import { InestModalComponent } from './shared/components/modals/inest-modal/inest-modal.component';
-import { SellModalComponent } from './shared/components/modals/sell-modal/sell-modal.component';
-import { LendItemModalComponent } from './shared/components/modals/lend-modal/lend-item-modal.component';
-import { ItemFormModalComponent } from './shared/components/modals/item-form-modal/item-form-modal.component';
-import { LocationFormModalComponent } from './shared/components/modals/location-form-modal/location-form-modal.component';
-import { FeedbackModalComponent } from './shared/components/modals/feedback-modal/feedback-modal.component';
+import { DashboardModalService } from './features/dashboard/components/dashboard/dashboard.modal.service';
+import { InestModalComponent } from './shared/components/inest-modal/inest-modal.component';
+import { SellModalComponent } from './features/sales/components/sell-modal/sell-modal.component';
+import { LendItemModalComponent } from './features/lending/components/lend-modal/lend-item-modal.component';
+import { ItemFormModalComponent } from './features/item/components/item-form-modal/item-form-modal.component';
+import { LocationFormModalComponent } from './features/location/components/location-form-modal/location-form-modal.component';
+import { FeedbackModalComponent } from './features/feedback/components/feedback-modal/feedback-modal.component';
 
 
 @Component({

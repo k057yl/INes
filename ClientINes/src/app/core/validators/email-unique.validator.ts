@@ -2,7 +2,7 @@ import { AbstractControl, AsyncValidatorFn, ValidationErrors } from '@angular/fo
 import { inject } from '@angular/core';
 import { Observable, of, timer } from 'rxjs';
 import { map, switchMap, catchError, first } from 'rxjs/operators';
-import { AuthService } from '../../core/services/auth.service';
+import { AuthService } from '../../features/auth/services/auth.service';
 
 export function emailUniqueValidator(): AsyncValidatorFn {
   const authService = inject(AuthService); 

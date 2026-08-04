@@ -53,7 +53,6 @@ namespace INest.Features.Locations.Queries.GetLocationTree
                     Details = i.Details != null ? new ItemFinanceDto
                     {
                         PurchasePrice = i.Details.PurchasePrice,
-                        EstimatedValue = i.Details.EstimatedValue,
                         Currency = i.Details.Currency ?? "USD",
                         PurchaseDate = i.Details.PurchaseDate
                     } : null,

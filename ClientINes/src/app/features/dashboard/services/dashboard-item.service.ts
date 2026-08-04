@@ -2,14 +2,14 @@ import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { Item } from '../../../core/contracts/item';
-import { ItemService } from '../../../core/services/item.service';
-import { SalesService } from '../../../core/services/sales.service';
-import { LendingService } from '../../../core/services/lending.service';
-import { SaleCreateDto } from '../../../core/dtos/sale-item-create.dto';
-import { ItemLendDto } from '../../../core/dtos/item-lend.dto';
-import { ItemReturnDto } from '../../../core/dtos/item-return.dto';
-import { StorageLocation } from '../../../core/contracts/storage-location';
+import { Item } from '../../item/contracts/item';
+import { ItemService } from '../../item/services/item.service';
+import { SalesService } from '../../sales/services/sales.service';
+import { LendingService } from '../../lending/services/lending.service';
+import { SaleCreateDto } from '../../sales/dtos/sale-item-create.dto';
+import { ItemLendDto } from '../../item/dtos/item-lend.dto';
+import { ItemReturnDto } from '../../item/dtos/item-return.dto';
+import { StorageLocation } from '../../location/contracts/storage-location';
 
 @Injectable()
 export class DashboardItemService {

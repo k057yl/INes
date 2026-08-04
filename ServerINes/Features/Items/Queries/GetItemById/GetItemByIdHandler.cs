@@ -55,7 +55,6 @@ namespace INest.Features.Items.Queries.GetItemById
                     : new ItemFinanceDto
                     {
                         PurchasePrice = item.Details.PurchasePrice,
-                        EstimatedValue = item.Details.EstimatedValue,
                         Currency = item.Details.Currency ?? "USD",
                         PurchaseDate = item.Details.PurchaseDate,
                         WarrantyExpiration = item.Details.WarrantyExpiration,

@@ -80,7 +80,6 @@ namespace INest.Features.Items.Queries.GetItems
                     Details = x.Item.Details != null ? new ItemFinanceDto
                     {
                         PurchasePrice = x.Item.Details.PurchasePrice,
-                        EstimatedValue = x.Item.Details.EstimatedValue,
                         Currency = x.Item.Details.Currency,
                         WarrantyExpiration = x.Item.Details.WarrantyExpiration,
                         ReceiptDocumentPath = x.Item.Details.ReceiptDocumentPath

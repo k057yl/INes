@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
-import { DashboardModalService } from '../../../features/dashboard/dashboard.modal.service';
+import { DashboardModalService } from '../../../features/dashboard/components/dashboard/dashboard.modal.service';
 
 @Component({
   selector: 'app-footer',

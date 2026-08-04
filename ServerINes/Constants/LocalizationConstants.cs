@@ -125,6 +125,7 @@
                 public const string SELF_NESTING = "LOCATIONS.ERRORS.SELF_NESTING";
                 public const string CIRCULAR_DEPENDENCY = "LOCATIONS.ERRORS.CIRCULAR_DEPENDENCY";
                 public const string INVALID_NAME = "LOCATIONS.ERRORS.INVALID_NAME";
+                public const string NOT_EMPTY = "LOCATIONS.ERRORS.NOT_EMPTY";
             }
 
             public static class SUCCESS

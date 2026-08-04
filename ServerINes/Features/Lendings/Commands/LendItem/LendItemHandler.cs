@@ -80,7 +80,6 @@ namespace INest.Features.Lendings.Commands.LendItem
                 PersonName = safePersonName,
                 DateGiven = DateTime.UtcNow,
                 ExpectedReturnDate = dto.ExpectedReturnDate,
-                ValueAtLending = dto.ValueAtLending ?? item.Details?.EstimatedValue,
                 Comment = safeComment
             };
 
@@ -111,7 +110,7 @@ namespace INest.Features.Lendings.Commands.LendItem
                 ItemId = item.Id,
                 UserId = request.UserId,
                 Type = isBorrowing ? ItemHistoryType.Lent : ItemHistoryType.Lent,
-                NewValue = $"{safePersonName}|{lending.ValueAtLending}$",
+                NewValue = safePersonName,
                 CreatedAt = DateTime.UtcNow
             });
 

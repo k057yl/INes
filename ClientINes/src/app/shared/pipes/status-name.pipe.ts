@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { ItemStatus } from '../../core/enums/item-status.enum';
+import { ItemStatus } from '../../features/item/enums/item-status.enum';
 import { ITEM_STATUS_LABELS } from '../../core/constants/item-status.constants';
 
 @Pipe({

@@ -1,16 +1,16 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from './features/auth/login/login.component';
-import { RegisterComponent } from './features/auth/register/register.component';
-import { ConfirmRegisterComponent } from './features/auth/register/confirm.register.component';
-import { DashboardComponent } from './features/dashboard/dashboard.component';
-import { LocationDetailComponent } from './features/inventory/location/details/location-detail.component';
-import { SalesListComponent } from './features/sales/sales-list.component';
-import { SettingsComponent } from './features/setting/settings.component';
-import { ItemDetailComponent } from './features/inventory/item/details/item-detail.component';
-import { ItemsListComponent } from './features/inventory/item/items-list/items-list.component';
-import { AdminFeedbackComponent } from './shared/components/admin/admin-feedback/admin-feedback.component';
+import { LoginComponent } from './features/auth/components/login/login.component';
+import { RegisterComponent } from './features/auth/components/register/register.component';
+import { ConfirmRegisterComponent } from './features/auth/components/confirm/confirm.register.component';
+import { DashboardComponent } from './features/dashboard/components/dashboard/dashboard.component';
+import { LocationDetailComponent } from './features/location/components/details/location-detail.component';
+import { SalesListComponent } from './features/sales/components/sales-list/sales-list.component';
+import { SettingsComponent } from './features/setting/components/setting/settings.component';
+import { ItemDetailComponent } from './features/item/components/details/item-detail.component';
+import { ItemsListComponent } from './features/item/components/items-list/items-list.component';
+import { AdminFeedbackComponent } from './features/admin/components/admin-feedback.component';
 import { authGuard, guestGuard } from './core/guards/auth.guard';
-import { locationResolver } from './features/inventory/location/location.resolver';
+import { locationResolver } from './features/location/components/location.resolver';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },

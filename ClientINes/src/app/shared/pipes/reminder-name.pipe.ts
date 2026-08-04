@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { ReminderType } from '../../core/enums/reminder-type.enum';
+import { ReminderType } from '../../features/reminder/enums/reminder-type.enum';
 
 @Pipe({
   name: 'reminderName',

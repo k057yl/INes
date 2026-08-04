@@ -118,12 +118,6 @@ namespace INest.Features.Items.Commands.UpdateItemPartial
                     item.Details.PurchasePrice = dto.PurchasePrice.Value;
                 }
 
-                if (dto.EstimatedValue.HasValue && dto.EstimatedValue != item.Details.EstimatedValue)
-                {
-                    LogChange(ItemHistoryType.ValueUpdated, item.Details.EstimatedValue?.ToString(), dto.EstimatedValue.Value.ToString());
-                    item.Details.EstimatedValue = dto.EstimatedValue.Value;
-                }
-
                 if (dto.Currency != null)
                 {
                     item.Details.Currency = dto.Currency;

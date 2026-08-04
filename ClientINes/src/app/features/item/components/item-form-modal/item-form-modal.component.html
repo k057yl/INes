@@ -1,0 +1,325 @@
+<div class="inest-form-page" (click)="cancel()">
+  <div class="inest-form-card item-card-wide" (click)="$event.stopPropagation()">
+
+    <button type="button" class="close-modal-btn" (click)="cancel()">
+      <i class="fa fa-times"></i>
+    </button>
+
+    <header class="inest-form-header">
+      <div class="logo-circle">
+        <i class="fa" [ngClass]="isEdit ? 'fa-pen' : 'fa-plus'"></i>
+      </div>
+      <div class="header-text">
+        <h2>{{ (isEdit ? 'CREATE_ITEM_PAGE.TITLE_EDIT' : 'CREATE_ITEM_PAGE.TITLE') | translate }}</h2>
+        @if (!isEdit) {
+          <p>{{ 'CREATE_ITEM_PAGE.TITLE_SUB' | translate }}</p>
+        }
+        @if (isEdit) {
+          <div class="status-badge-inline" [class]="(item?.status ?? 0) | statusName">
+            {{ 'STATUS.' + ((item?.status ?? 0) | statusName) | translate }}
+          </div>
+        }
+      </div>
+    </header>
+
+    @if (isEdit && item?.status !== 0) {
+      <div class="edit-restricted-banner">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <span>{{ 'CREATE_ITEM_PAGE.WARNING_EDIT_MSG' | translate }}</span>
+      </div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+      <!-- ОБЯЗАТЕЛЬНЫЕ ПОЛЯ (ВСЕГДА ВИДНЫ) -->
+      <div class="inest-form-group">
+        <label>{{ 'CREATE_ITEM_PAGE.NAME' | translate }} *</label>
+        <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('name')" [class.is-readonly]="isEdit && item?.status !== 0">
+          <i class="fa fa-tag inest-field-icon-left"></i>
+          <input formControlName="name" [placeholder]="'CREATE_ITEM_PAGE.NAME_PHL' | translate" autofocus>
+        </div>
+        @if (isControlInvalid('name')) {
+          <div class="error-hint-msg">
+            <i class="fa fa-exclamation-circle"></i>
+            <span>{{ (form.get('name')?.errors?.['serverError'] || 'ERRORS.REQUIRED_FIELD') | translate }}</span>
+          </div>
+        }
+      </div>
+
+      <div class="inest-form-group">
+        <div class="label-with-action">
+          <label>{{ 'CREATE_ITEM_PAGE.CATEGORY' | translate }} *</label>
+          @if (!isEdit || item?.status === 0) {
+            <button type="button" class="inline-add-btn" (click)="openCategoryModal()">
+              <i class="fa fa-plus"></i> {{ 'CREATE_ITEM_PAGE.BUTTON_ADD_INLINE' | translate }}
+            </button>
+          }
+        </div>
+        <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('categoryId')" [class.is-readonly]="isEdit && item?.status !== 0">
+          <i class="fa fa-folder inest-field-icon-left"></i>
+          <select formControlName="categoryId">
+            <option value="" disabled>{{ 'CREATE_ITEM_PAGE.FIELD_CATEGORY' | translate }}</option>
+            @for (cat of categories; track cat) {
+              <option [value]="cat.id">{{ cat.name }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      @if (!isLocationPredefined) {
+        <div class="inest-form-group">
+          <label>{{ 'CREATE_ITEM_PAGE.LOCATION' | translate }} *</label>
+          <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('storageLocationId')" [class.is-readonly]="isEdit && item?.status !== 0">
+            <i class="fa fa-map-marker-alt inest-field-icon-left"></i>
+            <select formControlName="storageLocationId">
+              <option value="" disabled>{{ 'CREATE_ITEM_PAGE.SELECT_LOCATION' | translate }}</option>
+              @for (loc of locations; track loc) {
+                <option [value]="loc.id">{{ loc.name }}</option>
+              }
+            </select>
+          </div>
+        </div>
+      }
+
+      <!-- ОПЦИОНАЛЬНЫЙ БЛОК: ОПИСАНИЕ И ФОТО -->
+      <div class="inest-form-group">
+        <label>{{ 'CREATE_ITEM_PAGE.DESCRIPTION' | translate }}</label>
+        <div class="inest-input-wrapper">
+          <i class="fa fa-align-left inest-field-icon-left"></i>
+          <textarea formControlName="description" [placeholder]="'CREATE_ITEM_PAGE.FIELD_DESCRIPTION' | translate" rows="2"></textarea>
+        </div>
+      </div>
+
+      @if (!isEdit || form.get('addPhoto')?.value) {
+        <div class="photo-hero-section">
+          <div class="photo-upload-canvas" [class.has-photos]="selectedPhotos.length > 0">
+            @if (selectedPhotos.length === 0) {
+              <div class="upload-placeholder">
+                <input type="file" accept="image/*" multiple (change)="onFileSelected($event)" id="fileInput" class="hidden-input">
+                <label for="fileInput" class="canvas-label">
+                  <i class="fa fa-camera-retro"></i>
+                  <span>{{ 'CREATE_ITEM_PAGE.CLICK_TO_UPLOAD' | translate }}</span>
+                </label>
+              </div>
+            }
+            @if (selectedPhotos.length > 0) {
+              <div class="photo-grid-inline">
+                @for (p of selectedPhotos; track p; let i = $index) {
+                  <div class="preview-card" [class.is-main]="p.isMain" (click)="setMainPhoto(i)">
+                    <img [src]="p.preview">
+                    @if (p.isMain) { <div class="main-badge"><i class="fa fa-star"></i></div> }
+                    <button type="button" class="btn-del" (click)="removePhoto(i, $event)"><i class="fa fa-times"></i></button>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- ЧЕКБОКС ДЛЯ РАЗВОРАЧИВАНИЯ ФИНАНСОВ И ДАТЫ ПОКУПКИ -->
+      @if (!isLendingStatus) {
+        <div class="reminder-toggle-section">
+          <div class="inest-form-group">
+            <div class="label-with-action">
+              <label class="inest-checkbox-label highlight">
+                <input type="checkbox" formControlName="addDetails">
+                <span><i class="fa fa-wallet"></i> {{ 'CREATE_ITEM_PAGE.ADD_FINANCIALS' | translate }}</span>
+              </label>
+              <i class="fa fa-question-circle help-tooltip-icon" [title]="'CREATE_ITEM_PAGE.TIPS.FINANCIALS' | translate"></i>
+            </div>
+          </div>
+
+          @if (form.get('addDetails')?.value) {
+            <div class="lending-info-section">
+              <div class="form-row-multi">
+                <div class="inest-form-group">
+                  <label>{{ 'CREATE_ITEM_PAGE.PURCHASE_DATE' | translate }}</label>
+                  <div class="inest-input-wrapper">
+                    <i class="fa fa-calendar-alt inest-field-icon-left"></i>
+                    <input type="date" formControlName="purchaseDate" [max]="todayMax">
+                  </div>
+                </div>
+
+                <div class="inest-form-group">
+                  <label>{{ 'CREATE_ITEM_PAGE.PRICE' | translate }}</label>
+                  <div class="inest-input-wrapper">
+                    <i class="fa fa-wallet inest-field-icon-left"></i>
+                    <input formControlName="purchasePrice" type="number" placeholder="0.00">
+                  </div>
+                </div>
+
+                <div class="inest-form-group">
+                  <label>{{ 'CREATE_ITEM_PAGE.CURRENCY' | translate }}</label>
+                  <div class="inest-input-wrapper">
+                    <i class="fa fa-coins inest-field-icon-left"></i>
+                    <select formControlName="currency">
+                      <option value="UAH">UAH (₴)</option>
+                      <option value="USD">USD ($)</option>
+                      <option value="EUR">EUR (€)</option>
+                      <option value="USDT">USDT (₮)</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- БЛОК ГАРАНТИИ И ЧЕКА -->
+      @if (!isLendingStatus && (!isEdit || item?.status === 0)) {
+        <div class="reminder-toggle-section">
+          <div class="inest-form-group">
+            <div class="label-with-action">
+              <label class="inest-checkbox-label highlight">
+                <input type="checkbox" formControlName="addReceipt">
+                <span><i class="fa fa-shield-alt"></i> {{ 'CREATE_ITEM_PAGE.ADD_WARRANTY_RECEIPT' | translate }}</span>
+              </label>
+              <i class="fa fa-question-circle help-tooltip-icon" [title]="'CREATE_ITEM_PAGE.TIPS.RECEIPT' | translate"></i>
+            </div>
+          </div>
+
+          @if (form.get('addReceipt')?.value) {
+            <div class="lending-info-section">
+              <div class="inest-form-group">
+                <label>{{ 'CREATE_ITEM_PAGE.WARRANTY_EXPIRATION' | translate }}</label>
+                <div class="inest-input-wrapper">
+                  <i class="fa fa-shield-alt inest-field-icon-left"></i>
+                  <input type="date" formControlName="warrantyExpiration">
+                </div>
+              </div>
+
+              <div class="inest-form-group">
+                <label>{{ 'CREATE_ITEM_PAGE.RECEIPT' | translate }} (PDF / Photo)</label>
+                <div class="receipt-dropzone-canvas" [class.has-file]="!!selectedReceiptFileName">
+                  <input type="file" #receiptInput accept="image/*,.pdf" (change)="onReceiptSelected($event)" class="receipt-hidden-input" id="receiptFileInput">
+
+                  @if (!selectedReceiptFileName) {
+                    <label for="receiptFileInput" class="receipt-dropzone-label">
+                      <i class="fa fa-file-invoice-dollar dropzone-icon"></i>
+                      <span class="dropzone-text">{{ 'CREATE_ITEM_PAGE.ATTACH_RECEIPT' | translate }}</span>
+                      <small class="dropzone-sub">PDF, PNG, JPG</small>
+                    </label>
+                  } @else {
+                    <div class="receipt-attached-card">
+                      <div class="file-icon-badge">
+                        <i class="fa" [ngClass]="selectedReceiptFileName.endsWith('.pdf') ? 'fa-file-pdf' : 'fa-file-image'"></i>
+                      </div>
+                      <div class="file-info">
+                        <span class="file-name" [title]="selectedReceiptFileName">{{ selectedReceiptFileName }}</span>
+                        <span class="file-status-tag"><i class="fa fa-check-circle"></i> {{ 'CREATE_ITEM_PAGE.UPLOADED' | translate }}</span>
+                      </div>
+                      <button type="button" class="btn-remove-receipt" (click)="removeReceipt($event)">
+                        <i class="fa fa-trash-alt"></i>
+                      </button>
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- БЛОК НАПОМИНАНИЯ -->
+      @if (!isLendingStatus && (!isEdit || item?.status === 0)) {
+        <div class="reminder-toggle-section">
+          <div class="inest-form-group">
+            <div class="label-with-action">
+              <label class="inest-checkbox-label highlight">
+                <input type="checkbox" formControlName="addReminder">
+                <span><i class="fa fa-bell"></i> {{ 'CREATE_ITEM_PAGE.ADD_REMINDER' | translate }}</span>
+              </label>
+              <i class="fa fa-question-circle help-tooltip-icon" [title]="'CREATE_ITEM_PAGE.TIPS.REMINDER' | translate"></i>
+            </div>
+          </div>
+
+          @if (form.get('addReminder')?.value) {
+            <div class="lending-info-section">
+              <div class="form-row-multi">
+                <div class="inest-form-group">
+                  <label>{{ 'CREATE_ITEM_PAGE.REMINDER_TITLE' | translate }} *</label>
+                  <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('reminderTitle')">
+                    <i class="fa fa-heading inest-field-icon-left"></i>
+                    <input formControlName="reminderTitle" [placeholder]="'CREATE_ITEM_PAGE.REMINDER_TITLE_PH' | translate">
+                  </div>
+                </div>
+
+                <div class="inest-form-group">
+                  <label>{{ 'CREATE_ITEM_PAGE.REMINDER_TYPE' | translate }}</label>
+                  <div class="inest-input-wrapper">
+                    <i class="fa fa-list inest-field-icon-left"></i>
+                    <select formControlName="reminderType">
+                      @for (t of reminderTypeOptions; track t.value) {
+                        <option [value]="t.value">{{ t.label | translate }}</option>
+                      }
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-row-multi">
+                <div class="inest-form-group">
+                  <label>{{ 'CREATE_ITEM_PAGE.REMINDER_RECURRENCE' | translate }}</label>
+                  <div class="inest-input-wrapper">
+                    <i class="fa fa-sync-alt inest-field-icon-left"></i>
+                    <select formControlName="reminderRecurrence">
+                      @for (r of reminderRecurrenceOptions; track r.value) {
+                        <option [value]="r.value">{{ r.label | translate }}</option>
+                      }
+                    </select>
+                  </div>
+                </div>
+
+                <div class="inest-form-group">
+                  <label>{{ 'CREATE_ITEM_PAGE.REMINDER_DATE' | translate }} *</label>
+                  <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('reminderTriggerAt')">
+                    <i class="fa fa-clock inest-field-icon-left"></i>
+                    <input type="date" formControlName="reminderTriggerAt" [min]="todayMax">
+                  </div>
+                </div>
+              </div>
+
+              <div class="notification-channels-wrapper">
+                <label class="channels-title">{{ 'CREATE_ITEM_PAGE.REMIND_CHANNELS_TITLE' | translate }}</label>
+
+                <label class="channel-box-vertical">
+                  <input type="checkbox" formControlName="reminderSendTelegramNotification" class="channel-checkbox">
+                  <div class="channel-content">
+                    <i class="fab fa-telegram-plane channel-icon tg-brand-color"></i>
+                    <span>{{ 'CREATE_ITEM_PAGE.CHANNEL_TELEGRAM' | translate }}</span>
+                  </div>
+                </label>
+
+                <label class="channel-box-vertical">
+                  <input type="checkbox" formControlName="reminderSendNotification" class="channel-checkbox">
+                  <div class="channel-content">
+                    <i class="fa fa-envelope channel-icon email-brand-color"></i>
+                    <span>{{ 'CREATE_ITEM_PAGE.CHANNEL_EMAIL' | translate }}</span>
+                  </div>
+                </label>
+              </div>
+
+            </div>
+          }
+        </div>
+      }
+
+      <div class="form-actions-row">
+        <button type="button" class="inest-btn-cancel" (click)="cancel()">{{ 'COMMON.CANCEL' | translate }}</button>
+        <button type="submit" class="inest-btn-primary" [disabled]="form.invalid">{{ 'COMMON.SAVE' | translate }}</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+@if (showCategoryModal) {
+  <app-inest-modal
+    mode="input"
+    [title]="'CREATE_ITEM_PAGE.CREATE_CATEGORY' | translate"
+    [name]="''"
+    (confirmed)="saveNewCategory($event)"
+    (cancelled)="closeCategoryModal()">
+  </app-inest-modal>
+}
