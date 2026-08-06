@@ -11,24 +11,40 @@
       </div>
 
       <div class="stats-grid">
+        <!-- КАРТОЧКА ВЫРУЧКИ / ПРОДАЖ -->
         <div class="stat-card revenue">
           <div class="stat-icon"><i class="fa fa-university"></i></div>
           <div class="stat-info">
             <span class="label">{{ 'SALES_PAGE.TOTAL_REVENUE' | translate }}</span>
-            <span class="value">{{ totalRevenue | number:'1.2-2' }}</span>
+            <div class="multi-currency-list">
+              @for (item of revenueByCurrency | keyvalue; track item.key) {
+                <span class="value-line">{{ item.value | price:item.key }}</span>
+              }
+              @if ((revenueByCurrency | keyvalue).length === 0) {
+                <span class="value-line">0 $</span>
+              }
+            </div>
           </div>
           <div class="stat-progress" style="background: var(--g-blue)"></div>
         </div>
 
+        <!-- КАРТОЧКА ПРИБЫЛИ -->
         <div class="stat-card profit">
-          <div class="stat-icon"><i class="fa fa-line-chart"></i></div>
+          <div class="stat-icon"><i class="fa fa-chart-line"></i></div>
           <div class="stat-info">
             <span class="label">{{ 'SALES_PAGE.TOTAL_PROFIT' | translate }}</span>
-            <span class="value" [class.negative]="totalProfit < 0">
-              {{ totalProfit | number:'1.2-2' }}
-            </span>
+            <div class="multi-currency-list">
+              @for (item of profitByCurrency | keyvalue; track item.key) {
+                <span class="value-line" [class.negative]="item.value < 0">
+                  {{ item.value | price:item.key }}
+                </span>
+              }
+              @if ((profitByCurrency | keyvalue).length === 0) {
+                <span class="value-line">0 $</span>
+              }
+            </div>
           </div>
-          <div class="stat-progress" [style.background]="totalProfit >= 0 ? 'var(--g-green)' : 'var(--error-red)'"></div>
+          <div class="stat-progress" style="background: var(--g-green)"></div>
         </div>
       </div>
     </header>
@@ -163,12 +179,12 @@
     (cancelled)="closeModal()">
     
     <div class="inest-form-group" style="margin-top: 15px; text-align: left;">
-      <label style="display: block; margin-bottom: 8px; font-weight: 500;">
+      <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.85rem; color: var(--text-muted);">
         {{ 'CREATE_ITEM_PAGE.LOCATION' | translate }} *
       </label>
-      <div class="inest-input-wrapper">
-        <i class="fa fa-map-marker-alt inest-field-icon-left"></i>
-        <select [(ngModel)]="selectedReturnLocationId" style="width: 100%; padding-left: 35px; height: 40px; border-radius: 6px;">
+      <div class="inest-input-wrapper" style="position: relative;">
+        <i class="fa fa-map-marker-alt inest-field-icon-left" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--accent-color);"></i>
+        <select [(ngModel)]="selectedReturnLocationId" class="inest-select">
           <option [value]="null" disabled selected>{{ 'CREATE_ITEM_PAGE.SELECT_LOCATION' | translate }}</option>
           @for (loc of locations; track loc.id) {
             <option [value]="loc.id">{{ loc.name }}</option>

@@ -10,11 +10,10 @@
   background: var(--bg-card); 
   border-bottom: 1px solid var(--border-color);
   padding: 0 1.5rem;
-  height: 70px;
+  height: 64px;
   display: flex;
   align-items: center;
-  transition: background 0.3s ease;
-  backdrop-filter: blur(10px);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
   position: relative;
   width: 100%;
   box-sizing: border-box;
@@ -29,7 +28,7 @@
   margin: 0 auto;
 }
 
-/* --- ОБЁРТКА ДЛЯ МОБИЛЬНОЙ ШАПКИ (НИК + БУРГЕР) --- */
+/* --- МОБИЛЬНЫЕ ЭЛЕМЕНТЫ --- */
 .mobile-header-right {
   display: none;
   align-items: center;
@@ -48,16 +47,16 @@
   }
 }
 
-/* --- КНОПКА ГАМБУРГЕРА ДЛЯ МОБИЛКИ --- */
 .mobile-menu-btn {
   background: var(--bg-input);
   border: 1px solid var(--border-color);
   color: var(--text-main);
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   border-radius: 10px;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   cursor: pointer;
+  display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1001;
@@ -76,27 +75,27 @@
 }
 
 .logo-icon {
-  width: 65px; 
-  height: 65px;
+  width: 55px; 
+  height: 55px;
   background-image: var(--logo-url);
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
   cursor: pointer;
-  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: transform 0.2s ease;
   
-  &:hover { transform: scale(1.08); }
+  &:hover { transform: scale(1.05); }
 }
 
-/* --- ПРАВАЯ ЧАСТЬ --- */
+/* --- ПРАВАЯ ЧАСТЬ И ДЕЙСТВИЯ --- */
 .actions {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   flex-shrink: 0;
 }
 
-/* Ссылка на настройки */
+/* Настройки */
 .settings-link {
   background: var(--bg-input);
   border: 1px solid var(--border-color);
@@ -110,15 +109,15 @@
   gap: 8px;
   font-size: 0.85rem;
   font-weight: 600;
-  transition: 0.2s;
+  transition: all 0.2s ease;
 
-  i { color: var(--text-muted); font-size: 0.95rem; }
+  i { color: var(--text-muted); font-size: 0.9rem; transition: color 0.2s; }
 
   &:hover, &.active {
     border-color: var(--accent-color);
     color: var(--accent-color);
     i { color: var(--accent-color); }
-    transform: translateY(-2px);
+    transform: translateY(-1px);
   }
 }
 
@@ -141,37 +140,37 @@
   transition: all 0.2s ease;
 
   i { 
-    font-size: 0.9rem; 
+    font-size: 0.85rem; 
     transition: transform 0.2s;
   }
   
   &:hover {
     border-color: var(--accent-color);
-    background: rgba(0, 184, 148, 0.05);
-    transform: translateY(-2px);
+    background: rgba(var(--accent-rgb), 0.08);
+    transform: translateY(-1px);
     i { transform: rotate(90deg); }
   }
 }
 
 .create-menu {
   position: absolute;
-  top: calc(100% + 10px);
+  top: calc(100% + 8px);
   right: 0;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: 14px;
+  border-radius: 12px;
   padding: 6px;
   min-width: 180px;
-  box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
   z-index: 1200;
   display: flex;
   flex-direction: column;
   gap: 2px;
-  animation: slideIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+  animation: slideIn 0.2s ease-out;
 
   button {
     width: 100%;
-    padding: 10px 14px;
+    padding: 10px 12px;
     background: transparent;
     border: none;
     color: var(--text-main);
@@ -179,28 +178,28 @@
     align-items: center;
     gap: 10px;
     cursor: pointer;
-    border-radius: 10px;
-    font-size: 0.9rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
     font-weight: 600;
+    transition: background 0.2s ease, color 0.2s ease;
 
-    i { width: 20px; color: var(--accent-color); font-size: 1rem; }
+    i { width: 18px; color: var(--accent-color); font-size: 0.95rem; }
 
     &:hover {
       background: var(--bg-input);
       color: var(--accent-color);
-      transform: translateX(4px);
     }
   }
 }
 
-/* Общие элементы */
+/* Общие утилитарные кнопки хедера */
 .user-box, .theme-toggle, .lang-trigger, .logout-icon-btn, .icon-btn {
   background: var(--bg-input);
   border: 1px solid var(--border-color);
   color: var(--text-main);
   border-radius: 10px;
   cursor: pointer;
-  transition: 0.2s;
+  transition: all 0.2s ease;
   height: 38px;
   display: flex;
   align-items: center;
@@ -210,36 +209,28 @@
   &:hover {
     border-color: var(--accent-color);
     color: var(--accent-color);
-    transform: translateY(-2px);
+    transform: translateY(-1px);
   }
 }
 
-/* Иконка перехода в Админку */
+/* Иконка Админки */
 .icon-btn.admin-trigger {
   width: 38px;
   font-size: 0.95rem;
   color: var(--text-muted);
   text-decoration: none;
 
-  i {
-    transition: color 0.2s ease, transform 0.2s ease;
-  }
-
   &:hover, &.active {
-    color: #e11d48;
-    border-color: #e11d48;
-    background: rgba(225, 29, 72, 0.08);
-
-    i {
-      transform: scale(1.1);
-    }
+    color: var(--error-red);
+    border-color: var(--error-red);
+    background: rgba(239, 68, 68, 0.1);
   }
 }
 
 .user-box {
   padding: 0 12px;
   color: var(--accent-color);
-  i { font-size: 1.1rem; opacity: 0.8; }
+  i { font-size: 1rem; opacity: 0.9; }
   strong {
     font-size: 0.85rem;
     max-width: 150px;
@@ -247,38 +238,48 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     margin-left: 8px;
+    color: var(--text-main);
   }
 }
 
-.theme-toggle { width: 38px; font-size: 1rem; }
+.theme-toggle { width: 38px; font-size: 0.95rem; }
+
 .logout-icon-btn {
   width: 38px;
-  color: #ff7675;
-  &:hover { border-color: #ff7675; background: rgba(255, 118, 117, 0.1); }
+  color: var(--text-muted);
+  &:hover { 
+    color: var(--error-red); 
+    border-color: var(--error-red); 
+    background: rgba(239, 68, 68, 0.1); 
+  }
 }
 
 .lang-trigger {
-  padding: 0 12px; gap: 8px; font-size: 0.85rem; font-weight: 800;
-  .fa-chevron-down { font-size: 0.6rem; transition: 0.3s; &.rotate { transform: rotate(180deg); } }
+  padding: 0 12px; gap: 8px; font-size: 0.85rem; font-weight: 700;
+  .fa-chevron-down { font-size: 0.6rem; transition: transform 0.2s; &.rotate { transform: rotate(180deg); } }
 }
 
 .lang-dropdown { position: relative; }
 .lang-menu {
-  position: absolute; top: calc(100% + 10px); right: 0;
+  position: absolute; top: calc(100% + 8px); right: 0;
   background: var(--bg-card); border: 1px solid var(--border-color);
-  border-radius: 12px; padding: 6px; min-width: 150px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.4); z-index: 1100;
+  border-radius: 12px; padding: 6px; min-width: 140px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3); z-index: 1100;
+  
   button {
-    width: 100%; padding: 10px 12px; background: transparent; border: none;
+    width: 100%; padding: 8px 12px; background: transparent; border: none;
     color: var(--text-main); display: flex; align-items: center; gap: 10px;
-    border-radius: 8px; font-size: 0.9rem;
-    &:hover { background: var(--bg-input); color: var(--accent-color); }
-    &.selected { color: var(--accent-color); font-weight: 700; background: rgba(0, 184, 148, 0.05); }
+    border-radius: 8px; font-size: 0.85rem; font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    
+    &:hover { background: var(--bg-input); }
+    &.selected { color: var(--accent-color); font-weight: 700; background: rgba(var(--accent-rgb), 0.08); }
   }
 }
 
 @keyframes slideIn {
-  from { opacity: 0; transform: translateY(-10px); }
+  from { opacity: 0; transform: translateY(-6px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
@@ -286,29 +287,22 @@
   .header { padding: 0 1rem; }
 }
 
-/* --- СТРОГО В ОДИН СТОЛБИК В МОБИЛКЕ --- */
+/* Мобильная адаптивность */
 @media (max-width: 768px) {
-  .mobile-header-right {
-    display: flex;
-  }
-
-  .desktop-user-box {
-    display: none !important;
-  }
+  .mobile-header-right { display: flex; }
+  .desktop-user-box { display: none !important; }
 
   .actions {
     display: none;
     position: absolute;
-    top: 70px;
-    left: 0;
-    right: 0;
+    top: 64px; left: 0; right: 0;
     background: var(--bg-card);
     border-bottom: 1px solid var(--border-color);
     padding: 16px 20px;
     flex-direction: column;
     align-items: stretch;
-    gap: 10px;
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+    gap: 8px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
     z-index: 999;
 
     &.mobile-open {
@@ -316,32 +310,18 @@
       animation: slideIn 0.2s ease-out;
     }
 
-    .create-dropdown,
-    .lang-dropdown,
-    .settings-link,
-    .theme-toggle,
-    .logout-icon-btn,
-    .icon-btn {
+    .create-dropdown, .lang-dropdown, .settings-link, .theme-toggle, .logout-icon-btn, .icon-btn {
       width: 100%;
       box-sizing: border-box;
       justify-content: center;
     }
 
-    .create-trigger,
-    .lang-trigger {
+    .create-trigger, .lang-trigger {
       width: 100%;
       justify-content: center;
     }
 
-    .desktop-only {
-      display: inline-block !important;
-    }
-
-    .create-menu,
-    .lang-menu {
-      left: 0;
-      right: 0;
-      min-width: auto;
-    }
+    .desktop-only { display: inline-block !important; }
+    .create-menu, .lang-menu { left: 0; right: 0; min-width: auto; }
   }
 }

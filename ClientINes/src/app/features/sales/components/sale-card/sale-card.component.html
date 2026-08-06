@@ -1,4 +1,6 @@
 <div class="sale-card" [class.archived]="!isItemExists">
+  
+  <!-- ИНФОРМАЦИЯ О ПРЕДМЕТЕ И ДАТЕ -->
   <div class="sale-main-info">
     <div class="item-details">
       <span class="name">{{ sale.itemName }}</span>
@@ -11,18 +13,21 @@
     <div class="date">{{ sale.soldDate | date:'dd.MM.yyyy' }}</div>
   </div>
 
+  <!-- ЦЕНА И ПРИБЫЛЬ С ДИНАМИЧЕСКОЙ ВАЛЮТОЙ -->
   <div class="sale-finance">
-    <div class="price">{{ sale.salePrice | number:'1.2-2' }} $</div>
-    <div class="profit" [ngClass]="sale.profit >= 0 ? 'text-accent' : 'text-danger'">
-      {{ sale.profit > 0 ? '+' : '' }}{{ sale.profit | number:'1.2-2' }} $
+    <div class="price">{{ sale.salePrice | price:(sale.currency || '$') }}</div>
+    <div class="profit" [ngClass]="sale.profit >= 0 ? 'text-profit' : 'text-danger'">
+      {{ sale.profit > 0 ? '+' : '' }}{{ sale.profit | price:(sale.currency || '$') }}
     </div>
   </div>
 
+  <!-- ДЕЙСТВИЯ -->
   <div class="sale-actions">
     @if (isItemExists) {
-      <button class="inest-action-btn"
+      <button class="inest-action-btn undo-btn"
         (click)="onUndo()"
-        [title]="'COMMON.RETURN' | translate"> <i class="fa fa-undo-alt"></i>
+        [title]="'COMMON.RETURN' | translate">
+        <i class="fa fa-undo-alt"></i>
       </button>
     }
 

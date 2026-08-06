@@ -7,6 +7,7 @@
         public string ItemName { get; set; } = null!;
         public decimal SalePrice { get; set; }
         public decimal Profit { get; set; }
+        public string Currency { get; set; } = "USD";
         public DateTime SoldDate { get; set; }
         public string? PlatformName { get; set; }
         public string? CategoryName { get; set; }

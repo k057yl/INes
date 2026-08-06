@@ -1,97 +1,55 @@
 :root {
-  /*logo*/
+  /* Logo */
   --logo-url: url('/assets/images/LogoKaraLight.png');
 
-  /*main*/
-  --bg-main: #e2e8f0;
-  --bg-card: #f8fafc;
-  --bg-main-card: #dbe1e7; 
-  --bg-input: #cbd5e1;
+  /* Surfaces (Поверхности) */
+  --bg-main: #f1f5f9;       /* Основной подстилающий фон */
+  --bg-card: #ffffff;       /* Карточки, модалки, риббоны */
+  --bg-main-card: #f8fafc;  /* Вложенные карточки / Ховеры */
+  --bg-input: #e2e8f0;      /* Инпуты, селекты, поля */
 
-  /*main button*/
-  --border-main-button: #d7ffe4;
+  /* Typography (Текст) */
+  --text-main: #0f172a;     /* Основной текст */
+  --text-muted: #64748b;    /* Вторичный / подписи / иконки */
+  --text-on-accent: #ffffff;/* Текст поверх акцентного цвета */
 
-  /*button*/
-  --bg-cancel-button: #cbd5e1; 
-  --bg-google-button: #b1bccd;
+  /* Borders & Accents (Границы и Акценты) */
+  --border-color: #cbd5e1;  /* Нейтральные границы */
+  --accent-color: #2563eb;  /* Строгий синий (Nordic Royal Blue) */
+  --accent-rgb: 37, 99, 235;
 
-  /*ribbon*/
-  --bg-ribbon: #e2e8f0;
-  /*no selected*/
-  --bg-ribbon-card-no-selected: #f8fafc;
-  --border-ribbon-card-no-selected: #94a3b8;
-  --text-ribbon-card-no-selected: #334155;
-  /*selected*/
-  --bg-ribbon-card-selected: #ffffff;
-  --border-ribbon-card-selected: var(--accent-color);
-  --text-ribbon-card-selected: #0e7490;
-
-  --text-main: #1e293b;
-  --text-muted: #64748b;
-  --text-on-accent: #ffffff;
-  --text-access: #2563eb;
-
-  --border-color: #94a3b8;
-  --accent-color: #06b6d4;
-
-  /*toast*/
-  --bg-toast: #1e293b; 
-  --text-toast: #ffffff;
-  --border-toast: #334155;
-  --toast-shadow: rgba(0, 0, 0, 0.3);
-  
-  /* Константы */
-  --dark-blue: #0b132b;
-  --navy-blue: #1c2541;
-  --turquoise: #00f5d4;
-  --error-red: #ff4d4d;
-  --hover-blue: #11038f;
-  /* Combine Palette */
-  --g-blue: #4285F4;
-  --g-red: #EA4335;
-  --g-yellow: #FBBC05;
-  --g-green: #34A853;
+  /* Status Colors (Системные статусы) */
+  --error-red: #ef4444;
+  --g-blue: #3b82f6;
+  --g-red: #ef4444;
+  --g-yellow: #f59e0b;
+  --g-green: #10b981;
 }
 
 body.dark-theme {
-  /*logo*/
+  /* Logo */
   --logo-url: url('/assets/images/LogoKaraDark.png');
 
-  /*main*/
-  --bg-main: #0b132b;
-  --bg-card: #1c2541;
-  --bg-main-card: #19213a; 
-  --bg-input: #0b132b;
+  /* Surfaces (Поверхности) */
+  --bg-main: #0b0f19;       /* Глубокий строгий фон */
+  --bg-card: #111827;       /* Карточки, модалки, плашки */
+  --bg-main-card: #1f2937;  /* Вложенности, ховеры */
+  --bg-input: #1f2937;      /* Поля ввода, селекты */
 
-  /*main button*/
-  --border-main-button: #00b894;
+  /* Typography (Текст) */
+  --text-main: #f9fafb;     /* Яркий читаемый текст */
+  --text-muted: #9ca3af;    /* Приглушенный текст */
+  --text-on-accent: #0b0f19;/* Текст на акцентной кнопке */
 
-  /*button*/
-  --bg-cancel-button: #0b132b;
-  --bg-google-button: #101b3d;
+  /* Borders & Accents (Границы и Акценты) */
+  --border-color: #1f2937;  /* Тёмные аккуратные границы */
+  --accent-color: #38bdf8;  /* Стальной голубой (Steel Sky Blue) */
+  --accent-rgb: 56, 189, 248;
 
-  /*ribbon*/
-  --bg-ribbon: #1c2541;
-  /*no selected*/
-  --bg-ribbon-card-no-selected: #0b132b;
-  --border-ribbon-card-no-selected: #177764;
-  --text-ribbon-card-no-selected: #00f5d4;
-  /*selected*/
-  --bg-ribbon-card-selected: #0b132b;
-  --border-ribbon-card-selected: #00b894;
-  --text-ribbon-card-selected: #00f5d4;
-
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
-  --text-on-accent: #0b132b;
-  --text-access: #00b894;
-
-  --border-color: #3a506b;
-  --accent-color: #259de2;
-
-  /*toast*/
-  --bg-toast: #020617;
-  --text-toast: #ffffff;
-  --border-toast: #1e293b;
-  --toast-shadow: rgba(0, 0, 0, 0.8);
+  /* Status Colors (Системные статусы) */
+  --error-red: #ef4444;
+  --g-blue: #38bdf8;
+  --g-red: #f87171;
+  --g-yellow: #fbbf24;
+  --g-green: #34d399;
 }

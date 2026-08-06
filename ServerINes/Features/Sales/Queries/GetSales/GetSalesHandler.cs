@@ -1,4 +1,5 @@
-﻿using INest.Data.Enums;
+﻿using INest.Data.Entities.Finances;
+using INest.Data.Enums;
 using INest.Features.Sales.DTOs;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -50,6 +51,7 @@ namespace INest.Features.Sales.Queries.GetSales
                     ItemName = s.ItemNameSnapshot,
                     SalePrice = s.SalePrice,
                     Profit = s.Profit,
+                    Currency = s.Currency,
                     SoldDate = s.SoldDate,
                     PlatformName = s.Platform != null ? s.Platform.Name : null,
                     CategoryName = s.Category != null ? s.Category.Name : null

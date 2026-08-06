@@ -141,7 +141,7 @@
                   </label>
                 </td>
                 <td class="col-photo">
-                  <img [src]="item.photoUrl || 'assets/images/no-image.png'" class="mini-thumb">
+                  <img [src]="item.photoUrl || 'assets/images/no-image.png'" class="mini-thumb" alt="Item photo">
                 </td>
                 <td class="col-name"><span class="name-text">{{ item.name }}</span></td>
                 <td class="col-cat"><span class="cat-tag">{{ item.categoryName || '—' }}</span></td>
@@ -155,7 +155,7 @@
                     <span class="status-text">{{ 'STATUS.' + (item.status | statusName) | translate }}</span>
                   </div>
                 </td>
-                <td class="col-price">{{ (item.details?.purchasePrice || 0) | number:'1.2-2' }} $</td>
+                <td class="col-price">{{ (item.details?.purchasePrice || 0) | price:(item.details?.currency || '$') }}</td>
                 <td class="col-actions">
                   <div class="actions-group">
                     <button class="icon-btn view-btn" [routerLink]="['/item', item.id]"><i class="fa fa-eye"></i></button>

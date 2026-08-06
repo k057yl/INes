@@ -37,6 +37,10 @@
 .sales-header {
   margin-bottom: 3rem;
 
+  .title-group {
+    margin-top: 1rem;
+  }
+
   h1 {
     font-size: 2.5rem;
     font-weight: 900;
@@ -50,10 +54,11 @@
 
   .subtitle {
     color: var(--text-muted);
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     margin-top: 0.5rem;
     text-transform: uppercase;
-    letter-spacing: 2px;
+    letter-spacing: 1.5px;
+    font-weight: 700;
   }
 }
 
@@ -65,7 +70,7 @@
 }
 
 .stat-card {
-  background: var(--bg-main-card);
+  background: var(--bg-card);
   border: 1px solid var(--border-color);
   padding: 1.5rem;
   border-radius: 20px;
@@ -77,29 +82,52 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
   transition: transform 0.3s ease;
 
-  &:hover { transform: translateY(-5px); }
+  &:hover { transform: translateY(-3px); }
 
   .stat-icon {
-    width: 60px; height: 60px;
-    background: var(--bg-card);
+    width: 56px; height: 56px;
+    background: var(--bg-main);
+    border: 1px solid var(--border-color);
     border-radius: 16px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     color: var(--accent-color);
+    flex-shrink: 0;
   }
 
   .stat-info {
-    display: flex; flex-direction: column;
-    .label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
-    .value { 
-      font-size: 1.8rem; font-weight: 800; font-family: monospace; 
-      &.negative { color: var(--error-red); }
+    display: flex; 
+    flex-direction: column;
+    
+    .label { 
+      font-size: 0.7rem; 
+      color: var(--text-muted); 
+      text-transform: uppercase; 
+      font-weight: 800; 
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+
+    .multi-currency-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+
+      .value-line {
+        font-size: 1.5rem; 
+        font-weight: 850;
+        line-height: 1.2;
+
+        &.negative {
+          color: var(--error-red);
+        }
+      }
     }
   }
 
   .stat-progress { position: absolute; bottom: 0; left: 0; width: 100%; height: 4px; opacity: 0.6; }
-  &.revenue .value { color: var(--g-blue); }
-  &.profit .value:not(.negative) { color: var(--g-green); }
+  &.revenue .value-line { color: var(--g-blue); }
+  &.profit .value-line:not(.negative) { color: var(--g-green); }
 }
 
 // --- Toolbar & Filters Logic ---
@@ -107,8 +135,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2.5rem;
-  padding-bottom: 1.2rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
   border-bottom: 1px solid var(--border-color);
   gap: 20px;
 
@@ -160,7 +188,7 @@
     }
 
     .th-dropdown-wrapper {
-      position: relative; // Важно для позиционирования панели
+      position: relative;
     }
 
     .icon-btn {
@@ -195,7 +223,7 @@
   }
 }
 
-// --- Dropdown Panel (Fixed Positioning) ---
+// --- Dropdown Panel ---
 .th-dropdown-panel {
   position: absolute;
   top: calc(100% + 8px);
@@ -210,10 +238,10 @@
   animation: slideIn 0.2s ease-out;
 
   .filter-item {
-    padding: 12px 14px;
+    padding: 10px 14px;
     border-radius: 10px;
     cursor: pointer;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: var(--text-main);
     transition: 0.2s;
     white-space: nowrap;
@@ -221,9 +249,28 @@
     &:hover { background: rgba(255, 255, 255, 0.05); }
     &.active { 
       background: var(--accent-color); 
-      color: #000; 
+      color: var(--text-on-accent); 
       font-weight: 700; 
     }
+  }
+}
+
+// --- Селектор локации в модалке ---
+.inest-select {
+  width: 100%;
+  height: 42px;
+  padding: 0 12px 0 38px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  color: var(--text-main);
+  outline: none;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+
+  &:focus {
+    border-color: var(--accent-color);
   }
 }
 
@@ -233,7 +280,7 @@
 .global-empty-state {
   text-align: center;
   padding: 5rem 2rem;
-  background: var(--bg-main-card);
+  background: var(--bg-card);
   border-radius: 24px;
   border: 2px dashed var(--border-color);
   .empty-icon { font-size: 4rem; color: var(--border-color); margin-bottom: 1.5rem; }

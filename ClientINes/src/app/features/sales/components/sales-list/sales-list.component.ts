@@ -5,7 +5,8 @@ import { FormBuilder, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { debounceTime, finalize, switchMap, tap, startWith, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
-import { Router} from '@angular/router';
+import { Router } from '@angular/router';
+import { PricePipe } from '../../../../shared/pipes/price-currency.pipe';
 
 import { SalesService } from '../../services/sales.service';
 import { CategoryService } from '../../../category/services/category.service';
@@ -25,7 +26,7 @@ export type SalesAction = 'undo' | null;
 @Component({
   selector: 'app-sales-list',
   standalone: true,
-  imports: [CommonModule, TranslateModule, ReactiveFormsModule, FormsModule, SaleCardComponent, InestModalComponent],
+  imports: [CommonModule, TranslateModule, ReactiveFormsModule, FormsModule, SaleCardComponent, InestModalComponent, PricePipe],
   templateUrl: './sales-list.component.html',
   styleUrl: './sales-list.component.scss'
 })
@@ -51,6 +52,10 @@ export class SalesListComponent implements OnInit {
   selectedSale: SaleListItem | null = null;
   activeDropdown: 'platform' | 'sort' | 'category' | null = null;
 
+  // Мультивалютный подсчет
+  revenueByCurrency: Record<string, number> = {};
+  profitByCurrency: Record<string, number> = {};
+
   filterForm = this.fb.group({
     searchQuery: [''],
     platformId: [null as string | null],
@@ -71,9 +76,6 @@ export class SalesListComponent implements OnInit {
     }
   }
 
-  get totalRevenue(): number { return this.sales.reduce((acc, curr) => acc + (curr.salePrice || 0), 0); }
-  get totalProfit(): number { return this.sales.reduce((acc, curr) => acc + (curr.profit || 0), 0); }
-  
   get hasActiveFilters(): boolean {
     const f = this.filterForm.getRawValue();
     return !!(f.searchQuery || f.platformId || f.categoryId || f.minPrice || f.maxPrice || f.minProfit || f.startDate || f.sortBy !== 0);
@@ -95,7 +97,21 @@ export class SalesListComponent implements OnInit {
         }),
         finalize(() => this.isLoading = false)
       ))
-    ).subscribe(data => this.sales = data);
+    ).subscribe(data => {
+      this.sales = data;
+      this.calculateCurrencyTotals();
+    });
+  }
+
+  private calculateCurrencyTotals(): void {
+    this.revenueByCurrency = {};
+    this.profitByCurrency = {};
+
+    for (const sale of this.sales) {
+      const curr = sale.currency || 'USD';
+      this.revenueByCurrency[curr] = (this.revenueByCurrency[curr] || 0) + (sale.salePrice || 0);
+      this.profitByCurrency[curr] = (this.profitByCurrency[curr] || 0) + (sale.profit || 0);
+    }
   }
 
   setFilter(field: keyof GetSalesDto, value: any): void {
@@ -166,10 +182,13 @@ export class SalesListComponent implements OnInit {
 
   refreshData(): void {
     this.salesService.getHistory(this.filterForm.getRawValue() as GetSalesDto)
-      .subscribe(data => this.sales = data);
+      .subscribe(data => {
+        this.sales = data;
+        this.calculateCurrencyTotals();
+      });
   }
 
-  goBack() {
+  goBack(): void {
     if (window.history.length > 1) {
       window.history.back();
     } else {

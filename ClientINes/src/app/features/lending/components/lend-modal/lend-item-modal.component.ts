@@ -26,7 +26,7 @@ export class LendItemModalComponent implements OnInit {
   ngOnInit(): void {
     this.lendForm = this.fb.group({
       personName: ['', [Validators.required, Validators.maxLength(50)]],
-      valueAtLending: [this.item?.details?.estimatedValue || 0, [Validators.min(0)]],
+      valueAtLending: [this.item?.details?.purchasePrice || 0, [Validators.min(0)]],
       expectedReturnDate: [null],
       comment: ['', [Validators.maxLength(200)]]
     });

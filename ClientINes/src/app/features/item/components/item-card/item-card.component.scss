@@ -5,26 +5,33 @@
   border: 1px solid var(--border-color);
   border-left: 4px solid var(--accent-color);
   border-radius: 16px;
-  padding: 12px 0 12px 14px;
+  padding: 12px;
   min-height: 74px;
   margin-bottom: 8px;
   position: relative;
   transition: all 0.2s ease;
+  cursor: grab;
+
+  &:active {
+    cursor: grabbing;
+  }
 
   &:hover:not(.cdk-drag-placeholder):not(.cdk-drag-dragging) {
     border-color: var(--accent-color);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    
+
     &:not([style*="background-color"]) {
       background: var(--bg-main-card);
     }
-    
+
     &[style*="background-color"] {
-       filter: brightness(1.1);
+      filter: brightness(1.1);
     }
   }
-  
-  &.menu-open { z-index: 100; }
+
+  &.menu-open {
+    z-index: 100;
+  }
 }
 
 .custom-drag-preview {
@@ -36,7 +43,7 @@
   border-radius: 12px;
   border: 1px solid var(--border-color);
   border-left: 4px solid var(--accent-color);
-  box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
   color: var(--text-main);
   font-weight: 700;
   font-size: 0.95rem;
@@ -51,9 +58,17 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    
-    img { width: 100%; height: 100%; object-fit: cover; }
-    i { font-size: 1rem; color: var(--text-muted); }
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    i {
+      font-size: 1rem;
+      color: var(--text-muted);
+    }
   }
 }
 
@@ -65,11 +80,20 @@
   flex-shrink: 0;
   border: 1px solid var(--border-color);
   background: var(--bg-main);
-  
-  img { width: 100%; height: 100%; object-fit: cover; }
-  .no-image { 
-    display: flex; align-items: center; justify-content: center; 
-    height: 100%; color: var(--text-muted); font-size: 1.2rem;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .no-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--text-muted);
+    font-size: 1.2rem;
   }
 }
 
@@ -93,9 +117,16 @@
     align-items: center;
     gap: 10px;
     margin-top: 4px;
-    
-    .price-tag { color: var(--g-yellow); font-size: 0.85rem; font-weight: 800; }
-    .status-badges i { font-size: 0.85rem; }
+
+    .price-tag {
+      color: var(--g-yellow);
+      font-size: 0.85rem;
+      font-weight: 800;
+    }
+
+    .status-badges i {
+      font-size: 0.85rem;
+    }
   }
 }
 
@@ -104,7 +135,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding-right: 12px;
+  cursor: default;
 }
 
 .inest-action-btn {
@@ -117,17 +148,23 @@
   border: 1px solid var(--border-color);
   border-radius: 8px;
   color: var(--text-muted);
-  cursor: pointer;
+  cursor: pointer !important;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
-  i { font-size: 0.9rem; color: inherit; }
+  i {
+    font-size: 0.9rem;
+    color: inherit;
+  }
 
   &:hover:not(:disabled) {
     transform: scale(1.15);
     background: var(--bg-main);
   }
 
-  &.btn-info:hover { color: var(--g-blue); border-color: var(--g-blue); }
+  &.btn-info:hover {
+    color: var(--g-blue);
+    border-color: var(--g-blue);
+  }
 
   &.active {
     background: var(--accent-color) !important;
@@ -136,7 +173,9 @@
   }
 }
 
-.card-actions-wrapper { position: relative; }
+.card-actions-wrapper {
+  position: relative;
+}
 
 .modern-dropdown {
   position: absolute;
@@ -147,12 +186,13 @@
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   padding: 8px;
   display: flex;
   flex-direction: column;
   gap: 4px;
   z-index: 1000;
+  cursor: default;
 
   .dropdown-item {
     display: flex;
@@ -166,15 +206,33 @@
     color: var(--text-main);
     font-size: 0.9rem;
     font-weight: 500;
-    cursor: pointer;
+    cursor: pointer !important;
     text-align: left;
     transition: background 0.2s, color 0.2s;
 
-    i { width: 16px; text-align: center; color: var(--text-muted); transition: color 0.2s; }
-    &:hover { background: var(--bg-main); }
-    
-    &.btn-edit:hover i { color: var(--g-yellow); }
-    &.btn-delete:hover { color: var(--error-red); background: rgba(255, 77, 77, 0.1); i { color: var(--error-red); } }
+    i {
+      width: 16px;
+      text-align: center;
+      color: var(--text-muted);
+      transition: color 0.2s;
+    }
+
+    &:hover {
+      background: var(--bg-main);
+    }
+
+    &.btn-edit:hover i {
+      color: var(--g-yellow);
+    }
+
+    &.btn-delete:hover {
+      color: var(--error-red);
+      background: rgba(255, 77, 77, 0.1);
+
+      i {
+        color: var(--error-red);
+      }
+    }
   }
 
   .dropdown-divider {
@@ -186,7 +244,7 @@
 
   .move-section {
     padding: 8px 12px;
-    
+
     label {
       display: flex;
       align-items: center;
@@ -196,11 +254,15 @@
       font-weight: 800;
       color: var(--text-muted);
       margin-bottom: 8px;
-      i { color: var(--accent-color); }
+
+      i {
+        color: var(--accent-color);
+      }
     }
 
     .select-container {
       position: relative;
+
       select {
         width: 100%;
         background: var(--bg-input);
@@ -209,13 +271,19 @@
         padding: 8px 10px;
         color: var(--text-main);
         font-size: 0.85rem;
-        cursor: pointer;
+        cursor: pointer !important;
         outline: none;
         appearance: none;
 
-        &:focus { border-color: var(--accent-color); }
-        option { background: var(--bg-card); }
+        &:focus {
+          border-color: var(--accent-color);
+        }
+
+        option {
+          background: var(--bg-card);
+        }
       }
+
       .select-arrow {
         position: absolute;
         right: 10px;
@@ -227,31 +295,4 @@
       }
     }
   }
-}
-
-.handle-section {
-  display: flex;
-  align-items: stretch;
-  flex-shrink: 0;
-
-  .v-divider { width: 2px; background: var(--border-color); margin: 10px 0; opacity: 0.4; }
-}
-
-.drag-handle {
-  width: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-muted);
-  cursor: grab;
-  font-size: 1.1rem;
-  transition: all 0.2s;
-
-  &:hover { color: var(--accent-color); background: rgba(0,0,0,0.02); }
-  &:active { cursor: grabbing; }
-}
-
-@media (max-width: 768px) {
-  .handle-section { display: none; }
-  .item-card { padding-right: 12px; }
 }

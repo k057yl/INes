@@ -106,6 +106,7 @@ namespace INest.Features.Sales.Commands.SellItem
                 ItemName = sale.ItemNameSnapshot,
                 SalePrice = sale.SalePrice,
                 Profit = sale.Profit,
+                Currency = sale.Currency,
                 SoldDate = sale.SoldDate,
                 PlatformName = platformName
             };

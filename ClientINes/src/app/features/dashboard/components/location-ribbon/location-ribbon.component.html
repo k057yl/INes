@@ -1,21 +1,17 @@
 <div class="ribbon-container">
-  <div class="ribbon-header">
-    <div class="ribbon-label">
-      <i class="fa fa-sort-amount-down"></i> {{ 'COMMON.PAGE' | translate }}
-      <span class="count-badge">{{ currentPage + 1 }}/{{ totalPages }}</span>
-    </div>
-
-    @if (totalPages > 1) {
+  @if (totalPages > 1) {
+    <div class="ribbon-pagination-row">
       <div class="pagination-ctrl">
         <button (click)="pageChange.emit(currentPage - 1)" [disabled]="currentPage === 0">
           <i class="fa fa-chevron-left"></i>
         </button>
+        <span class="page-info">{{ 'COMMON.PAGE' | translate }} {{ currentPage + 1 }}/{{ totalPages }}</span>
         <button (click)="pageChange.emit(currentPage + 1)" [disabled]="currentPage === totalPages - 1">
           <i class="fa fa-chevron-right"></i>
         </button>
       </div>
-    }
-  </div>
+    </div>
+  }
 
   <div class="root-ribbon-grid"
     cdkDropList

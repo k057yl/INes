@@ -111,6 +111,16 @@
                     <button type="button" class="btn-del" (click)="removePhoto(i, $event)"><i class="fa fa-times"></i></button>
                   </div>
                 }
+
+                @if (selectedPhotos.length < MAX_PHOTOS) {
+                  <label class="add-more-card">
+                    <input type="file" accept="image/*" multiple (change)="onFileSelected($event)" class="hidden-input">
+                    <div class="plus-content">
+                      <i class="fa fa-plus"></i>
+                      <span>{{ selectedPhotos.length }}/{{ MAX_PHOTOS }}</span>
+                    </div>
+                  </label>
+                }
               </div>
             }
           </div>

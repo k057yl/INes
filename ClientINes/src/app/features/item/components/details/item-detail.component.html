@@ -1,13 +1,15 @@
 @if (item) {
   <div class="detail-container">
+    
+    <!-- ВЕРХНЯЯ НАВИГАЦИОННАЯ ПАНЕЛЬ -->
     <header class="detail-header">
-      <button class="nav-btn" (click)="goBack()">
+      <button class="nav-btn back-btn" (click)="goBack()">
         <i class="fa fa-chevron-left"></i> {{ 'COMMON.BACK' | translate }}
       </button>
+
       <div class="header-actions">
-        
         @if (isLent) {
-          <button class="nav-btn return-btn" (click)="onReturn()" style="color: var(--g-blue); border-color: var(--g-blue);">
+          <button class="nav-btn return-btn" (click)="onReturn()">
             <i class="fa fa-undo"></i> {{ 'COMMON.RETURN' | translate }}
           </button>
         }
@@ -17,165 +19,182 @@
       </div>
     </header>
 
+    <!-- ОСНОВНОЙ ПЛОТНЫЙ ДАШБОРД (2 КОЛОНКИ) -->
     <div class="content-layout">
-      <!-- 1. Левая колонка - Картинка и Локация -->
+
+      <!-- ЛЕВАЯ КОЛОНКА: ВИЗУАЛ И МЕСТО ХРАНЕНИЯ -->
       <div class="column visual-col">
         <div class="main-image-wrapper">
-          <img [src]="getPhotoUrl(activePhotoUrl)" class="main-img">
+          <img [src]="getPhotoUrl(activePhotoUrl)" class="main-img" alt="Item photo">
         </div>
+
         @if (item.photos && item.photos.length > 0) {
           <div class="thumbs-gallery">
             @for (p of item.photos; track p) {
               <div class="thumb-item"
                 [class.active]="activePhotoUrl === p.filePath"
                 (click)="setMainPhoto(p.filePath)">
-                <img [src]="getPhotoUrl(p.filePath)">
+                <img [src]="getPhotoUrl(p.filePath)" alt="Thumb">
               </div>
             }
           </div>
         }
+
+        <!-- КАРТОЧКА МЕСТА ХРАНЕНИЯ -->
         @if (item.storageLocation) {
-          <div class="location-badge" [routerLink]="['/location', item.storageLocationId]">
-            <div class="loc-icon"><i class="fa fa-map-marker-alt"></i></div>
+          <div class="location-badge-card" [routerLink]="['/location', item.storageLocationId]">
+            <div class="loc-icon"><i class="fa fa-location-dot"></i></div>
             <div class="loc-info">
               <span>{{ 'ITEM_DETAILS.STORAGE_PLACE' | translate }}</span>
               <strong>{{ item.storageLocation.name }}</strong>
             </div>
+            <i class="fa fa-chevron-right arrow-icon"></i>
           </div>
         }
       </div>
 
-      <!-- 2. Средняя колонка - Инфо, Гарантия и История -->
+      <!-- ПРАВАЯ КОЛОНКА: ИНФО, ФИНАНСЫ, ВИДЖЕТЫ И ИСТОРИЯ -->
       <div class="column info-col">
-        <div class="accent-line" [style.background-color]="getAccentColor()"></div>
-        <div class="tags-row">
-          @if (item.category) {
-            <span class="badge category"
-              [style.background-color]="item.category.color + '20'"
-              [style.color]="item.category.color">
-              {{ item.category.name }}
+        
+        <!-- ШАПКА ПРЕДМЕТА -->
+        <div class="item-main-card">
+          <div class="tags-header-row">
+            <div class="tags-left">
+              @if (item.category) {
+                <span class="badge category-badge"
+                  [style.background-color]="item.category.color + '22'"
+                  [style.color]="item.category.color"
+                  [style.border-color]="item.category.color + '44'">
+                  <i class="fa fa-tag"></i> {{ item.category.name }}
+                </span>
+              }
+            </div>
+            <span class="status-pill">
+              {{ 'STATUS.' + (item.status | statusName) | translate }}
             </span>
-          }
-          <span class="status-value">
-            {{ 'STATUS.' + (item.status | statusName) | translate }}
-          </span>
-        </div>
-        
-        <h1 class="item-name">
-          {{ item.name }}
-          @if (item.hasOverdueReminders) {
-            <i class="fa fa-bell" style="color: var(--g-red); font-size: 0.6em; vertical-align: super; margin-left: 8px;" title="Есть пропущенные напоминания"></i>
-          }
-        </h1>
-        
-        <p class="item-description">{{ item.description || ('ITEM_DETAILS.NO_DESCRIPTION' | translate) }}</p>
-
-        <div class="finance-grid">
-          <div class="finance-card">
-            <label>{{ 'ITEM_DETAILS.PURCHASE_PRICE' | translate }}</label>
-            <div class="price-val">{{ item.details?.purchasePrice | price:item.details?.currency }}</div>
-          </div>
-          <div class="finance-card">
-            <label>{{ 'ITEM_DETAILS.ESTIMATED_VALUE' | translate }}</label>
-            <div class="price-val">{{ item.details?.estimatedValue | price:item.details?.currency }}</div>
           </div>
 
-          <!-- ГАРАНТИЯ И ЧЕК -->
-          @if (item.details; as details) {
-            @if (details.warrantyExpiration || getReceiptUrl(details)) {
-              <div class="warranty-and-receipt-banner">
-                <div class="banner-header">
-                  <i class="fa fa-shield-alt"></i>
-                  <span>{{ 'ITEM_DETAILS.RECEIPT' | translate }}</span>
-                </div>
-
-                <div class="banner-body">
-                  @if (details.warrantyExpiration) {
-                    <div class="warranty-badge">
-                      <label>{{ 'ITEM_DETAILS.WARRANTY' | translate }}</label>
-                      <span class="warranty-date-text">
-                        <i class="fa fa-calendar-check"></i> {{ details.warrantyExpiration | date:'dd.MM.yyyy' }}
-                      </span>
-                    </div>
-                  }
-
-                  @if (getReceiptUrl(details); as receiptUrl) {
-                    <a [href]="receiptUrl" 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
-                      class="receipt-action-btn"
-                      [title]="'ITEM_DETAILS.VIEW_RECEIPT_TOOLTIP' | translate">
-                      <i class="fa fa-file-invoice-dollar"></i>
-                      <span>{{ 'ITEM_DETAILS.VIEW_RECEIPT' | translate }}</span>
-                      <i class="fa fa-external-link-alt external-icon"></i>
-                    </a>
-                  }
-                </div>
-              </div>
+          <h1 class="item-title">
+            {{ item.name }}
+            @if (item.hasOverdueReminders) {
+              <i class="fa fa-bell overdue-bell" title="Есть пропущенные напоминания"></i>
             }
-          }
+          </h1>
+
+          <p class="item-description">{{ item.description || ('ITEM_DETAILS.NO_DESCRIPTION' | translate) }}</p>
+
+          <!-- ПАНЕЛЬ ФИНАНСОВ И ДОКУМЕНТОВ -->
+          <div class="metrics-grid">
+            <div class="metric-box">
+              <label>{{ 'ITEM_DETAILS.PURCHASE_PRICE' | translate }}</label>
+              <div class="metric-value">{{ item.details?.purchasePrice | price:item.details?.currency }}</div>
+            </div>
+
+            @if (item.details; as details) {
+              @if (details.warrantyExpiration) {
+                <div class="metric-box warranty-box">
+                  <label>{{ 'ITEM_DETAILS.WARRANTY' | translate }}</label>
+                  <div class="metric-value date-val">
+                    <i class="fa fa-shield-halved"></i> {{ details.warrantyExpiration | date:'dd.MM.yyyy' }}
+                  </div>
+                </div>
+              }
+
+              @if (getReceiptUrl(details); as receiptUrl) {
+                <div class="metric-box receipt-box">
+                  <label>{{ 'ITEM_DETAILS.RECEIPT' | translate }}</label>
+                  <a [href]="receiptUrl" target="_blank" rel="noopener noreferrer" class="receipt-link-btn">
+                    <i class="fa fa-file-invoice-dollar"></i>
+                    <span>{{ 'ITEM_DETAILS.VIEW_RECEIPT' | translate }}</span>
+                    <i class="fa fa-arrow-up-right-from-square"></i>
+                  </a>
+                </div>
+              }
+            }
+          </div>
+        </div>
+
+        <!-- КАРТОЧКА АРЕНДЫ (ЕСЛИ ВЫДАН) -->
+        @if (isLent && item.lending) {
+          <div class="lending-info-card">
+            <div class="card-header">
+              <i class="fa fa-handshake"></i>
+              <span>{{ 'STATUS.LENT' | translate }}</span>
+            </div>
+            <div class="lending-body">
+              <div class="lending-main-info">
+                <strong class="person-name">{{ item.lending.personName }}</strong>
+                <div class="lending-value">{{ item.lending.valueAtLending }} $</div>
+              </div>
+              <div class="lending-dates">
+                <div class="date-row">
+                  <label>{{ 'LENDING_MODAL.DATE_GIVEN' | translate }}</label>
+                  <span>{{ item.lending.dateGiven | date:'dd.MM.yyyy' }}</span>
+                </div>
+                @if (item.lending.expectedReturnDate) {
+                  <div class="date-row">
+                    <label>{{ 'LENDING_MODAL.EXPECTED_RETURN' | translate }}</label>
+                    <span class="return-deadline" [class.is-overdue]="item.isLendingOverdue">
+                      {{ item.lending.expectedReturnDate | date:'dd.MM.yyyy' }}
+                      @if (item.isLendingOverdue) {
+                        <i class="fa fa-triangle-exclamation"></i>
+                      }
+                    </span>
+                  </div>
+                }
+              </div>
+              @if (item.lending.comment) {
+                <div class="lending-comment-box">
+                  <p>"{{ item.lending.comment }}"</p>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- ВИДЖЕТ НАПОМИНАЛОК -->
+        <div class="widget-block">
+          <app-item-reminders [itemId]="item.id"></app-item-reminders>
         </div>
 
         <!-- ИСТОРИЯ ПРЕДМЕТА -->
-        <div class="history-section">
-          <h3>{{ 'ITEM_HISTORY.TITLE' | translate }}</h3>
+        <div class="history-block">
+          <h3 class="section-title"><i class="fa fa-clock-rotate-left"></i> {{ 'ITEM_HISTORY.TITLE' | translate }}</h3>
           @if (item.history) {
-            <div class="history-list">
-              @for (h of item.history; track h.id; let first = $first) {
-                <div class="history-record" [class.financial]="h.type === 3 || h.type === 4 || h.type === 6">
-                  <div class="history-icon">
+            <div class="history-timeline">
+              @for (h of item.history; track h.id) {
+                <div class="history-node" [class.financial]="h.type === 3 || h.type === 4 || h.type === 6">
+                  <div class="node-icon">
                     <i class="fa" [ngClass]="historyIcons[h.type] || 'fa-history'"></i>
                   </div>
-                  <div class="history-content">
-                    <span class="history-action">
-                      {{ 'ITEM_HISTORY.RECORD' + h.type | translate }}
-                      <span class="history-date">({{ h.createdAt | date:'dd.MM.yyyy HH:mm' }})</span>
-                    </span>
-                    
-                    <div class="history-meta">
-                      <!-- 1. ПЕРЕМЕЩЕНИЕ ЛОКАЦИИ -->
+                  <div class="node-content">
+                    <div class="node-header">
+                      <span class="action-title">{{ 'ITEM_HISTORY.RECORD' + h.type | translate }}</span>
+                      <span class="node-date">{{ h.createdAt | date:'dd.MM.yyyy HH:mm' }}</span>
+                    </div>
+
+                    <div class="node-details">
                       @if (h.type === 1) {
                         <span class="loc-path">
-                          {{ h.oldValue || '???' }}
-                          <i class="fa fa-long-arrow-alt-right"></i>
-                          {{ h.newValue || '???' }}
+                          {{ h.oldValue || '???' }} <i class="fa fa-arrow-right-long"></i> {{ h.newValue || '???' }}
                         </span>
                       }
-
-                      <!-- 2. СМЕНА СТАТУСА -->
                       @else if (h.type === 2) {
                         <span class="status-change">
-                          <i class="fa fa-check-circle"></i>
                           @if (h.oldValue) {
-                            <span class="status-old">
-                              {{ 'STATUS.' + (+h.oldValue | statusName) | translate }}
-                            </span>
+                            <span>{{ 'STATUS.' + (+h.oldValue | statusName) | translate }}</span>
                             <i class="fa fa-arrow-right"></i>
                           }
-                          @if (h.newValue) {
-                            <span class="status-new">
-                              {{ 'STATUS.' + (+h.newValue | statusName) | translate }}
-                            </span>
-                          }
                         </span>
                       }
-
-                      <!-- 3. ФИНАНСОВЫЕ ЗАПИСИ (ОЦЕНКА / ПРОДАЖА / ДОЛГ) -->
                       @else if (h.type === 3 || h.type === 4 || h.type === 6) {
-                        <span class="money-tag">
-                          <i class="fa fa-coins"></i> {{ h.newValue ? (h.newValue + ' $') : '' }}
-                        </span>
+                        <span class="money-tag"><i class="fa fa-coins"></i> {{ h.newValue ? (h.newValue + ' $') : '' }}</span>
                       }
-
-                      <!-- 4. ПРОЧИЕ ЗNAЧЕНИЯ -->
                       @else if (h.newValue; as val) {
-                        <span class="generic-value">
-                          {{ val }}
-                        </span>
+                        <span class="generic-val">{{ val }}</span>
                       }
                     </div>
 
-                    <!-- КОММЕНТАРИЙ -->
                     @if (h.comment) {
                       <p class="history-comment">
                         @if (h.comment.includes('{0}')) {
@@ -193,55 +212,7 @@
             </div>
           }
         </div>
-      </div>
 
-      <!-- 3. Правая колонка - Виджет Напоминалок и Одалживания -->
-      <div class="column widget-col">
-        <div class="widget-wrapper">
-          <app-item-reminders [itemId]="item.id"></app-item-reminders>
-        </div>
-
-        @if (isLent && item.lending) {
-          <div class="lending-info-card">
-            <div class="card-header">
-              <i class="fa fa-handshake"></i>
-              <span>{{ 'STATUS.LENT' | translate }}</span>
-            </div>
-            <div class="card-body">
-              <div class="lending-main-info">
-                <strong class="person-name">{{ item.lending.personName }}</strong>
-                <div class="lending-value">{{ item.lending.valueAtLending }} $</div>
-              </div>
-              <div class="lending-dates">
-                <div class="date-row">
-                  <label>{{ 'LENDING_MODAL.DATE_GIVEN' | translate }}</label>
-                  <span>{{ item.lending.dateGiven | date:'dd.MM.yyyy' }}</span>
-                </div>
-                
-                @if (item.lending.expectedReturnDate) {
-                  <div class="date-row">
-                    <label>{{ 'LENDING_MODAL.EXPECTED_RETURN' | translate }}</label>
-                    <span class="return-deadline" 
-                          [style.color]="item.isLendingOverdue ? 'var(--g-red)' : 'inherit'"
-                          [style.font-weight]="item.isLendingOverdue ? 'bold' : 'normal'">
-                      {{ item.lending.expectedReturnDate | date:'dd.MM.yyyy' }}
-                      
-                      @if (item.isLendingOverdue) {
-                        <i class="fa fa-exclamation-triangle" style="margin-left: 5px;" title="Просрочено!"></i>
-                      }
-                    </span>
-                  </div>
-                }
-              </div>
-              @if (item.lending.comment) {
-                <div class="lending-comment-box">
-                  <i class="fa fa-quote-left"></i>
-                  <p>{{ item.lending.comment }}</p>
-                </div>
-              }
-            </div>
-          </div>
-        }
       </div>
     </div>
   </div>

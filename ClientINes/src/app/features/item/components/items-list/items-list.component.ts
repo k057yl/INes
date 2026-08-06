@@ -6,6 +6,7 @@ import { debounceTime, finalize, switchMap, tap, startWith, catchError } from 'r
 import { of } from 'rxjs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
+import { PricePipe } from '../../../../shared/pipes/price-currency.pipe';
 
 import { ItemService } from '../../services/item.service';
 import { CategoryService } from '../../../category/services/category.service';
@@ -20,7 +21,7 @@ type DropdownType = 'category' | 'location' | 'status' | 'sort' | null;
 @Component({
   selector: 'app-items-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, TranslateModule, ReactiveFormsModule, StatusNamePipe],
+  imports: [CommonModule, RouterModule, TranslateModule, ReactiveFormsModule, StatusNamePipe, PricePipe],
   templateUrl: './items-list.component.html',
   styleUrl: './items-list.component.scss'
 })

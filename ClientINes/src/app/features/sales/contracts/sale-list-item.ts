@@ -7,4 +7,5 @@ export interface SaleListItem {
   soldDate: string;
   platformName?: string;
   categoryName?: string;
+  currency?: string;
 }
