@@ -331,6 +331,8 @@
       "DOWN_TOOLTIP": "Переместить локацию вниз",
       "HOLD_TOOLTIP": "Зажми и тяни"
     },
+    "CREATE_LOCATION": "Создать локацию",
+    "CREATE_ITEM": "Создать предмет",
     "EMPTY": "Пока пусто",
     "RIBBON": {
       "HAVE_TOOLTIP": "Есть вложенные локации"

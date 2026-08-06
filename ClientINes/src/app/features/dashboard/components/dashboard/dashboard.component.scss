@@ -172,6 +172,13 @@
     border-left: 2px dashed var(--border-color, rgba(255, 255, 255, 0.15));
     min-width: 0 !important;
     box-sizing: border-box;
+    transition: min-height 0.2s ease;
+  }
+
+  .board-dragging-active .child-locations,
+  .board-dragging-active .nested-locations-container {
+    min-height: 40px !important;
+    padding-bottom: 10px !important;
   }
 
   /* Drag & Drop превьюшки */
@@ -213,8 +220,6 @@
 
   .cdk-drag-placeholder {
     opacity: 0 !important;
-    min-height: 0 !important;
-    height: 0 !important;
     margin: 0 !important;
     padding: 0 !important;
     border: none !important;

@@ -11,15 +11,7 @@
     (jumpTo)="jumpToLocation($event)">
   </app-location-ribbon>
 
-  <div class="board-grid-3"
-    [class.board-dragging-active]="!!facade.locations.draggedLocationId" 
-    cdkDropList
-    id="root-loc-list"
-    [cdkDropListData]="pagedBoardLocations"
-    [cdkDropListConnectedTo]="facade.visibleConnectedLocationLists"
-    [cdkDropListSortingDisabled]="true"
-    [cdkDropListEnterPredicate]="canDropRootLocation"
-    (cdkDropListDropped)="onLocationDropped({event: $event, targetId: 'root'})">
+  <div class="board-grid-3">
 
     @if (facade.isLoading) {
       <div class="loader-overlay">
@@ -28,25 +20,12 @@
     }
 
     @for (loc of pagedBoardLocations; track trackById($index, loc)) {
-      <div class="root-loc-wrapper"
-        cdkDrag
-        [cdkDragData]="loc"
-        [cdkDragDisabled]="isMobile"
-        (cdkDragStarted)="onLocationDragStart(loc)" 
-        (cdkDragEnded)="onLocationDragEnd()">
-        
-        <div *cdkDragPreview class="custom-drag-preview" [style.border-color]="loc.color">
-          <i [className]="'fa ' + (loc.icon || 'fa-folder')" [style.color]="loc.color"></i>
-          <span class="preview-title">{{ loc.name }}</span>
-        </div>
-
+      <div class="root-loc-wrapper">
         <app-location-card
           [location]="loc"
           [flatLocations]="facade.locations.flatLocations"
           [connectedLists]="facade.visibleConnectedLists"
-          [connectedLocationLists]="facade.visibleConnectedLocationLists"
           (itemDropped)="onItemDropped($event)"
-          (locationDropped)="onLocationDropped($event)"
           (lendItem)="onLendRequest($event)"
           (returnItem)="onReturnRequest($event)"
           (sellItem)="onSellRequest($event)"

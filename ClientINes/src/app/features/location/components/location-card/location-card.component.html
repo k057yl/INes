@@ -1,20 +1,10 @@
-<div class="location-column"
-  [style.border-top-color]="effectiveColor"
-  [class.menu-open]="location.showMenu"
-  [class.is-valid-target]="isValidDropTarget"
-  [class.is-invalid-target]="isInvalidDropTarget"
-  [class.is-drag-over]="isDragOver" cdkDropList
-  [id]="'list-loc-' + location.id"
-  [cdkDropListData]="location.children!"
-  [cdkDropListConnectedTo]="connectedLocationLists"
-  [cdkDropListEnterPredicate]="canDropLocation"
-  (cdkDropListEntered)="onDragEntered()"
-  (cdkDropListExited)="onDragExited()"
-  (cdkDropListDropped)="onDragExited(); locationDropped.emit({event: $event, targetId: location.id})" 
-  [cdkDropListSortingDisabled]="true">
+<div class="location-column" [style.border-top-color]="effectiveColor">
 
+  <!-- ШАПКА ЛОКАЦИИ -->
   <div class="loc-header-wrapper">
     <div class="main-actions-area">
+      
+      <!-- ВЕРХНИЙ РЯД: Заголовок + Утилиты -->
       <div class="header-row top">
         <div class="title-block">
           <i [className]="'fa ' + (location.icon || 'fa-folder')" [style.color]="location.color"></i>
@@ -23,70 +13,78 @@
         </div>
 
         <div class="button-group">
-          <button class="tool-btn add-loc"
-            [disabled]="treeService.getLocationLevel(facade.locations.flatLocations, location.id) >= 3"
-            (click)="onAddLocation($event)"
-            [title]="'LOCATION_CARD.BTN.LOCATION_TOOLTIP' | translate">
-            <i class="fa fa-folder-plus"></i>
+          <!-- Инфо -->
+          <button class="tool-btn" 
+            [routerLink]="['/location', location.id]" 
+            (click)="$event.stopPropagation()" 
+            [title]="'COMMON.INFO' | translate">
+            <i class="fa fa-eye"></i>
           </button>
 
-          <button class="tool-btn add-item"
-            (click)="onAddItem($event)"
-            [title]="'LOCATION_CARD.BTN.ITEM_TOOLTIP' | translate">
-            <i class="fa fa-plus"></i>
+          <!-- Селект перемещения -->
+          <div class="select-btn-wrapper" [title]="'LOCATION_CARD.BTN.CHANGE_LOC_TOOLTIP' | translate" (click)="$event.stopPropagation()">
+            <i class="fa fa-exchange-alt select-icon"></i>
+            <select (change)="onMove($event)">
+              <option value="" disabled selected></option>
+              <option value="root"
+                [disabled]="!treeService.canMoveLocation(facade.locations.flatLocations, location.id, null)">
+                📁 {{'DROP_MENU.HIGHER_LEVEL' | translate}}
+              </option>
+              @for (target of flatLocations; track target.id) {
+                <option
+                  [value]="target.id"
+                  [disabled]="target.id === location.id || treeService.isChildOf(target.id, location) || !treeService.canMoveLocation(facade.locations.flatLocations, location.id, target.id)">
+                  {{ target.name }}
+                </option>
+              }
+            </select>
+          </div>
+
+          <!-- Стрелки вверх/вниз (только у вложенных) -->
+          @if (isNestedLocation) {
+            <button class="tool-btn" (click)="moveUp.emit(location); $event.stopPropagation()" [title]="'LOCATION_CARD.BTN.UP_TOOLTIP' | translate" [disabled]="isFirst">
+              <i class="fa fa-arrow-up"></i>
+            </button>
+            <button class="tool-btn" (click)="moveDown.emit(location); $event.stopPropagation()" [title]="'LOCATION_CARD.BTN.DOWN_TOOLTIP' | translate" [disabled]="isLast">
+              <i class="fa fa-arrow-down"></i>
+            </button>
+          }
+
+          <!-- Переименовать -->
+          <button class="tool-btn" (click)="rename.emit(location); $event.stopPropagation()" [title]="'COMMON.RENAME' | translate">
+            <i class="fa fa-edit"></i>
           </button>
 
-          <button class="tool-btn move-select" (click)="location.showMenu = !location.showMenu; $event.stopPropagation()" [title]="'LOCATION_CARD.BTN.CHANGE_LOC_TOOLTIP' | translate">
-            <i class="fa fa-exchange-alt"></i>
-          </button>
-
-          <button class="tool-btn" (click)="moveUp.emit(location); $event.stopPropagation()" [title]="'LOCATION_CARD.BTN.UP_TOOLTIP' | translate" [disabled]="isFirst">
-            <i class="fa fa-arrow-up"></i>
-          </button>
-          <button class="tool-btn" (click)="moveDown.emit(location); $event.stopPropagation()" [title]="'LOCATION_CARD.BTN.DOWN_TOOLTIP' | translate" [disabled]="isLast">
-            <i class="fa fa-arrow-down"></i>
+          <!-- Удалить -->
+          <button class="tool-btn is-danger" (click)="delete.emit(location); $event.stopPropagation()" [title]="'COMMON.DELETE' | translate">
+            <i class="fa fa-trash-alt"></i>
           </button>
         </div>
       </div>
 
+      <!-- НИЖНИЙ РЯД: Кнопки создания с текстом -->
       <div class="header-row bottom">
-        <button class="link-btn" [routerLink]="['/location', location.id]" (click)="$event.stopPropagation()">
-          <i class="fa fa-eye"></i> {{'COMMON.INFO' | translate}}
+        <button class="action-btn add-loc"
+          [disabled]="treeService.getLocationLevel(facade.locations.flatLocations, location.id) >= 3"
+          (click)="onAddLocation($event)">
+          <i class="fa fa-folder-plus"></i>
+          <span>{{'LOCATION_CARD.CREATE_LOCATION' | translate}}</span>
         </button>
-        <button class="link-btn" (click)="rename.emit(location); $event.stopPropagation()">
-          <i class="fa fa-edit"></i> {{'COMMON.RENAME' | translate}}
-        </button>
-        <button class="link-btn is-danger" (click)="delete.emit(location); $event.stopPropagation()">
-          <i class="fa fa-trash-alt"></i> {{'COMMON.DELETE' | translate}}
+
+        <button class="action-btn add-item"
+          (click)="onAddItem($event)">
+          <i class="fa fa-box"></i>
+          <span>{{'LOCATION_CARD.CREATE_ITEM' | translate}}</span>
         </button>
       </div>
-    </div>
 
-    <div class="drag-handle" cdkDragHandle (click)="$event.stopPropagation()" [title]="'LOCATION_CARD.BTN.HOLD_TOOLTIP' | translate">
-      <i class="fa fa-grip-vertical"></i>
     </div>
-
-    @if (location.showMenu) {
-      <div class="quick-move-panel" (click)="$event.stopPropagation()">
-        <select (change)="onMove($event)">
-          <option value="" disabled selected>{{'DROP_MENU.SELECT_LOCATION' | translate}}</option>
-          <option value="root"
-            [disabled]="!treeService.canMoveLocation(facade.locations.flatLocations, location.id, null)">
-            📁 {{'DROP_MENU.HIGHER_LEVEL' | translate}}
-          </option>
-          @for (target of flatLocations; track target) {
-            <option
-              [value]="target.id"
-              [disabled]="target.id === location.id || treeService.isChildOf(target.id, location) || !treeService.canMoveLocation(facade.locations.flatLocations, location.id, target.id)">
-              {{ target.name }}
-            </option>
-          }
-        </select>
-      </div>
-    }
   </div>
 
-  <div cdkDropList [id]="location.id" [cdkDropListData]="location.items"
+  <!-- ДРОП-ЗОНА ДЛЯ ПРЕДМЕТОВ -->
+  <div cdkDropList 
+    [id]="location.id" 
+    [cdkDropListData]="location.items"
     [cdkDropListConnectedTo]="connectedLists"
     [cdkDropListEnterPredicate]="canDropItem"
     (cdkDropListDropped)="onItemDrop($event)"
@@ -117,23 +115,15 @@
     }
   </div>
 
+  <!-- ВЛОЖЕННЫЕ ЛОКАЦИИ -->
   <div class="child-locations">
     @for (child of location.children; track trackById($index, child)) {
-      <div class="child-location-wrapper"
-        cdkDrag
-        [cdkDragData]="child"
-        [cdkDragDisabled]="isMobile"
-        (cdkDragStarted)="onDragStart(child)" (cdkDragEnded)="onDragEnd()">
-        <div *cdkDragPreview class="custom-drag-preview" [style.border-color]="effectiveColor">
-          <i [className]="'fa ' + (child.icon || 'fa-folder')" [style.color]="effectiveColor"></i>
-          <span class="preview-title">{{ child.name }}</span>
-        </div>
+      <div class="child-location-wrapper">
         <app-location-card
           [location]="child"
           [accentColor]="effectiveColor"
           [flatLocations]="flatLocations"
           [connectedLists]="connectedLists"
-          [connectedLocationLists]="connectedLocationLists"
           
           (itemDropped)="itemDropped.emit($event)"
           (sellItem)="sellItem.emit($event)"
@@ -142,7 +132,6 @@
           (deleteItem)="deleteItem.emit($event)"
           (editItem)="editItem.emit($event)"      
           (moveItemManual)="moveItemManual.emit($event)" 
-          (locationDropped)="locationDropped.emit($event)"
           (move)="move.emit($event)"
           (rename)="rename.emit($event)"
           (delete)="delete.emit($event)"

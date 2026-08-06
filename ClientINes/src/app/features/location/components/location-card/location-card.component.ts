@@ -27,10 +27,8 @@ export class LocationCardComponent implements OnInit {
   @Input() accentColor?: string;
   @Input() flatLocations: StorageLocation[] = [];
   @Input() connectedLists: string[] = [];
-  @Input() connectedLocationLists: string[] = [];
 
   @Output() itemDropped = new EventEmitter<{event: CdkDragDrop<Item[]>, loc: StorageLocation}>();
-  @Output() locationDropped = new EventEmitter<{event: CdkDragDrop<StorageLocation[]>, targetId: string | null}>();
   @Output() move = new EventEmitter<{ loc: StorageLocation, targetId: string }>();
   @Output() rename = new EventEmitter<StorageLocation>();
   @Output() delete = new EventEmitter<StorageLocation>();
@@ -46,18 +44,14 @@ export class LocationCardComponent implements OnInit {
 
   openItemMenuId: string | null = null;
   isMobile = window.innerWidth <= 768;
-  isDragOver = false;
 
   get effectiveColor(): string {
     return this.accentColor || this.location.color || 'var(--accent-color)';
   }
 
-  onDragEntered() {
-    this.isDragOver = true;
-  }
-  
-  onDragExited() {
-    this.isDragOver = false;
+  get isNestedLocation(): boolean {
+    const parentId = this.treeService.getParentId(this.facade.locations.flatLocations, this.location.id);
+    return !!parentId;
   }
 
   ngOnInit() {
@@ -66,50 +60,12 @@ export class LocationCardComponent implements OnInit {
     }
   }
 
-  onDragStart(child: StorageLocation) {
-    this.facade.locations.draggedLocationId = child.id;
-  }
-
-  onDragEnd() {
-    this.facade.locations.draggedLocationId = null;
-  }
-
-  private _checkIfValidTarget(draggedData: any): boolean {
-    if (!draggedData || !('children' in draggedData)) return false;
-    if (draggedData.id === this.location.id) return false;
-    if (this.treeService.isChildOf(this.location.id, draggedData)) return false;
-    return this.treeService.canMoveLocation(this.facade.locations.flatLocations, draggedData.id, this.location.id);
-  }
-
   @HostListener('window:resize')
   onResize() { this.isMobile = window.innerWidth <= 768; }
 
   canDropItem = (drag: CdkDrag): boolean => {
     return !!(drag.data && !('children' in drag.data));
   };
-
-  canDropLocation = (drag: CdkDrag): boolean => {
-    return this._checkIfValidTarget(drag.data);
-  };
-
-  get isValidDropTarget(): boolean {
-    const draggedId = this.facade.locations.draggedLocationId;
-    if (!draggedId) return false;
-    const draggedLoc = this.facade.locations.flatLocations.find(l => l.id === draggedId);
-    if (!draggedLoc) return false;
-    return this._checkIfValidTarget(draggedLoc);
-  }
-
-  get isInvalidDropTarget(): boolean {
-    const draggedId = this.facade.locations.draggedLocationId;
-    if (!draggedId) return false;
-    if (draggedId === this.location.id) return false;
-    
-    const draggedLoc = this.facade.locations.flatLocations.find(l => l.id === draggedId);
-    if (!draggedLoc) return false;
-    
-    return !this._checkIfValidTarget(draggedLoc);
-  }
 
   private getSiblings(): StorageLocation[] {
     const parent = this.facade.locations.flatLocations.find(l => l.children?.some(c => c.id === this.location.id));
@@ -132,20 +88,14 @@ export class LocationCardComponent implements OnInit {
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
-    if (!this.location.showMenu && !this.openItemMenuId) return;
+    if (!this.openItemMenuId) return;
     if (!this.el.nativeElement.contains(event.target)) {
-      this.location.showMenu = false;
       this.openItemMenuId = null;
     }
   }
 
   onItemDrop(event: CdkDragDrop<Item[]>) {
     this.itemDropped.emit({ event, loc: this.location });
-  }
-
-  toggleMenu(event: MouseEvent) {
-    event.stopPropagation();
-    this.location.showMenu = !this.location.showMenu;
   }
 
   onMove(event: Event) {
@@ -158,7 +108,6 @@ export class LocationCardComponent implements OnInit {
     }
 
     this.move.emit({ loc: this.location, targetId: targetId ?? 'root' });
-    this.location.showMenu = false;
     select.value = "";
   }
 
@@ -180,7 +129,7 @@ export class LocationCardComponent implements OnInit {
     });
   }
 
-  trackById(index: number, item: any): string {
+  trackById(_: number, item: any): string {
     return item.id;
   }
 }
