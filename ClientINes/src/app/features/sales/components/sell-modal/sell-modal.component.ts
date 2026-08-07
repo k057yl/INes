@@ -39,6 +39,14 @@ export class SellModalComponent implements OnInit {
     comment: ['']
   });
 
+  get purchasePriceDisplay(): string {
+    if (this.item?.details?.purchasePrice != null) {
+      const currency = this.item.details.currency || 'USD';
+      return `${this.item.details.purchasePrice} ${currency}`;
+    }
+    return '—';
+  }
+
   ngOnInit(): void {
     this.loadPlatforms();
   }
@@ -64,7 +72,7 @@ export class SellModalComponent implements OnInit {
   loadPlatforms() {
     this.salesService.getPlatforms().subscribe({
       next: (data) => this.platforms = data,
-      error: (err) => this.toastr.error(this.translate.instant('PLATFORMS.ERRORS.NOT_FOUND'))
+      error: () => this.toastr.error(this.translate.instant('PLATFORMS.ERRORS.NOT_FOUND'))
     });
   }
 
@@ -116,6 +124,7 @@ export class SellModalComponent implements OnInit {
     const dto: SaleCreateDto = {
       itemId: this.item.id,
       salePrice: Number(formValue.salePrice),
+      currency: this.item.details?.currency || 'USD',
       soldDate: new Date(formValue.soldDate!).toISOString(),
       platformId: formValue.platformId!,
       comment: formValue.comment || undefined

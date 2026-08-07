@@ -1,83 +1,102 @@
-<div class="modal-backdrop" (click)="onCancel()">
-  <div class="modal-content" (click)="$event.stopPropagation()">
-    <header class="modal-header">
-      <h2>{{ 'COMMON.SELL' | translate }}: {{ item.name }}</h2>
-      <button class="close-btn" (click)="onCancel()">&times;</button>
-    </header>
+<div class="inest-form-page" (click)="onCancel()">
+  <div class="inest-form-card" (click)="$event.stopPropagation()">
+    <button class="close-modal-btn" (click)="onCancel()">&times;</button>
+
+    <h2>{{ 'COMMON.SELL' | translate }}: {{ item.name }}</h2>
 
     <form [formGroup]="sellForm" (ngSubmit)="onSubmit()">
-      <div class="form-group">
-        <label>{{ 'SELL_PAGE.PRICE' | translate }}</label>
-        <input type="number"
-          formControlName="salePrice"
-          step="0.01"
-          placeholder="0.00"
-          [class.is-invalid]="isControlInvalid('salePrice', 'min')">
 
-          <div class="error-container">
-            @if (isControlInvalid('salePrice', 'min')) {
-              <small class="error-text">
-                {{ 'ERRORS.NEGATIVE_NUMBER' | translate }}
-              </small>
-            }
-          </div>
+      <!-- Нередактируемое поле: Цена покупки -->
+      <div class="inest-form-group">
+        <label>{{ 'SELL_PAGE.PURCHASE_PRICE' | translate }}</label>
+        <div class="inest-input-wrapper is-readonly">
+          <i class="fa-solid fa-tag inest-field-icon-left"></i>
+          <input type="text" [value]="purchasePriceDisplay" readonly tabIndex="-1">
+        </div>
+      </div>
+
+      <!-- Цена продажи -->
+      <div class="inest-form-group">
+        <label>{{ 'SELL_PAGE.PRICE' | translate }}</label>
+        <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('salePrice', 'min')">
+          <i class="fa-solid fa-coins inest-field-icon-left"></i>
+          <input type="number"
+            formControlName="salePrice"
+            step="0.01"
+            placeholder="0.00">
         </div>
 
-        <div class="form-group">
-          <label>{{ 'SELL_PAGE.DATE' | translate }}</label>
-          <input type="date"
-            formControlName="soldDate"
-            [class.is-invalid]="isControlInvalid('soldDate', 'futureDate')">
-
-            <div class="error-container">
-              @if (isControlInvalid('soldDate', 'futureDate')) {
-                <small class="error-text">
-                  {{ 'ERRORS.FUTURE_DATE' | translate }}
-                </small>
-              }
-            </div>
+        @if (isControlInvalid('salePrice', 'min')) {
+          <div class="error-hint-msg">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <span>{{ 'ERRORS.NEGATIVE_NUMBER' | translate }}</span>
           </div>
-
-          <div class="form-group">
-            <div class="label-row">
-              <label>{{ 'SELL_PAGE.SOLD_ON' | translate }}</label>
-              <button type="button" class="add-platform-btn" (click)="addPlatform()">
-                <i class="fa fa-plus"></i> {{ 'SELL_PAGE.CREATE' | translate }}
-              </button>
-            </div>
-            <div class="select-wrapper">
-              <select formControlName="platformId">
-                <option [value]="null">-- {{ 'SELL_PAGE.SELECT_PLATFORM' | translate }} --</option>
-                @for (p of platforms; track p) {
-                  <option [value]="p.id">{{ p.name }}</option>
-                }
-              </select>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label>{{ 'SELL_PAGE.COMMENT' | translate }}</label>
-            <textarea formControlName="comment" rows="3"></textarea>
-          </div>
-
-          <footer class="modal-actions">
-            <button type="button" class="btn-cancel" (click)="onCancel()">
-              {{ 'COMMON.CANCEL' | translate }}
-            </button>
-            <button type="submit" class="btn-confirm" [disabled]="sellForm.invalid">
-              {{ 'COMMON.SELL' | translate }}
-            </button>
-          </footer>
-        </form>
+        }
       </div>
-    </div>
 
-    @if (showPlatformModal) {
-      <app-inest-modal
-        mode="input"
-        [title]="'PLATFORM_PAGE.CREATE'"
-        [confirmText]="'COMMON.SAVE'"
-        (confirmed)="onPlatformConfirmed($event)"
-        (cancelled)="showPlatformModal = false">
-      </app-inest-modal>
-    }
+      <!-- Дата продажи -->
+      <div class="inest-form-group">
+        <label>{{ 'SELL_PAGE.DATE' | translate }}</label>
+        <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('soldDate', 'futureDate')">
+          <i class="fa-solid fa-calendar-days inest-field-icon-left"></i>
+          <input type="date" formControlName="soldDate">
+        </div>
+
+        @if (isControlInvalid('soldDate', 'futureDate')) {
+          <div class="error-hint-msg">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <span>{{ 'ERRORS.FUTURE_DATE' | translate }}</span>
+          </div>
+        }
+      </div>
+
+      <!-- Платформа продажи -->
+      <div class="inest-form-group">
+        <div class="label-with-action">
+          <label>{{ 'SELL_PAGE.SOLD_ON' | translate }}</label>
+          <button type="button" class="inline-add-btn" (click)="addPlatform()">
+            <i class="fa fa-plus"></i> {{ 'SELL_PAGE.CREATE' | translate }}
+          </button>
+        </div>
+
+        <div class="inest-input-wrapper">
+          <i class="fa-solid fa-store inest-field-icon-left"></i>
+          <select formControlName="platformId">
+            <option [value]="null">-- {{ 'SELL_PAGE.SELECT_PLATFORM' | translate }} --</option>
+            @for (p of platforms; track p.id) {
+              <option [value]="p.id">{{ p.name }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <!-- Комментарий -->
+      <div class="inest-form-group">
+        <label>{{ 'SELL_PAGE.COMMENT' | translate }}</label>
+        <div class="inest-input-wrapper">
+          <i class="fa-solid fa-comment-dots inest-field-icon-left"></i>
+          <textarea formControlName="comment" rows="3"></textarea>
+        </div>
+      </div>
+
+      <footer class="form-actions-row">
+        <button type="button" class="btn-cancel" (click)="onCancel()">
+          {{ 'COMMON.CANCEL' | translate }}
+        </button>
+        <button type="submit" class="inline-save-btn-large" [disabled]="sellForm.invalid">
+          {{ 'COMMON.SELL' | translate }}
+        </button>
+      </footer>
+    </form>
+  </div>
+</div>
+
+@if (showPlatformModal) {
+  <app-inest-modal
+    mode="input"
+    [title]="'PLATFORM_PAGE.CREATE'"
+    [confirmText]="'COMMON.SAVE'"
+    (confirmed)="onPlatformConfirmed($event)"
+    (cancelled)="showPlatformModal = false">
+  </app-inest-modal>
+}

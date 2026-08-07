@@ -100,7 +100,7 @@ export class ItemFormModalComponent implements OnInit {
     contactEmail: ['', [Validators.email]],
     expectedReturnDate: [null as string | null],
     sendNotification: [false],
-    sendTelegramNotification: [false],
+    sendTelegramNotification: [true],
     addPhoto: [false],
 
     addReceipt: [false],
@@ -119,6 +119,9 @@ export class ItemFormModalComponent implements OnInit {
   get isLendingStatus(): boolean {
     const s = Number(this.form.getRawValue().status);
     return s === 1 || s === 4;
+  }
+  get currentStatusNumber(): number {
+    return Number(this.form.getRawValue().status);
   }
 
   get availableStatuses() {
@@ -176,19 +179,23 @@ export class ItemFormModalComponent implements OnInit {
     const isLending = (s === 1 || s === 4);
 
     if (isLending) {
-      this.authService.user$.pipe(
-        filter(u => !!u && Object.keys(u).length > 0),
-        take(1)
-      ).subscribe(user => {
-        const u = user as any;
-        const foundEmail = u.email || u.Email || u.emailAddress || u.userName || u['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'];
-        if (foundEmail) {
-          emailControl?.setValue(foundEmail, { emitEvent: false });
-          emailControl?.disable({ emitEvent: false });
-        } else {
-          emailControl?.enable({ emitEvent: false });
-        }
-      });
+      this.form.patchValue({ addReminder: false });
+      
+      if (s === 1) {
+        this.authService.user$.pipe(
+          filter(u => !!u && Object.keys(u).length > 0),
+          take(1)
+        ).subscribe(user => {
+          const u = user as any;
+          const foundEmail = u.email || u.Email || u.emailAddress || u.userName || u['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'];
+          if (foundEmail) {
+            emailControl?.setValue(foundEmail, { emitEvent: false });
+            emailControl?.disable({ emitEvent: false });
+          } else {
+            emailControl?.enable({ emitEvent: false });
+          }
+        });
+      }
     } else {
       emailControl?.enable({ emitEvent: false });
       if (s === 0) emailControl?.setValue('', { emitEvent: false });
@@ -253,10 +260,6 @@ export class ItemFormModalComponent implements OnInit {
 
     if (this.isEdit) {
       this.form.get('status')?.disable({ emitEvent: false });
-    }
-
-    if (item.status !== 0) {
-      this.form.disable();
     }
   }
 
@@ -340,7 +343,7 @@ export class ItemFormModalComponent implements OnInit {
       formData.append('sendTelegramNotification', (!!val.sendTelegramNotification).toString());
     }
 
-    if (val.addReminder && val.reminderTriggerAt) {
+    if (val.addReminder && val.reminderTriggerAt && !this.isLendingStatus) {
       formData.append('reminder.title', val.reminderTitle || '');
       formData.append('reminder.type', (val.reminderType ?? ReminderType.Custom).toString());
       formData.append('reminder.recurrence', (val.reminderRecurrence ?? ReminderRecurrence.None).toString());

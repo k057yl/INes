@@ -1,4 +1,7 @@
-<div class="location-column" [style.border-top-color]="effectiveColor">
+<div class="location-column" 
+     [class.nested-location]="locationLevel > 0"
+     [style.border-top-color]="effectiveColor"
+     [style.background-color]="cardBackgroundStyle">
 
   <!-- ШАПКА ЛОКАЦИИ -->
   <div class="loc-header-wrapper">
@@ -62,16 +65,18 @@
         </div>
       </div>
 
-      <!-- НИЖНИЙ РЯД: Кнопки создания с текстом -->
+      <!-- НИЖНИЙ РЯД: Кнопки создания с текстом и тултипами -->
       <div class="header-row bottom">
         <button class="action-btn add-loc"
-          [disabled]="treeService.getLocationLevel(facade.locations.flatLocations, location.id) >= 3"
+          [disabled]="isMaxLevelReached"
+          [title]="(isMaxLevelReached ? 'LOCATION_CARD.BTN.MAX_LEVEL_TOOLTIP' : 'LOCATION_CARD.BTN.LOCATION_TOOLTIP') | translate"
           (click)="onAddLocation($event)">
           <i class="fa fa-folder-plus"></i>
           <span>{{'LOCATION_CARD.CREATE_LOCATION' | translate}}</span>
         </button>
 
         <button class="action-btn add-item"
+          [title]="'LOCATION_CARD.BTN.ITEM_TOOLTIP' | translate"
           (click)="onAddItem($event)">
           <i class="fa fa-box"></i>
           <span>{{'LOCATION_CARD.CREATE_ITEM' | translate}}</span>
@@ -88,7 +93,8 @@
     [cdkDropListConnectedTo]="connectedLists"
     [cdkDropListEnterPredicate]="canDropItem"
     (cdkDropListDropped)="onItemDrop($event)"
-    class="items-container">
+    class="items-container"
+    [class.is-empty]="location.items.length === 0">
 
     @for (item of location.items; track trackById($index, item)) {
       <app-item-card
@@ -107,21 +113,21 @@
       </app-item-card>
     }
 
+    <!-- КНОПКА БЫСТРОГО ДОБАВЛЕНИЯ ПРИ ПУСТОЙ ЛОКАЦИИ -->
     @if (location.items.length === 0) {
-      <div class="empty-placeholder">
-        <i class="fa fa-box-open"></i>
-        <p>{{'LOCATION_CARD.EMPTY' | translate}}</p>
+      <div class="empty-drop-zone" (click)="onAddItem($event)" [title]="'LOCATION_CARD.BTN.ITEM_TOOLTIP' | translate">
+        <i class="fa fa-plus"></i>
+        <span>{{'LOCATION_CARD.CREATE_ITEM' | translate}}</span>
       </div>
     }
   </div>
 
-  <!-- ВЛОЖЕННЫЕ ЛОКАЦИИ -->
+<!-- ВЛОЖЕННЫЕ ЛОКАЦИИ -->
   <div class="child-locations">
     @for (child of location.children; track trackById($index, child)) {
       <div class="child-location-wrapper">
         <app-location-card
           [location]="child"
-          [accentColor]="effectiveColor"
           [flatLocations]="flatLocations"
           [connectedLists]="connectedLists"
           

@@ -10,7 +10,6 @@ export interface ItemCreateDto {
   details: {
     purchaseDate?: string;
     purchasePrice?: number;
-    estimatedValue?: number;
     currency: string;
     warrantyExpiration?: string;
     receiptDocumentPath?: string;

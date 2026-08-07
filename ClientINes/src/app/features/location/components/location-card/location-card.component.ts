@@ -45,13 +45,56 @@ export class LocationCardComponent implements OnInit {
   openItemMenuId: string | null = null;
   isMobile = window.innerWidth <= 768;
 
+  get locationLevel(): number {
+    const rawLoc = this.location as any;
+    const parentId = rawLoc.parentLocationId || rawLoc.parentId || rawLoc.parentLocation?.id;
+    
+    if (!parentId) {
+      return 0;
+    }
+
+    return this.treeService.getLocationLevel(this.facade.locations.flatLocations, this.location.id);
+  }
+
+  get selfColor(): string {
+    return this.location.color || 'var(--accent-color)';
+  }
+
   get effectiveColor(): string {
-    return this.accentColor || this.location.color || 'var(--accent-color)';
+    if (this.locationLevel === 0) {
+      return this.selfColor;
+    }
+
+    const flat = this.facade.locations.flatLocations;
+    let currentParentId = this.treeService.getParentId(flat, this.location.id);
+    let rootColor = this.selfColor;
+
+    while (currentParentId) {
+      const parent = flat.find(l => l.id === currentParentId);
+      if (parent) {
+        rootColor = parent.color || 'var(--accent-color)';
+        currentParentId = this.treeService.getParentId(flat, parent.id);
+      } else {
+        break;
+      }
+    }
+
+    return rootColor;
+  }
+
+  get cardBackgroundStyle(): string {
+    if (this.locationLevel === 0) {
+      return 'var(--bg-card)';
+    }
+    return `color-mix(in srgb, ${this.selfColor} 10%, var(--bg-card))`;
   }
 
   get isNestedLocation(): boolean {
-    const parentId = this.treeService.getParentId(this.facade.locations.flatLocations, this.location.id);
-    return !!parentId;
+    return this.locationLevel > 0;
+  }
+
+  get isMaxLevelReached(): boolean {
+    return this.locationLevel >= 3;
   }
 
   ngOnInit() {
@@ -113,6 +156,8 @@ export class LocationCardComponent implements OnInit {
 
   onAddLocation(event: Event) {
     event.stopPropagation();
+    if (this.isMaxLevelReached) return;
+
     this.modalService.openLocationForm(null, this.location.id).subscribe(result => {
       if (result) {
         this.facade.loadData().subscribe(); 

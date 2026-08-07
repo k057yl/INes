@@ -5,13 +5,14 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
 import { Item } from '../../contracts/item';
 import { ItemHistoryType } from '../../enums/item-history-type.enum';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { StatusNamePipe } from '../../../../shared/pipes/status-name.pipe';
 import { ItemRemindersComponent } from './reminder/item-reminders.component';
 import { PricePipe } from '../../../../shared/pipes/price-currency.pipe';
 import { DashboardModalService } from '../../../dashboard/components/dashboard/dashboard.modal.service';
 import { ItemService } from '../../services/item.service';
 import { LendingService } from '../../../lending/services/lending.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-item-detail',
@@ -27,6 +28,8 @@ export class ItemDetailComponent implements OnInit {
   private modalService = inject(DashboardModalService);
   private itemService = inject(ItemService);
   private lendingService = inject(LendingService);
+  private toastr = inject(ToastrService);
+  private translateService = inject(TranslateService);
 
   item: Item | null = null;
   isLoading = true;
@@ -104,6 +107,12 @@ export class ItemDetailComponent implements OnInit {
 
   onEdit() {
     if (!this.item) return;
+
+    // Запрещаем редактирование, если предмет одолжен / взят в долг / не активен
+    if (this.item.status !== 0) {
+      this.toastr.warning(this.translateService.instant('CREATE_ITEM_PAGE.WARNING_EDIT_MSG'));
+      return;
+    }
     
     this.modalService.openItemForm(this.item).subscribe(res => {
       if (this.item) {

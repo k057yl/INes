@@ -1,7 +1,11 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
+import { ToastrService } from 'ngx-toastr';
+import { TranslateService } from '@ngx-translate/core';
 import { StorageLocation } from '../../../location/contracts/storage-location';
 import { Item } from '../../../item/contracts/item';
+import { EMPTY } from 'rxjs';
+
 
 export type DashboardModalType = 'itemForm' | 'locationForm' | 'categoryForm' | 'platformForm' | 'confirm' | 'sell' | 'lend' | 'statsList' | 'feedback' | null;
 
@@ -21,6 +25,8 @@ export class DashboardModalService {
   
   private confirmSubj = new Subject<any>();
   private refreshDataSubj = new Subject<void>();
+  private toastr = inject(ToastrService);
+  private translateService = inject(TranslateService);
   public refreshData$ = this.refreshDataSubj.asObservable();
 
   openFeedback(): Observable<any> {
@@ -36,6 +42,11 @@ export class DashboardModalService {
   }
 
   openItemForm(item: Item | null = null, locationId: string | null = null): Observable<any> {
+    if (item && item.status !== 0) {
+      this.toastr.warning(this.translateService.instant('CREATE_ITEM_PAGE.WARNING_EDIT_MSG'));
+      return EMPTY;
+    }
+
     this.selectedItem = item;
     this.currentParentId = locationId;
     this.activeModal = 'itemForm';

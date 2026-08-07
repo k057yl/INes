@@ -12,6 +12,7 @@
   --text-main: #0f172a;     /* Основной текст */
   --text-muted: #64748b;    /* Вторичный / подписи / иконки */
   --text-on-accent: #ffffff;/* Текст поверх акцентного цвета */
+  --accent-icon-filter: brightness(0) saturate(100%);
 
   /* Borders & Accents (Границы и Акценты) */
   --border-color: #cbd5e1;  /* Нейтральные границы */
@@ -45,6 +46,7 @@ body.dark-theme {
   --border-color: #1f2937;  /* Тёмные аккуратные границы */
   --accent-color: #38bdf8;  /* Стальной голубой (Steel Sky Blue) */
   --accent-rgb: 56, 189, 248;
+  --accent-icon-filter: invert(68%) sepia(61%) saturate(1730%) hue-rotate(167deg) brightness(101%) contrast(97%);
 
   /* Status Colors (Системные статусы) */
   --error-red: #ef4444;

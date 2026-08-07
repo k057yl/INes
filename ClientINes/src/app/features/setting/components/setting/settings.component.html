@@ -20,7 +20,6 @@
           <i class="fa fa-share-alt"></i>
           <span class="btn-text">{{ 'SETTINGS_PAGE.PLATFORMS_TAB' | translate }}</span>
         </button>
-        <!-- Новая кнопка в сайдбаре -->
         <button [class.active]="activeTab === 'integrations'" (click)="switchTab('integrations')">
           <i class="fa-brands fa-telegram"></i>
           <span class="btn-text">Интеграции</span>
@@ -58,6 +57,7 @@
                 <span class="inest-slider"></span>
               </label>
             </div>
+
             <div class="config-card">
               <div class="card-info">
                 <i class="fa fa-handshake"></i>
@@ -88,7 +88,7 @@
             @for (cat of categories; track cat) {
               <div class="entity-item">
                 <div class="item-main">
-                  <span class="color-dot" [style.background]="cat.color || 'var(--turquoise)'"></span>
+                  <span class="color-dot" [style.background]="cat.color || 'var(--accent-color)'"></span>
                   <span class="name">{{ cat.name }}</span>
                 </div>
                 <div class="item-actions">
@@ -132,26 +132,26 @@
         </section>
       }
 
-      <!-- Новая вкладка интеграций с ботами -->
+      <!-- Вкладка интеграций с ботами -->
       @if (activeTab === 'integrations') {
         <section class="content-section animate-fade">
-          <h2 class="section-title">Чат-боты и уведомления</h2>
+          <h2 class="section-title">{{ 'SETTINGS_PAGE.INTEGRATIONS.TITLE' | translate }}</h2>
           <div class="integrations-layout">
             
-            <!-- Карточка Telegram Бота -->
+            <!-- Telegram Бот -->
             <div class="bot-config-card">
               <div class="bot-card-header">
                 <div class="bot-meta">
                   <i class="fa-brands fa-telegram tg-icon"></i>
                   <div>
-                    <h3>Telegram Бот</h3>
-                    <p class="bot-desc">Поиск вещей по коробкам командой <code>/find</code> и мгновенные пуш-уведомления.</p>
+                    <h3>{{ 'SETTINGS_PAGE.INTEGRATIONS.TG_BOT_TITLE' | translate }}</h3>
+                    <p class="bot-desc">{{ 'SETTINGS_PAGE.INTEGRATIONS.TG_BOT_DESC' | translate }}</p>
                   </div>
                 </div>
                 
                 <div class="bot-status-badge" [class.linked]="tgStatus.isLinked">
                   <span class="status-dot"></span>
-                  {{ tgStatus.isLinked ? 'Подключен' : 'Не активен' }}
+                  {{ (tgStatus.isLinked ? 'SETTINGS_PAGE.INTEGRATIONS.STATUS_ACTIVE' : 'SETTINGS_PAGE.INTEGRATIONS.STATUS_INACTIVE') | translate }}
                 </div>
               </div>
 
@@ -159,60 +159,60 @@
 
               <div class="bot-card-body">
                 @if (tgStatus.isLinked) {
-                  <!-- Состояние: Бот успешно привязан -->
                   <div class="status-success-box">
                     <i class="fa-solid fa-circle-check"></i>
                     <div class="success-text">
-                      <span>Уведомления активны</span>
-                      <p>Система успешно отправляет пуши на Chat ID: <strong>{{ tgStatus.telegramChatId }}</strong>. Резервный Email задействуется только при сбоях.</p>
+                      <span>{{ 'SETTINGS_PAGE.INTEGRATIONS.NOTIFICATIONS_ACTIVE' | translate }}</span>
+                      <p>{{ 'SETTINGS_PAGE.INTEGRATIONS.NOTIFICATIONS_SUB' | translate:{ chatId: tgStatus.telegramChatId } }}</p>
                     </div>
                   </div>
                   <div class="bot-actions">
                     <button class="inest-btn-outline is-danger" (click)="unlinkTelegram()">
-                      <i class="fa-solid fa-link-slash"></i> Отвязать аккаунт
+                      <i class="fa-solid fa-link-slash"></i> {{ 'SETTINGS_PAGE.INTEGRATIONS.UNLINK_BTN' | translate }}
                     </button>
                   </div>
                 } @else {
-                  <!-- Состояние: Требуется привязка -->
                   <div class="setup-instructions">
-                    <h4>Инструкция по подключению:</h4>
+                    <h4>{{ 'SETTINGS_PAGE.INTEGRATIONS.INSTRUCTIONS_TITLE' | translate }}</h4>
                     <ol>
-                      <li>Нажмите кнопку ниже, чтобы сгенерировать временный код привязки.</li>
-                      <li>Перейдите в чат с ботом по сгенерированной ссылке.</li>
-                      <li>Отправьте команду запуска (кнопка <strong>Старт</strong> внизу чата).</li>
+                      <li>{{ 'SETTINGS_PAGE.INTEGRATIONS.STEP_1' | translate }}</li>
+                      <li>{{ 'SETTINGS_PAGE.INTEGRATIONS.STEP_2' | translate }}</li>
+                      <li>{{ 'SETTINGS_PAGE.INTEGRATIONS.STEP_3' | translate }}</li>
                     </ol>
 
                     @if (tgStatus.verificationToken) {
                       <div class="token-display-box animate-fade">
-                        <span class="token-label">Ваша ссылка для привязки:</span>
+                        <span class="token-label">{{ 'SETTINGS_PAGE.INTEGRATIONS.LINK_LABEL' | translate }}</span>
                         <a [href]="getTelegramLink()" target="_blank" class="tg-deep-link">
-                          <i class="fa-solid fa-paper-plane"></i> Запустить @{{ tgStatus.botUsername }}
+                          <i class="fa-solid fa-paper-plane"></i> 
+                          {{ 'SETTINGS_PAGE.INTEGRATIONS.LAUNCH_BOT' | translate:{ botUsername: tgStatus.botUsername } }}
                         </a>
-                        <p class="token-subtext">Ссылка действительна до привязки или повторной генерации кода.</p>
+                        <p class="token-subtext">{{ 'SETTINGS_PAGE.INTEGRATIONS.LINK_EXPIRE_SUB' | translate }}</p>
                       </div>
                     }
                   </div>
 
                   <div class="bot-actions">
                     <button class="inest-btn-ribbon-add" (click)="generateTelegramToken()">
-                      <i class="fa-solid fa-key"></i> {{ tgStatus.verificationToken ? 'Обновить код доступа' : 'Сгенерировать код привязки' }}
+                      <i class="fa-solid fa-key"></i> 
+                      {{ (tgStatus.verificationToken ? 'SETTINGS_PAGE.INTEGRATIONS.REFRESH_TOKEN_BTN' : 'SETTINGS_PAGE.INTEGRATIONS.GENERATE_TOKEN_BTN') | translate }}
                     </button>
                   </div>
                 }
               </div>
             </div>
 
-            <!-- Карточка Viber Бота (Заглушка/Планы на будущее) -->
+            <!-- Viber Бот -->
             <div class="bot-config-card is-disabled">
               <div class="bot-card-header">
                 <div class="bot-meta">
                   <i class="fa-brands fa-viber vb-icon"></i>
                   <div>
-                    <h3>Viber Бот</h3>
-                    <p class="bot-desc">Резервный канал отправки сообщений.</p>
+                    <h3>{{ 'SETTINGS_PAGE.INTEGRATIONS.VB_BOT_TITLE' | translate }}</h3>
+                    <p class="bot-desc">{{ 'SETTINGS_PAGE.INTEGRATIONS.VB_BOT_DESC' | translate }}</p>
                   </div>
                 </div>
-                <div class="bot-status-badge">Скоро</div>
+                <div class="bot-status-badge">{{ 'SETTINGS_PAGE.INTEGRATIONS.STATUS_COMING_SOON' | translate }}</div>
               </div>
             </div>
 

@@ -1,8 +1,9 @@
 <div class="reminders-widget">
   <div class="widget-header">
     <h3><i class="fa fa-bell"></i> {{ 'ITEM_REMINDERS.TITLE' | translate }}</h3>
-    <button class="add-btn" (click)="toggleAdd()" [title]="'COMMON.ADD' | translate">
+    <button type="button" class="inline-add-btn" [class.cancel-btn]="isAdding" (click)="toggleAdd()">
       <i class="fa" [ngClass]="isAdding ? 'fa-times' : 'fa-plus'"></i>
+      <span>{{ (isAdding ? 'COMMON.CANCEL' : 'COMMON.ADD') | translate }}</span>
     </button>
   </div>
 
@@ -11,57 +12,80 @@
       <form [formGroup]="reminderForm" (ngSubmit)="onSubmit()">
         <div class="form-fields-stack">
           
-          <div class="field-group">
-            <label>{{ 'ITEM_REMINDERS.NAME_LABEL' | translate }}</label>
-            <input type="text" formControlName="title" [placeholder]="'ITEM_REMINDERS.NAME_PHL' | translate" class="inest-input-styled">
+          <!-- Название -->
+          <div class="inest-form-group">
+            <label>{{ 'ITEM_REMINDERS.NAME_LABEL' | translate }} *</label>
+            <div class="inest-input-wrapper">
+              <i class="fa fa-heading inest-field-icon-left"></i>
+              <input type="text" formControlName="title" [placeholder]="'ITEM_REMINDERS.NAME_PHL' | translate">
+            </div>
           </div>
           
-          <div class="field-group">
+          <!-- Тип напоминания -->
+          <div class="inest-form-group">
             <label>{{ 'ITEM_REMINDERS.TYPE_LABEL' | translate }}</label>
-            <select formControlName="type" class="inest-input-styled">
-              @for (type of availableTypes; track type) {
-                <option [value]="type.value">
-                  {{ type.label | translate }}
-                </option>
-              }
-            </select>
+            <div class="inest-input-wrapper">
+              <i class="fa fa-list inest-field-icon-left"></i>
+              <select formControlName="type">
+                @for (type of availableTypes; track type) {
+                  <option [value]="type.value">
+                    {{ type.label | translate }}
+                  </option>
+                }
+              </select>
+            </div>
           </div>
           
-          <div class="field-group">
+          <!-- Периодичность -->
+          <div class="inest-form-group">
             <label>{{ 'ITEM_REMINDERS.RECURRENCE' | translate }}</label>
-            <select formControlName="recurrence" class="inest-input-styled">
-              @for (rec of availableRecurrences; track rec) {
-                <option [value]="rec.value">
-                  {{ rec.label | translate }}
-                </option>
-              }
-            </select>
+            <div class="inest-input-wrapper">
+              <i class="fa fa-sync-alt inest-field-icon-left"></i>
+              <select formControlName="recurrence">
+                @for (rec of availableRecurrences; track rec) {
+                  <option [value]="rec.value">
+                    {{ rec.label | translate }}
+                  </option>
+                }
+              </select>
+            </div>
           </div>
           
-          <div class="field-group">
-            <label>{{ 'ITEM_REMINDERS.DATE_LABEL' | translate }}</label>
-            <input type="datetime-local" formControlName="triggerAt" class="inest-input-styled">
+          <!-- Дата (цепляет глобальные стили input[type="date"]) -->
+          <div class="inest-form-group">
+            <label>{{ 'ITEM_REMINDERS.DATE_LABEL' | translate }} *</label>
+            <div class="inest-input-wrapper">
+              <i class="fa fa-clock inest-field-icon-left"></i>
+              <input type="date" formControlName="triggerAt">
+            </div>
           </div>
 
-          <div class="field-group checkbox-group">
-            <label class="checkbox-label">
-              <input type="checkbox" formControlName="sendNotification" class="inest-checkbox">
-              <i class="fa fa-envelope text-accent-icon"></i>
-              <span>Email</span>
+          <!-- Каналы уведомлений -->
+          <div class="notification-channels-wrapper">
+            <label class="channels-title">{{ 'CREATE_ITEM_PAGE.REMIND_CHANNELS_TITLE' | translate }}</label>
+
+            <label class="channel-box-vertical">
+              <input type="checkbox" formControlName="sendTelegram" class="channel-checkbox">
+              <div class="channel-content">
+                <i class="fab fa-telegram-plane channel-icon tg-brand-color"></i>
+                <span>Telegram</span>
+              </div>
             </label>
-          </div>
 
-          <div class="field-group checkbox-group">
-            <label class="checkbox-label">
-              <input type="checkbox" formControlName="sendTelegram" class="inest-checkbox">
-              <i class="fab fa-telegram text-accent-icon"></i>
-              <span>Telegram</span>
+            <label class="channel-box-vertical">
+              <input type="checkbox" formControlName="sendNotification" class="channel-checkbox">
+              <div class="channel-content">
+                <i class="fa fa-envelope channel-icon email-brand-color"></i>
+                <span>Email</span>
+              </div>
             </label>
           </div>
           
-          <button type="submit" class="save-btn" [disabled]="reminderForm.invalid">
-            <i class="fa fa-save"></i> {{ 'COMMON.SAVE' | translate }}
-          </button>
+          <div class="form-actions-row">
+            <button type="submit" class="inest-btn-primary" [disabled]="reminderForm.invalid">
+              <i class="fa fa-save"></i> {{ 'COMMON.SAVE' | translate }}
+            </button>
+          </div>
 
         </div>
       </form>

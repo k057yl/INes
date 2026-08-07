@@ -21,25 +21,43 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      i { color: var(--g-yellow); }
+
+      i {
+        color: var(--g-yellow);
+      }
     }
 
-    .add-btn {
-      background: var(--bg-google-button);
-      border: none;
-      color: var(--text-main);
-      border-radius: 50%;
-      width: 32px;
-      height: 32px;
-      cursor: pointer;
-      display: flex;
+    /* Стильная кнопка с текстом под стать общему интерфейсу */
+    .inline-add-btn {
+      display: inline-flex;
       align-items: center;
-      justify-content: center;
-      transition: all 0.2s;
+      gap: 6px;
+      background: rgba(var(--accent-rgb), 0.1);
+      border: 1px solid var(--accent-color);
+      color: var(--accent-color);
+      padding: 5px 12px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
 
-      &:hover { 
-        background: var(--accent-color); 
+      &:hover {
+        background: var(--accent-color);
         color: var(--text-on-accent);
+        transform: translateY(-1px);
+      }
+
+      /* Состояние "Отмена", когда форма уже развернута */
+      &.cancel-btn {
+        border-color: var(--error-red);
+        color: var(--error-red);
+        background: rgba(239, 68, 68, 0.08);
+
+        &:hover {
+          background: var(--error-red);
+          color: #fff;
+        }
       }
     }
   }
@@ -48,71 +66,32 @@
 .add-form-container {
   background: var(--bg-input);
   padding: 1.25rem;
-  border-radius: 12px;
+  border-radius: 14px;
   margin-bottom: 1.5rem;
   border: 1px solid var(--border-color);
   box-sizing: border-box;
+  animation: slideDown 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 
   .form-fields-stack {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 14px;
 
-    .field-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-
-      label {
-        font-size: 0.7rem;
-        color: var(--text-muted);
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        padding-left: 2px;
-      }
-
-      select, input {
-        width: 100%;
-        box-sizing: border-box;
-        background: var(--bg-card);
-        border: 1px solid var(--border-color);
-        color: var(--text-main);
-        padding: 12px;
-        border-radius: 8px;
-        font-size: 0.9rem;
-        outline: none;
-        transition: border-color 0.2s;
-        
-        &:focus { border-color: var(--accent-color); }
-      }
-    }
-
-    .save-btn {
-      width: 100%;
-      background: var(--accent-color);
-      border: none;
-      color: var(--text-on-accent);
-      padding: 14px;
-      border-radius: 8px;
-      font-weight: 700;
-      cursor: pointer;
-      margin-top: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: filter 0.2s;
-
-      &:disabled { opacity: 0.5; cursor: not-allowed; }
-      &:hover:not(:disabled) { filter: brightness(1.1); }
+    .inest-form-group {
+      margin-bottom: 0;
     }
   }
 }
 
-@keyframes slideIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .reminders-list {
@@ -120,102 +99,10 @@
   flex-direction: column;
   gap: 10px;
 
-  .reminder-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 14px;
-    background: var(--bg-main-card);
-    border-radius: 12px;
-    border-left: 4px solid var(--accent-color);
-    box-sizing: border-box;
-    width: 100%;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    animation: slideIn 0.3s ease-out;
-
-    &.completed {
-      opacity: 0.6;
-      border-left-color: var(--g-green) !important;
-      background: var(--bg-input) !important;
-      transform: translateX(5px);
-      
-      .r-info .r-title {
-        text-decoration: line-through;
-        color: var(--text-muted);
-        transition: all 0.3s ease;
-      }
-    }
-
-    .r-info {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      overflow: hidden;
-
-      .r-title-row {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-
-        .r-title {
-          font-weight: 700;
-          font-size: 1rem;
-          color: var(--text-main);
-          line-height: 1.2;
-        }
-
-        .completed-label {
-          font-size: 0.65rem;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-          background: rgba(52, 168, 83, 0.1); // var(--g-green)
-          color: var(--g-green);
-          padding: 2px 8px;
-          border-radius: 4px;
-          font-weight: 800;
-          display: flex;
-          align-items: center;
-          gap: 4px;
-        }
-      }
-
-      .r-meta-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 12px;
-        font-size: 0.75rem;
-
-        span {
-          display: flex;
-          align-items: center;
-          gap: 5px;
-        }
-
-        .r-date { color: var(--text-muted); }
-      }
-    }
-
-    .r-actions {
-      display: flex;
-      gap: 8px;
-      margin-left: 10px;
-
-      .icon-btn {
-        background: var(--bg-google-button);
-        border: none;
-        color: var(--text-main);
-        width: 34px;
-        height: 34px;
-        border-radius: 10px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: 0.2s;
-
-        &.success:hover { background: var(--g-green); color: #fff; }
-        &.danger:hover { background: var(--g-red); color: #fff; }
-      }
-    }
+  .empty-state {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    text-align: center;
+    padding: 12px 0;
   }
 }

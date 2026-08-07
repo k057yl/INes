@@ -19,7 +19,7 @@ namespace INest.Data.Configurations.Finances
 
             builder.Property(x => x.ItemNameSnapshot).IsRequired().HasMaxLength(200);
             builder.Property(x => x.CategoryNameSnapshot).HasMaxLength(100);
-            builder.Property(x => x.Currency).HasMaxLength(3);
+            builder.Property(x => x.Currency).HasMaxLength(10);
 
             builder.HasOne<Entities.Core.Item>()
                 .WithMany()
