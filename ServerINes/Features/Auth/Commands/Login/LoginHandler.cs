@@ -2,6 +2,7 @@
 using INest.Exceptions;
 using INest.Features.Auth.DTOs;
 using INest.Infrastructure.Identity;
+using INest.Infrastructure.Sanitizer;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using static INest.Constants.LocalizationConstants;
@@ -12,16 +13,22 @@ namespace INest.Features.Auth.Commands.Login
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly ITokenService _tokenService;
+        private readonly ISanitizerService _sanitizer;
 
-        public LoginHandler(UserManager<AppUser> userManager, ITokenService tokenService)
+        public LoginHandler(
+            UserManager<AppUser> userManager,
+            ITokenService tokenService,
+            ISanitizerService sanitizer)
         {
             _userManager = userManager;
             _tokenService = tokenService;
+            _sanitizer = sanitizer;
         }
 
         public async Task<AuthResponseDto> Handle(LoginCommand request, CancellationToken cancellationToken)
         {
-            var user = await _userManager.FindByEmailAsync(request.Email);
+            var sanitizedEmail = _sanitizer.StripAllHtml(request.Email);
+            var user = await _userManager.FindByEmailAsync(sanitizedEmail);
 
             if (user == null || !await _userManager.CheckPasswordAsync(user, request.Password))
                 throw new AppException(AUTH.ERRORS.INVALID_CREDENTIALS, 401);
@@ -38,7 +45,7 @@ namespace INest.Features.Auth.Commands.Login
 
             if (!string.IsNullOrWhiteSpace(request.TimeZoneId) && user.TimeZoneId != request.TimeZoneId)
             {
-                user.TimeZoneId = request.TimeZoneId;
+                user.TimeZoneId = _sanitizer.StripAllHtml(request.TimeZoneId);
             }
 
             await _userManager.UpdateAsync(user);

@@ -27,8 +27,8 @@ namespace INest.Features.Auth.Commands.ResendCode
 
         public async Task Handle(ResendCodeCommand request, CancellationToken cancellationToken)
         {
-            var normalizedEmail = request.Email.Trim().ToUpperInvariant();
-            var user = await _userManager.FindByEmailAsync(normalizedEmail);
+            var cleanEmail = request.Email.Trim();
+            var user = await _userManager.FindByEmailAsync(cleanEmail);
 
             if (user == null || user.EmailConfirmed)
                 throw new AppException(AUTH.ERRORS.USER_NOT_FOUND, 400);
@@ -43,7 +43,7 @@ namespace INest.Features.Auth.Commands.ResendCode
             var subject = _emailT[EMAILS.CONFIRM_SUBJECT];
             var body = string.Format(_emailT[EMAILS.CONFIRM_BODY], code);
 
-            await _emailService.SendEmailAsync(normalizedEmail, subject, body);
+            await _emailService.SendEmailAsync(cleanEmail, subject, body);
         }
     }
 }

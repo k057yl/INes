@@ -12,6 +12,9 @@ import { SalesService } from '../../services/sales.service';
 import { CategoryService } from '../../../category/services/category.service';
 import { LocationService } from '../../../location/services/location.service';
 import { DashboardModalService } from '../../../dashboard/components/dashboard/dashboard.modal.service';
+import { AuthService } from '../../../auth/services/auth.service';
+import { TutorialService } from '../../../../core/services/tutorial.service';
+import { take } from 'rxjs/operators';
 
 import { SaleListItem } from '../../contracts/sale-list-item';
 import { GetSalesDto } from '../../dtos/sales-get.dto';
@@ -40,6 +43,9 @@ export class SalesListComponent implements OnInit {
   private fb = inject(FormBuilder);
   private eRef = inject(ElementRef);
   private router = inject(Router);
+
+  private authService = inject(AuthService);
+  private tutorialService = inject(TutorialService);
 
   sales: SaleListItem[] = [];
   platforms: Platform[] = [];
@@ -86,6 +92,8 @@ export class SalesListComponent implements OnInit {
     this.categoryService.getAll().subscribe(res => this.categories = res);
     this.locationService.getAll().subscribe((res: any[]) => this.locations = res);
 
+    this.checkAndStartTutorial();
+
     this.filterForm.valueChanges.pipe(
       startWith(this.filterForm.getRawValue()),
       debounceTime(350),
@@ -100,6 +108,20 @@ export class SalesListComponent implements OnInit {
     ).subscribe(data => {
       this.sales = data;
       this.calculateCurrencyTotals();
+    });
+  }
+
+  private checkAndStartTutorial() {
+    this.authService.user$.pipe(take(1)).subscribe(user => {
+      if (!user) return;
+      const isSalesPassed = (user.completedTutorials & 4) === 4;
+      if (!isSalesPassed) {
+        setTimeout(() => {
+          this.tutorialService.startSalesListTour(() => {
+            user.completedTutorials |= 4;
+          });
+        }, 500);
+      }
     });
   }
 

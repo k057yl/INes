@@ -69,7 +69,7 @@ export class RegisterComponent implements OnInit, AfterViewInit {
 
   isControlInvalid(controlName: string): boolean {
     const control = this.registerForm.get(controlName);
-    return !!(control && control.touched && control.invalid);
+    return !!(control && (control.touched || control.dirty) && control.invalid);
   }
 
   hasForbiddenChars(): boolean {

@@ -15,6 +15,9 @@ import { Item } from '../../contracts/item';
 import { GetItemFilters } from '../../dtos/items-get.dto';
 import { StatusNamePipe } from '../../../../shared/pipes/status-name.pipe';
 import { DashboardModalService } from '../../../dashboard/components/dashboard/dashboard.modal.service';
+import { AuthService } from '../../../auth/services/auth.service';
+import { TutorialService } from '../../../../core/services/tutorial.service';
+import { take } from 'rxjs/operators';
 
 type DropdownType = 'category' | 'location' | 'status' | 'sort' | null;
 
@@ -37,6 +40,9 @@ export class ItemsListComponent implements OnInit {
   private router = inject(Router);
 
   public modal = inject(DashboardModalService);
+
+  private authService = inject(AuthService);
+  private tutorialService = inject(TutorialService);
 
   items: Item[] = [];
   categories: any[] = [];
@@ -75,6 +81,8 @@ export class ItemsListComponent implements OnInit {
   ngOnInit(): void {
     this.loadInitialData();
 
+    this.checkAndStartTutorial();
+
     this.filterForm.get('showArchived')?.valueChanges.subscribe(val => {
       if (val) this.filterForm.get('includeArchived')?.setValue(false, { emitEvent: false });
     });
@@ -97,6 +105,20 @@ export class ItemsListComponent implements OnInit {
     ).subscribe(items => {
       this.items = items;
       this.syncSelection();
+    });
+  }
+
+  private checkAndStartTutorial() {
+    this.authService.user$.pipe(take(1)).subscribe(user => {
+      if (!user) return;
+      const isItemsPassed = (user.completedTutorials & 2) === 2;
+      if (!isItemsPassed) {
+        setTimeout(() => {
+          this.tutorialService.startItemsListTour(() => {
+            user.completedTutorials |= 2;
+          });
+        }, 500);
+      }
     });
   }
 

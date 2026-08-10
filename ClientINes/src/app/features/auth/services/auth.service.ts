@@ -3,13 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { tap, finalize, catchError, switchMap } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
-
-export interface AppUser {
-  id: string;
-  email: string;
-  displayName: string;
-  roles: string[];
-}
+import { AppUser } from '../dtos/create-user';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -47,7 +41,7 @@ export class AuthService {
   }
 
   resendCode(data: { email: string }) {
-    return this.http.post(`${this.apiUrl}/auth/resend-code`, data);
+    return this.http.post(`${this.apiUrl}/resend-code`, data);
   }
 
   register(dto: any): Observable<void> {
@@ -64,6 +58,14 @@ export class AuthService {
     return this.http
       .post<any>(`${this.apiUrl}/google-login`, { idToken })
       .pipe(switchMap(() => this.checkAuth()));
+  }
+
+  forgotPassword(data: { email: string }): Observable<any> {
+    return this.http.post(`${this.apiUrl}/forgot-password`, data);
+  }
+
+  resetPassword(dto: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/reset-password`, dto);
   }
 
   logout(): Observable<any> {

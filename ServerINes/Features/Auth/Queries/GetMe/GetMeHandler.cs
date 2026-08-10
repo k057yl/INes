@@ -21,7 +21,7 @@ namespace INest.Features.Auth.Queries.GetMe
             var user = await _userManager.FindByIdAsync(request.UserId);
 
             if (user == null)
-                throw new AppException(AUTH.ERRORS.USER_NOT_FOUND, 404);
+                throw new AppException(AUTH.ERRORS.INVALID_TOKEN, 401);
 
             var roles = await _userManager.GetRolesAsync(user);
 
@@ -31,7 +31,8 @@ namespace INest.Features.Auth.Queries.GetMe
                 DisplayName = !string.IsNullOrWhiteSpace(user.DisplayName)
                     ? user.DisplayName
                     : (user.Email?.Split('@')[0] ?? "User"),
-                Roles = roles.ToList()
+                Roles = roles.ToList(),
+                CompletedTutorials = (int)user.CompletedTutorials
             };
         }
     }

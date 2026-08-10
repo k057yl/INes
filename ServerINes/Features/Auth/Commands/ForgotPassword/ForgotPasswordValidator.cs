@@ -9,7 +9,8 @@ namespace INest.Features.Auth.Commands.ForgotPassword
         {
             RuleFor(x => x.Email)
                 .NotEmpty().WithMessage(ERRORS.REQUIRED_FIELD)
-                .EmailAddress().WithMessage(ERRORS.INVALID_EMAIL_FORMAT);
+                .EmailAddress(FluentValidation.Validators.EmailValidationMode.AspNetCoreCompatible)
+                .WithMessage(ERRORS.INVALID_EMAIL_FORMAT);
         }
     }
 }

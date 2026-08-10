@@ -1,0 +1,217 @@
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 1. Центрирование страницы и карточки */
+.inest-form-page {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-main);
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.inest-form-card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  margin: 0 auto;
+
+  .inest-form-header {
+    text-align: center;
+    margin-bottom: 24px;
+
+    .logo-circle {
+      width: 50px;
+      height: 50px;
+      margin: 0 auto 14px;
+      border-radius: 12px;
+      background: rgba(var(--accent-rgb), 0.1);
+      border: 1px solid var(--accent-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      i {
+        font-size: 1.3rem;
+        color: var(--accent-color);
+      }
+    }
+
+    h2 {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin: 0 0 6px 0;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin: 0;
+    }
+
+    .target-email {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 4px 10px;
+      background: rgba(var(--accent-rgb), 0.1);
+      border: 1px solid rgba(var(--accent-rgb), 0.2);
+      border-radius: 20px;
+      color: var(--accent-color);
+      font-weight: 700;
+      font-size: 0.8rem;
+    }
+  }
+}
+
+/* 2. Блок ячеек ввода OTP */
+.otp-wrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  margin: 28px 0;
+
+  /* Прозрачный инпут поверх визуальных ячеек */
+  .real-otp-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    z-index: 10;
+    cursor: pointer;
+    caret-color: transparent;
+  }
+}
+
+.otp-container {
+  display: flex;
+  gap: 10px;
+  z-index: 1;
+
+  .otp-input {
+    width: 46px;
+    height: 56px;
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    color: var(--accent-color);
+    font-size: 1.5rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &.active {
+      border-color: var(--accent-color);
+      box-shadow: 0 0 12px rgba(var(--accent-rgb), 0.35);
+      transform: translateY(-2px);
+    }
+
+    &.filled {
+      border-color: var(--accent-color);
+      background: rgba(var(--accent-rgb), 0.05);
+    }
+  }
+}
+
+@media (max-width: 400px) {
+  .otp-container {
+    gap: 6px;
+
+    .otp-input {
+      width: 38px;
+      height: 48px;
+      font-size: 1.25rem;
+    }
+  }
+}
+
+/* 3. Статус-боксы ошибок и сообщений */
+.inest-status-box {
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  &.error {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: var(--error-red);
+  }
+
+  &.success {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: var(--g-green);
+  }
+}
+
+/* 4. Главная кнопка "Подтвердить" */
+.inest-btn-primary {
+  width: 100%;
+  background: var(--accent-color);
+  color: var(--text-on-accent);
+  border: none;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover:not(:disabled) {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.3);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    background: var(--border-color);
+    color: var(--text-muted);
+    cursor: not-allowed;
+  }
+}
+
+/* 5. Ссылка "Отправить повторно" */
+.inest-form-footer {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+
+  a {
+    &, &:visited, &:active {
+      color: var(--accent-color) !important;
+      font-weight: 700;
+      text-decoration: none;
+      margin-left: 6px;
+    }
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

@@ -13,10 +13,6 @@
         <h2>{{ (isEdit ? 'CREATE_ITEM_PAGE.TITLE_EDIT' : 'CREATE_ITEM_PAGE.TITLE') | translate }}</h2>
         @if (!isEdit) {
           <p class="form-subtitle">{{ 'CREATE_ITEM_PAGE.TITLE_SUB' | translate }}</p>
-          <span class="required-fields-hint">
-            <i class="fa-solid fa-asterisk"></i>
-            {{ 'CREATE_ITEM_PAGE.REQUIRED_HINT' | translate }}
-          </span>
         }
         @if (isEdit) {
           <div class="status-badge-inline" [class]="(item?.status ?? 0) | statusName">
@@ -44,8 +40,8 @@
       </div>
 
       <div class="inest-form-group">
+        <label> * {{ 'CREATE_ITEM_PAGE.CATEGORY' | translate }}</label>
         <div class="label-with-action">
-          <label> * {{ 'CREATE_ITEM_PAGE.CATEGORY' | translate }}</label>
           <button type="button" class="inline-add-btn" (click)="openCategoryModal()">
             <i class="fa fa-plus"></i> {{ 'CREATE_ITEM_PAGE.BUTTON_ADD_INLINE' | translate }}
           </button>

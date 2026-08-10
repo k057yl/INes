@@ -23,6 +23,7 @@ import { ReminderRecurrence } from '../../../reminder/enums/reminder-recurrence.
 import { take, filter } from 'rxjs/operators';
 import { FormErrorService } from '../../../../core/services/form-error.service';
 import { ToastrService } from 'ngx-toastr';
+import { TutorialService } from '../../../../core/services/tutorial.service';
 
 interface PhotoSlot {
   file?: File;
@@ -52,6 +53,7 @@ export class ItemFormModalComponent implements OnInit {
   private formErrorService = inject(FormErrorService);
   private toastr = inject(ToastrService);
   private translateService = inject(TranslateService);
+  private tutorialService = inject(TutorialService);
 
   locations: any[] = [];
   categories: any[] = [];
@@ -144,6 +146,10 @@ export class ItemFormModalComponent implements OnInit {
       }
     });
 
+    if (!this.isEdit) {
+      this.checkAndStartTutorial();
+    }
+
     if (this.isEdit && this.item) {
       this.patchFormValues(this.item);
     } else {
@@ -151,6 +157,22 @@ export class ItemFormModalComponent implements OnInit {
     }
 
     this.applyLendingLogic(this.form.get('status')?.value);
+  }
+
+  private checkAndStartTutorial() {
+    this.authService.user$.pipe(take(1)).subscribe(user => {
+      if (!user) return;
+
+      const isItemsPassed = (user.completedTutorials & 2) === 2;
+
+      if (!isItemsPassed) {
+        setTimeout(() => {
+          this.tutorialService.startItemFormTour(() => {
+            user.completedTutorials |= 2;
+          });
+        }, 400);
+      }
+    });
   }
 
   openCategoryModal() { this.showCategoryModal = true; }

@@ -9,7 +9,8 @@ namespace INest.Features.Auth.Commands.Register
         {
             RuleFor(x => x.Email)
                 .NotEmpty().WithMessage(LocalizationConstants.ERRORS.REQUIRED_FIELD)
-                .EmailAddress().WithMessage(LocalizationConstants.ERRORS.INVALID_EMAIL_FORMAT);
+                .EmailAddress(FluentValidation.Validators.EmailValidationMode.AspNetCoreCompatible)
+                .WithMessage(LocalizationConstants.ERRORS.INVALID_EMAIL_FORMAT);
 
             RuleFor(x => x.Password)
                 .NotEmpty().WithMessage(LocalizationConstants.ERRORS.REQUIRED_FIELD)

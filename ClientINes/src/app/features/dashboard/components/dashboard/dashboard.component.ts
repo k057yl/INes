@@ -3,6 +3,7 @@ import { RouterModule } from '@angular/router';
 import { DragDropModule, CdkDragDrop, moveItemInArray, CdkDrag } from '@angular/cdk/drag-drop';
 import { TranslateModule } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 import { DashboardFacade } from './dashboard.facade';
 import { DashboardModalService } from './dashboard.modal.service';
@@ -12,6 +13,7 @@ import { DashboardItemService } from '../../services/dashboard-item.service';
 import { DashboardNavigationService } from '../../services/dashboard-navigation.service';
 import { DashboardActionExecutor } from '../../services/dashboard-action-executor.service';
 import { TutorialService } from '../../../../core/services/tutorial.service';
+import { AuthService } from '../../../auth/services/auth.service';
 import { DashboardStatsComponent } from '../dashboard-stats/dashboard-stats.component';
 import { StatsListModalComponent } from '../stats-list-modal/stats-list-modal.component';
 
@@ -39,9 +41,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public facade = inject(DashboardFacade);
   public modal = inject(DashboardModalService);
   private tutorialService = inject(TutorialService);
+  private authService = inject(AuthService);
 
   private sub = new Subscription();
   isMobile = window.innerWidth <= 768;
+
+  private hasCheckedTutorial = false;
 
   ngOnInit() {
     this.loadData();
@@ -60,15 +65,24 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   // --- Проверка и запуск обучения ---
   private checkAndStartTutorial() {
-    const currentUser = (this.facade as any).user || (this.facade as any).currentUser;
+    if (this.hasCheckedTutorial) return;
 
-    const isDashboardPassed = currentUser && (currentUser.completedTutorials & 1) === 1;
+    this.sub.add(
+      this.authService.user$.pipe(take(1)).subscribe(currentUser => {
+        if (!currentUser) return;
 
-    if (currentUser && !isDashboardPassed) {
-      setTimeout(() => {
-        this.tutorialService.startDashboardTour();
-      }, 300);
-    }
+        const isDashboardPassed = (currentUser.completedTutorials & 1) === 1;
+
+        if (!isDashboardPassed) {
+          this.hasCheckedTutorial = true;
+          setTimeout(() => {
+            this.tutorialService.startDashboardTour(() => {
+              currentUser.completedTutorials |= 1;
+            });
+          }, 500);
+        }
+      })
+    );
   }
 
   // --- Навигация и пагинация ---

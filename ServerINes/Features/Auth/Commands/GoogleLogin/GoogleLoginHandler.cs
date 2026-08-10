@@ -4,6 +4,7 @@ using INest.Data.Entities.Infrastructure;
 using INest.Exceptions;
 using INest.Features.Auth.DTOs;
 using INest.Infrastructure.Identity;
+using INest.Infrastructure.Sanitizer;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using static INest.Constants.LocalizationConstants;
@@ -15,12 +16,18 @@ namespace INest.Features.Auth.Commands.GoogleLogin
         private readonly UserManager<AppUser> _userManager;
         private readonly ITokenService _tokenService;
         private readonly IConfiguration _config;
+        private readonly ISanitizerService _sanitizer;
 
-        public GoogleLoginHandler(UserManager<AppUser> userManager, ITokenService tokenService, IConfiguration config)
+        public GoogleLoginHandler(
+            UserManager<AppUser> userManager,
+            ITokenService tokenService,
+            IConfiguration config,
+            ISanitizerService sanitizer)
         {
             _userManager = userManager;
             _tokenService = tokenService;
             _config = config;
+            _sanitizer = sanitizer;
         }
 
         public async Task<AuthResponseDto?> Handle(GoogleLoginCommand request, CancellationToken cancellationToken)
@@ -35,16 +42,24 @@ namespace INest.Features.Auth.Commands.GoogleLogin
                 var payload = await GoogleJsonWebSignature.ValidateAsync(request.IdToken, settings);
                 var user = await _userManager.FindByEmailAsync(payload.Email);
 
+                var sanitizedTimeZone = string.IsNullOrWhiteSpace(request.TimeZoneId)
+                    ? "Europe/Kyiv"
+                    : _sanitizer.StripAllHtml(request.TimeZoneId);
+
                 if (user == null)
                 {
+                    var rawName = payload.Name ?? payload.Email.Split('@')[0];
+                    var sanitizedDisplayName = _sanitizer.StripAllHtml(rawName);
+
                     user = new AppUser
                     {
                         Email = payload.Email,
                         UserName = payload.Email,
-                        DisplayName = payload.Name ?? payload.Email.Split('@')[0],
+                        DisplayName = string.IsNullOrWhiteSpace(sanitizedDisplayName) ? "User" : sanitizedDisplayName,
                         EmailConfirmed = true,
-                        TimeZoneId = string.IsNullOrWhiteSpace(request.TimeZoneId) ? "Europe/Kyiv" : request.TimeZoneId
+                        TimeZoneId = sanitizedTimeZone
                     };
+
                     var result = await _userManager.CreateAsync(user);
                     if (result.Succeeded)
                     {
@@ -53,9 +68,9 @@ namespace INest.Features.Auth.Commands.GoogleLogin
                 }
                 else
                 {
-                    if (!string.IsNullOrWhiteSpace(request.TimeZoneId) && user.TimeZoneId != request.TimeZoneId)
+                    if (user.TimeZoneId != sanitizedTimeZone)
                     {
-                        user.TimeZoneId = request.TimeZoneId;
+                        user.TimeZoneId = sanitizedTimeZone;
                     }
                 }
 

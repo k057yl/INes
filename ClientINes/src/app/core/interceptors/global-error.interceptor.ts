@@ -18,8 +18,21 @@ export const globalErrorInterceptor: HttpInterceptorFn = (req, next) => {
         return throwError(() => error);
       }
 
+      let errorKey = 'SYSTEM.DEFAULT_ERROR';
+
+      if (error.error?.details) {
+        const details = error.error.details;
+        const firstField = Object.keys(details)[0];
+        if (firstField && details[firstField]?.length > 0) {
+          errorKey = details[firstField][0];
+        }
+      } else if (error.error?.message) {
+        errorKey = error.error.message;
+      } else if (error.error?.error) {
+        errorKey = error.error.error;
+      }
+
       const translate = injector.get(TranslateService);
-      const errorKey = error.error?.message || error.error?.error || 'SYSTEM.DEFAULT_ERROR';
       const translatedMessage = translate.instant(errorKey);
       const translatedTitle = translate.instant('SYSTEM.DEFAULT_ERROR');
 
@@ -31,6 +44,10 @@ export const globalErrorInterceptor: HttpInterceptorFn = (req, next) => {
 
       console.error(`[API Error] ${errorKey}: ${translatedMessage}`);
       
+      if (error.error && typeof error.error === 'object') {
+        error.error.error = errorKey;
+      }
+
       return throwError(() => error);
     })
   );

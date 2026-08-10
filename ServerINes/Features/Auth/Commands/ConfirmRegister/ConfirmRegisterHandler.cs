@@ -3,6 +3,7 @@ using INest.Data.Entities.Infrastructure;
 using INest.Exceptions;
 using INest.Features.Auth.DTOs;
 using INest.Infrastructure.Identity;
+using INest.Infrastructure.Sanitizer;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using static INest.Constants.LocalizationConstants;
@@ -13,22 +14,29 @@ namespace INest.Features.Auth.Commands.ConfirmRegister
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly ITokenService _tokenService;
+        private readonly ISanitizerService _sanitizer;
 
-        public ConfirmRegisterHandler(UserManager<AppUser> userManager, ITokenService tokenService)
+        public ConfirmRegisterHandler(
+            UserManager<AppUser> userManager,
+            ITokenService tokenService,
+            ISanitizerService sanitizer)
         {
             _userManager = userManager;
             _tokenService = tokenService;
+            _sanitizer = sanitizer;
         }
 
         public async Task<AuthResponseDto> Handle(ConfirmRegisterCommand request, CancellationToken cancellationToken)
         {
-            var email = request.Email.Trim().ToUpperInvariant();
-            var user = await _userManager.FindByEmailAsync(email);
+            var sanitizedEmail = _sanitizer.StripAllHtml(request.Email);
+            var sanitizedCode = _sanitizer.StripAllHtml(request.Code);
+
+            var user = await _userManager.FindByEmailAsync(sanitizedEmail);
 
             if (user == null)
                 throw new AppException(AUTH.ERRORS.USER_NOT_FOUND, 404);
 
-            if (user.VerificationCode != request.Code || user.VerificationCodeExpiryTime < DateTime.UtcNow)
+            if (user.VerificationCode != sanitizedCode || user.VerificationCodeExpiryTime < DateTime.UtcNow)
                 throw new AppException(AUTH.ERRORS.INVALID_OR_EXPIRED_CODE, 400);
 
             user.EmailConfirmed = true;

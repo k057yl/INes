@@ -139,7 +139,7 @@
     <value>Уведомление: Вы передали вещь</value>
   </data>
   <data name="EMAILS.RESET_BODY" xml:space="preserve">
-    <value>&lt;p&gt;Нажмите &lt;a href='{0}'&gt;здесь&lt;/a&gt;, чтобы сбросить пароль.&lt;/p&gt;</value>
+    <value>&lt;h3&gt;Сброс пароля&lt;/h3&gt;&lt;p&gt;Ваш код для сброса пароля: &lt;b&gt;{0}&lt;/b&gt;. Код действителен 10 минут.&lt;/p&gt;</value>
   </data>
   <data name="EMAILS.RESET_SUBJECT" xml:space="preserve">
     <value>Сброс пароля</value>

@@ -9,6 +9,9 @@ import { LocationService } from '../../services/location.service';
 import { FeatureService } from '../../../../core/services/feature.service';
 import { DashboardModalService } from '../../../dashboard/components/dashboard/dashboard.modal.service';
 import { StorageLocation } from '../../contracts/storage-location';
+import { AuthService } from '../../../auth/services/auth.service';
+import { TutorialService } from '../../../../core/services/tutorial.service';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-location-form-modal',
@@ -28,6 +31,9 @@ export class LocationFormModalComponent implements OnInit {
   private toastr = inject(ToastrService);
   public featureService = inject(FeatureService);
 
+  private authService = inject(AuthService);
+  private tutorialService = inject(TutorialService);
+
   public readonly presetColors = ['var(--g-blue)', 'var(--g-red)', 'var(--g-yellow)', 'var(--g-green)'];
 
   showColorPicker = false;
@@ -46,7 +52,10 @@ export class LocationFormModalComponent implements OnInit {
 
   ngOnInit() {
     console.log('Input parentId:', this.parentId);
-  console.log('Form before:', this.form.getRawValue());
+    console.log('Form before:', this.form.getRawValue());
+    if (!this.isEdit) {
+      this.checkAndStartTutorial();
+    }
     if (this.isEdit && this.location) {
       const loc = this.location as any;
       this.form.patchValue({
@@ -60,6 +69,22 @@ export class LocationFormModalComponent implements OnInit {
       this.form.patchValue({ parentLocationId: this.parentId });
     }
     console.log('Form after:', this.form.getRawValue());
+  }
+
+  private checkAndStartTutorial() {
+    this.authService.user$.pipe(take(1)).subscribe(user => {
+      if (!user) return;
+
+      const isLocationsPassed = (user.completedTutorials & 4) === 4;
+
+      if (!isLocationsPassed) {
+        setTimeout(() => {
+          this.tutorialService.startLocationFormTour(() => {
+            user.completedTutorials |= 4;
+          });
+        }, 400);
+      }
+    });
   }
 
   selectPresetColor(color: string) {

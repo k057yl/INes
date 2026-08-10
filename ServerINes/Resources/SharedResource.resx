@@ -139,7 +139,7 @@
     <value>Notification: Item lent</value>
   </data>
   <data name="EMAILS.RESET_BODY" xml:space="preserve">
-    <value>&lt;p&gt;Click &lt;a href='{0}'&gt;here&lt;/a&gt; to reset your password.&lt;/p&gt;</value>
+    <value>&lt;h3&gt;Reset Password&lt;/h3&gt;&lt;p&gt;Your password reset code: &lt;b&gt;{0}&lt;/b&gt;. The code is valid for 10 minutes.&lt;/p&gt;</value>
   </data>
   <data name="EMAILS.RESET_SUBJECT" xml:space="preserve">
     <value>Reset Password</value>

@@ -11,7 +11,7 @@ import { AuthService } from '../../services/auth.service';
   standalone: true,
   imports: [FormsModule, TranslateModule],
   templateUrl: './confirm-register.component.html',
-  styleUrl: '../register/register.component.scss'
+  styleUrl: './confirm-register.component.scss'
 })
 export class ConfirmRegisterComponent implements OnInit {
   private router = inject(Router);
