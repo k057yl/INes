@@ -71,6 +71,20 @@
                 <span class="inest-slider"></span>
               </label>
             </div>
+
+            <!-- Сброс подсказок обучения -->
+            <div class="config-card">
+              <div class="card-info">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <div class="text">
+                  <span class="label">{{ 'SETTINGS_PAGE.RESET_TUTORIAL_TITLE' | translate }}</span>
+                  <p>{{ 'SETTINGS_PAGE.RESET_TUTORIAL_SUB' | translate }}</p>
+                </div>
+              </div>
+              <button class="inest-btn-outline" (click)="resetTutorials()">
+                <i class="fa-solid fa-rotate-left"></i> {{ 'SETTINGS_PAGE.RESET_TUTORIAL_BTN' | translate }}
+              </button>
+            </div>
           </div>
         </section>
       }

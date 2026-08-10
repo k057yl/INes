@@ -8,8 +8,9 @@ import { FeatureService } from '../../../../core/services/feature.service';
 import { CategoryService } from '../../../category/services/category.service';
 import { PlatformService } from '../../../platform/services/platform.service';
 import { DashboardModalService } from '../../../dashboard/components/dashboard/dashboard.modal.service';
-import { TelegramBotService} from '../../services/telegram-bot.service';
+import { TelegramBotService } from '../../services/telegram-bot.service';
 import { TelegramStatusContract } from '../../contracts/telegram-status';
+import { TutorialService } from '../../../../core/services/tutorial.service';
 
 interface SimpleContract {
   id: string;
@@ -33,6 +34,7 @@ export class SettingsComponent implements OnInit {
   private modalService = inject(DashboardModalService);
   private translate = inject(TranslateService);
   private telegramService = inject(TelegramBotService);
+  private tutorialService = inject(TutorialService);
 
   categories: SimpleContract[] = [];
   platforms: SimpleContract[] = [];
@@ -61,6 +63,22 @@ export class SettingsComponent implements OnInit {
     });
   }
 
+  resetTutorials() {
+    this.modalService.openConfirm({
+      mode: 'confirm',
+      title: 'COMMON.CONFIRM',
+      message: this.translate.instant('SETTINGS_PAGE.RESET_TUTORIAL_CONFIRM'),
+      confirmText: 'COMMON.YES'
+    }).subscribe(confirm => {
+      if (confirm) {
+        this.isLoading = true;
+        this.tutorialService.resetTutorialsOnBackend()
+          .pipe(finalize(() => this.isLoading = false))
+          .subscribe();
+      }
+    });
+  }
+
   loadTelegramStatus() {
     this.isLoading = true;
     this.telegramService.getStatus()
@@ -79,7 +97,7 @@ export class SettingsComponent implements OnInit {
     this.modalService.openConfirm({
       mode: 'delete',
       title: 'COMMON.DELETE',
-      message: 'Вы уверены, что хотите отключить Telegram-бота? Уведомления будут приходить только на Email.',
+      message: this.translate.instant('SETTINGS_PAGE.INTEGRATIONS.UNLINK_CONFIRM'),
       name: 'Telegram Bot'
     }).subscribe(confirm => {
       if (confirm) {

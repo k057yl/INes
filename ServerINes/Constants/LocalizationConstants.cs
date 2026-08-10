@@ -249,5 +249,19 @@
                 public const string NOT_FOUND = "FEEDBACK.ERRORS.NOT_FOUND";
             }
         }
+
+        public static class TUTORIAL
+        {
+            public static class ERRORS
+            {
+                public const string INVALID_STEP = "TUTORIAL.ERRORS.INVALID_STEP";
+            }
+
+            public static class SUCCESS
+            {
+                public const string STEP_COMPLETED = "TUTORIAL.SUCCESS.STEP_COMPLETED";
+                public const string RESET_SUCCESS = "TUTORIAL.SUCCESS.RESET_SUCCESS";
+            }
+        }
     }
 }

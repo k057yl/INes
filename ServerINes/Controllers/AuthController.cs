@@ -1,4 +1,5 @@
-﻿using INest.Features.Auth.Commands.ConfirmRegister;
+﻿using INest.Features.Auth.Commands.CompleteTutorial;
+using INest.Features.Auth.Commands.ConfirmRegister;
 using INest.Features.Auth.Commands.ForgotPassword;
 using INest.Features.Auth.Commands.GoogleLogin;
 using INest.Features.Auth.Commands.Login;
@@ -6,6 +7,7 @@ using INest.Features.Auth.Commands.Logout;
 using INest.Features.Auth.Commands.RefreshToken;
 using INest.Features.Auth.Commands.Register;
 using INest.Features.Auth.Commands.ResendCode;
+using INest.Features.Auth.Commands.ResetTutorials;
 using INest.Features.Auth.DTOs;
 using INest.Features.Auth.Queries.CheckEmail;
 using INest.Features.Auth.Queries.GetMe;
@@ -148,6 +150,30 @@ namespace INest.Controllers
 
             SetTokenCookies(response);
             return Ok();
+        }
+
+        [Authorize]
+        [HttpPost("complete-tutorial")]
+        public async Task<IActionResult> CompleteTutorial([FromBody] CompleteTutorialDto dto)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
+
+            var updatedSteps = await _mediator.Send(new CompleteTutorialCommand(userId, dto.Step));
+            return Ok(new { completedTutorials = (int)updatedSteps });
+        }
+
+        [Authorize]
+        [HttpPost("reset-tutorials")]
+        public async Task<IActionResult> ResetTutorials()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
+
+            await _mediator.Send(new ResetTutorialsCommand(userId));
+            return Ok(new { message = TUTORIAL.SUCCESS.RESET_SUCCESS });
         }
     }
 }

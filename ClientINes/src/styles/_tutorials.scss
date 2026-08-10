@@ -1,0 +1,53 @@
+.driver-popover.inest-tutorial-popover {
+  background-color: var(--bg-card);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+
+  .driver-popover-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--accent-color);
+    margin-bottom: 8px;
+  }
+
+  .driver-popover-description {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+
+  .driver-popover-footer {
+    margin-top: 15px;
+    
+    button {
+      background-color: var(--bg-main-card);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-shadow: none;
+
+      &:hover {
+        background-color: var(--accent-color);
+        color: var(--text-on-accent);
+      }
+    }
+
+    .driver-popover-next-btn {
+      background-color: var(--accent-color);
+      color: var(--text-on-accent);
+      border: none;
+    }
+  }
+
+  .driver-popover-arrow-side-top {
+    border-top-color: var(--bg-card);
+  }
+  .driver-popover-arrow-side-bottom {
+    border-bottom-color: var(--bg-card);
+  }
+}

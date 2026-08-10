@@ -11,6 +11,7 @@ import { DashboardLocationService } from '../../services/dashboard-location.serv
 import { DashboardItemService } from '../../services/dashboard-item.service';
 import { DashboardNavigationService } from '../../services/dashboard-navigation.service';
 import { DashboardActionExecutor } from '../../services/dashboard-action-executor.service';
+import { TutorialService } from '../../../../core/services/tutorial.service';
 import { DashboardStatsComponent } from '../dashboard-stats/dashboard-stats.component';
 import { StatsListModalComponent } from '../stats-list-modal/stats-list-modal.component';
 
@@ -37,6 +38,7 @@ import { Item } from '../../../item/contracts/item';
 export class DashboardComponent implements OnInit, OnDestroy {
   public facade = inject(DashboardFacade);
   public modal = inject(DashboardModalService);
+  private tutorialService = inject(TutorialService);
 
   private sub = new Subscription();
   isMobile = window.innerWidth <= 768;
@@ -51,7 +53,22 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   loadData() {
-    this.facade.loadData().subscribe();
+    this.facade.loadData().subscribe(() => {
+      this.checkAndStartTutorial();
+    });
+  }
+
+  // --- Проверка и запуск обучения ---
+  private checkAndStartTutorial() {
+    const currentUser = (this.facade as any).user || (this.facade as any).currentUser;
+
+    const isDashboardPassed = currentUser && (currentUser.completedTutorials & 1) === 1;
+
+    if (currentUser && !isDashboardPassed) {
+      setTimeout(() => {
+        this.tutorialService.startDashboardTour();
+      }, 300);
+    }
   }
 
   // --- Навигация и пагинация ---

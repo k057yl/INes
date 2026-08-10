@@ -1,4 +1,5 @@
 ﻿using INest.Data.Entities.Core;
+using INest.Data.Enums;
 using Microsoft.AspNetCore.Identity;
 
 namespace INest.Data.Entities.Infrastructure
@@ -23,5 +24,7 @@ namespace INest.Data.Entities.Infrastructure
 
         public long? TelegramChatId { get; set; }
         public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+
+        public TutorialSteps CompletedTutorials { get; set; } = TutorialSteps.None;
     }
 }
