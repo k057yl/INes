@@ -18,21 +18,21 @@
       </div>
     </div>
 
-    <!-- 3. ОДОЛЖЕНО -->
-    <div class="stat-card info clickable" (click)="openStats('lent')" [attr.title]="'DASHBOARD_STATS.LENT_TOOLTIP' | translate">
-      <div class="stat-icon"><i class="fa fa-hand-holding"></i></div>
-      <div class="stat-body">
-        <span class="stat-label">{{ 'DASHBOARD_STATS.LENT' | translate }}</span>
-        <span class="stat-value">{{ stats.lentItemsCount }}</span>
-      </div>
-    </div>
-
-    <!-- 4. ПРОДАНО -->
+    <!-- 3. ПРОДАНО -->
     <div class="stat-card muted clickable" [routerLink]="['/sales']" [attr.title]="'DASHBOARD_STATS.SOLD_TOOLTIP' | translate">
       <div class="stat-icon"><i class="fa fa-shopping-bag"></i></div>
       <div class="stat-body">
         <span class="stat-label">{{ 'DASHBOARD_STATS.SOLD' | translate }}</span>
         <span class="stat-value">{{ stats.soldItemsCount }}</span>
+      </div>
+    </div>
+
+    <!-- 4. ОДОЛЖЕНО -->
+    <div class="stat-card info clickable" (click)="openStats('lent')" [attr.title]="'DASHBOARD_STATS.LENT_TOOLTIP' | translate">
+      <div class="stat-icon"><i class="fa fa-hand-holding"></i></div>
+      <div class="stat-body">
+        <span class="stat-label">{{ 'DASHBOARD_STATS.LENT' | translate }}</span>
+        <span class="stat-value">{{ stats.lentItemsCount }}</span>
       </div>
     </div>
 

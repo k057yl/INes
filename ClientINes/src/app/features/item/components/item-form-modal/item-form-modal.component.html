@@ -24,63 +24,7 @@
 
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
 
-      <!-- ОБЯЗАТЕЛЬНЫЕ ПОЛЯ -->
-      <div class="inest-form-group">
-        <label> * {{ 'CREATE_ITEM_PAGE.NAME' | translate }}</label>
-        <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('name')">
-          <i class="fa fa-tag inest-field-icon-left"></i>
-          <input formControlName="name" [placeholder]="'CREATE_ITEM_PAGE.NAME_PHL' | translate" autofocus>
-        </div>
-        @if (isControlInvalid('name')) {
-          <div class="error-hint-msg">
-            <i class="fa fa-exclamation-circle"></i>
-            <span>{{ (form.get('name')?.errors?.['serverError'] || 'ERRORS.REQUIRED_FIELD') | translate }}</span>
-          </div>
-        }
-      </div>
-
-      <div class="inest-form-group">
-        <label> * {{ 'CREATE_ITEM_PAGE.CATEGORY' | translate }}</label>
-        <div class="label-with-action">
-          <button type="button" class="inline-add-btn" (click)="openCategoryModal()">
-            <i class="fa fa-plus"></i> {{ 'CREATE_ITEM_PAGE.BUTTON_ADD_INLINE' | translate }}
-          </button>
-        </div>
-        <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('categoryId')">
-          <i class="fa fa-folder inest-field-icon-left"></i>
-          <select formControlName="categoryId">
-            <option value="" disabled>{{ 'CREATE_ITEM_PAGE.FIELD_CATEGORY' | translate }}</option>
-            @for (cat of categories; track cat) {
-              <option [value]="cat.id">{{ cat.name }}</option>
-            }
-          </select>
-        </div>
-      </div>
-
-      @if (!isLocationPredefined) {
-        <div class="inest-form-group">
-          <label> * {{ 'CREATE_ITEM_PAGE.LOCATION' | translate }}</label>
-          <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('storageLocationId')">
-            <i class="fa fa-map-marker-alt inest-field-icon-left"></i>
-            <select formControlName="storageLocationId">
-              <option value="" disabled>{{ 'CREATE_ITEM_PAGE.SELECT_LOCATION' | translate }}</option>
-              @for (loc of locations; track loc) {
-                <option [value]="loc.id">{{ loc.name }}</option>
-              }
-            </select>
-          </div>
-        </div>
-      }
-
-      <!-- ОПЦИОНАЛЬНЫЙ БЛОК: ОПИСАНИЕ И ФОТО -->
-      <div class="inest-form-group">
-        <label>{{ 'CREATE_ITEM_PAGE.DESCRIPTION' | translate }}</label>
-        <div class="inest-input-wrapper">
-          <i class="fa fa-align-left inest-field-icon-left"></i>
-          <textarea formControlName="description" [placeholder]="'CREATE_ITEM_PAGE.FIELD_DESCRIPTION' | translate" rows="2"></textarea>
-        </div>
-      </div>
-
+      <!-- 1. ФОТО -->
       @if (!isEdit || form.get('addPhoto')?.value) {
         <div class="photo-hero-section">
           <div class="photo-upload-canvas" [class.has-photos]="selectedPhotos.length > 0">
@@ -118,7 +62,66 @@
         </div>
       }
 
-      <!-- ВЫБОР СТАТУСА ПРЕДМЕТА -->
+      <!-- 2. ИМЯ -->
+      <div class="inest-form-group">
+        <label> * {{ 'CREATE_ITEM_PAGE.NAME' | translate }}</label>
+        <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('name')">
+          <i class="fa fa-tag inest-field-icon-left"></i>
+          <input formControlName="name" [placeholder]="'CREATE_ITEM_PAGE.NAME_PHL' | translate" autofocus>
+        </div>
+        @if (isControlInvalid('name')) {
+          <div class="error-hint-msg">
+            <i class="fa fa-exclamation-circle"></i>
+            <span>{{ (form.get('name')?.errors?.['serverError'] || 'ERRORS.REQUIRED_FIELD') | translate }}</span>
+          </div>
+        }
+      </div>
+
+      <!-- 3. ОПИСАНИЕ -->
+      <div class="inest-form-group">
+        <label>{{ 'CREATE_ITEM_PAGE.DESCRIPTION' | translate }}</label>
+        <div class="inest-input-wrapper">
+          <i class="fa fa-align-left inest-field-icon-left"></i>
+          <textarea formControlName="description" [placeholder]="'CREATE_ITEM_PAGE.FIELD_DESCRIPTION' | translate" rows="2"></textarea>
+        </div>
+      </div>
+
+      <!-- 4 & 5. КНОПКА "ДОБАВИТЬ" И КАТЕГОРИЯ -->
+      <div class="inest-form-group">
+        <div class="label-with-action" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <label style="margin-bottom: 0;"> * {{ 'CREATE_ITEM_PAGE.CATEGORY' | translate }}</label>
+          <button type="button" class="inline-add-btn" (click)="openCategoryModal()">
+            <i class="fa fa-plus"></i> {{ 'CREATE_ITEM_PAGE.BUTTON_ADD_INLINE' | translate }}
+          </button>
+        </div>
+        <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('categoryId')">
+          <i class="fa fa-folder inest-field-icon-left"></i>
+          <select formControlName="categoryId">
+            <option value="" disabled>{{ 'CREATE_ITEM_PAGE.FIELD_CATEGORY' | translate }}</option>
+            @for (cat of categories; track cat) {
+              <option [value]="cat.id">{{ cat.name }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <!-- ЛОКАЦИЯ (ЕСЛИ НЕ ПРЕДОПРЕДЕЛЕНА) -->
+      @if (!isLocationPredefined) {
+        <div class="inest-form-group">
+          <label> * {{ 'CREATE_ITEM_PAGE.LOCATION' | translate }}</label>
+          <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('storageLocationId')">
+            <i class="fa fa-map-marker-alt inest-field-icon-left"></i>
+            <select formControlName="storageLocationId">
+              <option value="" disabled>{{ 'CREATE_ITEM_PAGE.SELECT_LOCATION' | translate }}</option>
+              @for (loc of locations; track loc) {
+                <option [value]="loc.id">{{ loc.name }}</option>
+              }
+            </select>
+          </div>
+        </div>
+      }
+
+      <!-- 6. СТАТУС -->
       <div class="inest-form-group">
         <label> * {{ 'CREATE_ITEM_PAGE.STATUS' | translate }}</label>
         <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('status')" [class.is-readonly]="isEdit">
@@ -144,7 +147,6 @@
           </div>
 
           <div class="form-row-multi">
-            <!-- Имя человека -->
             <div class="inest-form-group">
               <label>
                 * {{ (currentStatusNumber === 1 ? 'CREATE_ITEM_PAGE.LENDING.NAME' : 'CREATE_ITEM_PAGE.BORROWED.NAME') | translate }}
@@ -161,7 +163,6 @@
               }
             </div>
 
-            <!-- Ожидаемая дата возврата -->
             <div class="inest-form-group">
               <label> * {{ 'CREATE_ITEM_PAGE.LENDING.RETURN_DATE' | translate }}</label>
               <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('expectedReturnDate')">
@@ -177,7 +178,6 @@
             </div>
           </div>
 
-          <!-- Email только для Одолжен (Status === 1) -->
           @if (currentStatusNumber === 1) {
             <div class="inest-form-group" style="margin-top: 10px;">
               <label>{{ 'CREATE_ITEM_PAGE.LENDING.EMAIL' | translate }}</label>
@@ -188,7 +188,6 @@
             </div>
           }
 
-          <!-- Каналы отправки уведомления о возврате -->
           <div class="notification-channels-wrapper" style="margin-top: 12px;">
             <label class="channels-title">
               {{ (currentStatusNumber === 1 ? 'CREATE_ITEM_PAGE.LENDING.SEND_REM' : 'CREATE_ITEM_PAGE.BORROWED.SEND_REM') | translate }}
@@ -213,7 +212,7 @@
         </div>
       }
 
-      <!-- ЧЕКБОКС ДЛЯ РАЗВОРАЧИВАНИЯ ФИНАНСОВ И ДАТЫ ПОКУПКИ -->
+      <!-- 7. ДОБАВИТЬ ФИНАНСЫ -->
       <div class="reminder-toggle-section">
         <div class="inest-form-group">
           <div class="label-with-action">
@@ -221,7 +220,6 @@
               <input type="checkbox" formControlName="addDetails">
               <span><i class="fa fa-wallet"></i> {{ 'CREATE_ITEM_PAGE.ADD_FINANCIALS' | translate }}</span>
             </label>
-            <i class="fa fa-question-circle help-tooltip-icon" [title]="'CREATE_ITEM_PAGE.TIPS.FINANCIALS' | translate"></i>
           </div>
         </div>
 
@@ -261,7 +259,7 @@
         }
       </div>
 
-      <!-- БЛОК ГАРАНТИИ И ЧЕКА -->
+      <!-- 8. ДОБАВИТЬ ЧЕК -->
       @if (!isLendingStatus) {
         <div class="reminder-toggle-section">
           <div class="inest-form-group">
@@ -270,7 +268,6 @@
                 <input type="checkbox" formControlName="addReceipt">
                 <span><i class="fa fa-shield-alt"></i> {{ 'CREATE_ITEM_PAGE.ADD_WARRANTY_RECEIPT' | translate }}</span>
               </label>
-              <i class="fa fa-question-circle help-tooltip-icon" [title]="'CREATE_ITEM_PAGE.TIPS.RECEIPT' | translate"></i>
             </div>
           </div>
 
@@ -316,7 +313,7 @@
         </div>
       }
 
-      <!-- СЕКЦИЯ ОБСЛУЖИВАНИЯ И НАПОМИНАНИЙ -->
+      <!-- 9. ДОБАВИТЬ НАПОМИНАНИЕ -->
       @if (!isLendingStatus) {
         <div class="reminder-toggle-section">
           <div class="inest-form-group">
@@ -325,7 +322,6 @@
                 <input type="checkbox" formControlName="addReminder">
                 <span><i class="fa fa-bell"></i> {{ 'CREATE_ITEM_PAGE.ADD_REMINDER' | translate }}</span>
               </label>
-              <i class="fa fa-question-circle help-tooltip-icon" [title]="'CREATE_ITEM_PAGE.TIPS.REMINDER' | translate"></i>
             </div>
           </div>
 
