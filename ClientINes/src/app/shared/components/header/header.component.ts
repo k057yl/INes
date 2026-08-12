@@ -36,7 +36,17 @@ export class HeaderComponent {
   get currentLang() { return this.loc.currentLang; }
 
   isAdmin(user: any): boolean {
-    return user?.roles?.includes('inest_admin') ?? false;
+    if (!user || !user.roles) return false;
+
+    if (Array.isArray(user.roles)) {
+      return user.roles.some((r: string) => r.toLowerCase() === 'inest_admin' || r.toLowerCase() === 'admin');
+    }
+
+    if (typeof user.roles === 'string') {
+      return user.roles.toLowerCase() === 'inest_admin' || user.roles.toLowerCase() === 'admin';
+    }
+
+    return false;
   }
 
   ngOnInit() {

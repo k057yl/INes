@@ -23,7 +23,7 @@ import { ReminderRecurrence } from '../../../reminder/enums/reminder-recurrence.
 import { take, filter } from 'rxjs/operators';
 import { FormErrorService } from '../../../../core/services/form-error.service';
 import { ToastrService } from 'ngx-toastr';
-import { TutorialService } from '../../../../core/services/tutorial.service';
+import { TutorialService, TutorialStep } from '../../../../core/services/tutorial.service';
 
 interface PhotoSlot {
   file?: File;
@@ -163,13 +163,11 @@ export class ItemFormModalComponent implements OnInit {
     this.authService.user$.pipe(take(1)).subscribe(user => {
       if (!user) return;
 
-      const isItemsPassed = (user.completedTutorials & 2) === 2;
+      const isItemsPassed = (user.completedTutorials & TutorialStep.Items) === TutorialStep.Items;
 
       if (!isItemsPassed) {
         setTimeout(() => {
-          this.tutorialService.startItemFormTour(() => {
-            user.completedTutorials |= 2;
-          });
+          this.tutorialService.startItemFormTour();
         }, 400);
       }
     });

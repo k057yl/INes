@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FormBuilder, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
-import { debounceTime, finalize, switchMap, tap, startWith, catchError } from 'rxjs/operators';
+import { debounceTime, finalize, switchMap, tap, startWith, catchError, take } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { Router } from '@angular/router';
 import { PricePipe } from '../../../../shared/pipes/price-currency.pipe';
@@ -13,8 +13,7 @@ import { CategoryService } from '../../../category/services/category.service';
 import { LocationService } from '../../../location/services/location.service';
 import { DashboardModalService } from '../../../dashboard/components/dashboard/dashboard.modal.service';
 import { AuthService } from '../../../auth/services/auth.service';
-import { TutorialService } from '../../../../core/services/tutorial.service';
-import { take } from 'rxjs/operators';
+import { TutorialService, TutorialStep } from '../../../../core/services/tutorial.service';
 
 import { SaleListItem } from '../../contracts/sale-list-item';
 import { GetSalesDto } from '../../dtos/sales-get.dto';
@@ -92,8 +91,6 @@ export class SalesListComponent implements OnInit {
     this.categoryService.getAll().subscribe(res => this.categories = res);
     this.locationService.getAll().subscribe((res: any[]) => this.locations = res);
 
-    this.checkAndStartTutorial();
-
     this.filterForm.valueChanges.pipe(
       startWith(this.filterForm.getRawValue()),
       debounceTime(350),
@@ -108,19 +105,21 @@ export class SalesListComponent implements OnInit {
     ).subscribe(data => {
       this.sales = data;
       this.calculateCurrencyTotals();
+
+      this.checkAndStartTutorial();
     });
   }
 
   private checkAndStartTutorial() {
     this.authService.user$.pipe(take(1)).subscribe(user => {
       if (!user) return;
-      const isSalesPassed = (user.completedTutorials & 4) === 4;
+      const isSalesPassed = (user.completedTutorials & TutorialStep.Items) === TutorialStep.Items;
       if (!isSalesPassed) {
         setTimeout(() => {
           this.tutorialService.startSalesListTour(() => {
-            user.completedTutorials |= 4;
+            user.completedTutorials |= TutorialStep.Items;
           });
-        }, 500);
+        }, 300);
       }
     });
   }

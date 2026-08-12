@@ -10,7 +10,7 @@ import { FeatureService } from '../../../../core/services/feature.service';
 import { DashboardModalService } from '../../../dashboard/components/dashboard/dashboard.modal.service';
 import { StorageLocation } from '../../contracts/storage-location';
 import { AuthService } from '../../../auth/services/auth.service';
-import { TutorialService } from '../../../../core/services/tutorial.service';
+import { TutorialService, TutorialStep } from '../../../../core/services/tutorial.service';
 import { take } from 'rxjs/operators';
 
 @Component({
@@ -75,13 +75,11 @@ export class LocationFormModalComponent implements OnInit {
     this.authService.user$.pipe(take(1)).subscribe(user => {
       if (!user) return;
 
-      const isLocationsPassed = (user.completedTutorials & 4) === 4;
+      const isLocationsPassed = (user.completedTutorials & TutorialStep.Locations) === TutorialStep.Locations;
 
       if (!isLocationsPassed) {
         setTimeout(() => {
-          this.tutorialService.startLocationFormTour(() => {
-            user.completedTutorials |= 4;
-          });
+          this.tutorialService.startLocationFormTour();
         }, 400);
       }
     });

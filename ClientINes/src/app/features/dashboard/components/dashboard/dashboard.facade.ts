@@ -25,7 +25,11 @@ export class DashboardFacade {
     this.isLoading = true;
 
     return forkJoin({
-      tree: this.locations.loadTree(),
+      tree: this.locations.loadTree().pipe(
+        tap(treeData => {
+          this.locations.locations = treeData;
+        })
+      ),
       stats: this.dashboardApi.getStats()
     }).pipe(
       tap({

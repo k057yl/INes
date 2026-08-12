@@ -67,7 +67,7 @@
         <label> * {{ 'CREATE_ITEM_PAGE.NAME' | translate }}</label>
         <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('name')">
           <i class="fa fa-tag inest-field-icon-left"></i>
-          <input formControlName="name" [placeholder]="'CREATE_ITEM_PAGE.NAME_PHL' | translate" autofocus>
+          <input formControlName="name" [placeholder]="'CREATE_ITEM_PAGE.NAME_PHL' | translate">
         </div>
         @if (isControlInvalid('name')) {
           <div class="error-hint-msg">

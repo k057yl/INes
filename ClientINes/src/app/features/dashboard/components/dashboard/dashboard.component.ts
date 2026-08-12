@@ -12,7 +12,7 @@ import { DashboardLocationService } from '../../services/dashboard-location.serv
 import { DashboardItemService } from '../../services/dashboard-item.service';
 import { DashboardNavigationService } from '../../services/dashboard-navigation.service';
 import { DashboardActionExecutor } from '../../services/dashboard-action-executor.service';
-import { TutorialService } from '../../../../core/services/tutorial.service';
+import { TutorialService, TutorialStep } from '../../../../core/services/tutorial.service';
 import { AuthService } from '../../../auth/services/auth.service';
 import { DashboardStatsComponent } from '../dashboard-stats/dashboard-stats.component';
 import { StatsListModalComponent } from '../stats-list-modal/stats-list-modal.component';
@@ -63,24 +63,57 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
-  // --- Проверка и запуск обучения ---
   private checkAndStartTutorial() {
-    if (this.hasCheckedTutorial) return;
-
     this.sub.add(
       this.authService.user$.pipe(take(1)).subscribe(currentUser => {
         if (!currentUser) return;
 
-        const isDashboardPassed = (currentUser.completedTutorials & 1) === 1;
+        const completed = currentUser.completedTutorials;
+        const isDashboardPassed = (completed & TutorialStep.Dashboard) === TutorialStep.Dashboard;
+        const isLocationsPassed = (completed & TutorialStep.Locations) === TutorialStep.Locations;
+        const isItemsPassed = (completed & TutorialStep.Items) === TutorialStep.Items;
 
+        // 1. Главный тур по дашборду
         if (!isDashboardPassed) {
-          this.hasCheckedTutorial = true;
-          setTimeout(() => {
-            this.tutorialService.startDashboardTour(() => {
-              currentUser.completedTutorials |= 1;
-            });
-          }, 500);
+          if (!this.hasCheckedTutorial) {
+            this.hasCheckedTutorial = true;
+            setTimeout(() => {
+              this.tutorialService.startDashboardTour(() => {
+                currentUser.completedTutorials |= TutorialStep.Dashboard;
+                this.authService.updateLocalUserTutorial(TutorialStep.Dashboard);
+              });
+            }, 300);
+          }
+          return;
         }
+
+        // Даем 500мс, чтобы ВСЕ модалки точно закрылись, а Angular отрисовал карточку
+        setTimeout(() => {
+          const flatLocations = this.facade.locations.flatLocations || [];
+          
+          // 2. Тур по первой карточке локации (если локация ровно 1)
+          if (!isLocationsPassed && flatLocations.length === 1) {
+            this.tutorialService.startFirstLocationCardTour(() => {
+              currentUser.completedTutorials |= TutorialStep.Locations;
+              this.authService.updateLocalUserTutorial(TutorialStep.Locations);
+            });
+            return;
+          }
+
+          // 3. Тур по первой карточке предмета (если айтем ровно 1)
+          const totalItemsCount = flatLocations.reduce(
+            (acc, loc) => acc + (loc.items?.length || 0), 
+            0
+          );
+
+          if (!isItemsPassed && totalItemsCount === 1) {
+            this.tutorialService.startFirstItemCardTour(() => {
+              currentUser.completedTutorials |= TutorialStep.Items;
+              this.authService.updateLocalUserTutorial(TutorialStep.Items);
+            });
+            return;
+          }
+        }, 500);
       })
     );
   }

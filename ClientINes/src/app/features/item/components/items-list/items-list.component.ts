@@ -2,7 +2,7 @@ import { Component, HostListener, OnInit, inject, ElementRef } from '@angular/co
 import { CommonModule, Location } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { debounceTime, finalize, switchMap, tap, startWith, catchError } from 'rxjs/operators';
+import { debounceTime, finalize, switchMap, tap, startWith, catchError, take } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
@@ -16,8 +16,7 @@ import { GetItemFilters } from '../../dtos/items-get.dto';
 import { StatusNamePipe } from '../../../../shared/pipes/status-name.pipe';
 import { DashboardModalService } from '../../../dashboard/components/dashboard/dashboard.modal.service';
 import { AuthService } from '../../../auth/services/auth.service';
-import { TutorialService } from '../../../../core/services/tutorial.service';
-import { take } from 'rxjs/operators';
+import { TutorialService, TutorialStep } from '../../../../core/services/tutorial.service';
 
 type DropdownType = 'category' | 'location' | 'status' | 'sort' | null;
 
@@ -81,8 +80,6 @@ export class ItemsListComponent implements OnInit {
   ngOnInit(): void {
     this.loadInitialData();
 
-    this.checkAndStartTutorial();
-
     this.filterForm.get('showArchived')?.valueChanges.subscribe(val => {
       if (val) this.filterForm.get('includeArchived')?.setValue(false, { emitEvent: false });
     });
@@ -105,19 +102,20 @@ export class ItemsListComponent implements OnInit {
     ).subscribe(items => {
       this.items = items;
       this.syncSelection();
+      this.checkAndStartTutorial();
     });
   }
 
   private checkAndStartTutorial() {
     this.authService.user$.pipe(take(1)).subscribe(user => {
       if (!user) return;
-      const isItemsPassed = (user.completedTutorials & 2) === 2;
+      const isItemsPassed = (user.completedTutorials & TutorialStep.Items) === TutorialStep.Items;
       if (!isItemsPassed) {
         setTimeout(() => {
           this.tutorialService.startItemsListTour(() => {
-            user.completedTutorials |= 2;
+            user.completedTutorials |= TutorialStep.Items;
           });
-        }, 500);
+        }, 300);
       }
     });
   }

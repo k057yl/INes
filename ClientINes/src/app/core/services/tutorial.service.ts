@@ -3,8 +3,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { driver, Driver } from 'driver.js';
 import { HttpClient } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
-import { DashboardModalService } from '../../features/dashboard/components/dashboard/dashboard.modal.service';
 import { environment } from '../../../environments/environment';
+import { AuthService } from '../../features/auth/services/auth.service';
 
 export enum TutorialStep {
   Dashboard = 1,
@@ -13,27 +13,58 @@ export enum TutorialStep {
   Settings = 8
 }
 
+export type TutorialTour =
+  | 'dashboard'
+  | 'items-list'
+  | 'sales-list'
+  | 'sell-form'
+  | 'location-form'
+  | 'item-form'
+  | 'first-location-card'
+  | 'first-item-card';
+
 @Injectable({
   providedIn: 'root'
 })
 export class TutorialService {
   private translate = inject(TranslateService);
   private toastr = inject(ToastrService);
-  private modalService = inject(DashboardModalService);
   private http = inject(HttpClient);
+  private authService = inject(AuthService);
   
   private driverObj?: Driver;
   private isExplicitlyCompleted = false;
-  private isCancellingToConfirm = false;
 
-  private initDriver(step: TutorialStep, onCompleteCallback?: () => void) {
+  private setTutorialLock(locked: boolean) {
+    document.body.classList.toggle('tutorial-active', locked);
+  }
+
+  private forceCleanup() {
+    this.setTutorialLock(false);
+
+    document.querySelectorAll('.driver-overlay, .driver-popover, .driver-active-element').forEach(el => {
+      el.classList.remove('driver-active-element');
+      if (el.classList.contains('driver-overlay') || el.classList.contains('driver-popover')) {
+        el.remove();
+      }
+    });
+  }
+
+  private initDriver(step: TutorialStep, tourType: TutorialTour, onCompleteCallback?: () => void) {
+    if (this.driverObj) {
+      this.driverObj.destroy();
+    }
+    this.forceCleanup();
+
     this.isExplicitlyCompleted = false;
+    this.setTutorialLock(true);
 
     this.driverObj = driver({
       showProgress: true,
       progressText: this.translate.instant('TUTORIAL_PAGE.PROGRESS'),
       animate: true,
       allowClose: false,
+      allowKeyboardControl: false,
       doneBtnText: this.translate.instant('TUTORIAL_PAGE.DONE_BTN'),
       nextBtnText: this.translate.instant('TUTORIAL_PAGE.NEXT_BTN'),
       prevBtnText: this.translate.instant('TUTORIAL_PAGE.PREV_BTN'),
@@ -41,7 +72,7 @@ export class TutorialService {
 
       onPopoverRender: (popover: any) => {
         const footer = popover.wrapper.querySelector('.driver-popover-footer');
-        
+
         if (footer && !footer.querySelector('.tutorial-skip-row')) {
           const skipRow = document.createElement('label');
           skipRow.className = 'tutorial-skip-row';
@@ -58,23 +89,53 @@ export class TutorialService {
 
           checkbox.addEventListener('change', (e) => {
             e.stopPropagation();
-            if (!checkbox.checked) return;
+            e.preventDefault();
 
-            checkbox.checked = false;
+            const wrapper = popover.wrapper as HTMLElement;
+            const footerEl = wrapper.querySelector('.driver-popover-footer') as HTMLElement;
+            if (!footerEl) return;
 
-            this.modalService.openConfirm({
-              mode: 'confirm',
-              title: this.translate.instant('TUTORIAL_PAGE.SKIP_CONFIRM_TITLE'),
-              message: this.translate.instant('TUTORIAL_PAGE.SKIP_CONFIRM_DESC'),
-              confirmText: this.translate.instant('COMMON.YES')
-            }).subscribe(confirmed => {
-              if (!confirmed) return;
+            const existingConfirm = footerEl.querySelector('.tutorial-inline-confirm');
 
-              this.isExplicitlyCompleted = true;
-              this.markStepAsCompleted(step).subscribe();
-              this.driverObj?.destroy();
-              if (onCompleteCallback) onCompleteCallback();
-            });
+            const closeConfirmBox = () => {
+              checkbox.checked = false;
+              existingConfirm?.remove();
+              footerEl.querySelector('.tutorial-inline-confirm')?.remove();
+            };
+
+            if (!checkbox.checked) {
+              closeConfirmBox();
+              return;
+            }
+
+            if (!existingConfirm) {
+              const confirmBox = document.createElement('div');
+              confirmBox.className = 'tutorial-inline-confirm';
+              confirmBox.innerHTML = `
+                <div class="confirm-title">${this.translate.instant('TUTORIAL_PAGE.SKIP_CONFIRM_DESC')}</div>
+                <div class="confirm-buttons">
+                  <button class="btn-confirm-yes">${this.translate.instant('COMMON.YES')}</button>
+                  <button class="btn-confirm-no">${this.translate.instant('COMMON.CANCEL')}</button>
+                </div>
+              `;
+
+              footerEl.appendChild(confirmBox);
+
+              confirmBox.querySelector('.btn-confirm-yes')?.addEventListener('click', (ev) => {
+                ev.stopPropagation();
+                this.isExplicitlyCompleted = true;
+                this.markStepAsCompleted(step).subscribe();
+                this.driverObj?.destroy();
+                this.forceCleanup();
+                
+                if (onCompleteCallback) onCompleteCallback();
+              });
+
+              confirmBox.querySelector('.btn-confirm-no')?.addEventListener('click', (ev) => {
+                ev.stopPropagation();
+                closeConfirmBox();
+              });
+            }
           });
 
           footer.appendChild(skipRow);
@@ -82,23 +143,26 @@ export class TutorialService {
       },
 
       onDestroyStarted: () => {
-        if (!this.isExplicitlyCompleted) {
+        if (this.driverObj?.isLastStep() && !this.isExplicitlyCompleted) {
           this.isExplicitlyCompleted = true;
           this.markStepAsCompleted(step).subscribe();
           if (onCompleteCallback) onCompleteCallback();
         }
+        
         this.driverObj?.destroy();
+        this.forceCleanup();
       }
     });
   }
 
   public markStepAsCompleted(step: TutorialStep) {
+    this.authService.updateLocalUserTutorial(step);
     return this.http.post(`${environment.apiBaseUrl}/auth/complete-tutorial`, { step });
   }
 
   // --- 1. ТУР ПО ДАШБОРДУ ---
   public startDashboardTour(onComplete?: () => void) {
-    this.initDriver(TutorialStep.Dashboard, onComplete);
+    this.initDriver(TutorialStep.Dashboard, 'dashboard', onComplete);
     if (!this.driverObj) return;
 
     const steps: any[] = [
@@ -111,9 +175,9 @@ export class TutorialService {
     ];
 
     // 1. Хедер
-    if (document.querySelector('app-header, .app-header, header')) {
+    if (document.querySelector('.header-main')) {
       steps.push({
-        element: 'app-header, .app-header, header',
+        element: '.header-main',
         popover: {
           title: this.translate.instant('TUTORIAL_PAGE.DASHBOARD.HEADER_TITLE'),
           description: this.translate.instant('TUTORIAL_PAGE.DASHBOARD.HEADER_DESC'),
@@ -122,10 +186,10 @@ export class TutorialService {
       });
     }
 
-    // 2. Панель статистики
-    if (document.querySelector('app-dashboard-stats')) {
+    // 2. Вся панель статистики
+    if (document.querySelector('.stats-ribbon')) {
       steps.push({
-        element: 'app-dashboard-stats',
+        element: '.stats-ribbon',
         popover: {
           title: this.translate.instant('TUTORIAL_PAGE.DASHBOARD.STATS_TITLE'),
           description: this.translate.instant('TUTORIAL_PAGE.DASHBOARD.STATS_DESC'),
@@ -134,7 +198,7 @@ export class TutorialService {
       });
     }
 
-    // 3.1. Кнопка "Локации"
+    // 3-6. Отдельные карточки статистики
     if (document.querySelector('.stats-ribbon .stat-card:nth-child(1)')) {
       steps.push({
         element: '.stats-ribbon .stat-card:nth-child(1)',
@@ -146,7 +210,6 @@ export class TutorialService {
       });
     }
 
-    // 3.2. Кнопка "Всего вещей"
     if (document.querySelector('.stats-ribbon .stat-card:nth-child(2)')) {
       steps.push({
         element: '.stats-ribbon .stat-card:nth-child(2)',
@@ -158,7 +221,6 @@ export class TutorialService {
       });
     }
 
-    // 3.3. Кнопка "Продано"
     if (document.querySelector('.stats-ribbon .stat-card:nth-child(3)')) {
       steps.push({
         element: '.stats-ribbon .stat-card:nth-child(3)',
@@ -170,7 +232,6 @@ export class TutorialService {
       });
     }
 
-    // 3.4. Кнопка "Одолжено"
     if (document.querySelector('.stats-ribbon .stat-card:nth-child(4)')) {
       steps.push({
         element: '.stats-ribbon .stat-card:nth-child(4)',
@@ -182,7 +243,7 @@ export class TutorialService {
       });
     }
 
-    // 3.5. Ахтунг-карточка (если есть)
+    // 7. Карточка внимания
     if (document.querySelector('.attention-card')) {
       steps.push({
         element: '.attention-card',
@@ -194,10 +255,10 @@ export class TutorialService {
       });
     }
 
-    // 4. Лента навигации (Риббон)
-    if (document.querySelector('app-location-ribbon')) {
+    // 8. Лента навигации (РИББОН ЛОКАЦИИ)
+    if (document.querySelector('.ribbon-container')) {
       steps.push({
-        element: 'app-location-ribbon',
+        element: '.ribbon-container',
         popover: {
           title: this.translate.instant('TUTORIAL_PAGE.DASHBOARD.LOCATIONS_TITLE'),
           description: this.translate.instant('TUTORIAL_PAGE.DASHBOARD.LOCATIONS_DESC'),
@@ -206,31 +267,10 @@ export class TutorialService {
       });
     }
 
-    // 5. Карточки или Zero State
-    if (document.querySelector('.root-loc-wrapper')) {
+    // 9. Футер и Обратная связь
+    if (document.querySelector('.footer-content')) {
       steps.push({
-        element: '.root-loc-wrapper:first-child',
-        popover: {
-          title: this.translate.instant('TUTORIAL_PAGE.DASHBOARD.BOARD_TITLE'),
-          description: this.translate.instant('TUTORIAL_PAGE.DASHBOARD.BOARD_DESC'),
-          side: 'right'
-        }
-      });
-    } else if (document.querySelector('.zero-state-container')) {
-      steps.push({
-        element: '.zero-state-container',
-        popover: {
-          title: this.translate.instant('MAIN_PAGE.LOCATION_EMPTY_MSG'),
-          description: this.translate.instant('TUTORIAL_PAGE.DASHBOARD.CREATE_FIRST_DESC'),
-          side: 'top'
-        }
-      });
-    }
-
-    // 6. Сам Футер
-    if (document.querySelector('footer, .footer')) {
-      steps.push({
-        element: 'footer, .footer',
+        element: '.footer-content',
         popover: {
           title: this.translate.instant('TUTORIAL_PAGE.DASHBOARD.FOOTER_TITLE'),
           description: this.translate.instant('TUTORIAL_PAGE.DASHBOARD.FOOTER_DESC'),
@@ -239,7 +279,6 @@ export class TutorialService {
       });
     }
 
-    // 7. ТОЧНЫЙ СЕЛЕКТОР: Кнопка фидбека в футере!
     if (document.querySelector('.feedback-btn')) {
       steps.push({
         element: '.feedback-btn',
@@ -251,13 +290,30 @@ export class TutorialService {
       });
     }
 
+    // 10. КУЛЬМИНАЦИЯ: Интерактивный клик по кнопке создания
+    const targetBtn = document.querySelector('.zero-state-container .tutorial-action, .tutorial-action');
+
+    if (targetBtn) {
+      steps.push({
+        element: targetBtn,
+        disableActiveInteraction: false,
+        advanceOnClick: true,
+        popover: {
+          title: this.translate.instant('MAIN_PAGE.LOCATION_EMPTY_MSG'),
+          description: this.translate.instant('TUTORIAL_PAGE.DASHBOARD.CREATE_FIRST_DESC'),
+          side: 'top',
+          showButtons: ['close']
+        }
+      });
+    }
+
     this.driverObj.setSteps(steps);
     this.driverObj.drive();
   }
 
   // --- 2. ТУР ПО СПИСКУ ПРЕДМЕТОВ ---
   public startItemsListTour(onComplete?: () => void) {
-    this.initDriver(TutorialStep.Items, onComplete);
+    this.initDriver(TutorialStep.Items, 'items-list', onComplete);
     if (!this.driverObj) return;
 
     const steps: any[] = [
@@ -297,7 +353,7 @@ export class TutorialService {
 
   // --- 3. ТУР ПО ПРОДАЖАМ ---
   public startSalesListTour(onComplete?: () => void) {
-    this.initDriver(TutorialStep.Locations, onComplete);
+    this.initDriver(TutorialStep.Items, 'sales-list', onComplete);
     if (!this.driverObj) return;
 
     const steps: any[] = [
@@ -337,7 +393,7 @@ export class TutorialService {
 
   // --- 4. ТУР ПО МОДАЛКЕ СОЗДАНИЯ ЛОКАЦИИ ---
   public startLocationFormTour(onComplete?: () => void) {
-    this.initDriver(TutorialStep.Locations, onComplete);
+    this.initDriver(TutorialStep.Locations, 'location-form', onComplete);
     if (!this.driverObj) return;
 
     const steps: any[] = [
@@ -349,9 +405,9 @@ export class TutorialService {
       }
     ];
 
-    if (document.querySelector('.create-card .form-group input')) {
+    if (document.querySelector('.create-card input[formControlName="name"]')) {
       steps.push({
-        element: '.create-card .form-group:first-of-type',
+        element: '.create-card input[formControlName="name"]',
         popover: {
           title: this.translate.instant('TUTORIAL_PAGE.LOCATION_FORM.NAME_TITLE'),
           description: this.translate.instant('TUTORIAL_PAGE.LOCATION_FORM.NAME_DESC'),
@@ -388,7 +444,7 @@ export class TutorialService {
 
   // --- 5. ТУР ПО МОДАЛКЕ СОЗДАНИЯ/РЕДАКТИРОВАНИЯ ПРЕДМЕТА ---
   public startItemFormTour(onComplete?: () => void) {
-    this.initDriver(TutorialStep.Items, onComplete);
+    this.initDriver(TutorialStep.Items, 'item-form', onComplete);
     if (!this.driverObj) return;
 
     const steps: any[] = [
@@ -400,7 +456,6 @@ export class TutorialService {
       }
     ];
 
-    // 1. Фото
     if (document.querySelector('.photo-hero-section, .upload-placeholder')) {
       steps.push({
         element: '.photo-hero-section, .upload-placeholder',
@@ -412,7 +467,6 @@ export class TutorialService {
       });
     }
 
-    // 2. Имя
     if (document.querySelector('input[formControlName="name"]')) {
       steps.push({
         element: 'input[formControlName="name"]',
@@ -424,7 +478,6 @@ export class TutorialService {
       });
     }
 
-    // 3. Описание
     if (document.querySelector('textarea[formControlName="description"]')) {
       steps.push({
         element: 'textarea[formControlName="description"]',
@@ -436,7 +489,6 @@ export class TutorialService {
       });
     }
 
-    // 4. Добавить категорию (Инлайн-кнопка)
     if (document.querySelector('.inline-add-btn')) {
       steps.push({
         element: '.inline-add-btn',
@@ -448,7 +500,6 @@ export class TutorialService {
       });
     }
 
-    // 5. Категория (Селект)
     if (document.querySelector('select[formControlName="categoryId"]')) {
       steps.push({
         element: 'select[formControlName="categoryId"]',
@@ -460,7 +511,6 @@ export class TutorialService {
       });
     }
 
-    // 6. Статус
     if (document.querySelector('select[formControlName="status"]')) {
       steps.push({
         element: 'select[formControlName="status"]',
@@ -472,7 +522,6 @@ export class TutorialService {
       });
     }
 
-    // 7. Добавить финансы
     if (document.querySelector('input[formControlName="addDetails"]')) {
       steps.push({
         element: 'input[formControlName="addDetails"]',
@@ -484,7 +533,6 @@ export class TutorialService {
       });
     }
 
-    // 8. Добавить чек
     if (document.querySelector('input[formControlName="addReceipt"]')) {
       steps.push({
         element: 'input[formControlName="addReceipt"]',
@@ -496,13 +544,164 @@ export class TutorialService {
       });
     }
 
-    // 9. Добавить напоминание
     if (document.querySelector('input[formControlName="addReminder"]')) {
       steps.push({
         element: 'input[formControlName="addReminder"]',
         popover: {
           title: this.translate.instant('TUTORIAL_PAGE.ITEM_FORM.REMINDER_TITLE'),
           description: this.translate.instant('TUTORIAL_PAGE.ITEM_FORM.REMINDER_DESC'),
+          side: 'top'
+        }
+      });
+    }
+
+    this.driverObj.setSteps(steps);
+    this.driverObj.drive();
+  }
+
+  // --- 6. ТУР ПО ПЕРВОЙ КАРТОЧКЕ ЛОКАЦИИ ---
+  public startFirstLocationCardTour(onComplete?: () => void) {
+    this.initDriver(TutorialStep.Locations, 'first-location-card', onComplete);
+    if (!this.driverObj) return;
+
+    // Ждем микротаск для прорисовки DOM
+    setTimeout(() => {
+      const steps: any[] = [
+        {
+          popover: {
+            title: this.translate.instant('TUTORIAL_PAGE.FIRST_LOCATION_CARD.WELCOME_TITLE'),
+            description: this.translate.instant('TUTORIAL_PAGE.FIRST_LOCATION_CARD.WELCOME_DESC'),
+          }
+        }
+      ];
+
+      const cardHeader = document.querySelector('.location-column .loc-header-wrapper, .location-column');
+      if (cardHeader) {
+        steps.push({
+          element: cardHeader,
+          popover: {
+            title: this.translate.instant('TUTORIAL_PAGE.FIRST_LOCATION_CARD.HEADER_TITLE'),
+            description: this.translate.instant('TUTORIAL_PAGE.FIRST_LOCATION_CARD.HEADER_DESC'),
+            side: 'bottom'
+          }
+        });
+      }
+
+      const addLocBtn = document.querySelector('.location-column .action-btn.add-loc');
+      if (addLocBtn) {
+        steps.push({
+          element: addLocBtn,
+          popover: {
+            title: this.translate.instant('TUTORIAL_PAGE.FIRST_LOCATION_CARD.ADD_NESTED_TITLE'),
+            description: this.translate.instant('TUTORIAL_PAGE.FIRST_LOCATION_CARD.ADD_NESTED_DESC'),
+            side: 'top'
+          }
+        });
+      }
+
+      const addItemBtn = document.querySelector('.location-column .action-btn.add-item, .empty-drop-zone');
+      if (addItemBtn) {
+        steps.push({
+          element: addItemBtn,
+          popover: {
+            title: this.translate.instant('TUTORIAL_PAGE.FIRST_LOCATION_CARD.ADD_ITEM_TITLE'),
+            description: this.translate.instant('TUTORIAL_PAGE.FIRST_LOCATION_CARD.ADD_ITEM_DESC'),
+            side: 'top'
+          }
+        });
+      }
+
+      this.driverObj?.setSteps(steps);
+      this.driverObj?.drive();
+    }, 100);
+  }
+
+  // --- 7. ТУР ПО ПЕРВОЙ КАРТОЧКЕ ПРЕДМЕТА ---
+  public startFirstItemCardTour(onComplete?: () => void) {
+    this.initDriver(TutorialStep.Items, 'first-item-card', onComplete);
+    if (!this.driverObj) return;
+
+    const steps: any[] = [
+      {
+        popover: {
+          title: this.translate.instant('TUTORIAL_PAGE.FIRST_ITEM_CARD.WELCOME_TITLE'),
+          description: this.translate.instant('TUTORIAL_PAGE.FIRST_ITEM_CARD.WELCOME_DESC'),
+        }
+      }
+    ];
+
+    // 1. Карточка предмета
+    const itemCard = document.querySelector('app-item-card');
+    if (itemCard) {
+      steps.push({
+        element: itemCard,
+        popover: {
+          title: this.translate.instant('TUTORIAL_PAGE.FIRST_ITEM_CARD.DRAG_TITLE'),
+          description: this.translate.instant('TUTORIAL_PAGE.FIRST_ITEM_CARD.DRAG_DESC'),
+          side: 'bottom'
+        }
+      });
+    }
+
+    // 2. Инфо/Меню на предмет
+    const menuBtn = document.querySelector('app-item-card .tool-btn, app-item-card button');
+    if (menuBtn) {
+      steps.push({
+        element: menuBtn,
+        popover: {
+          title: this.translate.instant('TUTORIAL_PAGE.FIRST_ITEM_CARD.MENU_TITLE'),
+          description: this.translate.instant('TUTORIAL_PAGE.FIRST_ITEM_CARD.MENU_DESC'),
+          side: 'left'
+        }
+      });
+    }
+
+    this.driverObj.setSteps(steps);
+    this.driverObj.drive();
+  }
+
+  // --- 8. ТУР ПО МОДАЛКЕ ПРОДАЖИ ПРЕДМЕТА ---
+  public startSellFormTour(onComplete?: () => void) {
+    this.initDriver(TutorialStep.Items, 'sell-form', onComplete);
+    if (!this.driverObj) return;
+
+    const steps: any[] = [
+      {
+        popover: {
+          title: this.translate.instant('TUTORIAL_PAGE.SELL_FORM.WELCOME_TITLE'),
+          description: this.translate.instant('TUTORIAL_PAGE.SELL_FORM.WELCOME_DESC'),
+        }
+      }
+    ];
+
+    if (document.querySelector('input[formControlName="salePrice"]')) {
+      steps.push({
+        element: 'input[formControlName="salePrice"]',
+        popover: {
+          title: this.translate.instant('TUTORIAL_PAGE.SELL_FORM.PRICE_TITLE'),
+          description: this.translate.instant('TUTORIAL_PAGE.SELL_FORM.PRICE_DESC'),
+          side: 'bottom'
+        }
+      });
+    }
+
+    if (document.querySelector('input[formControlName="soldDate"]')) {
+      steps.push({
+        element: 'input[formControlName="soldDate"]',
+        popover: {
+          title: this.translate.instant('TUTORIAL_PAGE.SELL_FORM.DATE_TITLE'),
+          description: this.translate.instant('TUTORIAL_PAGE.SELL_FORM.DATE_DESC'),
+          side: 'bottom'
+        }
+      });
+    }
+
+    if (document.querySelector('select[formControlName="platformId"]')) {
+      steps.push({
+        element: 'select[formControlName="platformId"]',
+        popover: {
+          title: this.translate.instant('TUTORIAL_PAGE.SELL_FORM.PLATFORM_TITLE'),
+          description: this.translate.instant('TUTORIAL_PAGE.SELL_FORM.PLATFORM_DESC'),
           side: 'top'
         }
       });

@@ -1,13 +1,15 @@
 import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
+import { take } from 'rxjs/operators';
 import { Item } from '../../../item/contracts/item';
 import { SaleCreateDto } from '../../dtos/sale-item-create.dto';
 import { Platform } from '../../../platform/contracts/platform';
 import { SalesService } from '../../services/sales.service';
 import { InestModalComponent } from '../../../../shared/components/inest-modal/inest-modal.component';
-import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
+import { AuthService } from '../../../auth/services/auth.service';
+import { TutorialService, TutorialStep } from '../../../../core/services/tutorial.service';
 import { FORM_VALIDATION } from '../../../../shared/constants/form-defaults.constants';
 
 @Component({
@@ -22,6 +24,8 @@ export class SellModalComponent implements OnInit {
   private salesService = inject(SalesService);
   private translate = inject(TranslateService);
   private toastr = inject(ToastrService);
+  private authService = inject(AuthService);
+  private tutorialService = inject(TutorialService);
 
   @Input() item!: Item;
   platforms: Platform[] = [];
@@ -49,6 +53,19 @@ export class SellModalComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadPlatforms();
+    this.checkAndStartTutorial();
+  }
+
+  private checkAndStartTutorial(): void {
+    this.authService.user$.pipe(take(1)).subscribe(user => {
+      if (!user) return;
+      const isPassed = (user.completedTutorials & TutorialStep.Items) === TutorialStep.Items;
+      if (!isPassed) {
+        setTimeout(() => {
+          this.tutorialService.startSellFormTour();
+        }, 300);
+      }
+    });
   }
 
   private getLocalDateString(): string {

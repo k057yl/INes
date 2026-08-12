@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { tap, finalize, catchError, switchMap } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
 import { AppUser } from '../dtos/create-user';
+import { TutorialStep } from '../../../core/services/tutorial.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -102,5 +103,15 @@ export class AuthService {
 
   clearLocalSession(): void {
     this.userSubject.next(null);
+  }
+
+  // ================= ТУТОРИАЛ =================
+
+  public updateLocalUserTutorial(step: TutorialStep) {
+    const currentUser = this.userSubject.value;
+    if (currentUser) {
+      currentUser.completedTutorials |= step;
+      this.userSubject.next({ ...currentUser });
+    }
   }
 }

@@ -1,53 +1,218 @@
-.driver-popover.inest-tutorial-popover {
-  background-color: var(--bg-card);
-  color: var(--text-main);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+/* --- ТУТОРИАЛ (DRIVER.JS) СИСТЕМНЫЕ СТИЛИ --- */
+
+/* 1. ГЛОБАЛЬНАЯ БЛОКИРОВКА UI ВО ВРЕМЯ ТУТОРИАЛА */
+body.tutorial-active {
+  button,
+  a,
+  select,
+  input,
+  textarea,
+  [role="button"] {
+    pointer-events: none !important;
+  }
+
+  /* Разрешаем клики по поповеру, оверлею, активному элементу и целевым кнопкам туториала */
+  .driver-popover,
+  .driver-popover *,
+  .driver-overlay,
+  .driver-active-element,
+  .driver-active-element *,
+  .tutorial-action,
+  .tutorial-action * {
+    pointer-events: auto !important;
+  }
+}
+
+/* 2. ОВЕРЛЕЙ И ПОПОВЕР Z-INDEX */
+.driver-overlay,
+.driver-popover {
+  z-index: 9990 !important;
+}
+
+.driver-overlay {
+  opacity: 0.88 !important;
+}
+
+.driver-overlay path {
+  fill-opacity: 0.88 !important;
+}
+
+/* 3. КРАСИВАЯ ПОДСВЕТКА ВЫБРАННОГО ЭЛЕМЕНТА */
+.driver-active-element {
+  box-shadow:
+    0 0 0 3px var(--accent-color),
+    0 0 20px var(--accent-color),
+    0 0 50px rgba(56, 189, 248, 0.35) !important;
+  border-radius: 12px !important;
+}
+
+.header-main.driver-active-element,
+.footer-content.driver-active-element,
+.ribbon-container.driver-active-element {
+  border-radius: 16px !important;
+}
+
+/* 4. КАСТОМНЫЙ ПОПОВЕР ТУТОРИАЛА */
+.inest-tutorial-popover {
+  z-index: 9999 !important;
+  background: var(--bg-card) !important;
+  color: var(--text-main) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4) !important;
+  padding: 20px !important;
+  max-width: 380px !important;
 
   .driver-popover-title {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--accent-color);
-    margin-bottom: 8px;
+    color: var(--accent-color) !important;
+    font-size: 1.15rem !important;
+    font-weight: 700 !important;
+    margin-bottom: 8px !important;
   }
 
   .driver-popover-description {
-    font-size: 0.9rem;
-    color: var(--text-muted);
-    line-height: 1.4;
+    color: var(--text-muted) !important;
+    font-size: 0.9rem !important;
+    line-height: 1.5 !important;
   }
 
   .driver-popover-footer {
-    margin-top: 15px;
-    
-    button {
-      background-color: var(--bg-main-card);
-      color: var(--text-main);
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
-      padding: 6px 12px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      text-shadow: none;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 12px !important;
+    margin-top: 16px !important;
+    padding-top: 14px !important;
+    border-top: 1px solid var(--border-color) !important;
 
-      &:hover {
-        background-color: var(--accent-color);
-        color: var(--text-on-accent);
+    .driver-popover-progress-text {
+      width: 100% !important;
+      text-align: center !important;
+      color: var(--text-muted) !important;
+      font-size: 0.8rem !important;
+      font-weight: 600 !important;
+      margin: 0 !important;
+    }
+
+    .driver-popover-navigation-btns {
+      display: flex !important;
+      justify-content: center !important;
+      align-items: center !important;
+      gap: 10px !important;
+      width: 100% !important;
+
+      button {
+        flex: 1 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        text-align: center !important;
+        background: var(--bg-input) !important;
+        color: var(--text-main) !important;
+        border: 1px solid var(--border-color) !important;
+        font-size: 0.85rem !important;
+        font-weight: 700 !important;
+        padding: 9px 16px !important;
+        border-radius: 10px !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+
+        &:hover {
+          background: var(--accent-color) !important;
+          color: var(--text-on-accent) !important;
+          border-color: var(--accent-color) !important;
+        }
       }
     }
 
-    .driver-popover-next-btn {
-      background-color: var(--accent-color);
-      color: var(--text-on-accent);
-      border: none;
+    .tutorial-skip-row {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 8px !important;
+      cursor: pointer !important;
+      margin-top: 2px !important;
+      user-select: none !important;
+
+      span {
+        font-size: 0.8rem !important;
+        color: var(--text-muted) !important;
+        transition: color 0.2s ease !important;
+      }
+
+      .skip-checkbox {
+        accent-color: var(--accent-color) !important;
+        cursor: pointer !important;
+        width: 15px !important;
+        height: 15px !important;
+        margin: 0 !important;
+      }
+
+      &:hover span {
+        color: var(--text-main) !important;
+      }
+    }
+
+    .tutorial-inline-confirm {
+      width: 100% !important;
+      padding: 12px 14px !important;
+      background: var(--bg-main-card) !important;
+      border: 1px solid var(--border-color) !important;
+      border-radius: 12px !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 12px !important;
+      box-sizing: border-box !important;
+      animation: fadeIn 0.2s ease-out;
+
+      .confirm-title {
+        font-size: 0.85rem !important;
+        font-weight: 600 !important;
+        color: var(--text-main) !important;
+        text-align: center !important;
+        line-height: 1.4 !important;
+      }
+
+      .confirm-buttons {
+        display: flex !important;
+        gap: 10px !important;
+
+        button {
+          flex: 1 !important;
+          padding: 9px 14px !important;
+          font-size: 0.85rem !important;
+          font-weight: 700 !important;
+          border-radius: 8px !important;
+          border: 1px solid transparent !important;
+          cursor: pointer !important;
+          transition: all 0.2s ease !important;
+
+          &.btn-confirm-yes {
+            background: var(--accent-color) !important;
+            color: var(--text-on-accent) !important;
+
+            &:hover {
+              filter: brightness(1.1) !important;
+              transform: translateY(-1px) !important;
+            }
+          }
+
+          &.btn-confirm-no {
+            background: var(--bg-input) !important;
+            color: var(--text-main) !important;
+            border-color: var(--border-color) !important;
+
+            &:hover {
+              background: var(--bg-card) !important;
+              border-color: var(--text-muted) !important;
+            }
+          }
+        }
+      }
     }
   }
 
-  .driver-popover-arrow-side-top {
-    border-top-color: var(--bg-card);
-  }
-  .driver-popover-arrow-side-bottom {
-    border-bottom-color: var(--bg-card);
+  .driver-popover-arrow {
+    display: none !important;
   }
 }
