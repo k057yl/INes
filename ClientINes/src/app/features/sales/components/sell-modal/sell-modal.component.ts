@@ -56,13 +56,17 @@ export class SellModalComponent implements OnInit {
     this.checkAndStartTutorial();
   }
 
-  private checkAndStartTutorial(): void {
+  private checkAndStartTutorial() {
     this.authService.user$.pipe(take(1)).subscribe(user => {
       if (!user) return;
-      const isPassed = (user.completedTutorials & TutorialStep.Items) === TutorialStep.Items;
-      if (!isPassed) {
+      
+      const isSellFormPassed = (user.completedTutorials & TutorialStep.SellForm) === TutorialStep.SellForm;
+      if (!isSellFormPassed) {
         setTimeout(() => {
-          this.tutorialService.startSellFormTour();
+          this.tutorialService.startSellFormTour(() => {
+            user.completedTutorials |= TutorialStep.SellForm;
+            this.authService.updateLocalUserTutorial(TutorialStep.SellForm);
+          });
         }, 300);
       }
     });

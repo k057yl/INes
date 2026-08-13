@@ -163,11 +163,14 @@ export class ItemFormModalComponent implements OnInit {
     this.authService.user$.pipe(take(1)).subscribe(user => {
       if (!user) return;
 
-      const isItemsPassed = (user.completedTutorials & TutorialStep.Items) === TutorialStep.Items;
+      const isFormPassed = (user.completedTutorials & TutorialStep.ItemForm) === TutorialStep.ItemForm;
 
-      if (!isItemsPassed) {
+      if (!isFormPassed) {
         setTimeout(() => {
-          this.tutorialService.startItemFormTour();
+          this.tutorialService.startItemFormTour(() => {
+            user.completedTutorials |= TutorialStep.ItemForm;
+            this.authService.updateLocalUserTutorial(TutorialStep.ItemForm);
+          });
         }, 400);
       }
     });
@@ -225,17 +228,13 @@ export class ItemFormModalComponent implements OnInit {
   }
 
   private updateReminderValidators(isEnabled: boolean) {
-    const titleControl = this.form.get('reminderTitle');
     const dateControl = this.form.get('reminderTriggerAt');
 
     if (isEnabled) {
-      titleControl?.setValidators([Validators.required]);
       dateControl?.setValidators([Validators.required]);
     } else {
-      titleControl?.clearValidators();
       dateControl?.clearValidators();
     }
-    titleControl?.updateValueAndValidity();
     dateControl?.updateValueAndValidity();
   }
 
@@ -364,7 +363,12 @@ export class ItemFormModalComponent implements OnInit {
     }
 
     if (val.addReminder && val.reminderTriggerAt && !this.isLendingStatus) {
-      formData.append('reminder.title', val.reminderTitle || '');
+      const selectedTypeObj = this.reminderTypeOptions.find(o => o.value === val.reminderType);
+      const fallbackLabel = this.translateService.instant('REMINDERS.CUSTOM');
+      const typeLabel = selectedTypeObj ? this.translateService.instant(selectedTypeObj.label) : fallbackLabel;
+      const autoTitle = val.name ? `${typeLabel}: ${val.name}` : typeLabel;
+
+      formData.append('reminder.title', autoTitle);
       formData.append('reminder.type', (val.reminderType ?? ReminderType.Custom).toString());
       formData.append('reminder.recurrence', (val.reminderRecurrence ?? ReminderRecurrence.None).toString());
       formData.append('reminder.triggerAt', val.reminderTriggerAt);

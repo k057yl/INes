@@ -75,11 +75,14 @@ export class LocationFormModalComponent implements OnInit {
     this.authService.user$.pipe(take(1)).subscribe(user => {
       if (!user) return;
 
-      const isLocationsPassed = (user.completedTutorials & TutorialStep.Locations) === TutorialStep.Locations;
+      const isFormPassed = (user.completedTutorials & TutorialStep.LocationForm) === TutorialStep.LocationForm;
 
-      if (!isLocationsPassed) {
+      if (!isFormPassed) {
         setTimeout(() => {
-          this.tutorialService.startLocationFormTour();
+          this.tutorialService.startLocationFormTour(() => {
+            user.completedTutorials |= TutorialStep.LocationForm;
+            this.authService.updateLocalUserTutorial(TutorialStep.LocationForm);
+          });
         }, 400);
       }
     });

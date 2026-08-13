@@ -80,7 +80,7 @@
                   <div class="item-title-row">
                     <span class="item-title">{{ item.itemName }}</span>
                     <span class="status-badge" [ngClass]="'badge-' + item.severity">
-                      {{ item.typeKey | translate }}
+                      {{ item.typeKey | translate:{ count: 1 } }}
                     </span>
                   </div>
                   <span class="item-sub">
@@ -111,7 +111,7 @@
                     <div class="item-title-row">
                       <span class="item-title text-danger">{{ item.itemName }}</span>
                       <span class="status-badge badge-danger">
-                        {{ item.typeKey | translate }}
+                        {{ item.typeKey | translate:{ count: 1 } }}
                       </span>
                     </div>
                     <span class="item-sub text-danger-sub">

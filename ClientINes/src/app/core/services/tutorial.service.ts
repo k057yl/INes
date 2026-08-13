@@ -10,7 +10,12 @@ export enum TutorialStep {
   Dashboard = 1,
   Items = 2,
   Locations = 4,
-  Settings = 8
+  Settings = 8,
+  LocationForm = 16,
+  ItemForm = 32,
+  Sales = 64,
+  ItemsList = 128,
+  SellForm = 256
 }
 
 export type TutorialTour =
@@ -313,7 +318,7 @@ export class TutorialService {
 
   // --- 2. ТУР ПО СПИСКУ ПРЕДМЕТОВ ---
   public startItemsListTour(onComplete?: () => void) {
-    this.initDriver(TutorialStep.Items, 'items-list', onComplete);
+    this.initDriver(TutorialStep.ItemsList, 'items-list', onComplete);
     if (!this.driverObj) return;
 
     const steps: any[] = [
@@ -353,7 +358,7 @@ export class TutorialService {
 
   // --- 3. ТУР ПО ПРОДАЖАМ ---
   public startSalesListTour(onComplete?: () => void) {
-    this.initDriver(TutorialStep.Items, 'sales-list', onComplete);
+    this.initDriver(TutorialStep.Sales, 'sales-list', onComplete);
     if (!this.driverObj) return;
 
     const steps: any[] = [
@@ -393,7 +398,7 @@ export class TutorialService {
 
   // --- 4. ТУР ПО МОДАЛКЕ СОЗДАНИЯ ЛОКАЦИИ ---
   public startLocationFormTour(onComplete?: () => void) {
-    this.initDriver(TutorialStep.Locations, 'location-form', onComplete);
+    this.initDriver(TutorialStep.LocationForm, 'location-form', onComplete);
     if (!this.driverObj) return;
 
     const steps: any[] = [
@@ -444,7 +449,7 @@ export class TutorialService {
 
   // --- 5. ТУР ПО МОДАЛКЕ СОЗДАНИЯ/РЕДАКТИРОВАНИЯ ПРЕДМЕТА ---
   public startItemFormTour(onComplete?: () => void) {
-    this.initDriver(TutorialStep.Items, 'item-form', onComplete);
+    this.initDriver(TutorialStep.ItemForm, 'item-form', onComplete);
     if (!this.driverObj) return;
 
     const steps: any[] = [
@@ -564,7 +569,6 @@ export class TutorialService {
     this.initDriver(TutorialStep.Locations, 'first-location-card', onComplete);
     if (!this.driverObj) return;
 
-    // Ждем микротаск для прорисовки DOM
     setTimeout(() => {
       const steps: any[] = [
         {
@@ -575,10 +579,10 @@ export class TutorialService {
         }
       ];
 
-      const cardHeader = document.querySelector('.location-column .loc-header-wrapper, .location-column');
-      if (cardHeader) {
+      const buttonGroup = document.querySelector('app-location-card .button-group');
+      if (buttonGroup) {
         steps.push({
-          element: cardHeader,
+          element: buttonGroup,
           popover: {
             title: this.translate.instant('TUTORIAL_PAGE.FIRST_LOCATION_CARD.HEADER_TITLE'),
             description: this.translate.instant('TUTORIAL_PAGE.FIRST_LOCATION_CARD.HEADER_DESC'),
@@ -621,48 +625,48 @@ export class TutorialService {
     this.initDriver(TutorialStep.Items, 'first-item-card', onComplete);
     if (!this.driverObj) return;
 
-    const steps: any[] = [
-      {
-        popover: {
-          title: this.translate.instant('TUTORIAL_PAGE.FIRST_ITEM_CARD.WELCOME_TITLE'),
-          description: this.translate.instant('TUTORIAL_PAGE.FIRST_ITEM_CARD.WELCOME_DESC'),
+    setTimeout(() => {
+      const steps: any[] = [
+        {
+          popover: {
+            title: this.translate.instant('TUTORIAL_PAGE.FIRST_ITEM_CARD.WELCOME_TITLE'),
+            description: this.translate.instant('TUTORIAL_PAGE.FIRST_ITEM_CARD.WELCOME_DESC'),
+          }
         }
+      ];
+
+      const itemCard = document.querySelector('app-item-card .item-card');
+      if (itemCard) {
+        steps.push({
+          element: itemCard,
+          popover: {
+            title: this.translate.instant('TUTORIAL_PAGE.FIRST_ITEM_CARD.DRAG_TITLE'),
+            description: this.translate.instant('TUTORIAL_PAGE.FIRST_ITEM_CARD.DRAG_DESC'),
+            side: 'bottom'
+          }
+        });
       }
-    ];
 
-    // 1. Карточка предмета
-    const itemCard = document.querySelector('app-item-card');
-    if (itemCard) {
-      steps.push({
-        element: itemCard,
-        popover: {
-          title: this.translate.instant('TUTORIAL_PAGE.FIRST_ITEM_CARD.DRAG_TITLE'),
-          description: this.translate.instant('TUTORIAL_PAGE.FIRST_ITEM_CARD.DRAG_DESC'),
-          side: 'bottom'
-        }
-      });
-    }
+      const menuBtn = document.querySelector('app-item-card .menu-toggle-btn');
+      if (menuBtn) {
+        steps.push({
+          element: menuBtn,
+          popover: {
+            title: this.translate.instant('TUTORIAL_PAGE.FIRST_ITEM_CARD.MENU_TITLE'),
+            description: this.translate.instant('TUTORIAL_PAGE.FIRST_ITEM_CARD.MENU_DESC'),
+            side: 'left'
+          }
+        });
+      }
 
-    // 2. Инфо/Меню на предмет
-    const menuBtn = document.querySelector('app-item-card .tool-btn, app-item-card button');
-    if (menuBtn) {
-      steps.push({
-        element: menuBtn,
-        popover: {
-          title: this.translate.instant('TUTORIAL_PAGE.FIRST_ITEM_CARD.MENU_TITLE'),
-          description: this.translate.instant('TUTORIAL_PAGE.FIRST_ITEM_CARD.MENU_DESC'),
-          side: 'left'
-        }
-      });
-    }
-
-    this.driverObj.setSteps(steps);
-    this.driverObj.drive();
+      this.driverObj?.setSteps(steps);
+      this.driverObj?.drive();
+    }, 100);
   }
 
   // --- 8. ТУР ПО МОДАЛКЕ ПРОДАЖИ ПРЕДМЕТА ---
   public startSellFormTour(onComplete?: () => void) {
-    this.initDriver(TutorialStep.Items, 'sell-form', onComplete);
+    this.initDriver(TutorialStep.SellForm, 'sell-form', onComplete);
     if (!this.driverObj) return;
 
     const steps: any[] = [

@@ -113,11 +113,13 @@ export class SalesListComponent implements OnInit {
   private checkAndStartTutorial() {
     this.authService.user$.pipe(take(1)).subscribe(user => {
       if (!user) return;
-      const isSalesPassed = (user.completedTutorials & TutorialStep.Items) === TutorialStep.Items;
+
+      const isSalesPassed = (user.completedTutorials & TutorialStep.Sales) === TutorialStep.Sales;
       if (!isSalesPassed) {
         setTimeout(() => {
           this.tutorialService.startSalesListTour(() => {
-            user.completedTutorials |= TutorialStep.Items;
+            user.completedTutorials |= TutorialStep.Sales;
+            this.authService.updateLocalUserTutorial(TutorialStep.Sales);
           });
         }, 300);
       }

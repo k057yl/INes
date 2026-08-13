@@ -109,11 +109,13 @@ export class ItemsListComponent implements OnInit {
   private checkAndStartTutorial() {
     this.authService.user$.pipe(take(1)).subscribe(user => {
       if (!user) return;
-      const isItemsPassed = (user.completedTutorials & TutorialStep.Items) === TutorialStep.Items;
-      if (!isItemsPassed) {
+
+      const isItemsListPassed = (user.completedTutorials & TutorialStep.ItemsList) === TutorialStep.ItemsList;
+      if (!isItemsListPassed) {
         setTimeout(() => {
           this.tutorialService.startItemsListTour(() => {
-            user.completedTutorials |= TutorialStep.Items;
+            user.completedTutorials |= TutorialStep.ItemsList;
+            this.authService.updateLocalUserTutorial(TutorialStep.ItemsList);
           });
         }, 300);
       }
