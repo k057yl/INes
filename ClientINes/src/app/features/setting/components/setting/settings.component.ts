@@ -1,8 +1,9 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { RouterModule } from '@angular/router';
-import { finalize, forkJoin } from 'rxjs';
+import { finalize, forkJoin, interval, Subscription } from 'rxjs';
+import { takeWhile } from 'rxjs/operators';
 
 import { FeatureService } from '../../../../core/services/feature.service';
 import { CategoryService } from '../../../category/services/category.service';
@@ -27,7 +28,7 @@ type SettingsTab = 'general' | 'categories' | 'platforms' | 'integrations';
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.scss'
 })
-export class SettingsComponent implements OnInit {
+export class SettingsComponent implements OnInit, OnDestroy {
   public featureService = inject(FeatureService);
   private categoryService = inject(CategoryService);
   private platformService = inject(PlatformService);
@@ -44,8 +45,14 @@ export class SettingsComponent implements OnInit {
   tgStatus: TelegramStatusContract = { isLinked: false };
   isViberBotEnabled = false;
 
+  private pollSubscription?: Subscription;
+
   ngOnInit() {
     this.loadAllData();
+  }
+
+  ngOnDestroy() {
+    this.stopPolling();
   }
 
   loadAllData() {
@@ -79,18 +86,47 @@ export class SettingsComponent implements OnInit {
     });
   }
 
-  loadTelegramStatus() {
-    this.isLoading = true;
+  loadTelegramStatus(showSpinner = true) {
+    if (showSpinner) this.isLoading = true;
+    
     this.telegramService.getStatus()
-      .pipe(finalize(() => this.isLoading = false))
-      .subscribe(status => this.tgStatus = status);
+      .pipe(finalize(() => { if (showSpinner) this.isLoading = false; }))
+      .subscribe(status => {
+        this.tgStatus = status;
+        if (status.isLinked) {
+          this.stopPolling();
+        }
+      });
   }
 
   generateTelegramToken() {
     this.isLoading = true;
     this.telegramService.generateToken()
       .pipe(finalize(() => this.isLoading = false))
-      .subscribe(status => this.tgStatus = status);
+      .subscribe(status => {
+        this.tgStatus = status;
+        this.startPolling();
+      });
+  }
+
+  onLaunchBotClick() {
+    this.startPolling();
+  }
+
+  private startPolling() {
+    this.stopPolling();
+    this.pollSubscription = interval(2500)
+      .pipe(takeWhile(() => !this.tgStatus.isLinked))
+      .subscribe(() => {
+        this.loadTelegramStatus(false);
+      });
+  }
+
+  private stopPolling() {
+    if (this.pollSubscription) {
+      this.pollSubscription.unsubscribe();
+      this.pollSubscription = undefined;
+    }
   }
 
   unlinkTelegram() {
@@ -106,6 +142,7 @@ export class SettingsComponent implements OnInit {
           .pipe(finalize(() => this.isLoading = false))
           .subscribe(() => {
             this.tgStatus = { isLinked: false };
+            this.stopPolling();
           });
       }
     });
@@ -190,6 +227,8 @@ export class SettingsComponent implements OnInit {
     this.activeTab = tab;
     if (tab === 'integrations') {
       this.loadTelegramStatus();
+    } else {
+      this.stopPolling();
     }
   }
 }

@@ -8,7 +8,52 @@
   transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
-/* Строка пагинации по центру (видна только если totalPages > 1) */
+.global-empty-state {
+  grid-column: 1 / -1;
+  grid-row: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 108px; /* Высота 3 строк грида (3 * 32px + gap) */
+  padding: 16px 20px;
+  border-radius: 12px;
+  background: rgba(var(--accent-rgb), 0.03);
+  border: 1px dashed rgba(var(--accent-rgb), 0.2);
+  color: var(--text-muted);
+  text-align: center;
+  transition: all 0.3s ease;
+
+  .empty-icon-wrapper {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: rgba(var(--accent-rgb), 0.08);
+    color: var(--accent-color);
+    flex-shrink: 0;
+
+    i {
+      font-size: 0.95rem;
+    }
+  }
+
+  span {
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    color: var(--text-muted);
+  }
+
+  &:hover {
+    border-color: rgba(var(--accent-rgb), 0.4);
+    background: rgba(var(--accent-rgb), 0.05);
+  }
+}
+
 .ribbon-pagination-row {
   display: flex;
   justify-content: center;

@@ -208,4 +208,64 @@
   <data name="REMINDERS.RETURN_ITEM" xml:space="preserve">
     <value>Возврат вещи</value>
   </data>
+	<data name="TG_BTN_WHERE" xml:space="preserve">
+    <value>📍 Где лежит?</value>
+  </data>
+	<data name="TG_BTN_LEND" xml:space="preserve">
+    <value>🤝 Одолжить</value>
+  </data>
+	<data name="TG_BTN_SELL" xml:space="preserve">
+    <value>🏷 Продать</value>
+  </data>
+	<data name="TG_BTN_RETURNED" xml:space="preserve">
+    <value>✅ Вернул</value>
+  </data>
+	<data name="TG_BTN_EXTEND" xml:space="preserve">
+    <value>⏳ Продлить на неделю</value>
+  </data>
+	<data name="TG_BTN_STATS" xml:space="preserve">
+    <value>📊 Сводка склада</value>
+  </data>
+	<data name="TG_ITEM_PRICE" xml:space="preserve">
+    <value>💰 Цена: {0}</value>
+  </data>
+	<data name="TG_ITEM_PRICE_NOT_SET" xml:space="preserve">
+    <value>💰 Цена: Не указана</value>
+  </data>
+	<data name="TG_STATS_HEADER" xml:space="preserve">
+    <value>📊 *Сводка по вашему складу INest:*</value>
+  </data>
+	<data name="TG_STATS_ITEMS_COUNT" xml:space="preserve">
+    <value>📦 Всего вещей на учёте: *{0} шт.*</value>
+  </data>
+	<data name="TG_STATS_TOTAL_PRICE" xml:space="preserve">
+    <value>💵 Общая стоимость: *{0}*</value>
+  </data>
+	<data name="TG_STATS_LENT_TITLE" xml:space="preserve">
+    <value>🤝 *Сейчас одолжено людям ({0} шт.):*</value>
+  </data>
+	<data name="TG_STATS_LENT_EMPTY" xml:space="preserve">
+    <value>_Ничего не одолжено_</value>
+  </data>
+	<data name="TG_LENT_SUCCESS" xml:space="preserve">
+    <value>✅ Вещь «*{0}*» переведена в статус *Одолжена*.</value>
+  </data>
+	<data name="TG_SOLD_SUCCESS" xml:space="preserve">
+    <value>🏷 Вещь «*{0}*» успешно переведена в статус *Продано*.</value>
+  </data>
+	<data name="TG_RETURNED_SUCCESS" xml:space="preserve">
+    <value>🎉 Отлично! Вещь «*{0}*» снова на складе.</value>
+  </data>
+	<data name="TG_ALERT_LENT" xml:space="preserve">
+    <value>🤝 Статус изменён: Одолжено!</value>
+  </data>
+	<data name="TG_ALERT_SOLD" xml:space="preserve">
+    <value>🏷 Предмет списан как проданный!</value>
+  </data>
+	<data name="TG_ALERT_RETURNED" xml:space="preserve">
+    <value>✅ Предмет вернулся на склад!</value>
+  </data>
+	<data name="TG_ALERT_EXTENDED" xml:space="preserve">
+    <value>⏳ Срок возврата продлён на 7 дней</value>
+  </data>
 </root>

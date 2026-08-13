@@ -22,7 +22,7 @@
         </button>
         <button [class.active]="activeTab === 'integrations'" (click)="switchTab('integrations')">
           <i class="fa-brands fa-telegram"></i>
-          <span class="btn-text">Интеграции</span>
+          <span class="btn-text">{{ 'SETTINGS_PAGE.INTEGRATIONS_TAB' | translate }}</span>
         </button>
       </nav>
 
@@ -72,7 +72,6 @@
               </label>
             </div>
 
-            <!-- Сброс подсказок обучения -->
             <div class="config-card">
               <div class="card-info">
                 <i class="fa-solid fa-graduation-cap"></i>
@@ -146,10 +145,15 @@
         </section>
       }
 
-      <!-- Вкладка интеграций с ботами -->
       @if (activeTab === 'integrations') {
         <section class="content-section animate-fade">
-          <h2 class="section-title">{{ 'SETTINGS_PAGE.INTEGRATIONS.TITLE' | translate }}</h2>
+          <div class="section-header">
+            <div>
+              <h2 class="section-title">{{ 'SETTINGS_PAGE.INTEGRATIONS.TITLE' | translate }}</h2>
+              <p class="section-subtitle">{{ 'SETTINGS_PAGE.INTEGRATIONS.SUBTITLE' | translate }}</p>
+            </div>
+          </div>
+
           <div class="integrations-layout">
             
             <!-- Telegram Бот -->
@@ -159,7 +163,6 @@
                   <i class="fa-brands fa-telegram tg-icon"></i>
                   <div>
                     <h3>{{ 'SETTINGS_PAGE.INTEGRATIONS.TG_BOT_TITLE' | translate }}</h3>
-                    <p class="bot-desc">{{ 'SETTINGS_PAGE.INTEGRATIONS.TG_BOT_DESC' | translate }}</p>
                   </div>
                 </div>
                 
@@ -176,8 +179,9 @@
                   <div class="status-success-box">
                     <i class="fa-solid fa-circle-check"></i>
                     <div class="success-text">
-                      <span>{{ 'SETTINGS_PAGE.INTEGRATIONS.NOTIFICATIONS_ACTIVE' | translate }}</span>
-                      <p>{{ 'SETTINGS_PAGE.INTEGRATIONS.NOTIFICATIONS_SUB' | translate:{ chatId: tgStatus.telegramChatId } }}</p>
+                      <p>🔍 {{ 'SETTINGS_PAGE.INTEGRATIONS.ACTIVE_LINE_1' | translate }}</p>
+                      <p>📊 {{ 'SETTINGS_PAGE.INTEGRATIONS.ACTIVE_LINE_2' | translate }}</p>
+                      <p>🔔 {{ 'SETTINGS_PAGE.INTEGRATIONS.ACTIVE_LINE_3' | translate }}</p>
                     </div>
                   </div>
                   <div class="bot-actions">
@@ -196,8 +200,8 @@
 
                     @if (tgStatus.verificationToken) {
                       <div class="token-display-box animate-fade">
-                        <span class="token-label">{{ 'SETTINGS_PAGE.INTEGRATIONS.LINK_LABEL' | translate }}</span>
-                        <a [href]="getTelegramLink()" target="_blank" class="tg-deep-link">
+                        <span class="token-label"><i class="fa-solid fa-key"></i> {{ 'SETTINGS_PAGE.INTEGRATIONS.LINK_LABEL' | translate }}</span>
+                        <a [href]="getTelegramLink()" (click)="onLaunchBotClick()" target="_blank" class="tg-deep-link">
                           <i class="fa-solid fa-paper-plane"></i> 
                           {{ 'SETTINGS_PAGE.INTEGRATIONS.LAUNCH_BOT' | translate:{ botUsername: tgStatus.botUsername } }}
                         </a>
@@ -208,7 +212,7 @@
 
                   <div class="bot-actions">
                     <button class="inest-btn-ribbon-add" (click)="generateTelegramToken()">
-                      <i class="fa-solid fa-key"></i> 
+                      <i class="fa-solid fa-bolt"></i> 
                       {{ (tgStatus.verificationToken ? 'SETTINGS_PAGE.INTEGRATIONS.REFRESH_TOKEN_BTN' : 'SETTINGS_PAGE.INTEGRATIONS.GENERATE_TOKEN_BTN') | translate }}
                     </button>
                   </div>

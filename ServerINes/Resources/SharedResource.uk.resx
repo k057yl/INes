@@ -208,4 +208,64 @@
   <data name="REMINDERS.RETURN_ITEM" xml:space="preserve">
     <value>Повернення речі</value>
   </data>
+	<data name="TG_BTN_WHERE" xml:space="preserve">
+    <value>📍 Де лежить?</value>
+  </data>
+	<data name="TG_BTN_LEND" xml:space="preserve">
+    <value>🤝 Позичити</value>
+  </data>
+	<data name="TG_BTN_SELL" xml:space="preserve">
+    <value>🏷 Продати</value>
+  </data>
+	<data name="TG_BTN_RETURNED" xml:space="preserve">
+    <value>✅ Повернув</value>
+  </data>
+	<data name="TG_BTN_EXTEND" xml:space="preserve">
+    <value>⏳ Продовжити на тиждень</value>
+  </data>
+	<data name="TG_BTN_STATS" xml:space="preserve">
+    <value>📊 Зведення складу</value>
+  </data>
+	<data name="TG_ITEM_PRICE" xml:space="preserve">
+    <value>💰 Ціна: {0}</value>
+  </data>
+	<data name="TG_ITEM_PRICE_NOT_SET" xml:space="preserve">
+    <value>💰 Ціна: Не вказана</value>
+  </data>
+	<data name="TG_STATS_HEADER" xml:space="preserve">
+    <value>📊 *Зведення по вашому складу INest:*</value>
+  </data>
+	<data name="TG_STATS_ITEMS_COUNT" xml:space="preserve">
+    <value>📦 Всього речей на обліку: *{0} шт.*</value>
+  </data>
+	<data name="TG_STATS_TOTAL_PRICE" xml:space="preserve">
+    <value>💵 Загальна вартість: *{0}*</value>
+  </data>
+	<data name="TG_STATS_LENT_TITLE" xml:space="preserve">
+    <value>🤝 *Зараз позичено людям ({0} шт.):*</value>
+  </data>
+	<data name="TG_STATS_LENT_EMPTY" xml:space="preserve">
+    <value>_Нічого не позичено_</value>
+  </data>
+	<data name="TG_LENT_SUCCESS" xml:space="preserve">
+    <value>✅ Річ «*{0}*» переведено в статус *Позичено*.</value>
+  </data>
+	<data name="TG_SOLD_SUCCESS" xml:space="preserve">
+    <value>🏷 Річ «*{0}*» успішно переведено в статус *Продано*.</value>
+  </data>
+	<data name="TG_RETURNED_SUCCESS" xml:space="preserve">
+    <value>🎉 Чудово! Річ «*{0}*» знову на складі.</value>
+  </data>
+	<data name="TG_ALERT_LENT" xml:space="preserve">
+    <value>🤝 Статус змінено: Позичено!</value>
+  </data>
+	<data name="TG_ALERT_SOLD" xml:space="preserve">
+    <value>🏷 Предмет списано як проданий!</value>
+  </data>
+	<data name="TG_ALERT_RETURNED" xml:space="preserve">
+    <value>✅ Предмет повернувся на склад!</value>
+  </data>
+	<data name="TG_ALERT_EXTENDED" xml:space="preserve">
+    <value>⏳ Термін повернення продовжено на 7 днів</value>
+  </data>
 </root>

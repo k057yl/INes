@@ -1,6 +1,8 @@
-﻿using INest.Features.Telegram.Commands.ConnectTelegram;
-using INest.Features.Telegram.Queries.SearchItems;
+﻿using INest.Data.Entities.Core;
+using INest.Data.Enums;
+using INest.Features.Telegram.Commands.ConnectTelegram;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using System.Globalization;
 using Telegram.Bot;
@@ -51,7 +53,7 @@ namespace INest.Infrastructure.BackgroundServices.Telegram
 
             var receiverOptions = new ReceiverOptions
             {
-                AllowedUpdates = Array.Empty<UpdateType>(),
+                AllowedUpdates = new[] { UpdateType.Message, UpdateType.CallbackQuery },
                 DropPendingUpdates = true
             };
 
@@ -73,11 +75,11 @@ namespace INest.Infrastructure.BackgroundServices.Telegram
                             await _botClient.SetMyCommands(new[]
                             {
                                 new BotCommand { Command = "find", Description = localizer["TG_MENU_FIND"].Value },
-                                new BotCommand { Command = "status", Description = localizer["TG_MENU_STATUS"].Value },
+                                new BotCommand { Command = "stats", Description = localizer["TG_MENU_STATS"].Value },
                                 new BotCommand { Command = "help", Description = localizer["TG_MENU_HELP"].Value }
                             }, cancellationToken: stoppingToken);
 
-                            _logger.LogInformation("[TG BOT] Кнопка меню команд успешно настроена.");
+                            _logger.LogInformation("[TG BOT] Меню команд успешно настроено.");
                             isCommandsConfigured = true;
                         }
                         catch (Exception ex) when (IsNetworkError(ex))
@@ -115,24 +117,26 @@ namespace INest.Infrastructure.BackgroundServices.Telegram
 
         private async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken ct)
         {
-            if (update.Message is not { Text: { } messageText } message || message.Chat.Type != ChatType.Private)
-                return;
-
-            var chatId = message.Chat.Id;
             using var scope = _serviceProvider.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             var localizer = scope.ServiceProvider.GetRequiredService<IStringLocalizer<SharedResource>>();
 
-            var userLang = message.From?.LanguageCode ?? "ru";
+            var userLang = update.Message?.From?.LanguageCode ?? update.CallbackQuery?.From?.LanguageCode ?? "ru";
             var culture = new CultureInfo(userLang);
             CultureInfo.CurrentCulture = culture;
             CultureInfo.CurrentUICulture = culture;
 
-            if (messageText == localizer["TG_BTN_FIND_ITEMS"].Value)
+            
+            if (update.CallbackQuery is { } callback)
             {
-                await botClient.SendMessage(chatId, localizer["TG_FIND_USAGE"].Value, parseMode: ParseMode.Markdown, cancellationToken: ct);
+                await HandleCallbackQueryAsync(botClient, callback, db, localizer, ct);
                 return;
             }
 
+            if (update.Message is not { Text: { } messageText } message || message.Chat.Type != ChatType.Private)
+                return;
+
+            var chatId = message.Chat.Id;
             var parts = messageText.Split(' ', StringSplitOptions.RemoveEmptyEntries);
             var command = parts[0].ToLower();
 
@@ -155,7 +159,7 @@ namespace INest.Infrastructure.BackgroundServices.Telegram
                 {
                     var replyKeyboard = new ReplyKeyboardMarkup(new[]
                     {
-                        new KeyboardButton[] { localizer["TG_BTN_FIND_ITEMS"].Value }
+                        new KeyboardButton[] { localizer["TG_BTN_FIND_ITEMS"].Value, localizer["TG_BTN_STATS"].Value }
                     })
                     {
                         ResizeKeyboard = true
@@ -168,46 +172,185 @@ namespace INest.Infrastructure.BackgroundServices.Telegram
                     await botClient.SendMessage(chatId, localizer["TG_LINK_ERROR"].Value, cancellationToken: ct);
                 }
             }
-            else if (command == "/find")
+           
+            else if (command == "/find" || messageText == localizer["TG_BTN_FIND_ITEMS"].Value)
             {
-                if (parts.Length < 2)
+                if (parts.Length < 2 && command == "/find")
                 {
                     await botClient.SendMessage(chatId, localizer["TG_FIND_USAGE"].Value, parseMode: ParseMode.Markdown, cancellationToken: ct);
                     return;
                 }
 
-                var searchTerm = string.Join(" ", parts[1..]);
-                var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+                var searchTerm = command == "/find" ? string.Join(" ", parts[1..]) : "";
 
-                var results = await mediator.Send(new SearchItemsQuery(chatId, searchTerm), ct);
+                if (string.IsNullOrWhiteSpace(searchTerm))
+                {
+                    await botClient.SendMessage(chatId, localizer["TG_FIND_USAGE"].Value, parseMode: ParseMode.Markdown, cancellationToken: ct);
+                    return;
+                }
 
-                if (results == null || results.Count == 0)
+                var user = await db.Users.FirstOrDefaultAsync(u => u.TelegramChatId == chatId, ct);
+                if (user == null) return;
+
+                var term = searchTerm.ToLower().Trim();
+                var items = await db.Set<Item>()
+                    .Include(i => i.StorageLocation)
+                    .Include(i => i.Details)
+                    .Where(i => i.User.Id == user.Id && i.Status != ItemStatus.Archived && i.Status != ItemStatus.Sold)
+                    .Where(i => EF.Functions.Like(i.Name.ToLower(), $"%{term}%") || (i.Description != null && EF.Functions.Like(i.Description.ToLower(), $"%{term}%")))
+                    .Take(5)
+                    .ToListAsync(ct);
+
+                if (items.Count == 0)
                 {
                     var emptyMsg = string.Format(localizer["TG_FIND_EMPTY"].Value, searchTerm);
                     await botClient.SendMessage(chatId, emptyMsg, parseMode: ParseMode.Markdown, cancellationToken: ct);
                     return;
                 }
 
-                var responseText = string.Format(localizer["TG_FIND_ITEM_HEADER"].Value, searchTerm);
-                foreach (var item in results)
+                foreach (var item in items)
                 {
-                    responseText += string.Format(localizer["TG_FIND_ITEM_ROW"].Value, item.Name, item.StorageLocationName);
-                    if (!string.IsNullOrWhiteSpace(item.Description))
-                    {
-                        responseText += string.Format(localizer["TG_FIND_ITEM_DESC"].Value, item.Description);
-                    }
-                    responseText += "\n-------------------\n\n";
-                }
+                    var locationName = item.StorageLocation != null ? item.StorageLocation.Name : localizer["TG_FIND_ITEM_ROW"].Value;
 
-                await botClient.SendMessage(chatId, responseText, parseMode: ParseMode.Markdown, cancellationToken: ct);
+                    var priceValue = item.Details?.PurchasePrice;
+                    var currency = item.Details?.Currency ?? "USD";
+
+                    var priceText = priceValue.HasValue
+                        ? string.Format(localizer["TG_ITEM_PRICE"].Value, $"{priceValue.Value:N0} {currency}")
+                        : localizer["TG_ITEM_PRICE_NOT_SET"].Value;
+
+                    var caption = $"📦 *{item.Name}*\n" +
+                                  string.Format(localizer["TG_FIND_ITEM_ROW"].Value, item.Name, locationName) + "\n" +
+                                  (string.IsNullOrWhiteSpace(item.Description) ? "" : string.Format(localizer["TG_FIND_ITEM_DESC"].Value, item.Description) + "\n") +
+                                  priceText;
+
+                    var inlineButtons = new InlineKeyboardMarkup(new[]
+                    {
+                        new[]
+                        {
+                            InlineKeyboardButton.WithCallbackData(localizer["TG_BTN_WHERE"].Value, $"loc_{item.Id}"),
+                            InlineKeyboardButton.WithCallbackData(localizer["TG_BTN_LEND"].Value, $"lend_{item.Id}")
+                        },
+                        new[]
+                        {
+                            InlineKeyboardButton.WithCallbackData(localizer["TG_BTN_SELL"].Value, $"sell_{item.Id}")
+                        }
+                    });
+
+                    if (!string.IsNullOrWhiteSpace(item.PhotoUrl))
+                    {
+                        await botClient.SendPhoto(chatId, InputFile.FromUri(item.PhotoUrl), caption: caption, parseMode: ParseMode.Markdown, replyMarkup: inlineButtons, cancellationToken: ct);
+                    }
+                    else
+                    {
+                        await botClient.SendMessage(chatId, caption, parseMode: ParseMode.Markdown, replyMarkup: inlineButtons, cancellationToken: ct);
+                    }
+                }
+            }
+            
+            else if (command == "/stats" || messageText == localizer["TG_BTN_STATS"].Value)
+            {
+                var user = await db.Users.FirstOrDefaultAsync(u => u.TelegramChatId == chatId, ct);
+                if (user == null) return;
+
+                var totalItems = await db.Set<Item>().CountAsync(i => i.User.Id == user.Id && i.Status != ItemStatus.Archived && i.Status != ItemStatus.Sold, ct);
+                var totalPrice = await db.Set<Item>()
+                    .Where(i => i.User.Id == user.Id && i.Status != ItemStatus.Archived && i.Status != ItemStatus.Sold)
+                    .SumAsync(i => i.Details != null ? (i.Details.PurchasePrice ?? 0) : 0, ct);
+
+                var lentItems = await db.Set<Item>()
+                    .Where(i => i.User.Id == user.Id && i.Status == ItemStatus.Lent)
+                    .Select(i => $"• *{i.Name}*")
+                    .ToListAsync(ct);
+
+                var statsText = $"{localizer["TG_STATS_HEADER"].Value}\n\n" +
+                                $"{string.Format(localizer["TG_STATS_ITEMS_COUNT"].Value, totalItems)}\n" +
+                                $"{string.Format(localizer["TG_STATS_TOTAL_PRICE"].Value, totalPrice.ToString("N0"))}\n\n" +
+                                $"{string.Format(localizer["TG_STATS_LENT_TITLE"].Value, lentItems.Count)}\n" +
+                                (lentItems.Count > 0 ? string.Join("\n", lentItems) : localizer["TG_STATS_LENT_EMPTY"].Value);
+
+                await botClient.SendMessage(chatId, statsText, parseMode: ParseMode.Markdown, cancellationToken: ct);
             }
             else if (command == "/help")
             {
                 await botClient.SendMessage(chatId, localizer["TG_HELP_TEXT"].Value, parseMode: ParseMode.Markdown, cancellationToken: ct);
             }
-            else if (command == "/status")
+        }
+
+        private async Task HandleCallbackQueryAsync(ITelegramBotClient botClient, CallbackQuery callback, AppDbContext db, IStringLocalizer<SharedResource> localizer, CancellationToken ct)
+        {
+            var data = callback.Data;
+            if (string.IsNullOrEmpty(data)) return;
+
+            var chatId = callback.Message!.Chat.Id;
+
+            
+            if (data.StartsWith("loc_"))
             {
-                await botClient.SendMessage(chatId, localizer["TG_STATUS_OK"].Value, cancellationToken: ct);
+                var itemId = Guid.Parse(data.Replace("loc_", ""));
+                var item = await db.Set<Item>().Include(i => i.StorageLocation).FirstOrDefaultAsync(i => i.Id == itemId, ct);
+
+                if (item != null)
+                {
+                    var path = new List<string>();
+                    var currentLoc = item.StorageLocation;
+                    while (currentLoc != null)
+                    {
+                        path.Insert(0, currentLoc.Name);
+                        currentLoc = currentLoc.ParentLocationId.HasValue
+                            ? await db.Set<StorageLocation>().FirstOrDefaultAsync(l => l.Id == currentLoc.ParentLocationId, ct)
+                            : null;
+                    }
+
+                    var locationChain = path.Count > 0 ? string.Join(" ➔ ", path) : localizer["TG_FIND_ITEM_ROW"].Value;
+                    await botClient.AnswerCallbackQuery(callback.Id, $"📍 {locationChain}", showAlert: true, cancellationToken: ct);
+                }
+            }
+            
+            else if (data.StartsWith("lend_"))
+            {
+                var itemId = Guid.Parse(data.Replace("lend_", ""));
+                var item = await db.Set<Item>().FirstOrDefaultAsync(i => i.Id == itemId, ct);
+                if (item != null)
+                {
+                    item.Lend();
+                    await db.SaveChangesAsync(ct);
+
+                    await botClient.AnswerCallbackQuery(callback.Id, localizer["TG_ALERT_LENT"].Value, cancellationToken: ct);
+                    await botClient.SendMessage(chatId, string.Format(localizer["TG_LENT_SUCCESS"].Value, item.Name), parseMode: ParseMode.Markdown, cancellationToken: ct);
+                }
+            }
+            
+            else if (data.StartsWith("sell_"))
+            {
+                var itemId = Guid.Parse(data.Replace("sell_", ""));
+                var item = await db.Set<Item>().FirstOrDefaultAsync(i => i.Id == itemId, ct);
+                if (item != null)
+                {
+                    item.Sell();
+                    await db.SaveChangesAsync(ct);
+
+                    await botClient.AnswerCallbackQuery(callback.Id, localizer["TG_ALERT_SOLD"].Value, cancellationToken: ct);
+                    await botClient.SendMessage(chatId, string.Format(localizer["TG_SOLD_SUCCESS"].Value, item.Name), parseMode: ParseMode.Markdown, cancellationToken: ct);
+                }
+            }
+
+            else if (data.StartsWith("return_"))
+            {
+                var itemId = Guid.Parse(data.Replace("return_", ""));
+                var item = await db.Set<Item>().FirstOrDefaultAsync(i => i.Id == itemId, ct);
+                if (item != null)
+                {
+                    item.Return();
+                    await db.SaveChangesAsync(ct);
+
+                    await botClient.AnswerCallbackQuery(callback.Id, localizer["TG_ALERT_RETURNED"].Value, cancellationToken: ct);
+                    await botClient.SendMessage(chatId, string.Format(localizer["TG_RETURNED_SUCCESS"].Value, item.Name), parseMode: ParseMode.Markdown, cancellationToken: ct);
+                }
+            }
+            else if (data.StartsWith("extend_"))
+            {
+                await botClient.AnswerCallbackQuery(callback.Id, localizer["TG_ALERT_EXTENDED"].Value, showAlert: true, cancellationToken: ct);
             }
         }
 

@@ -208,4 +208,64 @@ Expected return date: {2}.</value>
   <data name="REMINDERS.RETURN_ITEM" xml:space="preserve">
     <value>Return item</value>
   </data>
+	<data name="TG_BTN_WHERE" xml:space="preserve">
+    <value>📍 Where is it?</value>
+  </data>
+	<data name="TG_BTN_LEND" xml:space="preserve">
+    <value>🤝 Lend</value>
+  </data>
+	<data name="TG_BTN_SELL" xml:space="preserve">
+    <value>🏷 Sell</value>
+  </data>
+	<data name="TG_BTN_RETURNED" xml:space="preserve">
+    <value>✅ Returned</value>
+  </data>
+	<data name="TG_BTN_EXTEND" xml:space="preserve">
+    <value>⏳ Extend 1 week</value>
+  </data>
+	<data name="TG_BTN_STATS" xml:space="preserve">
+    <value>📊 Inventory summary</value>
+  </data>
+	<data name="TG_ITEM_PRICE" xml:space="preserve">
+    <value>💰 Price: {0}</value>
+  </data>
+	<data name="TG_ITEM_PRICE_NOT_SET" xml:space="preserve">
+    <value>💰 Price: Not set</value>
+  </data>
+	<data name="TG_STATS_HEADER" xml:space="preserve">
+    <value>📊 *INest inventory summary:*</value>
+  </data>
+	<data name="TG_STATS_ITEMS_COUNT" xml:space="preserve">
+    <value>📦 Total items: *{0} pcs.*</value>
+  </data>
+	<data name="TG_STATS_TOTAL_PRICE" xml:space="preserve">
+    <value>💵 Total value: *{0}*</value>
+  </data>
+	<data name="TG_STATS_LENT_TITLE" xml:space="preserve">
+    <value>🤝 *Currently lent ({0} pcs.):*</value>
+  </data>
+	<data name="TG_STATS_LENT_EMPTY" xml:space="preserve">
+    <value>_Nothing is lent_</value>
+  </data>
+	<data name="TG_LENT_SUCCESS" xml:space="preserve">
+    <value>✅ Item "*{0}*" marked as *Lent*.</value>
+  </data>
+	<data name="TG_SOLD_SUCCESS" xml:space="preserve">
+    <value>🏷 Item "*{0}*" marked as *Sold*.</value>
+  </data>
+	<data name="TG_RETURNED_SUCCESS" xml:space="preserve">
+    <value>🎉 Great! Item "*{0}*" is back in stock.</value>
+  </data>
+	<data name="TG_ALERT_LENT" xml:space="preserve">
+    <value>🤝 Status updated: Lent!</value>
+  </data>
+	<data name="TG_ALERT_SOLD" xml:space="preserve">
+    <value>🏷 Item marked as Sold!</value>
+  </data>
+	<data name="TG_ALERT_RETURNED" xml:space="preserve">
+    <value>✅ Item returned to stock!</value>
+  </data>
+	<data name="TG_ALERT_EXTENDED" xml:space="preserve">
+    <value>⏳ Return date extended by 7 days</value>
+  </data>
 </root>

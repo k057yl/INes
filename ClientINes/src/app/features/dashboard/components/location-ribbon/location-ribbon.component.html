@@ -20,8 +20,10 @@
     (cdkDropListDropped)="reorder.emit($event)">
 
     @if (locations.length === 0) {
-      <div class="global-empty-state">
-        <i class="fa fa-info-circle"></i>
+      <div class="global-empty-state animate-fade">
+        <div class="empty-icon-wrapper">
+          <i class="fa-solid fa-folder-open"></i>
+        </div>
         <span>{{ 'RIBBON.EMPTY' | translate }}</span>
       </div>
     }
