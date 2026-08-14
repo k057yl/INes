@@ -177,11 +177,17 @@
               <div class="bot-card-body">
                 @if (tgStatus.isLinked) {
                   <div class="status-success-box">
-                    <i class="fa-solid fa-circle-check"></i>
+                    <div class="success-header">
+                      <i class="fa-solid fa-circle-check"></i>
+                      <span>{{ 'SETTINGS_PAGE.INTEGRATIONS.ACTIVE_TITLE' | translate }}</span>
+                    </div>
                     <div class="success-text">
                       <p>🔍 {{ 'SETTINGS_PAGE.INTEGRATIONS.ACTIVE_LINE_1' | translate }}</p>
-                      <p>📊 {{ 'SETTINGS_PAGE.INTEGRATIONS.ACTIVE_LINE_2' | translate }}</p>
-                      <p>🔔 {{ 'SETTINGS_PAGE.INTEGRATIONS.ACTIVE_LINE_3' | translate }}</p>
+                      <p>📍 {{ 'SETTINGS_PAGE.INTEGRATIONS.ACTIVE_LINE_2' | translate }}</p>
+                      <p>🤝 {{ 'SETTINGS_PAGE.INTEGRATIONS.ACTIVE_LINE_3' | translate }}</p>
+                      <p>🔔 {{ 'SETTINGS_PAGE.INTEGRATIONS.ACTIVE_LINE_4' | translate }}</p>
+                      <p>➕ {{ 'SETTINGS_PAGE.INTEGRATIONS.ACTIVE_LINE_5' | translate }}</p>
+                      <p>📲 {{ 'SETTINGS_PAGE.INTEGRATIONS.ACTIVE_LINE_6' | translate }}</p>
                     </div>
                   </div>
                   <div class="bot-actions">

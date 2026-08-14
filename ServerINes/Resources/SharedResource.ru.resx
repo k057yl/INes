@@ -1,271 +1,115 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-  <!-- 
-    Microsoft ResX Schema 
-    
-    Version 2.0
-    
-    The primary goals of this format is to allow a simple XML format 
-    that is mostly human readable. The generation and parsing of the 
-    various data types are done through the TypeConverter classes 
-    associated with the data types.
-    
-    Example:
-    
-    ... ado.net/XML headers & schema ...
-    <resheader name="resmimetype">text/microsoft-resx</resheader>
-    <resheader name="version">2.0</resheader>
-    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
-    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
-    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
-    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
-    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
-        <value>[base64 mime encoded serialized .NET Framework object]</value>
-    </data>
-    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
-        <comment>This is a comment</comment>
-    </data>
-                
-    There are any number of "resheader" rows that contain simple 
-    name/value pairs.
-    
-    Each data row contains a name, and value. The row also contains a 
-    type or mimetype. Type corresponds to a .NET class that support 
-    text/value conversion through the TypeConverter architecture. 
-    Classes that don't support this are serialized and stored with the 
-    mimetype set.
-    
-    The mimetype is used for serialized objects, and tells the 
-    ResXResourceReader how to depersist the object. This is currently not 
-    extensible. For a given mimetype the value must be set accordingly:
-    
-    Note - application/x-microsoft.net.object.binary.base64 is the format 
-    that the ResXResourceWriter will generate, however the reader can 
-    read any of the formats listed below.
-    
-    mimetype: application/x-microsoft.net.object.binary.base64
-    value   : The object must be serialized with 
-            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
-            : and then encoded with base64 encoding.
-    
-    mimetype: application/x-microsoft.net.object.soap.base64
-    value   : The object must be serialized with 
-            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
-            : and then encoded with base64 encoding.
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="metadata">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" />
+							</xsd:sequence>
+							<xsd:attribute name="name" use="required" type="xsd:string" />
+							<xsd:attribute name="type" type="xsd:string" />
+							<xsd:attribute name="mimetype" type="xsd:string" />
+							<xsd:attribute ref="xml:space" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="assembly">
+						<xsd:complexType>
+							<xsd:attribute name="alias" type="xsd:string" />
+							<xsd:attribute name="name" type="xsd:string" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+							<xsd:attribute ref="xml:space" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="COMMON_NOT_SPECIFIED" xml:space="preserve"><value>не указана</value></data>
+	<data name="EMAILS.CONFIRM_BODY" xml:space="preserve"><value>&lt;h3&gt;Добро пожаловать!&lt;/h3&gt;&lt;p&gt;Ваш код: &lt;b&gt;{0}&lt;/b&gt;&lt;/p&gt;</value></data>
+	<data name="EMAILS.CONFIRM_SUBJECT" xml:space="preserve"><value>Добро пожаловать в INest! Подтвердите регистрацию</value></data>
+	<data name="LENDING_BODY_IN" xml:space="preserve"><value>&lt;h3&gt;INest&lt;/h3&gt;&lt;p&gt;Вы передали &lt;b&gt;{0}&lt;/b&gt; пользователю &lt;b&gt;{1}&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;Ожидаемая дата возврата: {2}&lt;/p&gt;</value></data>
+	<data name="LENDING_BODY_OUT" xml:space="preserve"><value>&lt;h3&gt;INest&lt;/h3&gt;&lt;p&gt;Вы передали &lt;b&gt;{0}&lt;/b&gt; пользователю &lt;b&gt;{1}&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;Ожидаемая дата возврата: {2}&lt;/p&gt;</value></data>
+	<data name="LENDING_SUBJECT_IN" xml:space="preserve"><value>Напоминание: Вы взяли вещь</value></data>
+	<data name="LENDING_SUBJECT_OUT" xml:space="preserve"><value>Уведомление: Вы передали вещь</value></data>
+	<data name="EMAILS.RESET_BODY" xml:space="preserve"><value>&lt;h3&gt;Сброс пароля&lt;/h3&gt;&lt;p&gt;Ваш код для сброса пароля: &lt;b&gt;{0}&lt;/b&gt;. Код действителен 10 минут.&lt;/p&gt;</value></data>
+	<data name="EMAILS.RESET_SUBJECT" xml:space="preserve"><value>Сброс пароля</value></data>
+	<data name="EMAILS.REMINDER_SUBJECT" xml:space="preserve"><value>Напоминание INest: {0}</value></data>
+	<data name="EMAILS.REMINDER_BODY" xml:space="preserve"><value>&lt;h3&gt;Внимание!&lt;/h3&gt;&lt;p&gt;Напоминание на дату &lt;b&gt;{0}&lt;/b&gt;:&lt;/p&gt;&lt;p&gt;&lt;b&gt;{1}&lt;/b&gt;&lt;/p&gt;</value></data>
+	<data name="REMINDERS.RETURN_ITEM" xml:space="preserve"><value>Возврат вещи</value></data>
+	<data name="TG_LINK_ERROR" xml:space="preserve"><value>❌ Ошибка привязки. Токен недействителен.</value></data>
+	<data name="TG_LINK_SUCCESS" xml:space="preserve"><value>🎉 Аккаунт привязан к INest! Пульт управления вещами готов.</value></data>
+	<data name="TG_WELCOME_WITHOUT_TOKEN" xml:space="preserve"><value>Привет! Перейди по ссылке из настроек INest для привязки.</value></data>
+	<data name="TG_FIND_USAGE" xml:space="preserve"><value>Использование: `/find &lt;название&gt;` (напр. `/find дрель`)</value></data>
+	<data name="TG_FIND_EMPTY" xml:space="preserve"><value>🤷‍♂️ Ничего не найдено по запросу: *{0}*</value></data>
+	<data name="TG_HELP_TEXT" xml:space="preserve"><value>🤖 *Пульт управления INest:*
 
-    mimetype: application/x-microsoft.net.object.bytearray.base64
-    value   : The object must be serialized into a byte array 
-            : using a System.ComponentModel.TypeConverter
-            : and then encoded with base64 encoding.
-    -->
-  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
-    <xsd:element name="root" msdata:IsDataSet="true">
-      <xsd:complexType>
-        <xsd:choice maxOccurs="unbounded">
-          <xsd:element name="metadata">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" />
-              </xsd:sequence>
-              <xsd:attribute name="name" use="required" type="xsd:string" />
-              <xsd:attribute name="type" type="xsd:string" />
-              <xsd:attribute name="mimetype" type="xsd:string" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="assembly">
-            <xsd:complexType>
-              <xsd:attribute name="alias" type="xsd:string" />
-              <xsd:attribute name="name" type="xsd:string" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="data">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
-              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="resheader">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" />
-            </xsd:complexType>
-          </xsd:element>
-        </xsd:choice>
-      </xsd:complexType>
-    </xsd:element>
-  </xsd:schema>
-  <resheader name="resmimetype">
-    <value>text/microsoft-resx</value>
-  </resheader>
-  <resheader name="version">
-    <value>2.0</value>
-  </resheader>
-  <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
-  <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
-  <data name="COMMON_NOT_SPECIFIED" xml:space="preserve">
-    <value>не указана</value>
-  </data>
-  <data name="EMAILS.CONFIRM_BODY" xml:space="preserve">
-    <value>&lt;h3&gt;Добро пожаловать!&lt;/h3&gt;&lt;p&gt;Ваш код: &lt;b&gt;{0}&lt;/b&gt;&lt;/p&gt;</value>
-  </data>
-  <data name="EMAILS.CONFIRM_SUBJECT" xml:space="preserve">
-    <value>Добро пожаловать в INest! Подтвердите регистрацию</value>
-  </data>
-  <data name="LENDING_BODY_IN" xml:space="preserve">
-    <value>&lt;h3&gt;INest&lt;/h3&gt;&lt;p&gt;Вы передали &lt;b&gt;{0}&lt;/b&gt; пользователю &lt;b&gt;{1}&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;Ожидаемая дата возврата: {2}&lt;/p&gt;</value>
-  </data>
-  <data name="LENDING_BODY_OUT" xml:space="preserve">
-    <value>&lt;h3&gt;INest&lt;/h3&gt;&lt;p&gt;Вы передали &lt;b&gt;{0}&lt;/b&gt; пользователю &lt;b&gt;{1}&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;Ожидаемая дата возврата: {2}&lt;/p&gt;</value>
-  </data>
-  <data name="LENDING_SUBJECT_IN" xml:space="preserve">
-    <value>Напоминание: Вы взяли вещь</value>
-  </data>
-  <data name="LENDING_SUBJECT_OUT" xml:space="preserve">
-    <value>Уведомление: Вы передали вещь</value>
-  </data>
-  <data name="EMAILS.RESET_BODY" xml:space="preserve">
-    <value>&lt;h3&gt;Сброс пароля&lt;/h3&gt;&lt;p&gt;Ваш код для сброса пароля: &lt;b&gt;{0}&lt;/b&gt;. Код действителен 10 минут.&lt;/p&gt;</value>
-  </data>
-  <data name="EMAILS.RESET_SUBJECT" xml:space="preserve">
-    <value>Сброс пароля</value>
-  </data>
-  <data name="TG_LINK_ERROR" xml:space="preserve">
-    <value>❌ Ошибка привязки. Возможно, ссылка устарела или токен недействителен. Сгенерируй новый код в админке.</value>
-  </data>
-  <data name="TG_LINK_SUCCESS" xml:space="preserve">
-    <value>🎉 Аккаунт успешно привязан к INest! Теперь уведомления и быстрый поиск доступны прямо здесь.</value>
-  </data>
-  <data name="TG_WELCOME_WITHOUT_TOKEN" xml:space="preserve">
-    <value>Привет! Для привязки аккаунта перейди по ссылке из админки INest.</value>
-  </data>
-  <data name="TG_FIND_USAGE" xml:space="preserve">
-    <value>🔍 Напиши что искать после команды, например: `/find отвертка`
-*(Ищет по названию и описанию)*</value>
-  </data>
-  <data name="TG_FIND_EMPTY" xml:space="preserve">
-    <value>🤷‍♂️ Ничего не найдено по запросу: *{0}*</value>
-  </data>
-  <data name="TG_FIND_ITEM_HEADER" xml:space="preserve">
-    <value>🔍 *Вот что я нашёл по запросу "{0}":*</value>
-  </data>
-  <data name="TG_FIND_ITEM_ROW" xml:space="preserve">
-    <value>📦 *{0}*
-📍 Место: _{1}_</value>
-  </data>
-  <data name="TG_FIND_ITEM_DESC" xml:space="preserve">
-    <value>📝 Примечание: {0}</value>
-  </data>
-  <data name="TG_HELP_TEXT" xml:space="preserve">
-    <value>🤖 *Доступные команды:*
-
-🔍 `/find &lt;название&gt;` - быстрый поиск вещи по коробкам и локациям
-ℹ️ `/status` - проверить статус привязки аккаунта</value>
-  </data>
-  <data name="TG_STATUS_OK" xml:space="preserve">
-    <value>✅ Ваш аккаунт успешно связан с базой INest. Уведомления активны!</value>
-  </data>
-  <data name="TG_MENU_FIND" xml:space="preserve">
-    <value>Поиск вещей по коробкам</value>
-  </data>
-  <data name="TG_MENU_STATUS" xml:space="preserve">
-    <value>Проверить статус привязки</value>
-  </data>
-  <data name="TG_MENU_HELP" xml:space="preserve">
-    <value>Показать справку</value>
-  </data>
-  <data name="TG_BTN_FIND_ITEMS" xml:space="preserve">
-    <value>🔍 Поиск вещей</value>
-  </data>
-  <data name="TG_NOTIFICATION_LENDING_ALERT" xml:space="preserve">
-    <value>⚠️ Внимание! {0} до сих пор не вернул вещь: {1} 
-Ожидаемая дата возврата: {2}.</value>
-  </data>
-  <data name="TG_NOTIFICATION_REMINDER_ALERT" xml:space="preserve">
-    <value>⏰ Напоминание! Событие: {0} Для вещи: {1}</value>
-  </data>
-  <data name="EMAILS.REMINDER_SUBJECT" xml:space="preserve">
-    <value>Напоминание INest: {0}</value>
-  </data>
-  <data name="EMAILS.REMINDER_BODY" xml:space="preserve">
-    <value>&lt;h3&gt;Внимание!&lt;/h3&gt;
-&lt;p&gt;Напоминание на дату &lt;b&gt;{0}&lt;/b&gt;:&lt;/p&gt;&lt;p&gt;&lt;b&gt;{1}&lt;/b&gt;&lt;/p&gt;</value>
-  </data>
-  <data name="REMINDERS.RETURN_ITEM" xml:space="preserve">
-    <value>Возврат вещи</value>
-  </data>
-	<data name="TG_BTN_WHERE" xml:space="preserve">
-    <value>📍 Где лежит?</value>
-  </data>
-	<data name="TG_BTN_LEND" xml:space="preserve">
-    <value>🤝 Одолжить</value>
-  </data>
-	<data name="TG_BTN_SELL" xml:space="preserve">
-    <value>🏷 Продать</value>
-  </data>
-	<data name="TG_BTN_RETURNED" xml:space="preserve">
-    <value>✅ Вернул</value>
-  </data>
-	<data name="TG_BTN_EXTEND" xml:space="preserve">
-    <value>⏳ Продлить на неделю</value>
-  </data>
-	<data name="TG_BTN_STATS" xml:space="preserve">
-    <value>📊 Сводка склада</value>
-  </data>
-	<data name="TG_ITEM_PRICE" xml:space="preserve">
-    <value>💰 Цена: {0}</value>
-  </data>
-	<data name="TG_ITEM_PRICE_NOT_SET" xml:space="preserve">
-    <value>💰 Цена: Не указана</value>
-  </data>
-	<data name="TG_STATS_HEADER" xml:space="preserve">
-    <value>📊 *Сводка по вашему складу INest:*</value>
-  </data>
-	<data name="TG_STATS_ITEMS_COUNT" xml:space="preserve">
-    <value>📦 Всего вещей на учёте: *{0} шт.*</value>
-  </data>
-	<data name="TG_STATS_TOTAL_PRICE" xml:space="preserve">
-    <value>💵 Общая стоимость: *{0}*</value>
-  </data>
-	<data name="TG_STATS_LENT_TITLE" xml:space="preserve">
-    <value>🤝 *Сейчас одолжено людям ({0} шт.):*</value>
-  </data>
-	<data name="TG_STATS_LENT_EMPTY" xml:space="preserve">
-    <value>_Ничего не одолжено_</value>
-  </data>
-	<data name="TG_LENT_SUCCESS" xml:space="preserve">
-    <value>✅ Вещь «*{0}*» переведена в статус *Одолжена*.</value>
-  </data>
-	<data name="TG_SOLD_SUCCESS" xml:space="preserve">
-    <value>🏷 Вещь «*{0}*» успешно переведена в статус *Продано*.</value>
-  </data>
-	<data name="TG_RETURNED_SUCCESS" xml:space="preserve">
-    <value>🎉 Отлично! Вещь «*{0}*» снова на складе.</value>
-  </data>
-	<data name="TG_ALERT_LENT" xml:space="preserve">
-    <value>🤝 Статус изменён: Одолжено!</value>
-  </data>
-	<data name="TG_ALERT_SOLD" xml:space="preserve">
-    <value>🏷 Предмет списан как проданный!</value>
-  </data>
-	<data name="TG_ALERT_RETURNED" xml:space="preserve">
-    <value>✅ Предмет вернулся на склад!</value>
-  </data>
-	<data name="TG_ALERT_EXTENDED" xml:space="preserve">
-    <value>⏳ Срок возврата продлён на 7 дней</value>
-  </data>
+🔎 `/find &lt;название&gt;` — поиск вещи, цены и действия
+📍 `/where &lt;название&gt;` — полная цепочка локаций
+🤝 `/lent` — одолженные вещи (возврат/продление)
+🔔 `/reminders` — ближайшие события и гарантии
+➕ `/add &lt;название&gt;` — быстрое добавление вещи
+ℹ️ `/help` — справка по командам</value></data>
+	<data name="TG_MENU_FIND" xml:space="preserve"><value>Поиск вещей и действия</value></data>
+	<data name="TG_MENU_WHERE" xml:space="preserve"><value>Где лежит вещь</value></data>
+	<data name="TG_MENU_LENT" xml:space="preserve"><value>Одолженные вещи</value></data>
+	<data name="TG_MENU_REMINDERS" xml:space="preserve"><value>Ближайшие напоминания</value></data>
+	<data name="TG_MENU_ADD" xml:space="preserve"><value>Быстрое добавление вещи</value></data>
+	<data name="TG_MENU_HELP" xml:space="preserve"><value>Справка по командам</value></data>
+	<data name="TG_BTN_FIND_ITEMS" xml:space="preserve"><value>🔎 Найти вещь</value></data>
+	<data name="TG_BTN_LENT_ITEMS" xml:space="preserve"><value>🤝 Одолженные</value></data>
+	<data name="TG_BTN_REMINDERS" xml:space="preserve"><value>🔔 Напоминания</value></data>
+	<data name="TG_BTN_ADD_ITEM" xml:space="preserve"><value>➕ Добавить вещь</value></data>
+	<data name="TG_BTN_WHERE" xml:space="preserve"><value>📍 Где лежит</value></data>
+	<data name="TG_BTN_LEND" xml:space="preserve"><value>🤝 Одолжить</value></data>
+	<data name="TG_BTN_SELL" xml:space="preserve"><value>💰 Продать</value></data>
+	<data name="TG_BTN_RETURNED" xml:space="preserve"><value>↩ Вернуть</value></data>
+	<data name="TG_BTN_EXTEND" xml:space="preserve"><value>➕ Продлить</value></data>
+	<data name="TG_BTN_CONFIRM_SELL" xml:space="preserve"><value>Да, продать</value></data>
+	<data name="TG_BTN_CANCEL" xml:space="preserve"><value>Отмена</value></data>
+	<data name="TG_NO_LOCATION" xml:space="preserve"><value>Локация не указана</value></data>
+	<data name="TG_DATE_NOT_SET" xml:space="preserve"><value>срок не указан</value></data>
+	<data name="TG_WHERE_USAGE" xml:space="preserve"><value>Использование: `/where &lt;название&gt;` (напр. `/where перфоратор`)</value></data>
+	<data name="TG_ADD_USAGE" xml:space="preserve"><value>Использование: `/add &lt;Название вещи&gt;` (напр. `/add Дрель Bosch`)</value></data>
+	<data name="TG_LENT_HEADER" xml:space="preserve"><value>🤝 *Сейчас одолжено вещей ({0} шт.):*</value></data>
+	<data name="TG_LENT_EMPTY" xml:space="preserve"><value>👍 У вас нет одолженных вещей.</value></data>
+	<data name="TG_REMINDERS_HEADER" xml:space="preserve"><value>🔔 *Ближайшие напоминания:*</value></data>
+	<data name="TG_REMINDERS_EMPTY" xml:space="preserve"><value>👌 Активных напоминаний нет.</value></data>
+	<data name="TG_CONFIRM_SELL" xml:space="preserve"><value>Продать «*{0}*»?</value></data>
+	<data name="TG_SOLD_SUCCESS" xml:space="preserve"><value>💰 *Продано:* {0}</value></data>
+	<data name="TG_RETURNED_SUCCESS" xml:space="preserve"><value>🎉 Вещь «*{0}*» снова на складе!</value></data>
+	<data name="TG_ACTION_CANCELLED" xml:space="preserve"><value>Отменено.</value></data>
 </root>
