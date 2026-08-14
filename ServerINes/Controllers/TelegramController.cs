@@ -47,7 +47,6 @@ namespace INest.Controllers
 
         private Guid GetCurrentUserId()
         {
-            // Вытаскиваешь UserId из контекста авторизации (NameIdentifier или твой кастомный claim)
             var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
             return Guid.TryParse(userIdStr, out var userId) ? userId : Guid.Empty;
         }

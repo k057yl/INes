@@ -1,6 +1,8 @@
 ﻿using INest.Data.Entities.Core;
-using ReminderEntity = INest.Data.Entities.Infrastructure.Reminder;
+using INest.Data.Entities.Finances;
 using INest.Data.Enums;
+using INest.Features.Items.Commands.CreateItem;
+using INest.Features.Items.DTOs;
 using INest.Features.Telegram.Commands.ConnectTelegram;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -66,7 +68,7 @@ namespace INest.Infrastructure.BackgroundServices.Telegram
                             {
                                 new BotCommand { Command = "find", Description = localizer["TG_MENU_FIND"].Value },
                                 new BotCommand { Command = "where", Description = localizer["TG_MENU_WHERE"].Value },
-                                new BotCommand { Command = "lent", Description = localizer["TG_MENU_LENT"].Value },
+                                new BotCommand { Command = "locations", Description = localizer["TG_MENU_LOCATIONS"].Value },
                                 new BotCommand { Command = "reminders", Description = localizer["TG_MENU_REMINDERS"].Value },
                                 new BotCommand { Command = "add", Description = localizer["TG_MENU_ADD"].Value },
                                 new BotCommand { Command = "help", Description = localizer["TG_MENU_HELP"].Value }
@@ -92,6 +94,7 @@ namespace INest.Infrastructure.BackgroundServices.Telegram
         private async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken ct)
         {
             using var scope = _serviceProvider.CreateScope();
+            var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             var localizer = scope.ServiceProvider.GetRequiredService<IStringLocalizer<SharedResource>>();
 
@@ -100,7 +103,6 @@ namespace INest.Infrastructure.BackgroundServices.Telegram
             CultureInfo.CurrentCulture = culture;
             CultureInfo.CurrentUICulture = culture;
 
-            // 🎯 INLINE ACTIONS (Кнопки под сообщениями)
             if (update.CallbackQuery is { } callback)
             {
                 await HandleCallbackQueryAsync(botClient, callback, db, localizer, ct);
@@ -114,7 +116,9 @@ namespace INest.Infrastructure.BackgroundServices.Telegram
             var parts = messageText.Split(' ', StringSplitOptions.RemoveEmptyEntries);
             var command = parts[0].ToLower();
 
-            // 1. СВЯЗЫВАНИЕ АККАУНТА (/start)
+            // Создаем основную клавиатуру из 3 кнопок
+            var mainReplyKeyboard = GetMainReplyKeyboard(localizer);
+
             if (command == "/start")
             {
                 if (parts.Length < 2)
@@ -123,216 +127,224 @@ namespace INest.Infrastructure.BackgroundServices.Telegram
                     return;
                 }
 
-                var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
                 var isLinked = await mediator.Send(new ConnectTelegramCommand(chatId, parts[1]), ct);
 
                 if (isLinked)
                 {
-                    var replyKeyboard = new ReplyKeyboardMarkup(new[]
-                    {
-                        new KeyboardButton[] { localizer["TG_BTN_FIND_ITEMS"].Value, localizer["TG_BTN_LENT_ITEMS"].Value },
-                        new KeyboardButton[] { localizer["TG_BTN_REMINDERS"].Value, localizer["TG_BTN_ADD_ITEM"].Value }
-                    })
-                    { ResizeKeyboard = true };
-
-                    await botClient.SendMessage(chatId, localizer["TG_LINK_SUCCESS"].Value, replyMarkup: replyKeyboard, cancellationToken: ct);
+                    await botClient.SendMessage(chatId, localizer["TG_LINK_SUCCESS"].Value, replyMarkup: mainReplyKeyboard, cancellationToken: ct);
                 }
                 else
                 {
                     await botClient.SendMessage(chatId, localizer["TG_LINK_ERROR"].Value, cancellationToken: ct);
                 }
+                return;
             }
-            // 2. ПОИСК ВЕЩЕЙ И ДЕЙСТВИЯ (/find)
-            else if (command == "/find" || messageText == localizer["TG_BTN_FIND_ITEMS"].Value)
-            {
-                if (parts.Length < 2 && command == "/find")
-                {
-                    await botClient.SendMessage(chatId, localizer["TG_FIND_USAGE"].Value, parseMode: ParseMode.Markdown, cancellationToken: ct);
-                    return;
-                }
 
-                var term = (command == "/find" ? string.Join(" ", parts[1..]) : "").ToLower().Trim();
+            var userId = await GetUserIdByChatIdAsync(db, chatId, ct);
+            if (userId == Guid.Empty) return;
+
+            // 1. ПОИСК (/find или кнопка 🔎 Найти вещь)
+            if (command == "/find" || messageText == localizer["TG_BTN_FIND_ITEMS"].Value)
+            {
+                var term = (command == "/find" ? string.Join(" ", parts[1..]) : string.Empty).ToLower().Trim();
+
                 if (string.IsNullOrWhiteSpace(term))
                 {
-                    await botClient.SendMessage(chatId, localizer["TG_FIND_USAGE"].Value, parseMode: ParseMode.Markdown, cancellationToken: ct);
+                    await botClient.SendMessage(chatId, localizer["TG_FIND_USAGE"].Value, parseMode: ParseMode.Markdown, replyMarkup: mainReplyKeyboard, cancellationToken: ct);
                     return;
                 }
 
-                var user = await db.Users.FirstOrDefaultAsync(u => u.TelegramChatId == chatId, ct);
-                if (user == null) return;
-
                 var items = await db.Set<Item>()
                     .Include(i => i.StorageLocation)
-                    .Include(i => i.Details)
-                    .Where(i => i.User.Id == user.Id && i.Status != ItemStatus.Archived && i.Status != ItemStatus.Sold)
-                    .Where(i => EF.Functions.Like(i.Name.ToLower(), $"%{term}%"))
+                    .Where(i => i.UserId == userId && i.Status == ItemStatus.Active && i.Name.ToLower().Contains(term))
                     .Take(5)
                     .ToListAsync(ct);
 
-                if (items.Count == 0)
+                if (!items.Any())
                 {
-                    await botClient.SendMessage(chatId, string.Format(localizer["TG_FIND_EMPTY"].Value, term), parseMode: ParseMode.Markdown, cancellationToken: ct);
+                    await botClient.SendMessage(chatId, string.Format(localizer["TG_FIND_EMPTY"].Value, term), parseMode: ParseMode.Markdown, replyMarkup: mainReplyKeyboard, cancellationToken: ct);
                     return;
                 }
 
                 foreach (var item in items)
                 {
-                    var chain = await GetLocationChainAsync(db, item.StorageLocation, localizer, ct);
-                    var priceStr = item.Details?.PurchasePrice.HasValue == true
-                        ? $"💰 {item.Details.PurchasePrice.Value:N0} {item.Details.Currency ?? "UAH"}"
-                        : "";
-
-                    var caption = $"📦 *{item.Name}*\n" +
-                                  $"📍 {chain}\n" +
-                                  (string.IsNullOrEmpty(priceStr) ? "" : $"{priceStr}\n");
-
-                    var inlineButtons = new InlineKeyboardMarkup(new[]
-                    {
-                        new[]
-                        {
-                            InlineKeyboardButton.WithCallbackData(localizer["TG_BTN_WHERE"].Value, $"where_{item.Id}"),
-                            InlineKeyboardButton.WithCallbackData(localizer["TG_BTN_LEND"].Value, $"lend_{item.Id}"),
-                            InlineKeyboardButton.WithCallbackData(localizer["TG_BTN_SELL"].Value, $"sell_{item.Id}")
-                        }
-                    });
-
-                    await botClient.SendMessage(chatId, caption, parseMode: ParseMode.Markdown, replyMarkup: inlineButtons, cancellationToken: ct);
-                }
-            }
-            // 3. ЦЕПОЧКА ЛОКАЦИЙ (/where)
-            else if (command == "/where")
-            {
-                if (parts.Length < 2)
-                {
-                    await botClient.SendMessage(chatId, localizer["TG_WHERE_USAGE"].Value, parseMode: ParseMode.Markdown, cancellationToken: ct);
-                    return;
-                }
-
-                var term = string.Join(" ", parts[1..]).ToLower().Trim();
-                var user = await db.Users.FirstOrDefaultAsync(u => u.TelegramChatId == chatId, ct);
-                if (user == null) return;
-
-                var items = await db.Set<Item>()
-                    .Include(i => i.StorageLocation)
-                    .Where(i => i.User.Id == user.Id && i.Status == ItemStatus.Active)
-                    .Where(i => EF.Functions.Like(i.Name.ToLower(), $"%{term}%"))
-                    .Take(5)
-                    .ToListAsync(ct);
-
-                if (items.Count == 0)
-                {
-                    await botClient.SendMessage(chatId, string.Format(localizer["TG_FIND_EMPTY"].Value, term), parseMode: ParseMode.Markdown, cancellationToken: ct);
-                    return;
-                }
-
-                foreach (var item in items)
-                {
-                    var chain = await GetLocationChainAsync(db, item.StorageLocation, localizer, ct);
-                    await botClient.SendMessage(chatId, $"📦 *{item.Name}*\n📍 {chain}", parseMode: ParseMode.Markdown, cancellationToken: ct);
-                }
-            }
-            // 4. ОДОЛЖЕННЫЕ ВЕЩИ (/lent)
-            else if (command == "/lent" || messageText == localizer["TG_BTN_LENT_ITEMS"].Value)
-            {
-                var user = await db.Users.FirstOrDefaultAsync(u => u.TelegramChatId == chatId, ct);
-                if (user == null) return;
-
-                var lentItems = await db.Set<Item>()
-                    .Include(i => i.Reminders)
-                    .Where(i => i.User.Id == user.Id && i.Status == ItemStatus.Lent)
-                    .ToListAsync(ct);
-
-                if (lentItems.Count == 0)
-                {
-                    await botClient.SendMessage(chatId, localizer["TG_LENT_EMPTY"].Value, parseMode: ParseMode.Markdown, cancellationToken: ct);
-                    return;
-                }
-
-                await botClient.SendMessage(chatId, string.Format(localizer["TG_LENT_HEADER"].Value, lentItems.Count), parseMode: ParseMode.Markdown, cancellationToken: ct);
-
-                foreach (var item in lentItems)
-                {
-                    var activeReminder = item.Reminders.FirstOrDefault(r => !r.IsCompleted);
-                    var dueDateStr = activeReminder != null ? activeReminder.TriggerAt.ToString("dd.MM.yyyy") : localizer["TG_DATE_NOT_SET"].Value;
-
-                    var caption = $"🔧 *{item.Name}*\n📅 До: *{dueDateStr}*";
+                    var chain = await BuildLocationChainInlineAsync(db, item.StorageLocationId, localizer, ct);
+                    var caption = $"📦 *{item.Name}*\n📍 {chain}";
 
                     var buttons = new InlineKeyboardMarkup(new[]
                     {
                         new[]
                         {
-                            InlineKeyboardButton.WithCallbackData(localizer["TG_BTN_RETURNED"].Value, $"return_{item.Id}"),
-                            InlineKeyboardButton.WithCallbackData(localizer["TG_BTN_EXTEND"].Value, $"extend_{item.Id}")
+                            InlineKeyboardButton.WithCallbackData(localizer["TG_BTN_WHERE_IS_IT"].Value, $"where_{item.Id}"),
+                            InlineKeyboardButton.WithCallbackData(localizer["TG_BTN_MOVE"].Value, $"move_{item.Id}")
                         }
                     });
 
                     await botClient.SendMessage(chatId, caption, parseMode: ParseMode.Markdown, replyMarkup: buttons, cancellationToken: ct);
                 }
             }
-            // 5. НАПОМИНАНИЯ (/reminders)
-            else if (command == "/reminders" || messageText == localizer["TG_BTN_REMINDERS"].Value)
+            // 2. ГДЕ ЛЕЖИТ (/where)
+            else if (command == "/where")
             {
-                var user = await db.Users.FirstOrDefaultAsync(u => u.TelegramChatId == chatId, ct);
-                if (user == null) return;
-
-                var reminders = await db.Set<ReminderEntity>()
-                    .Include(r => r.Item)
-                    .Where(r => r.Item.User.Id == user.Id && !r.IsCompleted && r.TriggerAt >= DateTime.UtcNow.AddDays(-1))
-                    .OrderBy(r => r.TriggerAt)
-                    .Take(5)
-                    .ToListAsync(ct);
-
-                if (reminders.Count == 0)
+                var term = string.Join(" ", parts[1..]).ToLower().Trim();
+                if (string.IsNullOrWhiteSpace(term))
                 {
-                    await botClient.SendMessage(chatId, localizer["TG_REMINDERS_EMPTY"].Value, parseMode: ParseMode.Markdown, cancellationToken: ct);
+                    await botClient.SendMessage(chatId, localizer["TG_WHERE_USAGE"].Value, parseMode: ParseMode.Markdown, replyMarkup: mainReplyKeyboard, cancellationToken: ct);
                     return;
                 }
 
-                var text = localizer["TG_REMINDERS_HEADER"].Value + "\n\n";
-                foreach (var r in reminders)
+                var items = await db.Set<Item>()
+                    .Where(i => i.UserId == userId && i.Status == ItemStatus.Active && i.Name.ToLower().Contains(term))
+                    .Take(5)
+                    .ToListAsync(ct);
+
+                if (!items.Any())
                 {
-                    var itemName = r.Item != null ? $" ({r.Item.Name})" : "";
-                    text += $"• *{r.TriggerAt:dd.MM.yyyy}* — {r.Title}{itemName}\n";
+                    await botClient.SendMessage(chatId, string.Format(localizer["TG_FIND_EMPTY"].Value, term), parseMode: ParseMode.Markdown, replyMarkup: mainReplyKeyboard, cancellationToken: ct);
+                    return;
                 }
 
-                await botClient.SendMessage(chatId, text, parseMode: ParseMode.Markdown, cancellationToken: ct);
+                if (items.Count == 1)
+                {
+                    var item = items.First();
+                    var tree = await BuildLocationTreeAsync(db, item.StorageLocationId, localizer, ct);
+                    await botClient.SendMessage(chatId, $"📦 *{item.Name}*\n\n{tree}", parseMode: ParseMode.Markdown, replyMarkup: mainReplyKeyboard, cancellationToken: ct);
+                }
+                else
+                {
+                    var buttons = items.Select(i => new[] { InlineKeyboardButton.WithCallbackData($"🔧 {i.Name}", $"where_{i.Id}") });
+                    var markup = new InlineKeyboardMarkup(buttons);
+                    await botClient.SendMessage(chatId, string.Format(localizer["TG_WHERE_FOUND_MULTIPLE"].Value, items.Count), replyMarkup: markup, cancellationToken: ct);
+                }
             }
-            // 6. БЫСТРОЕ ДОБАВЛЕНИЕ (/add <Название>)
+            // 3. НАВИГАЦИЯ ПО ЛОКАЦИЯМ (/locations)
+            else if (command == "/locations")
+            {
+                var rootLocations = await db.Set<StorageLocation>()
+                    .Where(l => l.UserId == userId && l.ParentLocationId == null)
+                    .ToListAsync(ct);
+
+                var buttons = rootLocations.Select(l => new[] { InlineKeyboardButton.WithCallbackData($"📍 {l.Name}", $"loc_{l.Id}") });
+                var markup = new InlineKeyboardMarkup(buttons);
+
+                await botClient.SendMessage(chatId, localizer["TG_LOCATIONS_ROOT"].Value, parseMode: ParseMode.Markdown, replyMarkup: markup, cancellationToken: ct);
+            }
+            // 4. КОНКРЕТНАЯ ЛОКАЦИЯ ПО ИМЕНИ (/location <имя>)
+            else if (command == "/location")
+            {
+                var term = string.Join(" ", parts[1..]).ToLower().Trim();
+                var loc = await db.Set<StorageLocation>().FirstOrDefaultAsync(l => l.UserId == userId && l.Name.ToLower() == term, ct);
+
+                if (loc == null)
+                {
+                    await botClient.SendMessage(chatId, localizer["TG_LOCATION_NOT_FOUND"].Value, replyMarkup: mainReplyKeyboard, cancellationToken: ct);
+                    return;
+                }
+
+                await SendLocationInfoAsync(botClient, chatId, loc, db, localizer, ct);
+            }
+            // 5. НАПОМИНАНИЯ (/reminders или кнопка 🔔 Напоминания)
+            else if (command == "/reminders" || messageText == localizer["TG_BTN_REMINDERS"].Value)
+            {
+                var myBorrowedItems = await db.Set<Item>().Include(i => i.Reminders)
+                    .Where(i => i.UserId == userId && i.Status == ItemStatus.Borrowed).ToListAsync(ct);
+
+                var myLentItems = await db.Set<Item>().Include(i => i.Reminders)
+                    .Where(i => i.UserId == userId && i.Status == ItemStatus.Lent).ToListAsync(ct);
+
+                var allItemIds = myBorrowedItems.Select(i => i.Id).Concat(myLentItems.Select(i => i.Id)).ToList();
+                var activeLendings = await db.Set<Lending>()
+                    .Where(l => allItemIds.Contains(l.ItemId) && l.UserId == userId && l.ReturnedDate == null)
+                    .ToListAsync(ct);
+
+                var sb = new System.Text.StringBuilder();
+                sb.AppendLine(localizer["TG_REMINDERS_TITLE"].Value);
+                sb.AppendLine();
+
+                sb.AppendLine(localizer["TG_REMINDERS_BORROWED_HEADER"].Value);
+                if (!myBorrowedItems.Any()) sb.AppendLine(localizer["TG_REMINDERS_NO_BORROWED"].Value + "\n");
+                else
+                {
+                    foreach (var item in myBorrowedItems)
+                    {
+                        var lending = activeLendings.FirstOrDefault(l => l.ItemId == item.Id);
+                        var activeReminder = item.Reminders.FirstOrDefault(r => !r.IsCompleted);
+                        var dueDate = lending?.ExpectedReturnDate ?? activeReminder?.TriggerAt;
+                        var dateStr = dueDate.HasValue ? dueDate.Value.ToString("dd.MM.yyyy") : localizer["TG_REMINDERS_NO_DATE"].Value;
+                        sb.AppendLine($"• *{item.Name}* — {localizer["TG_REMINDERS_RETURN_BY"].Value}: {dateStr}");
+                    }
+                    sb.AppendLine();
+                }
+
+                sb.AppendLine(localizer["TG_REMINDERS_LENT_HEADER"].Value);
+                if (!myLentItems.Any()) sb.AppendLine(localizer["TG_REMINDERS_NO_LENT"].Value);
+                else
+                {
+                    foreach (var item in myLentItems)
+                    {
+                        var lending = activeLendings.FirstOrDefault(l => l.ItemId == item.Id);
+                        var activeReminder = item.Reminders.FirstOrDefault(r => !r.IsCompleted);
+                        var dueDate = lending?.ExpectedReturnDate ?? activeReminder?.TriggerAt;
+                        var dateStr = dueDate.HasValue ? dueDate.Value.ToString("dd.MM.yyyy") : localizer["TG_REMINDERS_NO_DATE"].Value;
+                        sb.AppendLine($"• *{item.Name}* — {localizer["TG_REMINDERS_RETURN_BY"].Value}: {dateStr}");
+                    }
+                }
+
+                await botClient.SendMessage(chatId, sb.ToString(), parseMode: ParseMode.Markdown, replyMarkup: mainReplyKeyboard, cancellationToken: ct);
+            }
+            // 6. ДОБАВИТЬ (/add или кнопка ➕ Добавить вещь)
             else if (command == "/add" || messageText == localizer["TG_BTN_ADD_ITEM"].Value)
             {
-                if (parts.Length < 2)
+                if (messageText == localizer["TG_BTN_ADD_ITEM"].Value || parts.Length < 2)
                 {
-                    await botClient.SendMessage(chatId, localizer["TG_ADD_USAGE"].Value, parseMode: ParseMode.Markdown, cancellationToken: ct);
+                    await botClient.SendMessage(chatId, localizer["TG_ADD_USAGE"].Value, parseMode: ParseMode.Markdown, replyMarkup: mainReplyKeyboard, cancellationToken: ct);
                     return;
                 }
 
                 var itemName = string.Join(" ", parts[1..]).Trim();
-                var user = await db.Users.FirstOrDefaultAsync(u => u.TelegramChatId == chatId, ct);
-                if (user == null) return;
 
-                var defaultCategory = await db.Set<Category>().FirstOrDefaultAsync(c => c.User.Id == user.Id, ct);
+                var defaultCategory = await db.Set<Category>().FirstOrDefaultAsync(c => c.UserId == userId, ct);
                 if (defaultCategory == null)
                 {
-                    await botClient.SendMessage(chatId, "❌ Сначала создайте хотя бы одну категорию на сайте.", cancellationToken: ct);
-                    return;
+                    defaultCategory = new Category { Id = Guid.NewGuid(), UserId = userId, Name = localizer["TG_DEFAULT_CATEGORY_NAME"].Value };
+                    db.Set<Category>().Add(defaultCategory);
+                    await db.SaveChangesAsync(ct);
                 }
 
-                var newItem = new Item
+                var defaultLocation = await db.Set<StorageLocation>().FirstOrDefaultAsync(l => l.UserId == userId, ct);
+                if (defaultLocation == null)
+                {
+                    defaultLocation = new StorageLocation { Id = Guid.NewGuid(), UserId = userId, Name = "Other" };
+                    db.Set<StorageLocation>().Add(defaultLocation);
+                    await db.SaveChangesAsync(ct);
+                }
+
+                var dto = new CreateItemDto
                 {
                     Name = itemName,
-                    User = user,
-                    Category = defaultCategory
+                    CategoryId = defaultCategory.Id,
+                    StorageLocationId = defaultLocation.Id,
+                    Status = ItemStatus.Active,
+                    Details = new ItemFinanceDto { Currency = "USD" }
                 };
 
-                db.Set<Item>().Add(newItem);
-                await db.SaveChangesAsync(ct);
-
-                await botClient.SendMessage(chatId, $"✅ Вещь «*{newItem.Name}*» добавлена на склад!", parseMode: ParseMode.Markdown, cancellationToken: ct);
+                await mediator.Send(new CreateItemCommand(userId, dto, new List<IFormFile>()), ct);
+                await botClient.SendMessage(chatId, string.Format(localizer["TG_ADD_SUCCESS"].Value, itemName), parseMode: ParseMode.Markdown, replyMarkup: mainReplyKeyboard, cancellationToken: ct);
             }
             else if (command == "/help")
             {
-                await botClient.SendMessage(chatId, localizer["TG_HELP_TEXT"].Value, parseMode: ParseMode.Markdown, cancellationToken: ct);
+                await botClient.SendMessage(chatId, localizer["TG_HELP_TEXT"].Value, parseMode: ParseMode.Markdown, replyMarkup: mainReplyKeyboard, cancellationToken: ct);
             }
+        }
+
+        private ReplyKeyboardMarkup GetMainReplyKeyboard(IStringLocalizer<SharedResource> localizer)
+        {
+            return new ReplyKeyboardMarkup(new[]
+            {
+                new KeyboardButton[] { localizer["TG_BTN_FIND_ITEMS"].Value, localizer["TG_BTN_REMINDERS"].Value },
+                new KeyboardButton[] { localizer["TG_BTN_ADD_ITEM"].Value }
+            })
+            { ResizeKeyboard = true };
         }
 
         private async Task HandleCallbackQueryAsync(ITelegramBotClient botClient, CallbackQuery callback, AppDbContext db, IStringLocalizer<SharedResource> localizer, CancellationToken ct)
@@ -344,78 +356,127 @@ namespace INest.Infrastructure.BackgroundServices.Telegram
             if (data.StartsWith("where_"))
             {
                 var itemId = Guid.Parse(data.Replace("where_", ""));
-                var item = await db.Set<Item>().Include(i => i.StorageLocation).FirstOrDefaultAsync(i => i.Id == itemId, ct);
+                var item = await db.Set<Item>().FindAsync(itemId);
                 if (item != null)
                 {
-                    var chain = await GetLocationChainAsync(db, item.StorageLocation, localizer, ct);
-                    await botClient.AnswerCallbackQuery(callback.Id, $"📍 {chain}", showAlert: true, cancellationToken: ct);
+                    var tree = await BuildLocationTreeAsync(db, item.StorageLocationId, localizer, ct);
+                    await botClient.SendMessage(chatId, $"📦 *{item.Name}*\n\n{tree}", parseMode: ParseMode.Markdown, cancellationToken: ct);
+                    await botClient.AnswerCallbackQuery(callback.Id, cancellationToken: ct);
                 }
             }
-            else if (data.StartsWith("sell_"))
+            else if (data.StartsWith("loc_"))
             {
-                var itemId = Guid.Parse(data.Replace("sell_", ""));
-                var item = await db.Set<Item>().FirstOrDefaultAsync(i => i.Id == itemId, ct);
-                if (item != null)
+                var locId = Guid.Parse(data.Replace("loc_", ""));
+                var loc = await db.Set<StorageLocation>().FindAsync(locId);
+                if (loc != null)
                 {
-                    var confirmButtons = new InlineKeyboardMarkup(new[]
-                    {
-                        new[]
-                        {
-                            InlineKeyboardButton.WithCallbackData(localizer["TG_BTN_CONFIRM_SELL"].Value, $"confirm_sell_{item.Id}"),
-                            InlineKeyboardButton.WithCallbackData(localizer["TG_BTN_CANCEL"].Value, $"cancel_action")
-                        }
-                    });
+                    await SendLocationInfoAsync(botClient, chatId, loc, db, localizer, ct);
+                    await botClient.AnswerCallbackQuery(callback.Id, cancellationToken: ct);
+                }
+            }
+            else if (data.StartsWith("sublocs_"))
+            {
+                var locId = Guid.Parse(data.Replace("sublocs_", ""));
+                var subLocs = await db.Set<StorageLocation>().Where(l => l.ParentLocationId == locId).ToListAsync(ct);
 
-                    await botClient.SendMessage(chatId, string.Format(localizer["TG_CONFIRM_SELL"].Value, item.Name), parseMode: ParseMode.Markdown, replyMarkup: confirmButtons, cancellationToken: ct);
-                }
-            }
-            else if (data.StartsWith("confirm_sell_"))
-            {
-                var itemId = Guid.Parse(data.Replace("confirm_sell_", ""));
-                var item = await db.Set<Item>().FirstOrDefaultAsync(i => i.Id == itemId, ct);
-                if (item != null)
-                {
-                    item.Sell(); // Вызов доменного метода
-                    await db.SaveChangesAsync(ct);
+                var buttons = subLocs.Select(l => new[] { InlineKeyboardButton.WithCallbackData($"📁 {l.Name}", $"loc_{l.Id}") });
+                var markup = new InlineKeyboardMarkup(buttons);
 
-                    await botClient.AnswerCallbackQuery(callback.Id, "Продано!", cancellationToken: ct);
-                    await botClient.SendMessage(chatId, string.Format(localizer["TG_SOLD_SUCCESS"].Value, item.Name), parseMode: ParseMode.Markdown, cancellationToken: ct);
-                }
+                await botClient.SendMessage(chatId, localizer["TG_BTN_SUBLOCATIONS"].Value + ":", replyMarkup: markup, cancellationToken: ct);
+                await botClient.AnswerCallbackQuery(callback.Id, cancellationToken: ct);
             }
-            else if (data.StartsWith("return_"))
+            else if (data.StartsWith("locitems_"))
             {
-                var itemId = Guid.Parse(data.Replace("return_", ""));
-                var item = await db.Set<Item>().FirstOrDefaultAsync(i => i.Id == itemId, ct);
-                if (item != null)
-                {
-                    item.Return(); // Вызов доменного метода
-                    await db.SaveChangesAsync(ct);
+                var locId = Guid.Parse(data.Replace("locitems_", ""));
+                var items = await db.Set<Item>().Where(i => i.StorageLocationId == locId && i.Status == ItemStatus.Active).ToListAsync(ct);
 
-                    await botClient.AnswerCallbackQuery(callback.Id, "Вернулось!", cancellationToken: ct);
-                    await botClient.SendMessage(chatId, string.Format(localizer["TG_RETURNED_SUCCESS"].Value, item.Name), parseMode: ParseMode.Markdown, cancellationToken: ct);
-                }
+                var sb = new System.Text.StringBuilder();
+                sb.AppendLine($"📦 *{localizer["TG_BTN_ALL_ITEMS"].Value}:*");
+                foreach (var item in items) sb.AppendLine($"• {item.Name}");
+
+                await botClient.SendMessage(chatId, sb.ToString(), parseMode: ParseMode.Markdown, cancellationToken: ct);
+                await botClient.AnswerCallbackQuery(callback.Id, cancellationToken: ct);
             }
-            else if (data == "cancel_action")
+            else if (data.StartsWith("move_"))
             {
-                await botClient.AnswerCallbackQuery(callback.Id, localizer["TG_ACTION_CANCELLED"].Value, cancellationToken: ct);
+                await botClient.AnswerCallbackQuery(callback.Id, localizer["TG_DEV_STUB"].Value, showAlert: true, cancellationToken: ct);
             }
         }
 
-        private async Task<string> GetLocationChainAsync(AppDbContext db, StorageLocation? location, IStringLocalizer<SharedResource> localizer, CancellationToken ct)
+        private async Task SendLocationInfoAsync(ITelegramBotClient botClient, long chatId, StorageLocation loc, AppDbContext db, IStringLocalizer<SharedResource> localizer, CancellationToken ct)
         {
-            if (location == null) return localizer["TG_NO_LOCATION"].Value;
+            var itemsCount = await db.Set<Item>().CountAsync(i => i.StorageLocationId == loc.Id && i.Status == ItemStatus.Active, ct);
+            var subLocsCount = await db.Set<StorageLocation>().CountAsync(l => l.ParentLocationId == loc.Id, ct);
 
-            var path = new List<string>();
-            var currentLoc = location;
-            while (currentLoc != null)
+            var latestItems = await db.Set<Item>()
+                .Where(i => i.StorageLocationId == loc.Id && i.Status == ItemStatus.Active)
+                .OrderByDescending(i => i.CreatedAt)
+                .Take(5)
+                .ToListAsync(ct);
+
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine($"📍 *{loc.Name}*\n");
+            sb.AppendLine(string.Format(localizer["TG_LOCATION_INFO"].Value, itemsCount, subLocsCount));
+
+            if (latestItems.Any())
             {
-                path.Insert(0, currentLoc.Name);
-                currentLoc = currentLoc.ParentLocationId.HasValue
-                    ? await db.Set<StorageLocation>().FirstOrDefaultAsync(l => l.Id == currentLoc.ParentLocationId, ct)
-                    : null;
+                sb.AppendLine("\n" + localizer["TG_LOCATION_LATEST_ITEMS"].Value);
+                foreach (var item in latestItems) sb.AppendLine($"• {item.Name}");
             }
 
-            return string.Join(" ➔ ", path);
+            var buttons = new List<InlineKeyboardButton>();
+            if (itemsCount > 0) buttons.Add(InlineKeyboardButton.WithCallbackData(localizer["TG_BTN_ALL_ITEMS"].Value, $"locitems_{loc.Id}"));
+            if (subLocsCount > 0) buttons.Add(InlineKeyboardButton.WithCallbackData(localizer["TG_BTN_SUBLOCATIONS"].Value, $"sublocs_{loc.Id}"));
+
+            var markup = buttons.Any() ? new InlineKeyboardMarkup(buttons) : null;
+            await botClient.SendMessage(chatId, sb.ToString(), parseMode: ParseMode.Markdown, replyMarkup: markup, cancellationToken: ct);
+        }
+
+        private async Task<string> BuildLocationChainInlineAsync(AppDbContext db, Guid? locationId, IStringLocalizer<SharedResource> localizer, CancellationToken ct)
+        {
+            if (locationId == null) return localizer["TG_LOCATION_NOT_SET"].Value;
+            var path = new List<string>();
+            var currentId = locationId;
+
+            while (currentId.HasValue)
+            {
+                var loc = await db.Set<StorageLocation>().FirstOrDefaultAsync(l => l.Id == currentId.Value, ct);
+                if (loc == null) break;
+                path.Insert(0, loc.Name);
+                currentId = loc.ParentLocationId;
+            }
+            return path.Count > 0 ? string.Join(" ➔ ", path) : localizer["TG_LOCATION_NOT_SET"].Value;
+        }
+
+        private async Task<string> BuildLocationTreeAsync(AppDbContext db, Guid? locationId, IStringLocalizer<SharedResource> localizer, CancellationToken ct)
+        {
+            if (locationId == null) return localizer["TG_LOCATION_NOT_SET"].Value;
+            var path = new List<string>();
+            var currentId = locationId;
+
+            while (currentId.HasValue)
+            {
+                var loc = await db.Set<StorageLocation>().FirstOrDefaultAsync(l => l.Id == currentId.Value, ct);
+                if (loc == null) break;
+                path.Insert(0, loc.Name);
+                currentId = loc.ParentLocationId;
+            }
+
+            if (path.Count == 0) return localizer["TG_LOCATION_NOT_FOUND"].Value;
+
+            var sb = new System.Text.StringBuilder();
+            for (int i = 0; i < path.Count; i++)
+            {
+                if (i == 0) sb.AppendLine($"📍 {path[i]}");
+                else sb.AppendLine($"{new string(' ', (i - 1) * 4)}└── {path[i]}");
+            }
+            return sb.ToString().TrimEnd();
+        }
+
+        private async Task<Guid> GetUserIdByChatIdAsync(AppDbContext db, long chatId, CancellationToken ct)
+        {
+            var user = await db.Users.FirstOrDefaultAsync(u => u.TelegramChatId == chatId, ct);
+            return user?.Id ?? Guid.Empty;
         }
 
         private Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken ct)

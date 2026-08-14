@@ -58,58 +58,80 @@
 	<resheader name="writer">
 		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
 	</resheader>
-	<data name="COMMON_NOT_SPECIFIED" xml:space="preserve"><value>не вказано</value></data>
-	<data name="EMAILS.CONFIRM_BODY" xml:space="preserve"><value>&lt;h3&gt;Ласкаво просимо!&lt;/h3&gt;&lt;p&gt;Ваш код: &lt;b&gt;{0}&lt;/b&gt;&lt;/p&gt;</value></data>
-	<data name="EMAILS.CONFIRM_SUBJECT" xml:space="preserve"><value>Ласкаво просимо до INest! Підтвердьте свою реєстрацію</value></data>
-	<data name="LENDING_BODY_IN" xml:space="preserve"><value>&lt;h3&gt;INest&lt;/h3&gt;&lt;p&gt;Ви взяли &lt;b&gt;{0}&lt;/b&gt; у користувача &lt;b&gt;{1}&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;Термін повернення: &lt;b&gt;{2}&lt;/b&gt;&lt;/p&gt;</value></data>
-	<data name="LENDING_BODY_OUT" xml:space="preserve"><value>&lt;h3&gt;INest&lt;/h3&gt;&lt;p&gt;Ви передали &lt;b&gt;{0}&lt;/b&gt; користувачу &lt;b&gt;{1}&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;Очікувана дата повернення: &lt;b&gt;{2}&lt;/b&gt;&lt;/p&gt;</value></data>
-	<data name="LENDING_SUBJECT_IN" xml:space="preserve"><value>Нагадування: Ви взяли річ</value></data>
-	<data name="LENDING_SUBJECT_OUT" xml:space="preserve"><value>Сповіщення: Ви передали річ</value></data>
-	<data name="EMAILS.RESET_BODY" xml:space="preserve"><value>&lt;h3&gt;Скидання пароля&lt;/h3&gt;&lt;p&gt;Ваш код для скидання пароля: &lt;b&gt;{0}&lt;/b&gt;. Код дійсний 10 хвилин.&lt;/p&gt;</value></data>
-	<data name="EMAILS.RESET_SUBJECT" xml:space="preserve"><value>Скидання пароля</value></data>
-	<data name="EMAILS.REMINDER_SUBJECT" xml:space="preserve"><value>Нагадування: {0}</value></data>
-	<data name="EMAILS.REMINDER_BODY" xml:space="preserve"><value>&lt;h3&gt;Увага!&lt;/h3&gt;&lt;p&gt;Нагадування про дату &lt;b&gt;{0}&lt;/b&gt;:&lt;/p&gt;&lt;p&gt;&lt;b&gt;{1}&lt;/b&gt;&lt;/p&gt;</value></data>
-	<data name="REMINDERS.RETURN_ITEM" xml:space="preserve"><value>Повернення речі</value></data>
-	<data name="TG_LINK_ERROR" xml:space="preserve"><value>❌ Помилка прив'язки. Токен недійсний.</value></data>
-	<data name="TG_LINK_SUCCESS" xml:space="preserve"><value>🎉 Аккаунт прив'язано до INest! Пульт управління речами готовий.</value></data>
-	<data name="TG_WELCOME_WITHOUT_TOKEN" xml:space="preserve"><value>Привіт! Перейди за посиланням з налаштувань INest для прив'язки.</value></data>
-	<data name="TG_FIND_USAGE" xml:space="preserve"><value>Використання: `/find &lt;назва&gt;` (напр. `/find дриль`)</value></data>
-	<data name="TG_FIND_EMPTY" xml:space="preserve"><value>🤷‍♂️ Нічого не знайдено за запитом: *{0}*</value></data>
-	<data name="TG_HELP_TEXT" xml:space="preserve"><value>🤖 *Пульт управління INest:*
 
-🔍 `/find &lt;назва&gt;` — пошук речі, ціни та дії
-📍 `/where &lt;назва&gt;` — повний ланцюжок локацій
-🤝 `/lent` — позичені речі (повернення/продовження)
-🔔 `/reminders` — найближчі події та гарантії
-➕ `/add &lt;назва&gt;` — швидке додавання речі
-ℹ️ `/help` — довідка по командам</value></data>
-	<data name="TG_MENU_FIND" xml:space="preserve"><value>Пошук речей та дії</value></data>
+	<!-- COMMON / SYSTEM -->
+	<data name="COMMON_NOT_SPECIFIED" xml:space="preserve"><value>не вказано</value></data>
+	<data name="REMINDERS.RETURN_ITEM" xml:space="preserve"><value>Повернути річ</value></data>
+
+	<!-- EMAILS -->
+	<data name="EMAILS.CONFIRM_BODY" xml:space="preserve"><value>&lt;h3&gt;Ласкаво просимо!&lt;/h3&gt;&lt;p&gt;Ваш код підтвердження: &lt;b&gt;{0}&lt;/b&gt;&lt;/p&gt;</value></data>
+	<data name="EMAILS.CONFIRM_SUBJECT" xml:space="preserve"><value>Ласкаво просимо до INest! Підтвердіть реєстрацію</value></data>
+	<data name="EMAILS.RESET_BODY" xml:space="preserve"><value>&lt;h3&gt;Скидання пароля&lt;/h3&gt;&lt;p&gt;Ваш код скидання: &lt;b&gt;{0}&lt;/b&gt;. Дійсний 10 хвилин.&lt;/p&gt;</value></data>
+	<data name="EMAILS.RESET_SUBJECT" xml:space="preserve"><value>Скидання пароля</value></data>
+	<data name="EMAILS.REMINDER_SUBJECT" xml:space="preserve"><value>Нагадування INest: {0}</value></data>
+	<data name="EMAILS.REMINDER_BODY" xml:space="preserve"><value>&lt;h3&gt;Увага!&lt;/h3&gt;&lt;p&gt;Нагадування для &lt;b&gt;{0}&lt;/b&gt;:&lt;/p&gt;&lt;p&gt;&lt;b&gt;{1}&lt;/b&gt;&lt;/p&gt;</value></data>
+	<data name="LENDING_BODY_IN" xml:space="preserve"><value>&lt;h3&gt;INest&lt;/h3&gt;&lt;p&gt;Ви взяли &lt;b&gt;{0}&lt;/b&gt; у &lt;b&gt;{1}&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;Повернути до: &lt;b&gt;{2}&lt;/b&gt;&lt;/p&gt;</value></data>
+	<data name="LENDING_BODY_OUT" xml:space="preserve"><value>&lt;h3&gt;INest&lt;/h3&gt;&lt;p&gt;Ви позичили &lt;b&gt;{0}&lt;/b&gt; людині &lt;b&gt;{1}&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;Очікуване повернення: &lt;b&gt;{2}&lt;/b&gt;&lt;/p&gt;</value></data>
+	<data name="LENDING_SUBJECT_IN" xml:space="preserve"><value>Нагадування: Ви взяли річ</value></data>
+	<data name="LENDING_SUBJECT_OUT" xml:space="preserve"><value>Сповіщення: Річ позичено</value></data>
+
+	<!-- TELEGRAM BOT SYSTEM -->
+	<data name="TG_WELCOME_WITHOUT_TOKEN" xml:space="preserve"><value>Привіт! Перейдіть за посиланням із налаштувань INest, щоб прив'язати акаунт.</value></data>
+	<data name="TG_LINK_SUCCESS" xml:space="preserve"><value>🎉 Акаунт успішно прив'язано до INest! Пульт керування активний.</value></data>
+	<data name="TG_LINK_ERROR" xml:space="preserve"><value>❌ Помилка прив'язки. Недійсний токен.</value></data>
+
+	<!-- TELEGRAM MENU COMMANDS -->
+	<data name="TG_MENU_REMINDERS" xml:space="preserve"><value>Нагадування та борги</value></data>
+	<data name="TG_MENU_ADD" xml:space="preserve"><value>Швидко додати річ</value></data>
+	<data name="TG_MENU_HELP" xml:space="preserve"><value>Довідка по командах</value></data>
+	<data name="TG_MENU_FIND" xml:space="preserve"><value>Швидкий пошук речей</value></data>
 	<data name="TG_MENU_WHERE" xml:space="preserve"><value>Де лежить річ</value></data>
-	<data name="TG_MENU_LENT" xml:space="preserve"><value>Позичені речі</value></data>
-	<data name="TG_MENU_REMINDERS" xml:space="preserve"><value>Найближчі нагадування</value></data>
-	<data name="TG_MENU_ADD" xml:space="preserve"><value>Швидке додавання речі</value></data>
-	<data name="TG_MENU_HELP" xml:space="preserve"><value>Довідка по командам</value></data>
-	<data name="TG_BTN_FIND_ITEMS" xml:space="preserve"><value>🔎 Знайти річ</value></data>
-	<data name="TG_BTN_LENT_ITEMS" xml:space="preserve"><value>🤝 Позичені</value></data>
+	<data name="TG_MENU_LOCATIONS" xml:space="preserve"><value>Дерево локацій</value></data>
+	<data name="TG_MENU_LOCATION" xml:space="preserve"><value>Деталі локації</value></data>
+
+	<!-- TELEGRAM REPLY BUTTONS -->
 	<data name="TG_BTN_REMINDERS" xml:space="preserve"><value>🔔 Нагадування</value></data>
 	<data name="TG_BTN_ADD_ITEM" xml:space="preserve"><value>➕ Додати річ</value></data>
-	<data name="TG_BTN_WHERE" xml:space="preserve"><value>📍 Де лежить</value></data>
-	<data name="TG_BTN_LEND" xml:space="preserve"><value>🤝 Позичити</value></data>
-	<data name="TG_BTN_SELL" xml:space="preserve"><value>💰 Продати</value></data>
-	<data name="TG_BTN_RETURNED" xml:space="preserve"><value>↩ Повернути</value></data>
-	<data name="TG_BTN_EXTEND" xml:space="preserve"><value>➕ Продовжити</value></data>
-	<data name="TG_BTN_CONFIRM_SELL" xml:space="preserve"><value>Так, продати</value></data>
-	<data name="TG_BTN_CANCEL" xml:space="preserve"><value>Скасувати</value></data>
-	<data name="TG_NO_LOCATION" xml:space="preserve"><value>Локація не вказана</value></data>
-	<data name="TG_DATE_NOT_SET" xml:space="preserve"><value>термін не вказано</value></data>
-	<data name="TG_WHERE_USAGE" xml:space="preserve"><value>Використання: `/where &lt;назва&gt;` (напр. `/where перфоратор`)</value></data>
-	<data name="TG_ADD_USAGE" xml:space="preserve"><value>Використання: `/add &lt;Назва речі&gt;` (напр. `/add Дриль Bosch`)</value></data>
-	<data name="TG_LENT_HEADER" xml:space="preserve"><value>🤝 *Зараз позичено речей ({0} шт.):*</value></data>
-	<data name="TG_LENT_EMPTY" xml:space="preserve"><value>👍 У вас немає позичених речей.</value></data>
-	<data name="TG_REMINDERS_HEADER" xml:space="preserve"><value>🔔 *Найближчі нагадування:*</value></data>
-	<data name="TG_REMINDERS_EMPTY" xml:space="preserve"><value>👌 Активних нагадувань немає.</value></data>
-	<data name="TG_CONFIRM_SELL" xml:space="preserve"><value>Продати «*{0}*»?</value></data>
-	<data name="TG_SOLD_SUCCESS" xml:space="preserve"><value>💰 *Продано:* {0}</value></data>
-	<data name="TG_RETURNED_SUCCESS" xml:space="preserve"><value>🎉 Річ «*{0}*» знову на складі!</value></data>
-	<data name="TG_ACTION_CANCELLED" xml:space="preserve"><value>Скасовано.</value></data>
+	<data name="TG_BTN_FIND_ITEMS" xml:space="preserve"><value>🔎 Знайти річ</value></data>
+
+	<!-- TELEGRAM COMMAND USAGES & MESSAGES -->
+	<data name="TG_ADD_USAGE" xml:space="preserve"><value>Використовуйте команду: `/add &lt;Назва речі&gt;` (напр. `/add Дриль Bosch`)</value></data>
+	<data name="TG_ADD_SUCCESS" xml:space="preserve"><value>✅ Річ "*{0}*" додано на склад!</value></data>
+	<data name="TG_DEFAULT_CATEGORY_NAME" xml:space="preserve"><value>Загальна (Telegram)</value></data>
+	<data name="TG_DEFAULT_LOCATION_NAME" xml:space="preserve"><value>Інше</value></data>
+	<data name="TG_FIND_USAGE" xml:space="preserve"><value>Використовуйте команду: `/find &lt;Назва речі&gt;` (напр. `/find Дриль`)</value></data>
+	<data name="TG_FIND_EMPTY" xml:space="preserve"><value>🤷‍♂️ Нічого не знайдено за запитом: *{0}*</value></data>
+	<data name="TG_WHERE_USAGE" xml:space="preserve"><value>Використовуйте команду: `/where &lt;Назва речі&gt;` (напр. `/where Дриль`)</value></data>
+	<data name="TG_HELP_TEXT" xml:space="preserve"><value>🤖 *Пульт керування INest:*
+
+🔎 `/find &lt;назва&gt;` — Швидкий пошук речей
+📍 `/where &lt;назва&gt;` — Показати дерево локації речі
+📁 `/locations` — Навігатор по локаціях
+🔔 `/reminders` — Нагадування та борги
+➕ `/add &lt;назва&gt;` — Швидко створити річ
+ℹ️ `/help` — Список команд</value></data>
+
+	<!-- TELEGRAM REMINDERS BLOCK -->
+	<data name="TG_REMINDERS_TITLE" xml:space="preserve"><value>🔔 *Ваші нагадування та борги:*</value></data>
+	<data name="TG_REMINDERS_BORROWED_HEADER" xml:space="preserve"><value>📌 *Я винен (взято у тимчасове користування):*</value></data>
+	<data name="TG_REMINDERS_NO_BORROWED" xml:space="preserve"><value>└ _Заборгованостей немає_</value></data>
+	<data name="TG_REMINDERS_LENT_HEADER" xml:space="preserve"><value>🤝 *Мені винні (видано людям):*</value></data>
+	<data name="TG_REMINDERS_NO_LENT" xml:space="preserve"><value>└ _Позичених речей немає_</value></data>
+	<data name="TG_REMINDERS_RETURN_BY" xml:space="preserve"><value>повернути до</value></data>
+	<data name="TG_REMINDERS_NO_DATE" xml:space="preserve"><value>Термін не вказано</value></data>
+	<data name="TG_NOTIFICATION_REMINDER_ALERT" xml:space="preserve"><value>🔔 *Нагадування:* {0}</value></data>
+
+	<!-- TELEGRAM LOCATIONS BLOCK -->
+	<data name="TG_LOCATION_NOT_SET" xml:space="preserve"><value>Локацію не вказано</value></data>
+	<data name="TG_LOCATION_NOT_FOUND" xml:space="preserve"><value>Локацію не знайдено.</value></data>
+	<data name="TG_LOCATIONS_ROOT" xml:space="preserve"><value>📍 *Мої локації*</value></data>
+	<data name="TG_LOCATION_INFO" xml:space="preserve"><value>📦 Речей: {0}
+📁 Підлокацій: {1}</value></data>
+	<data name="TG_LOCATION_LATEST_ITEMS" xml:space="preserve"><value>Останні речі:</value></data>
+	<data name="TG_WHERE_FOUND_MULTIPLE" xml:space="preserve"><value>Знайдено {0} речей. Оберіть потрібну:</value></data>
+	<data name="TG_BTN_WHERE_IS_IT" xml:space="preserve"><value>📍 Де знаходиться</value></data>
+	<data name="TG_BTN_MOVE" xml:space="preserve"><value>📦 Перемістити</value></data>
+	<data name="TG_BTN_ALL_ITEMS" xml:space="preserve"><value>📦 Усі речі</value></data>
+	<data name="TG_BTN_SUBLOCATIONS" xml:space="preserve"><value>📁 Підлокації</value></data>
+	<data name="TG_DEV_STUB" xml:space="preserve"><value>У розробці...</value></data>
 </root>

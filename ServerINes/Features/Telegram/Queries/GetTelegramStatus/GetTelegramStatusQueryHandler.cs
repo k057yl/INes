@@ -13,7 +13,9 @@ namespace INest.Features.Telegram.Queries.GetTelegramStatus
         public GetTelegramStatusQueryHandler(AppDbContext db, IConfiguration configuration)
         {
             _db = db;
-            _botUsername = configuration["Telegram:BotUsername"] ?? "INestHomeBot";
+            _botUsername = configuration["Telegram:BotUsername"]
+                             ?? configuration["TelegramBotSettings:BotUsername"]
+                             ?? "INestHomeBot";
         }
 
         public async Task<TelegramStatusDto> Handle(GetTelegramStatusQuery request, CancellationToken ct)
@@ -23,18 +25,11 @@ namespace INest.Features.Telegram.Queries.GetTelegramStatus
                 .Select(u => new { u.Id, u.TelegramChatId })
                 .FirstOrDefaultAsync(u => u.Id == request.UserId, ct);
 
-            if (user == null) return new TelegramStatusDto { IsLinked = false };
+            if (user == null) return new TelegramStatusDto { IsLinked = false, BotUsername = _botUsername };
 
-            if (user.TelegramChatId.HasValue)
-            {
-                return new TelegramStatusDto
-                {
-                    IsLinked = true,
-                    TelegramChatId = user.TelegramChatId.Value
-                };
-            }
+            var isLinked = user.TelegramChatId.HasValue && user.TelegramChatId.Value != 0;
 
-            var activeCode = await _db.Set<TelegramConnectionCode>()
+            var activeCode = isLinked ? null : await _db.Set<TelegramConnectionCode>()
                 .AsNoTracking()
                 .Where(c => c.UserId == request.UserId && c.ExpiryTime > DateTime.UtcNow)
                 .Select(c => c.Code)
@@ -42,7 +37,8 @@ namespace INest.Features.Telegram.Queries.GetTelegramStatus
 
             return new TelegramStatusDto
             {
-                IsLinked = false,
+                IsLinked = isLinked,
+                TelegramChatId = user.TelegramChatId ?? 0,
                 BotUsername = _botUsername,
                 VerificationToken = activeCode
             };

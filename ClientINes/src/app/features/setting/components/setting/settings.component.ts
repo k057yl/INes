@@ -70,25 +70,9 @@ export class SettingsComponent implements OnInit, OnDestroy {
     });
   }
 
-  resetTutorials() {
-    this.modalService.openConfirm({
-      mode: 'confirm',
-      title: 'COMMON.CONFIRM',
-      message: this.translate.instant('SETTINGS_PAGE.RESET_TUTORIAL_CONFIRM'),
-      confirmText: 'COMMON.YES'
-    }).subscribe(confirm => {
-      if (confirm) {
-        this.isLoading = true;
-        this.tutorialService.resetTutorialsOnBackend()
-          .pipe(finalize(() => this.isLoading = false))
-          .subscribe();
-      }
-    });
-  }
-
   loadTelegramStatus(showSpinner = true) {
     if (showSpinner) this.isLoading = true;
-    
+
     this.telegramService.getStatus()
       .pipe(finalize(() => { if (showSpinner) this.isLoading = false; }))
       .subscribe(status => {
@@ -151,6 +135,22 @@ export class SettingsComponent implements OnInit, OnDestroy {
   getTelegramLink(): string {
     if (!this.tgStatus.botUsername || !this.tgStatus.verificationToken) return '#';
     return `https://t.me/${this.tgStatus.botUsername}?start=${this.tgStatus.verificationToken}`;
+  }
+
+  resetTutorials() {
+    this.modalService.openConfirm({
+      mode: 'confirm',
+      title: 'COMMON.CONFIRM',
+      message: this.translate.instant('SETTINGS_PAGE.RESET_TUTORIAL_CONFIRM'),
+      confirmText: 'COMMON.YES'
+    }).subscribe(confirm => {
+      if (confirm) {
+        this.isLoading = true;
+        this.tutorialService.resetTutorialsOnBackend()
+          .pipe(finalize(() => this.isLoading = false))
+          .subscribe();
+      }
+    });
   }
 
   toggleViberBot(enabled: boolean): void {
