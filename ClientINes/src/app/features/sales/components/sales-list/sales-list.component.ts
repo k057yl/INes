@@ -57,7 +57,6 @@ export class SalesListComponent implements OnInit {
   selectedSale: SaleListItem | null = null;
   activeDropdown: 'platform' | 'sort' | 'category' | null = null;
 
-  // Мультивалютный подсчет
   revenueByCurrency: Record<string, number> = {};
   profitByCurrency: Record<string, number> = {};
 
@@ -110,18 +109,40 @@ export class SalesListComponent implements OnInit {
     });
   }
 
-  private checkAndStartTutorial() {
+  private checkAndStartTutorial(): void {
     this.authService.user$.pipe(take(1)).subscribe(user => {
       if (!user) return;
 
-      const isSalesPassed = (user.completedTutorials & TutorialStep.Sales) === TutorialStep.Sales;
+      const completed = user.completedTutorials;
+      const isSalesPassed = (completed & TutorialStep.Sales) === TutorialStep.Sales;
+      const isFirstSalePassed = (completed & TutorialStep.FirstSaleCard) === TutorialStep.FirstSaleCard;
+
       if (!isSalesPassed) {
         setTimeout(() => {
           this.tutorialService.startSalesListTour(() => {
             user.completedTutorials |= TutorialStep.Sales;
             this.authService.updateLocalUserTutorial(TutorialStep.Sales);
+
+            if (!isFirstSalePassed && this.sales.length === 1) {
+              setTimeout(() => {
+                this.tutorialService.startFirstSaleCardTour(() => {
+                  user.completedTutorials |= TutorialStep.FirstSaleCard;
+                  this.authService.updateLocalUserTutorial(TutorialStep.FirstSaleCard);
+                });
+              }, 400);
+            }
           });
         }, 300);
+        return;
+      }
+
+      if (!isFirstSalePassed && this.sales.length === 1) {
+        setTimeout(() => {
+          this.tutorialService.startFirstSaleCardTour(() => {
+            user.completedTutorials |= TutorialStep.FirstSaleCard;
+            this.authService.updateLocalUserTutorial(TutorialStep.FirstSaleCard);
+          });
+        }, 400);
       }
     });
   }

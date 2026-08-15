@@ -247,6 +247,9 @@ export class ItemFormModalComponent implements OnInit {
   }
 
   private patchFormValues(item: Item) {
+    const hasPrice = item.details?.purchasePrice !== null && item.details?.purchasePrice !== undefined;
+    const hasDate = !!item.details?.purchaseDate;
+
     this.form.patchValue({
       name: item.name,
       description: item.description,
@@ -255,11 +258,11 @@ export class ItemFormModalComponent implements OnInit {
       status: item.status,
       currency: item.details?.currency || 'USD',
       purchaseDate: item.details?.purchaseDate ? item.details.purchaseDate.split('T')[0] : '',
-      purchasePrice: item.details?.purchasePrice,
+      purchasePrice: item.details?.purchasePrice ?? null,
       warrantyExpiration: item.details?.warrantyExpiration ? item.details.warrantyExpiration.split('T')[0] : null
     });
 
-    if (item.details?.purchasePrice || item.details?.purchaseDate) {
+    if (hasPrice || hasDate) {
       this.form.patchValue({ addDetails: true });
     }
 
@@ -343,17 +346,27 @@ export class ItemFormModalComponent implements OnInit {
     formData.append('storageLocationId', val.storageLocationId!);
     formData.append('status', val.status!.toString());
 
-    if (val.addDetails) {
-      formData.append('details.currency', val.currency!);
-      if (val.purchaseDate) formData.append('details.purchaseDate', val.purchaseDate);
-      if (val.purchasePrice != null) formData.append('details.purchasePrice', val.purchasePrice.toString());
+    // ФИНАНСЫ: Шлём ключи без префикса "details.", ровно так, как ждёт UpdateItemFullCommand
+    const hasPriceValue = val.purchasePrice !== null && val.purchasePrice !== undefined;
+    if (val.addDetails || hasPriceValue || val.purchaseDate) {
+      formData.append('currency', val.currency || 'USD');
+      
+      if (val.purchaseDate) {
+        formData.append('purchaseDate', val.purchaseDate);
+      }
+      
+      if (hasPriceValue) {
+        formData.append('purchasePrice', val.purchasePrice!.toString());
+      }
     }
 
+    // ЧЕК И ГАРАНТИЯ
     if (val.addReceipt) {
-      if (val.warrantyExpiration) formData.append('details.warrantyExpiration', val.warrantyExpiration);
-      if (this.selectedReceiptFile) formData.append('details.receiptFile', this.selectedReceiptFile, this.selectedReceiptFile.name);
+      if (val.warrantyExpiration) formData.append('warrantyExpiration', val.warrantyExpiration);
+      if (this.selectedReceiptFile) formData.append('receiptFile', this.selectedReceiptFile, this.selectedReceiptFile.name);
     }
 
+    // АРЕНДА
     if (this.isLendingStatus) {
       formData.append('personName', val.personName || '');
       formData.append('contactEmail', val.contactEmail || '');
@@ -362,6 +375,7 @@ export class ItemFormModalComponent implements OnInit {
       formData.append('sendTelegramNotification', (!!val.sendTelegramNotification).toString());
     }
 
+    // НАПОМИНАНИЯ
     if (val.addReminder && val.reminderTriggerAt && !this.isLendingStatus) {
       const selectedTypeObj = this.reminderTypeOptions.find(o => o.value === val.reminderType);
       const fallbackLabel = this.translateService.instant('REMINDERS.CUSTOM');
@@ -376,6 +390,7 @@ export class ItemFormModalComponent implements OnInit {
       formData.append('reminder.sendTelegram', (!!val.reminderSendTelegramNotification).toString());
     }
 
+    // ФОТОГРАФИИ
     if ((!this.isEdit || val.addPhoto) && this.selectedPhotos.length > 0) {
       this.selectedPhotos.forEach(p => {
         if (p.file) {

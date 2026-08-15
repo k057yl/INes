@@ -1,4 +1,5 @@
-﻿using INest.Exceptions;
+﻿using INest.Data.Entities.Core;
+using INest.Exceptions;
 using INest.Infrastructure.Tracker;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -35,7 +36,49 @@ namespace INest.Features.Locations.Commands.DeleteLocation
 
             if (hasChildren || hasItems)
             {
-                throw new AppException(ERRORS.NOT_EMPTY, 400);
+                Guid destinationId;
+
+                if (request.TargetLocationId.HasValue && request.TargetLocationId.Value != Guid.Empty)
+                {
+                    destinationId = request.TargetLocationId.Value;
+
+                    if (destinationId == request.Id)
+                    {
+                        throw new AppException(LOCATIONS.ERRORS.SELF_NESTING, 400);
+                    }
+
+                    var targetExists = await _context.StorageLocations
+                        .AnyAsync(l => l.Id == destinationId && l.UserId == request.UserId, cancellationToken);
+
+                    if (!targetExists)
+                    {
+                        destinationId = await GetOrCreateOtherLocationAsync(request.UserId, cancellationToken);
+                    }
+                }
+                else
+                {
+                    destinationId = await GetOrCreateOtherLocationAsync(request.UserId, cancellationToken);
+                }
+
+                var itemsToMove = await _context.Items
+                    .Where(i => i.StorageLocationId == location.Id && i.UserId == request.UserId)
+                    .ToListAsync(cancellationToken);
+
+                foreach (var item in itemsToMove)
+                {
+                    item.StorageLocationId = destinationId;
+                }
+
+                var subLocationsToMove = await _context.StorageLocations
+                    .Where(l => l.ParentLocationId == location.Id && l.UserId == request.UserId)
+                    .ToListAsync(cancellationToken);
+
+                foreach (var subLoc in subLocationsToMove)
+                {
+                    subLoc.ParentLocationId = destinationId;
+                }
+
+                await _context.SaveChangesAsync(cancellationToken);
             }
 
             _context.StorageLocations.Remove(location);
@@ -43,6 +86,30 @@ namespace INest.Features.Locations.Commands.DeleteLocation
 
             _tracker.InvalidateUserCache(request.UserId);
             return true;
+        }
+
+        private async Task<Guid> GetOrCreateOtherLocationAsync(Guid userId, CancellationToken ct)
+        {
+            var existingOther = await _context.StorageLocations
+                .FirstOrDefaultAsync(l => l.UserId == userId && l.Name == "Other" && l.ParentLocationId == null, ct);
+
+            if (existingOther != null)
+            {
+                return existingOther.Id;
+            }
+
+            var newOther = new StorageLocation
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                Name = "Other",
+                ParentLocationId = null
+            };
+
+            _context.StorageLocations.Add(newOther);
+            await _context.SaveChangesAsync(ct);
+
+            return newOther.Id;
         }
     }
 }

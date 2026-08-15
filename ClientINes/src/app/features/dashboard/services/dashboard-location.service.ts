@@ -27,8 +27,8 @@ export class DashboardLocationService {
     this.flatLocations = this.treeService.flattenLocations(this.locations);
   }
 
-  delete(id: string): Observable<void> {
-    return this.locationApi.delete(id).pipe(
+  delete(id: string, targetLocationId: string | null = null): Observable<void> {
+    return this.locationApi.delete(id, targetLocationId).pipe(
       tap(() => {
         this.locations = this.treeService.excludeLocation(this.locations, id);
         this.refreshFlat();

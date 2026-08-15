@@ -7,7 +7,7 @@ import { Item } from '../../../item/contracts/item';
 import { EMPTY } from 'rxjs';
 
 
-export type DashboardModalType = 'itemForm' | 'locationForm' | 'categoryForm' | 'platformForm' | 'confirm' | 'sell' | 'lend' | 'statsList' | 'feedback' | null;
+export type DashboardModalType = 'itemForm' | 'locationForm' | 'categoryForm' | 'platformForm' | 'confirm' | 'sell' | 'lend' | 'statsList' | 'feedback' | 'notEmptyLocationDelete' | null;
 
 export type StatsListType = 'locations' | 'lent' | 'attention';
 
@@ -115,5 +115,11 @@ export class DashboardModalService {
     if (!this.confirmSubj.closed) this.confirmSubj.complete();
     this.confirmSubj = new Subject<any>();
     return this.confirmSubj.asObservable();
+  }
+
+  openNotEmptyLocationDelete(config: { locationId: string, availableLocations: StorageLocation[] }): Observable<string | null | undefined> {
+    this.config = config;
+    this.activeModal = 'notEmptyLocationDelete';
+    return this.resetSubject();
   }
 }

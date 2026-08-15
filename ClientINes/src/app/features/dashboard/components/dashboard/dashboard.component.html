@@ -86,3 +86,33 @@
     (selectLocation)="jumpToLocation($any($event))">
   </app-stats-list-modal>
 }
+
+<!-- МОДАЛКА ПЕРЕНОСА ВЕЩЕЙ ПРИ УДАЛЕНИИ НЕПУСТОЙ ЛОКАЦИИ -->
+@if (modal.activeModal === 'notEmptyLocationDelete') {
+  <app-inest-modal
+    mode="confirm"
+    [title]="'LOCATION_CARD.MODAL.NOT_EMPTY_TITLE' | translate"
+    [confirmText]="'COMMON.SAVE' | translate"
+    (confirmed)="onConfirmMoveAndDelete()"
+    (cancelled)="modal.close()">
+    
+    <p style="margin-bottom: 15px; color: var(--text-muted); font-size: 0.9rem;">
+      {{ 'LOCATION_CARD.MODAL.NOT_EMPTY_MSG' | translate }}
+    </p>
+
+    <div class="inest-form-group" style="text-align: left;">
+      <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.85rem; color: var(--text-muted);">
+        {{ 'LOCATION_CARD.MODAL.TARGET_LOCATION_LABEL' | translate }} *
+      </label>
+      <div class="inest-input-wrapper" style="position: relative;">
+        <i class="fa fa-folder-open inest-field-icon-left" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--accent-color);"></i>
+        <select [(ngModel)]="selectedTargetLocationForDelete" class="inest-select" style="width: 100%; padding-left: 35px;">
+          <option [ngValue]="null">{{ 'LOCATION_CARD.MODAL.CREATE_OTHER_OPTION' | translate }}</option>
+          @for (targetLoc of modal.config?.availableLocations; track targetLoc.id) {
+            <option [ngValue]="targetLoc.id">{{ targetLoc.name }}</option>
+          }
+        </select>
+      </div>
+    </div>
+  </app-inest-modal>
+}

@@ -126,5 +126,13 @@ namespace INest.Controllers
             await _mediator.Send(new DeleteLocationCommand(GetUserId(), id));
             return Ok(new { message = LOCATIONS.SUCCESS.DELETE });
         }
+
+        [HttpDelete("{id:guid}")]
+        public async Task<IActionResult> DeleteLocation(Guid id, [FromQuery] Guid? targetLocationId, CancellationToken ct)
+        {
+            var userId = GetUserId();
+            await _mediator.Send(new DeleteLocationCommand(id, userId, targetLocationId), ct);
+            return Ok(new { message = LOCATIONS.SUCCESS.DELETE });
+        }
     }
 }

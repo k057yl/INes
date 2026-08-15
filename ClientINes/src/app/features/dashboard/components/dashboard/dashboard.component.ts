@@ -21,11 +21,13 @@ import { LocationCardComponent } from '../../../location/components/location-car
 import { LocationRibbonComponent } from '../location-ribbon/location-ribbon.component';
 import { StorageLocation } from '../../../location/contracts/storage-location';
 import { Item } from '../../../item/contracts/item';
+import { FormsModule } from '@angular/forms';
+import { InestModalComponent } from '../../../../shared/components/inest-modal/inest-modal.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [RouterModule, DragDropModule, LocationCardComponent, LocationRibbonComponent, DashboardStatsComponent, StatsListModalComponent, TranslateModule],
+  imports: [RouterModule, DragDropModule, LocationCardComponent, LocationRibbonComponent, DashboardStatsComponent, StatsListModalComponent, TranslateModule, FormsModule, InestModalComponent],
   providers: [
     DashboardTreeService,
     DashboardLocationService,
@@ -47,6 +49,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   isMobile = window.innerWidth <= 768;
 
   private hasCheckedTutorial = false;
+
+  selectedTargetLocationForDelete: string | null = null;
+  locationToDeleteId: string | null = null;
 
   ngOnInit() {
     this.loadData();
@@ -87,7 +92,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
           return;
         }
 
-        // Даем 500мс, чтобы ВСЕ модалки точно закрылись, а Angular отрисовал карточку
         setTimeout(() => {
           const flatLocations = this.facade.locations.flatLocations || [];
           
@@ -156,19 +160,72 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   onDeleteLocation(loc: StorageLocation) {
     loc.showMenu = false;
-    this.modal.openConfirm({ mode: 'delete', title: 'COMMON.DELETE', message: 'LOCATION_CARD.MODAL.YOU_SURE_MSG' })
-      .subscribe(confirmed => {
+
+    const hasItems = loc.items && loc.items.length > 0;
+    const hasChildren = loc.children && loc.children.length > 0;
+
+    if (hasItems || hasChildren) {
+      this.locationToDeleteId = loc.id;
+      this.selectedTargetLocationForDelete = null;
+
+      const availableTargets = this.facade.locations.flatLocations.filter(
+        l => l.id !== loc.id && !this.facade.tree.isChildOf(l.id, loc)
+      );
+
+      this.modal.openNotEmptyLocationDelete({
+        locationId: loc.id,
+        availableLocations: availableTargets
+      });
+    } else {
+      this.modal.openConfirm({ 
+        mode: 'delete', 
+        title: 'COMMON.DELETE', 
+        message: 'LOCATION_CARD.MODAL.YOU_SURE_MSG' 
+      }).subscribe(confirmed => {
         if (confirmed) {
-          this.facade.executor.run(
-            this.facade.locations.delete(loc.id),
-            'LOCATIONS.SUCCESS.DELETE',
-            () => {
-              this.facade.nav.adjustPageAfterDelete(this.pagedBoardLocations.length);
-              this.loadData();
-            }
-          );
+          this.executeDeleteLocation(loc.id, null);
         }
       });
+    }
+  }
+
+  onConfirmMoveAndDelete() {
+    if (!this.locationToDeleteId) return;
+
+    const locId = this.locationToDeleteId;
+    const targetId = this.selectedTargetLocationForDelete;
+
+    this.modal.close();
+    this.locationToDeleteId = null;
+    this.selectedTargetLocationForDelete = null;
+
+    this.executeDeleteLocation(locId, targetId);
+  }
+
+  private executeDeleteLocation(locationId: string, targetLocationId: string | null) {
+    this.facade.executor.run(
+      this.facade.locations.delete(locationId, targetLocationId),
+      'LOCATIONS.SUCCESS.DELETE',
+      () => {
+        this.facade.nav.adjustPageAfterDelete(this.pagedBoardLocations.length);
+        this.loadData();
+      }
+    );
+  }
+
+  private handleNotEmptyLocationDelete(locationId: string) {
+    const availableTargets = this.facade.locations.flatLocations.filter(
+      l => l.id !== locationId && !this.facade.tree.isChildOf(l.id, this.facade.locations.flatLocations.find(x => x.id === locationId)!)
+    );
+
+    this.modal.openNotEmptyLocationDelete({
+      locationId,
+      availableLocations: availableTargets
+    }).subscribe((selectedTargetId: string | null | undefined) => {
+      if (selectedTargetId !== undefined) {
+        this.executeDeleteLocation(locationId, selectedTargetId);
+      }
+    });
   }
 
   onLocationMoveUp(loc: StorageLocation) {

@@ -15,7 +15,8 @@ export enum TutorialStep {
   ItemForm = 32,
   Sales = 64,
   ItemsList = 128,
-  SellForm = 256
+  SellForm = 256,
+  FirstSaleCard = 512
 }
 
 export type TutorialTour =
@@ -26,7 +27,8 @@ export type TutorialTour =
   | 'location-form'
   | 'item-form'
   | 'first-location-card'
-  | 'first-item-card';
+  | 'first-item-card'
+  | 'first-sale-card';
 
 @Injectable({
   providedIn: 'root'
@@ -370,6 +372,7 @@ export class TutorialService {
       }
     ];
 
+    // 1. Статистика (выручка/прибыль)
     if (document.querySelector('.stats-grid')) {
       steps.push({
         element: '.stats-grid',
@@ -381,6 +384,19 @@ export class TutorialService {
       });
     }
 
+    // 2. Фильтры, поиск и сортировка
+    if (document.querySelector('.controls-toolbar')) {
+      steps.push({
+        element: '.controls-toolbar',
+        popover: {
+          title: this.translate.instant('TUTORIAL_PAGE.SALES_LIST.FILTERS_TITLE'),
+          description: this.translate.instant('TUTORIAL_PAGE.SALES_LIST.FILTERS_DESC'),
+          side: 'bottom'
+        }
+      });
+    }
+
+    // 3. Сетка карточек продаж
     if (document.querySelector('.sales-grid')) {
       steps.push({
         element: '.sales-grid',
@@ -678,6 +694,7 @@ export class TutorialService {
       }
     ];
 
+    // 1. Цена продажи
     if (document.querySelector('input[formControlName="salePrice"]')) {
       steps.push({
         element: 'input[formControlName="salePrice"]',
@@ -689,6 +706,7 @@ export class TutorialService {
       });
     }
 
+    // 2. Дата продажи
     if (document.querySelector('input[formControlName="soldDate"]')) {
       steps.push({
         element: 'input[formControlName="soldDate"]',
@@ -700,6 +718,19 @@ export class TutorialService {
       });
     }
 
+    // 3. Кнопка создания новой платформы
+    if (document.querySelector('.inline-add-btn')) {
+      steps.push({
+        element: '.inline-add-btn',
+        popover: {
+          title: this.translate.instant('TUTORIAL_PAGE.SELL_FORM.ADD_PLATFORM_TITLE'),
+          description: this.translate.instant('TUTORIAL_PAGE.SELL_FORM.ADD_PLATFORM_DESC'),
+          side: 'left'
+        }
+      });
+    }
+
+    // 4. Выбор торговой площадки
     if (document.querySelector('select[formControlName="platformId"]')) {
       steps.push({
         element: 'select[formControlName="platformId"]',
@@ -713,6 +744,50 @@ export class TutorialService {
 
     this.driverObj.setSteps(steps);
     this.driverObj.drive();
+  }
+
+  // --- 9. ТУР ПО ПЕРВОЙ КАРТОЧКЕ ПРОДАЖИ ---
+  public startFirstSaleCardTour(onComplete?: () => void) {
+    this.initDriver(TutorialStep.FirstSaleCard, 'first-sale-card', onComplete);
+    if (!this.driverObj) return;
+
+    setTimeout(() => {
+      const steps: any[] = [
+        {
+          popover: {
+            title: this.translate.instant('TUTORIAL_PAGE.FIRST_SALE_CARD.WELCOME_TITLE'),
+            description: this.translate.instant('TUTORIAL_PAGE.FIRST_SALE_CARD.WELCOME_DESC'),
+          }
+        }
+      ];
+
+      const saleCard = document.querySelector('app-sale-card .sale-card');
+      if (saleCard) {
+        steps.push({
+          element: saleCard,
+          popover: {
+            title: this.translate.instant('TUTORIAL_PAGE.FIRST_SALE_CARD.INFO_TITLE'),
+            description: this.translate.instant('TUTORIAL_PAGE.FIRST_SALE_CARD.INFO_DESC'),
+            side: 'bottom'
+          }
+        });
+      }
+
+      const undoBtn = document.querySelector('app-sale-card .undo-btn');
+      if (undoBtn) {
+        steps.push({
+          element: undoBtn,
+          popover: {
+            title: this.translate.instant('TUTORIAL_PAGE.FIRST_SALE_CARD.UNDO_TITLE'),
+            description: this.translate.instant('TUTORIAL_PAGE.FIRST_SALE_CARD.UNDO_DESC'),
+            side: 'top'
+          }
+        });
+      }
+
+      this.driverObj?.setSteps(steps);
+      this.driverObj?.drive();
+    }, 100);
   }
 
   public resetTutorialsOnBackend() {

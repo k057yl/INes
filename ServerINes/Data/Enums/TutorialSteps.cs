@@ -12,6 +12,7 @@
         ItemForm = 1 << 5,
         Sales = 1 << 6,
         ItemsList = 1 << 7,
-        SellForm = 1 << 8
+        SellForm = 1 << 8,
+        FirstSaleCard = 1 << 9
     }
 }

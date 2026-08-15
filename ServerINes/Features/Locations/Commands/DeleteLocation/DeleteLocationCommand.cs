@@ -2,5 +2,5 @@
 
 namespace INest.Features.Locations.Commands.DeleteLocation
 {
-    public record DeleteLocationCommand(Guid UserId, Guid Id) : IRequest<bool>;
+    public record DeleteLocationCommand(Guid Id, Guid UserId, Guid? TargetLocationId = null) : IRequest<bool>;
 }

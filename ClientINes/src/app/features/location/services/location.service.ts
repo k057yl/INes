@@ -50,7 +50,11 @@ export class LocationService {
     return this.http.put<void>(`${this.apiUrl}/reorder`, payload);
   }
 
-  delete(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  delete(id: string, targetLocationId: string | null = null): Observable<any> {
+    let params: any = {};
+    if (targetLocationId) {
+      params.targetLocationId = targetLocationId;
+    }
+    return this.http.delete(`${this.apiUrl}/${id}`, { params });
   }
 }

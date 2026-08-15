@@ -62,7 +62,7 @@ namespace INest.Features.Items.Commands.UpdateItemFull
 
                 if (item.Details == null)
                 {
-                    item.Details = new ItemDetails
+                    item.Details ??= new ItemDetails
                     {
                         Id = Guid.NewGuid(),
                         ItemId = item.Id,

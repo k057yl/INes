@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SaleListItem } from '../../contracts/sale-list-item';
 import { TranslateModule } from '@ngx-translate/core';
+import { SaleListItem } from '../../contracts/sale-list-item';
 import { PricePipe } from '../../../../shared/pipes/price-currency.pipe';
 
 @Component({
@@ -22,6 +22,11 @@ export class SaleCardComponent {
     return !!this.sale.itemId && this.sale.itemId !== this.EMPTY_GUID;
   }
 
-  onUndo(): void { this.undo.emit(this.sale); }
-  onDelete(): void { this.delete.emit(this.sale); }
+  onUndo(): void { 
+    this.undo.emit(this.sale); 
+  }
+
+  onDelete(): void { 
+    this.delete.emit(this.sale); 
+  }
 }
