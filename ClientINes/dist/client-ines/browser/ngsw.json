@@ -1,0 +1,106 @@
+{
+  "configVersion": 1,
+  "timestamp": 1786984685482,
+  "index": "/index.html",
+  "assetGroups": [
+    {
+      "name": "app",
+      "installMode": "prefetch",
+      "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "urls": [
+        "/favicon.ico",
+        "/index.html",
+        "/main-S2DB6QWY.js",
+        "/manifest.webmanifest",
+        "/polyfills-5CFQRCPP.js",
+        "/styles-DZ4BR2PV.css"
+      ],
+      "patterns": []
+    },
+    {
+      "name": "assets",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "urls": [
+        "/assets/i18n/en.json",
+        "/assets/i18n/ru.json",
+        "/assets/i18n/uk.json",
+        "/assets/images/LogoKaraDark.png",
+        "/assets/images/LogoKaraLight.png",
+        "/assets/images/no-image.png"
+      ],
+      "patterns": []
+    }
+  ],
+  "dataGroups": [
+    {
+      "name": "api-freshness",
+      "patterns": [
+        "\\/api\\/Locations\\/.*",
+        "\\/api\\/Reminders\\/active",
+        "\\/api\\/Items\\/[^/]*\\/history"
+      ],
+      "strategy": "freshness",
+      "maxSize": 100,
+      "maxAge": 3600000,
+      "timeoutMs": 5000,
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "version": 1
+    },
+    {
+      "name": "api-performance",
+      "patterns": [
+        "\\/api\\/Categories\\/.*",
+        "\\/api\\/Platforms\\/.*"
+      ],
+      "strategy": "performance",
+      "maxSize": 50,
+      "maxAge": 86400000,
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "version": 1
+    }
+  ],
+  "hashTable": {
+    "/assets/i18n/en.json": "c36e6e5bb4237a6ed742763b6a801dcb2c9b9eda",
+    "/assets/i18n/ru.json": "514f605a338507f68b7b55207cd15b8ae167dae2",
+    "/assets/i18n/uk.json": "f88db40d2ae3b4849416ddf3ba8d834876c5a0e4",
+    "/assets/images/LogoKaraDark.png": "c9556470d1ba5214c54e56a3fd1c24db8ea24c0f",
+    "/assets/images/LogoKaraLight.png": "5c9e3c650f77bf7c5972542dba7a9423b7c8f9b0",
+    "/assets/images/no-image.png": "31a74fe17ebaa5f56007ac77a34fcd3e73cb50ef",
+    "/favicon.ico": "9c39f434fe1261f68c5e3eefdf734630d99c5670",
+    "/index.html": "8710929c81e416b3f5824c627789e64b4444c7c4",
+    "/main-S2DB6QWY.js": "25279b583e9253109fb0cd8ab465fe95b65bc754",
+    "/manifest.webmanifest": "5f8f7a69b16f788ddf990ce4e01b0e9c60aab88b",
+    "/polyfills-5CFQRCPP.js": "f2241e9a25858f895ce299d15f6f22e849e2fd72",
+    "/styles-DZ4BR2PV.css": "f5988580338ef75406eef4088b97ab746174a712"
+  },
+  "navigationUrls": [
+    {
+      "positive": true,
+      "regex": "^\\/.*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*\\.[^/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*__[^/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*__[^/]*\\/.*$"
+    }
+  ],
+  "navigationRequestStrategy": "performance"
+}
