@@ -2,6 +2,8 @@
 {
     public static class SharedConstants
     {
+        public const string PROD_ORIGIN = "http://165.245.219.122";
+        public const string PROD_ORIGIN_HTTPS = "https://165.245.219.122";
         // Angular dev server по умолчанию работает по HTTP!
         public const string LOCALHOST = "http://localhost:4200";
         public const string LOCALHOST_HTTPS = "https://localhost:4200";

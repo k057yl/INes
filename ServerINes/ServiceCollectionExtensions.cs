@@ -135,7 +135,9 @@ namespace INest
                 SharedConstants.PWA_HTTPS,
                 SharedConstants.PWA_FROM_IP,
                 SharedConstants.PWA_MOBILE,
-                SharedConstants.PWA_MOBILE_HTTPS
+                SharedConstants.PWA_MOBILE_HTTPS,
+                SharedConstants.PROD_ORIGIN,
+                SharedConstants.PROD_ORIGIN_HTTPS
             };
 
             services.AddCors(options =>
