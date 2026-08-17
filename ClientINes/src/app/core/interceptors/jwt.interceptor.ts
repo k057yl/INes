@@ -13,9 +13,19 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
     return next(req);
   }
 
+  const token = localStorage.getItem('token');
+
+  const headers: Record<string, string> = {
+    'X-Requested-With': 'XMLHttpRequest'
+  };
+
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
   const clonedReq = req.clone({
     withCredentials: true,
-    setHeaders: { 'X-Requested-With': 'XMLHttpRequest' }
+    setHeaders: headers
   });
 
   return next(clonedReq).pipe(
@@ -37,7 +47,13 @@ function handle401Error(req: HttpRequest<any>, next: HttpHandlerFn, authService:
       switchMap(() => {
         isRefreshing = false;
         refreshTokenSubject.next(true);
-        return next(req);
+
+        const newToken = localStorage.getItem('token');
+        const retryReq = newToken 
+          ? req.clone({ setHeaders: { Authorization: `Bearer ${newToken}` } })
+          : req;
+
+        return next(retryReq);
       }),
       catchError((err) => {
         isRefreshing = false;
@@ -54,7 +70,12 @@ function handle401Error(req: HttpRequest<any>, next: HttpHandlerFn, authService:
       take(1),
       switchMap((success) => {
         if (success) {
-          return next(req);
+          const newToken = localStorage.getItem('token');
+          const retryReq = newToken 
+            ? req.clone({ setHeaders: { Authorization: `Bearer ${newToken}` } })
+            : req;
+
+          return next(retryReq);
         }
         return throwError(() => new HttpErrorResponse({ status: 401, statusText: 'Unauthorized' }));
       })

@@ -18,7 +18,7 @@ export class AuthService {
     return this.http.get<AppUser>(`${this.apiUrl}/me`).pipe(
       tap(user => this.userSubject.next(user)),
       catchError(() => {
-        this.userSubject.next(null);
+        this.clearLocalSession();
         return of(null);
       })
     );
@@ -28,14 +28,26 @@ export class AuthService {
     return this.http
       .post<any>(`${this.apiUrl}/login`, { email, password })
       .pipe(
+        tap(response => {
+          const token = response?.data?.token || response?.token;
+          if (token) {
+            localStorage.setItem('token', token);
+          }
+        }),
         switchMap(() => this.checkAuth())
       );
   }
 
   refreshToken(): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/refresh`, {}).pipe(
+      tap(response => {
+        const token = response?.data?.token || response?.token;
+        if (token) {
+          localStorage.setItem('token', token);
+        }
+      }),
       catchError(err => {
-        this.userSubject.next(null);
+        this.clearLocalSession();
         return throwError(() => err);
       })
     );
@@ -52,13 +64,29 @@ export class AuthService {
   confirmRegistration(email: string, code: string): Observable<any> {
     return this.http
       .post<any>(`${this.apiUrl}/confirm-register`, { email, code })
-      .pipe(switchMap(() => this.checkAuth()));
+      .pipe(
+        tap(response => {
+          const token = response?.data?.token || response?.token;
+          if (token) {
+            localStorage.setItem('token', token);
+          }
+        }),
+        switchMap(() => this.checkAuth())
+      );
   }
 
   googleLogin(idToken: string): Observable<any> {
     return this.http
       .post<any>(`${this.apiUrl}/google-login`, { idToken })
-      .pipe(switchMap(() => this.checkAuth()));
+      .pipe(
+        tap(response => {
+          const token = response?.data?.token || response?.token;
+          if (token) {
+            localStorage.setItem('token', token);
+          }
+        }),
+        switchMap(() => this.checkAuth())
+      );
   }
 
   forgotPassword(data: { email: string }): Observable<any> {
@@ -71,9 +99,9 @@ export class AuthService {
 
   logout(): Observable<any> {
     return this.http.post(`${this.apiUrl}/logout`, {}).pipe(
-      finalize(() => this.userSubject.next(null)),
+      finalize(() => this.clearLocalSession()),
       catchError(() => {
-        this.userSubject.next(null);
+        this.clearLocalSession();
         return of(null);
       })
     );
@@ -102,6 +130,7 @@ export class AuthService {
   // ================= СБРОС СЕССИИ БЕЗ СЕТИ =================
 
   clearLocalSession(): void {
+    localStorage.removeItem('token');
     this.userSubject.next(null);
   }
 
