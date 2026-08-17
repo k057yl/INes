@@ -25,18 +25,18 @@ export class AuthService {
   }
 
   login(email: string, password: string): Observable<any> {
-    return this.http
-      .post<any>(`${this.apiUrl}/login`, { email, password })
-      .pipe(
-        tap(response => {
-          const token = response?.data?.token || response?.token;
-          if (token) {
-            localStorage.setItem('token', token);
-          }
-        }),
-        switchMap(() => this.checkAuth())
-      );
-  }
+  return this.http
+    .post<any>(`${this.apiUrl}/login`, { email, password })
+    .pipe(
+      switchMap(response => {
+        const token = response?.data?.token || response?.token;
+        if (token) {
+          localStorage.setItem('token', token);
+        }
+        return this.checkAuth();
+      })
+    );
+}
 
   refreshToken(): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/refresh`, {}).pipe(

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, AfterViewInit, NgZone } from '@angular/core';
+import { Component, inject, OnInit, NgZone } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';

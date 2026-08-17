@@ -115,7 +115,6 @@ export class RegisterComponent implements OnInit, AfterViewInit {
     });
   }
 
-  // --- UI Helpers ---
   togglePassword() { this.showPassword = !this.showPassword; }
   
   toggleGoogle() {
