@@ -5,7 +5,7 @@
     "EMAIL_SEND_FAILED": "Failed to send email",
     "CONFIG_ERROR": "Server configuration error",
     "ERRORS": {
-      "VALIDATION_FAILED": "Data validation failed"
+      "VALIDATION_FAILED": "Data validation error"
     }
   },
   "ERRORS": {
@@ -14,16 +14,16 @@
     "INVALID_COLOR_HEX": "Invalid color format (HEX)",
     "MAX_LENGTH_50": "Maximum length is 50 characters",
     "PWD_MIN_LENGTH": "Password must be at least 6 characters",
-    "PWD_UPPER": "Password must contain an uppercase letter",
-    "PWD_DIGIT": "Password must contain a digit",
+    "PWD_UPPER": "Password must contain at least one uppercase letter",
+    "PWD_DIGIT": "Password must contain at least one digit",
     "PWD_SPEC": "Password must contain a special character",
     "PWD_LATIN": "Password must contain only Latin characters",
-    "USERNAME_LATIN_ONLY": "Username must be in Latin characters",
+    "USERNAME_LATIN_ONLY": "Username must contain only Latin letters",
     "NEGATIVE_NUMBER": "Value cannot be negative",
     "FUTURE_DATE": "Date cannot be in the future",
-    "FILE_TOO_LARGE": "File is too large",
+    "FILE_TOO_LARGE": "File size is too large",
     "IMAGE_PROCESSING_FAILED": "Image processing error",
-    "MAX_NESTING_REACHED": "Maximum nesting limit reached",
+    "MAX_NESTING_REACHED": "Maximum nesting level reached",
     "EMPTY_LIST": "List cannot be empty"
   },
   "EMAILS": {
@@ -32,19 +32,19 @@
     "RESET_SUBJECT": "INest Password Reset",
     "RESET_BODY": "To reset your password, follow the link: {0}",
     "LENDING_SUBJECT": "INest Item Lending Notification",
-    "LENDING_BODY": "Notification regarding lent item: {0}",
-    "REMINDER_SUBJECT": "INest Reminder Notification",
+    "LENDING_BODY": "Notification about lending an item: {0}",
+    "REMINDER_SUBJECT": "INest Reminder",
     "REMINDER_BODY": "Reminder: {0}"
   },
   "AUTH": {
     "ERRORS": {
       "EMAIL_ALREADY_EXISTS": "User with this email already exists",
       "INVALID_CREDENTIALS": "Invalid email or password",
-      "EMAIL_UNCONFIRMED": "Email not confirmed",
+      "EMAIL_UNCONFIRMED": "Email is not confirmed",
       "INVALID_OR_EXPIRED_CODE": "Invalid or expired code",
       "USER_NOT_FOUND": "User not found",
       "GOOGLE_AUTH_FAILED": "Google authentication failed",
-      "TOKEN_MISSING": "Access token missing",
+      "TOKEN_MISSING": "Access token is missing",
       "INVALID_TOKEN": "Invalid token",
       "REFRESH_TOKEN_EXPIRED": "Session expired, please log in again",
       "INVALID_USERNAME": "Invalid username",
@@ -54,7 +54,7 @@
       "OTP_SENT": "Confirmation code sent to email",
       "RESET_EMAIL_SENT": "Password reset instructions sent to email",
       "PASSWORD_CHANGED": "Password changed successfully",
-      "LOGIN": "Log in successful"
+      "LOGIN": "Authorization successful"
     }
   },
   "CATEGORIES": {
@@ -87,21 +87,21 @@
       "DELETE": "Item deleted successfully",
       "CREATE": "Item created successfully",
       "UPDATE": "Item updated successfully",
-      "ARCHIVED": "Item archived successfully"
+      "ARCHIVED": "Item successfully sent to archive"
     }
   },
   "LOCATIONS": {
     "ERRORS": {
       "NOT_FOUND": "Location not found",
-      "SELF_NESTING": "Location cannot be nested within itself",
+      "SELF_NESTING": "Location cannot contain itself",
       "CIRCULAR_DEPENDENCY": "Circular dependency detected",
       "INVALID_NAME": "Invalid location name",
-      "NOT_EMPTY": "Cannot delete a location that contains items"
+      "NOT_EMPTY": "Cannot delete location while it contains sub-locations or items."
     },
     "SUCCESS": {
       "CREATE": "Location created successfully",
       "MOVE": "Location moved successfully",
-      "REORDER": "Locations reordered successfully",
+      "REORDER": "Locations order saved",
       "RENAME": "Location renamed successfully",
       "DELETE": "Location deleted successfully"
     }
@@ -120,13 +120,21 @@
   "SALES": {
     "ERRORS": {
       "ITEM_NOT_FOUND": "Item for sale not found",
-      "ALREADY_SOLD": "Item already sold",
+      "ALREADY_SOLD": "Item is already sold",
       "NOT_FOUND": "Sale record not found"
     },
     "SUCCESS": {
       "SELL": "Item sold successfully",
-      "CANCEL": "Sale canceled successfully",
+      "CANCEL": "Sale cancelled successfully",
       "DELETE": "Sale record deleted successfully"
+    }
+  },
+  "TUTORIAL": {
+    "ERRORS": {
+      "INVALID_STEP": "Invalid tutorial step specified"
+    },
+    "SUCCESS": {
+      "STEP_COMPLETED": "Step completed"
     }
   },
   "STATUS": {
@@ -146,12 +154,12 @@
     "STATUS_CHANGED": "Status changed to: {0}",
     "REPAIRED": "Item repaired",
     "LENT": "Lent to user: {0}",
-    "RETURNED": "Returned to storage",
+    "RETURNED": "Returned to location",
     "VALUE_UPDATED": "Price updated: {0}",
     "PHOTOS_ADDED_COUNT": "Photos added: {0}",
-    "SALES_CANCELED": "Sale canceled",
+    "SALES_CANCELED": "Sale cancelled",
     "SOLD_FOR": "Sold for: {0}",
-    "RETURNED_BORROWED": "Returned borrowed item",
+    "RETURNED_BORROWED": "Returned to owner",
     "REMINDER": {
       "COMPLETED": "Reminder completed: {0}",
       "SCHEDULED": "Reminder scheduled: {0}"
@@ -161,7 +169,7 @@
     "CUSTOM": "Reminder",
     "WARRANTY": "Warranty",
     "MAINTENANCE": "Maintenance",
-    "RETURN_ITEM": "Item return",
+    "RETURN_ITEM": "Item Return",
     "INSURANCE": "Insurance",
     "MEDICAL": "Medical",
     "TAX": "Taxes",
@@ -176,15 +184,26 @@
     }
   },
   "LENDING": {
+    "RETURN_MSG": "Are you sure you want to return the item?",
     "ERRORS": {
       "NOT_FOUND": "Lending record not found",
-      "ALREADY_LENT": "Item already lent",
-      "NOT_LENT": "Item is not currently lent"
+      "ALREADY_LENT": "Item is already lent",
+      "NOT_LENT": "Item is not currently lent to anyone"
     },
     "SUCCESS": {
       "LEND": "Item lent successfully",
       "RETURN": "Item returned successfully"
     }
+  },
+  "LENDING_MODAL": {
+    "TITLE": "Lend an item",
+    "PERSON_NAME": "To whom?",
+    "PLACEHOLDER_NAME": "Enter the lucky person's name",
+    "ERROR_NAME_REQ": "Name is required, otherwise you won't find it later",
+    "ESTIMATED_VALUE": "Estimated value",
+    "EXPECTED_RETURN": "When to return?",
+    "COMMENT": "Comment",
+    "PLACEHOLDER_COMMENT": "Condition, completeness, and other details..."
   },
   "COMMON": {
     "SAVE": "Save",
@@ -192,7 +211,7 @@
     "CANCEL": "Cancel",
     "CLOSE": "Close",
     "DELETE": "Delete",
-    "ARCHIVE": "Archive",
+    "ARCHIVE": "To Archive",
     "DELETE_ASK": "Delete?",
     "M_YOU_SURE": "Are you sure?",
     "ENTER_NAME": "Enter name",
@@ -219,12 +238,231 @@
     "RETURN": "Return",
     "PRINT": "Print",
     "SMART_DELETE": "Smart Delete",
-    "SMART_DELETE_TEXT": "Delete the sale but keep the history record",
-    "HARD_DELETE": "Hard Delete",
-    "HARD_DELETE_TEXT": "Permanently delete the record. This action is irreversible!",
+    "SMART_DELETE_TEXT": "Delete sale, but keep record in history",
+    "HARD_DELETE": "Delete Permanently",
+    "HARD_DELETE_TEXT": "Permanently delete record. This action is irreversible!",
     "CHANGE_THEME_TOOLTIP": "Change theme",
     "EXIT": "Exit",
-    "CHANGE_LANGUAGE_TOOLTIP": "Change language"
+    "CHANGE_LANGUAGE_TOOLTIP": "Change language",
+    "MORE_DETAILS": "More details"
+  },
+  "HEADER": {
+    "HOME": "Home",
+    "ITEMS": "Items",
+    "LOGIN": "Log in",
+    "REGISTERATION": "Registration",
+    "LOGOUT": "Log out",
+    "SETTINGS": "Settings",
+    "SALES": "Sales",
+    "CREATE_LOCATION": "Create location",
+    "CREATE_ITEM": "Create item"
+  },
+  "MAIN_PAGE": {
+    "LOCATION_EMPTY_MSG": "Start by creating your first location",
+    "CREATE_FIRST_BTN": "Create first location",
+    "NEXT_PAGE_TOOLTIP": "Next page",
+    "PREV_PAGE_TOOLTIP": "Previous page"
+  },
+  "RIBBON": {
+    "EMPTY": "Your locations will be displayed here"
+  },
+  "AUTH_PAGE": {
+    "TITLE_LOGIN": "Welcome back!",
+    "TITLE_REG": "Oh, hi!",
+    "SUBTITLE_LOGIN": "Log in to your inventory system",
+    "SUBTITLE_REG": "Register in the system",
+    "NAME": "Name",
+    "NAME_PHL": "Enter name",
+    "EMAIL": "Email",
+    "EMAIL_PHL": "Enter email",
+    "CHECKING_MAIL": "Checking email",
+    "PASSWORD": "Password",
+    "PASSWORD_CREATE_PHL": "Create a password",
+    "PASSWORD_ENTER_PHL": "Enter password",
+    "PASSWORD_CONFIRM_PHL": "Repeat password",
+    "CONFIRM_PASSWORD": "Confirm password",
+    "CONFIRM_PASSWORD_PHL": "Repeat password",
+    "PASSWORD_MISMATCH": "Passwords do not match",
+    "BTN_GOOGLE": "Sign in with Google",
+    "CONFIRM_TITLE": "Email Confirmation",
+    "CODE_LABEL": "Code from email",
+    "FORGOT_PASSWORD": "Forgot password?",
+    "LOGIN_BTN": "Log in",
+    "REGISTRATION_BTN": "Register",
+    "OR": "or",
+    "HIDE_GOOGLE_BTN": "Other method",
+    "SHOW_GOOGLE_BTN": "Sign in with Google",
+    "SHOW_REG_GOOGLE_BTN": "Register with Google",
+    "NO_ACC_YET": "Don't have an account yet? ",
+    "ALREADY_HAVE_ACC": "Already have an account? ",
+    "GO_TO_REGISTER": "Go to registration",
+    "GO_TO_LOGIN": "Go to login",
+    "REMEMBERED_PASSWORD": "Remembered password?"
+  },
+  "FORGOT_PASSWORD_PAGE": {
+    "TITLE": "Recovery",
+    "SUBTITLE": "Enter your Email and we will send a 6-digit password reset code",
+    "SUBMIT_BTN": "Send code",
+    "REMEMBERED_PASSWORD": "Remembered password?"
+  },
+  "RESET_PASSWORD_PAGE": {
+    "TITLE": "Reset Password",
+    "SUBTITLE": "Enter code from email and create a new password",
+    "NEW_PASSWORD": "New password",
+    "SAVE_BTN": "Save new password"
+  },
+  "CONFIRM_REGISTRATION_PAGE": {
+    "TITLE": "Email Confirmation",
+    "SUBTITLE": "Enter the 6 digits we sent to",
+    "SUBMIT_BTN": "Confirm",
+    "RESEND_TEXT": "Didn't receive code?",
+    "RESEND_LINK": "Resend",
+    "SUCCESS": "Registration confirmed successfully",
+    "ERROR": "Invalid or expired confirmation code"
+  },
+  "CREATE_LOCATION_PAGE": {
+    "TITLE_CREATE": "Location Creation",
+    "NAME": "Name",
+    "NAME_PLACEHOLDER": "Example: Garage or Shelf",
+    "SELECT_COLOR": "Select color",
+    "EMPTY": "Empty for now",
+    "COLOR_HINT_RANDOM": "If color is not selected, it will be generated randomly"
+  },
+  "LOCATION_CARD": {
+    "MODAL": {
+      "YOU_SURE_MSG": "Delete this location with all items inside? This action is irreversible!",
+      "NOT_EMPTY_TITLE": "Transfer Content",
+      "NOT_EMPTY_MSG": "This location contains items or sub-locations. Select where to move them before deletion:",
+      "TARGET_LOCATION_LABEL": "Move content to",
+      "CREATE_OTHER_OPTION": "Create default «Other»"
+    },
+    "BTN": {
+      "LOCATION_TOOLTIP": "Create location",
+      "ITEM_TOOLTIP": "Create item",
+      "MAX_LEVEL_TOOLTIP": "Maximum location nesting level reached (max 3 levels)",
+      "CHANGE_LOC_TOOLTIP": "Move location",
+      "UP_TOOLTIP": "Move location up",
+      "DOWN_TOOLTIP": "Move location down",
+      "HOLD_TOOLTIP": "Hold and drag"
+    },
+    "CREATE_LOCATION": "Create location",
+    "CREATE_ITEM": "Create item",
+    "EMPTY": "Empty for now",
+    "RIBBON": {
+      "HAVE_TOOLTIP": "Has nested locations"
+    }
+  },
+  "DROP_MENU": {
+    "MOVE_MSG": "Move to another location?",
+    "SELECT_LOCATION": "Select location",
+    "HIGHER_LEVEL": "To the top level"
+  },
+  "LOCATION_DETAILS": {
+    "STORAGE_PLACE": "INest Storage",
+    "UPPER_LEVEL": "One level up",
+    "NESTED": "Nested locations",
+    "ITEMS_COUNT": "Total items",
+    "NO_ITEMS": "No items in this location yet",
+    "NO_DESCRIPTION": "No description",
+    "QR_LABEL": "Location QR Code"
+  },
+  "CREATE_ITEM_PAGE": {
+    "TITLE": "New Item",
+    "TITLE_EDIT": "Edit Item",
+    "TITLE_SUB": "Fill in the details to add an item to the database",
+    "WARNING_EDIT_MSG": "Limited editing: this item is active in a deal or lent out.",
+    "CLICK_TO_UPLOAD": "Click or drag files to upload",
+    "ADD_NEW_PHOTO": "Add new photos",
+    "NAME": "NAME - this field is required",
+    "NAME_PHL": "Enter item name",
+    "DESCRIPTION": "Description",
+    "FIELD_DESCRIPTION": "Enter detailed description (optional)",
+    "CATEGORY": "CATEGORY - this field is required",
+    "CREATE_CATEGORY": "New category",
+    "FIELD_CATEGORY": "Select category from list",
+    "LOCATION": "Location",
+    "SELECT_LOCATION": "Select storage place",
+    "STATUS": "STATUS - this field is required",
+    "PURCHASE_DATE": "Creation date",
+    "ADD_FINANCIALS": "Add financial information",
+    "PRICE": "Cost",
+    "CURRENCY": "Currency",
+    "BORROWED_INFO": "Information about whom it was borrowed from",
+    "LENT_INFO": "Lending information",
+    "LENDING": {
+      "TITLE": "Lending menu (I lent)",
+      "NAME": "LENDING TO WHOM ? - this field is required",
+      "NAME_PLH": "Enter name",
+      "RETURN_DATE": "RETURN DATE - this field is required",
+      "EMAIL": "Your email",
+      "SEND_REM": "Send reminder"
+    },
+    "BORROWED": {
+      "TITLE": "Lending menu (borrowed to me)",
+      "NAME": "BORROWED FROM WHOM ? - this field is required",
+      "NAME_PLH": "Enter name",
+      "RETURN_DATE": "RETURN DATE - this field is required",
+      "SEND_REM": "Send reminder"
+    },
+    "PERSON_NAME": "Contact name",
+    "PH_NAME": "Enter contact person's name",
+    "RETURN_DATE": "Return date",
+    "YOUR_EMAIL": "Your email",
+    "REMIND_CHANNELS_TITLE": "Notification delivery channels",
+    "CHANNEL_TELEGRAM": "Telegram",
+    "CHANNEL_EMAIL": "Email",
+    "ADD_WARRANTY_RECEIPT": "Add warranty and receipt",
+    "WARRANTY_EXPIRATION": "Warranty expiration date",
+    "RECEIPT": "Receipt / Document",
+    "ATTACH_RECEIPT": "Attach receipt file",
+    "UPLOADED": "Uploaded",
+    "ADD_REMINDER": "Add reminder / maintenance",
+    "REMINDER": {
+      "TYPE": "REMINDER TYPE - this field is required",
+      "DATE": "REMINDER DATE - this field is required",
+      "RECURRENCE": "Recurrence"
+    },
+    "BUTTON_ADD_INLINE": "Add",
+    "TIPS": {
+      "FINANCIALS": "Specify actual cost and purchase date to keep financial statistics.",
+      "RECEIPT": "Upload receipt photo or PDF and specify warranty end date — system will remind you before it expires.",
+      "REMINDER": "Set up scheduled maintenance, subscription payment, or regular reminder via Telegram and Email."
+    }
+  },
+  "EDIT_ITEM_PAGE": {
+    "ADD_NEW_PHOTO": "Add new photos",
+    "NAME": "Name",
+    "DESCRIPTION": "Description",
+    "CATEGORY": "Category",
+    "LOCATION": "Location",
+    "PRICE": "Price",
+    "ESTIMATED": "Estimated value",
+    "DATE": "Date",
+    "LENT_INFO": "Return by: ",
+    "RETURN_NOW": "Return now",
+    "STATUS_LOCKED_HINT": "Item status"
+  },
+  "ITEM_CARD": {
+    "MOVE": "Move",
+    "SELECT_TO_MOVE": "Move to...",
+    "TOASER": {
+      "MOVE_SUCCESS": "Item successfully moved to new location"
+    },
+    "MODAL": {
+      "YOU_SURE_MSG": "Are you sure you want to permanently delete this item? This action is irreversible!",
+      "MOVE_TITLE": "Move",
+      "MOVE_SUB": "Move item?"
+    }
+  },
+  "ITEM_DETAILS": {
+    "PURCHASE_PRICE": "Purchase price",
+    "ESTIMATED_VALUE": "Estimated value",
+    "STORAGE_PLACE": "Storage place",
+    "NO_DESCRIPTION": "No description",
+    "RECEIPT": "Receipt / Document",
+    "VIEW_RECEIPT": "Open document",
+    "VIEW_RECEIPT_TOOLTIP": "Open document",
+    "WARRANTY": "Warranty period"
   },
   "ITEM_HISTORY": {
     "TITLE": "History",
@@ -239,221 +477,32 @@
     "RECORD8": "Reminder scheduled",
     "RECORD9": "Sold",
     "RECORD10": "Borrowed",
-    "RECORD11": "Returned from debtor"
-  },
-  "HEADER": {
-    "HOME": "Home",
-    "ITEMS": "Items",
-    "LOGIN": "Login",
-    "REGISTERATION": "Registration",
-    "LOGOUT": "Logout",
-    "SETTINGS": "Settings",
-    "SALES": "Sales"
-  },
-  "MAIN_PAGE": {
-    "LOCATION_EMPTY_MSG": "Start by creating your first location",
-    "CREATE_FIRST_BTN": "Create first location"
-  },
-  "AUTH_PAGE": {
-    "TITLE_LOGIN": "Welcome back!",
-    "TITLE_REG": "Oh, Hi!",
-    "SUBTITLE_LOGIN": "Log in to your storage system",
-    "SUBTITLE_REG": "Register in the system",
-    "NAME": "Name",
-    "NAME_PHL": "Enter name",
-    "EMAIL": "Email",
-    "EMAIL_PHL": "Enter email",
-    "CHECKING_MAIL": "Checking email",
-    "PASSWORD": "Password",
-    "PASSWORD_CREATE_PHL": "Create a password",
-    "PASSWORD_ENTER_PHL": "Enter your password",
-    "PASSWORD_CONFIRM_PHL": "Repeat password",
-    "CONFIRM_PASSWORD": "Confirmation",
-    "CONFIRM_PASSWORD_PHL": "Repeat password",
-    "PASSWORD_MISMATCH": "Passwords do not match",
-    "BTN_GOOGLE": "Sign in with Google",
-    "CONFIRM_TITLE": "Email Confirmation",
-    "CODE_LABEL": "Code from email",
-    "LOGIN_BTN": "Login",
-    "REGISTRATION_BTN": "Register",
-    "OR": "or",
-    "HIDE_GOOGLE_BTN": "Other way",
-    "SHOW_GOOGLE_BTN": "Sign in with Google",
-    "SHOW_REG_GOOGLE_BTN": "Register with Google",
-    "NO_ACC_YET": "Don't have an account yet? ",
-    "ALREADY_HAVE_ACC": "Already have an account? ",
-    "GO_TO_REGISTER": "Go to registration",
-    "GO_TO_LOGIN": "Go to login"
-  },
-  "CONFIRM_REGISTRATION_PAGE": {
-    "TITLE": "Email Confirmation",
-    "SUBTITLE": "Enter the 6 digits we sent to",
-    "SUBMIT_BTN": "Confirm",
-    "RESEND_TEXT": "Didn't get the code?",
-    "RESEND_LINK": "Resend",
-    "SUCCESS": "Registration confirmed successfully",
-    "ERROR": "Invalid or expired confirmation code"
-  },
-  "CREATE_LOCATION_PAGE": {
-    "TITLE_CREATE": "Create Location",
-    "NAME": "Name",
-    "NAME_PLACEHOLDER": "E.g., Garage or Rack",
-    "SELECT_COLOR": "Select color",
-    "EMPTY": "It's empty here for now",
-    "COLOR_HINT_RANDOM": "If no color is chosen, one will be selected randomly"
-  },
-  "LOCATION_CARD": {
-    "MODAL": {
-      "YOU_SURE_MSG": "Delete this location and all its items? This action is irreversible!"
-    },
-    "BTN": {
-      "LOCATION": "Create Location",
-      "ITEM": "Create Item"
-    },
-    "EMPTY": "Empty for now",
-    "RIBBON": {
-      "HAVE_TOOLTIP": "Has nested locations"
-    }
-  },
-  "LOCATION_DETAILS": {
-    "STORAGE_PLACE": "INest Warehouse",
-    "UPPER_LEVEL": "Go level up",
-    "NESTED": "Nested locations",
-    "ITEMS_COUNT": "Total items",
-    "NO_ITEMS": "No items in this location",
-    "NO_DESCRIPTION": "No description",
-    "QR_LABEL": "Location QR Code"
-  },
-  "ITEM_CARD": {
-    "MODAL": {
-      "YOU_SURE_MSG": "Are you sure you want to permanently delete this item? This action is irreversible!",
-      "MOVE_TITLE": "Move",
-      "MOVE_SUB": "Move item?"
-    }
-  },
-  "ITEM_DETAILS": {
-    "PURCHASE_PRICE": "Purchase price",
-    "ESTIMATED_VALUE": "Estimated value",
-    "STORAGE_PLACE": "Storage place",
-    "NO_DESCRIPTION": "No description"
-  },
-  "DROP_MENU": {
-    "MOVE_MSG": "Move to another location?",
-    "SELECT_LOCATION": "Select location",
-    "HIGHER_LEVEL": "To the top level"
-  },
-  "LENDING_MODAL": {
-    "TITLE": "Lend Item",
-    "PERSON_NAME": "To whom?",
-    "PLACEHOLDER_NAME": "Enter the lucky person's name",
-    "ERROR_NAME_REQ": "Name is required, otherwise you'll never find it",
-    "ESTIMATED_VALUE": "Estimated value",
-    "EXPECTED_RETURN": "When to return?",
-    "COMMENT": "Comment",
-    "PLACEHOLDER_COMMENT": "Condition, set, and other important nuances..."
-  },
-  "SETTINGS_PAGE": {
-    "TITLE": "General Settings",
-    "GENERAL_TAB": "Module settings",
-    "CATEGORIES_TAB": "Category management",
-    "PLATFORMS_TAB": "Platform management",
-    "SALES_MODULE": "Sales",
-    "SALES_SUB": "Enables item selling, profit calculation, and financial statistics section",
-    "LENDING_MODULE": "Lending",
-    "LENDING_SUB": "Enables tracking of items lent to others or borrowed for temporary use",
-    "DELETE_CAT_CONFIRM": "Delete category? Make sure it has no items",
-    "MODAL": {
-      "CREATE_CATEGORY": "Create category?",
-      "DELETE_CATEGORY": "Delete category?",
-      "CREATE_PLATFORM": "Create platform?",
-      "DELETE_PLATFORM": "Delete platform?"
-    }
-  },
-  "FILTERS": {
-    "TITLE": "Filters",
-    "RESET": "Reset all filters",
-    "RESET_SHORT": "Reset",
-    "SEARCH_PHL": "Start typing a name...",
-    "CATEGORY": "Category",
-    "CATEGORY_PHL": "Select category",
-    "STATUS": "Status",
-    "PRICE": "Price",
-    "PRICE_FROM": "From",
-    "PRICE_TO": "To",
-    "SHOW_ALL": "All statuses",
-    "SORT_BY": "Sort by",
-    "SORT": {
-      "NEWEST": "Newest first",
-      "OLDEST": "Oldest first",
-      "NAME_ASC": "Name (A-Z)",
-      "NAME_DESC": "Name (Z-A)",
-      "PRICE_ASC": "Cheapest",
-      "PRICE_DESC": "Most expensive"
-    }
-  },
-  "CREATE_ITEM_PAGE": {
-    "TITLE": "New Item",
-    "TITLE_SUB": "Fill in the details to add an item to the database",
-    "NAME": "Name",
-    "NAME_PHL": "Enter item name",
-    "DESCRIPTION": "Description",
-    "FIELD_DESCRIPTION": "Enter detailed description (optional)",
-    "CATEGORY": "Category",
-    "CREATE_CATEGORY": "New Category",
-    "FIELD_CATEGORY": "Select a category from the list",
-    "STATUS": "Status",
-    "LOCATION": "Location",
-    "SELECT_LOCATION": "Select storage place",
-    "PURCHASE_DATE": "Purchase date",
-    "PRICE": "Cost ($)",
-    "BORROWED_INFO": "Borrowing info",
-    "LENT_INFO": "Lending info",
-    "PERSON_NAME": "Name",
-    "PH_NAME": "Enter contact person's name",
-    "RETURN_DATE": "Return date",
-    "SEND_EMAIL_TO_ME": "Send email notification",
-    "ADD_PHOTO": "Add photo",
-    "CLICK_TO_UPLOAD": "Click or drag files to upload",
-    "BUTTON_CANCEL": "Cancel",
-    "BUTTON_START": "Create Item",
-    "SEND_NOTIFICATION": "Send email notification",
-    "YOUR_EMAIL": "Your email",
-    "CURRENCY": "Currency",
-    "ESTIMATED": "Estimated value"
-  },
-  "EDIT_ITEM_PAGE": {
-    "ADD_NEW_PHOTO": "Add new photos",
-    "NAME": "Name",
-    "DESCRIPTION": "Description",
-    "CATEGORY": "Category",
-    "LOCATION": "Location",
-    "PRICE": "Price",
-    "ESTIMATED": "Estimated value",
-    "DATE": "Date",
-    "LENT_INFO": "Return by: ",
-    "RETURN_NOW": "Return now",
-    "STATUS_LOCKED_HINT": "Items status"
-  },
-  "SELL_PAGE": {
-    "PRICE": "Sale price",
-    "PRICE_PLH": "Specify price",
-    "DATE": "Sale date",
-    "SOLD_ON": "Sold on: ",
-    "SELECT_PLATFORM": "Select platform",
-    "CREATE": "Create platform",
-    "COMMENT": "Comment"
-  },
-  "PLATFORM_PAGE": {
-    "CREATE": "Create platform"
+    "RECORD11": "Returned by debtor"
   },
   "ITEMS_LIST": {
     "TITLE": "Item Management",
-    "EMPTY_RESULT": "No items found",
-    "BULK_DELETE_COUNT_CONFIRM": "Are you sure you want to move {{count}} selected items to the archive?",
-    "BULK_HARD_DELETE_CONFIRM": "Are you sure you want to permanently delete {{count}} selected items? This action is irreversible!",
+    "SEARCH_PHL": "Start typing name...",
+    "RESET_SHORT": "Reset",
+    "ONLY_ARCHIVE": "Archive only",
+    "ALL_AND_ARCHIVE": "All + Archive",
+    "EMPTY_TITLE": "Your items will be displayed here",
+    "EMPTY_DESC": "Create your first location on the home screen and add an item.",
+    "EMPTY_RESULT": "Nothing found",
+    "EMPTY_RESULT_DESC": "Try changing search parameters or resetting filters",
+    "BULK_DELETE_COUNT_CONFIRM": "Are you sure you want to archive selected items ({{count}} pcs)?",
+    "BULK_HARD_DELETE_CONFIRM": "Are you sure you want to permanently delete selected items ({{count}} pcs)? This action is irreversible!",
     "DROP_MENU": {
       "ALL_CATEGORIES": "All categories",
       "ALL_LOCATIONS": "All locations"
+    },
+    "SORT": {
+      "NEWEST": "Newest first",
+      "NAME_ASC": "Name (A-Z)",
+      "PRICE_ASC": "Cheapest first",
+      "PRICE_DESC": "Most expensive first"
+    },
+    "STATUS_FILTER": {
+      "SHOW_ALL": "All statuses"
     },
     "TABLE": {
       "PHOTO": "Photo",
@@ -465,36 +514,113 @@
       "ACTION": "Actions"
     }
   },
-  "SALES_PAGE": {
-    "TITLE": "Sales",
-    "TITLE_SUB": "Your transaction history and financial stats",
-    "TOTAL_REVENUE": "Revenue",
-    "TOTAL_PROFIT": "Profit",
-    "COUNT_LABEL": "Total deals",
-    "NO_SALES": "No sales yet",
-    "NO_SALES_SUB": "Once you sell an item, it will appear here",
-    "MODALS": {
-      "RETURN_TITLE": "Item Return",
-      "RETURN_MESSAGE": "Are you sure you want to cancel the sale? The item will become active in your inventory again.",
-      "DELETE_TITLE": "Delete Record",
-      "DELETE_MESSAGE": "Do you really want to delete this transaction info?",
-      "DELETE_SMART_HINT": "When deleting, you can keep the history record for stats."
+  "SETTINGS_PAGE": {
+    "TITLE": "General Settings",
+    "GENERAL_TAB": "Modules",
+    "CATEGORIES_TAB": "Categories",
+    "PLATFORMS_TAB": "Platforms",
+    "INTEGRATIONS_TAB": "Integrations",
+    "SALES_MODULE": "Sales module",
+    "SALES_SUB": "Includes tracking of sold items, net profit calculation, and financial analytics",
+    "LENDING_MODULE": "Lending module",
+    "LENDING_SUB": "Allows tracking items lent to others or borrowed for temporary use",
+    "DELETE_CAT_CONFIRM": "Delete category? Make sure there are no linked items left in it",
+    "RESET_TUTORIAL_TITLE": "Interactive Tours",
+    "RESET_TUTORIAL_SUB": "Reset progress of interactive hints to go through interface tour again",
+    "RESET_TUTORIAL_BTN": "Reset progress",
+    "RESET_TUTORIAL_CONFIRM": "Reset hints and start interactive interface tour again?",
+    "MODAL": {
+      "CREATE_CATEGORY": "New category",
+      "DELETE_CATEGORY": "Delete category",
+      "CREATE_PLATFORM": "New marketplace",
+      "DELETE_PLATFORM": "Delete marketplace"
+    },
+    "INTEGRATIONS": {
+      "TITLE": "Bot Integration",
+      "SUBTITLE": "Connect Telegram to get a quick control panel for your items directly from messenger",
+      "TG_BOT_TITLE": "Telegram bot",
+      "VB_BOT_TITLE": "Viber bot",
+      "VB_BOT_DESC": "Backup channel for sending service notifications.",
+      "STATUS_ACTIVE": "Connected",
+      "STATUS_INACTIVE": "Inactive",
+      "STATUS_COMING_SOON": "Coming soon",
+      "ACTIVE_TITLE": "Telegram control panel features:",
+      "ACTIVE_LINE_1": "/find <name> — instant search for items with action buttons.",
+      "ACTIVE_LINE_2": "/where <name> — tree navigation of location chain.",
+      "ACTIVE_LINE_3": "/locations — interactive guide to your storage structure.",
+      "ACTIVE_LINE_4": "/reminders — view current reminders and debts.",
+      "ACTIVE_LINE_5": "/add <name> — quick creation of new item with «Active» status.",
+      "ACTIVE_LINE_6": "🔔 Automatic push notifications on event date.",
+      "UNLINK_BTN": "Unlink bot",
+      "UNLINK_CONFIRM": "Disable Telegram bot?",
+      "INSTRUCTIONS_TITLE": "How to link the bot:",
+      "STEP_1": "Click «Generate binding code» below.",
+      "STEP_2": "Click on the blue «Go to Telegram bot» button that appears.",
+      "STEP_3": "In the opened Telegram chat, click «Start» button at the bottom.",
+      "LINK_LABEL": "Your connection link:",
+      "LAUNCH_BOT": "Go to Telegram bot",
+      "LINK_EXPIRE_SUB": "Link is valid for 15 minutes.",
+      "GENERATE_TOKEN_BTN": "Generate binding code",
+      "REFRESH_TOKEN_BTN": "Refresh access code"
     }
   },
-  "REMINDS_PAGE": {
-    "OPEN_MENU": "Reminder menu",
+  "SELL_PAGE": {
+    "PURCHASE_PRICE": "Purchase price",
+    "PRICE": "Selling price",
+    "PRICE_PLH": "Specify price",
+    "DATE": "Sale date",
+    "SOLD_ON": "Sold for: ",
+    "SELECT_PLATFORM": "Select platform",
+    "CREATE": "Create platform",
+    "COMMENT": "Comment"
+  },
+  "PLATFORM_PAGE": {
+    "CREATE": "Create platform"
+  },
+  "SALES_PAGE": {
+    "TITLE": "Sales",
+    "TITLE_SUB": "History of your deals and financial statistics",
+    "TOTAL_REVENUE": "Total revenue",
+    "TOTAL_PROFIT": "Net profit",
+    "COUNT_LABEL": "Total deals",
+    "NO_SALES": "No sales yet",
+    "NO_SALES_SUB": "As soon as you sell an item, it will appear here",
+    "EMPTY_RESULT": "Nothing found for your request",
+    "EMPTY_RESULT_DESC": "Try changing search parameters or resetting filters",
+    "SEARCH_PHL": "Start typing name...",
+    "RESET_SHORT": "Reset",
+    "ALL_CATEGORIES": "All categories",
+    "CATEGORIES_TOOLTIP": "Select category",
+    "ALL_PLATFORMS": "All platforms",
+    "PLATFORMS_TOOLTIP": "Select platform",
+    "SORT": {
+      "SORT_TOOLTIP": "Sort",
+      "NEWEST": "Newest first",
+      "PROFIT_DESC": "Most profitable first",
+      "PRICE_DESC": "Most expensive first",
+      "PRICE_ASC": "Cheapest first"
+    },
+    "MODALS": {
+      "RETURN_TITLE": "Item Return",
+      "RETURN_MESSAGE": "Are you sure you want to cancel the sale? Item will become active in your inventory again.",
+      "DELETE_TITLE": "Delete Record",
+      "DELETE_MESSAGE": "Are you sure you want to delete information about this deal?",
+      "DELETE_SMART_HINT": "When deleting, you can keep record in history for statistics."
+    }
+  },
+  "ITEM_REMINDERS": {
+    "TITLE": "Reminders & Service",
+    "EMPTY": "No reminders yet",
     "NAME_LABEL": "Name",
-    "NAME_PHL": "Enter name (remind me about...",
-    "EMPTY_LABEL": "No reminders",
+    "NAME_PHL": "Example: Oil change / Subscription payment",
     "TYPE_LABEL": "Reminder type",
-    "DATE_LABEL": "Reminder date",
-    "RECURRENCE": "Period",
-    "STATUS_COMPLETED": "Completed",
-    "ACTION_FINISHED": "Action finished",
-    "MODAL": {
-      "TITLE_DONE": "Finish task",
-      "M_YOU_SURE_DONE": "Did you really complete this reminder?",
-      "DELETE_MSG": "Do you really want to delete the reminder?"
+    "RECURRENCE": "Recurrence",
+    "DATE_LABEL": "Date and time",
+    "MODALS": {
+      "COMPLETE_TITLE": "Complete Reminder",
+      "COMPLETE_MSG": "Are you sure you want to mark this reminder as completed?",
+      "DELETE_TITLE": "Delete Reminder",
+      "DELETE_MSG": "Are you sure you want to delete this reminder?"
     }
   },
   "RECURRENCE": {
@@ -505,15 +631,24 @@
     "YEARLY": "Yearly"
   },
   "DASHBOARD_STATS": {
-    "TOTAL_ITEMS": "Total Items",
     "LOCATIONS": "Locations",
-    "ATTENTION": "Attention",
-    "LENT": "Lent Out",
+    "LOCATIONS_TOOLTIP": "Open locations list",
+    "TOTAL_ITEMS": "Total items",
+    "TOTAL_ITEMS_TOOLTIP": "Open items list",
+    "LENT": "Lent",
+    "LENT_TOOLTIP": "Open lent items list",
     "SOLD": "Sold",
-    "EXPIRED_SHORT": "{{ count }} expired",
+    "SOLD_TOOLTIP": "Open sold items list",
+    "ATTENTION": "Attention",
+    "ATTENTION_TOOLTIP": "Open warnings list",
+    "EXPIRED_SHORT": "{{ count }} overdue",
     "WARRANTY_SHORT": "{{ count }} warranty",
-    "REMINDERS_SHORT": "{{ count }} reminders",
-    "ALL_OK": "All good"
+    "REMINDERS_SHORT": "{{ count }} remind.",
+    "WARRANTY_LABEL": "Warranty",
+    "EXPIRED_LABEL": "Overdue",
+    "REMINDER_LABEL": "Reminder",
+    "ALL_OK": "All good",
+    "EXPIRED": "Overdue"
   },
   "FEEDBACK": {
     "TITLE": "Have an idea or found a bug?",
@@ -524,11 +659,138 @@
     "SEND": "Send",
     "SENDING": "Sending...",
     "MESSAGE_EMPTY": "Message cannot be empty",
-    
-    "RATING_TITLE": "Thanks! How useful is the app?",
-    "MISSING_PLACEHOLDER": "What's missing? (optional)",
+    "RATING_TITLE": "Thank you! How useful is the app?",
+    "MISSING_PLACEHOLDER": "What is missing? (optional)",
     "SKIP": "Skip",
     "DONE": "Done",
     "SAVING": "Saving..."
+  },
+  "TUTORIAL_PAGE": {
+    "DONE_BTN": "Got it",
+    "NEXT_BTN": "Next",
+    "PREV_BTN": "Back",
+    "SKIP_BTN": "Don't show again",
+    "PROGRESS": "{{current}} of {{total}}",
+    "SKIP_CONFIRM_TITLE": "Tutorial Disabled",
+    "SKIP_CONFIRM_DESC": "You can always launch it again or reset in profile settings.",
+    "DASHBOARD": {
+      "WELCOME_TITLE": "Welcome to INest!",
+      "WELCOME_DESC": "Let's walk through main sections so you can easily navigate the app right away.",
+      "HEADER_TITLE": "Header",
+      "HEADER_DESC": "Switch themes, languages, open profile and settings here.",
+      "STATS_TITLE": "General Statistics",
+      "STATS_DESC": "Top block shows general summary: how many items you have, what is sold, lent, and where actions are required.",
+      "STATS_LOCATIONS_TITLE": "«Locations» Section",
+      "STATS_LOCATIONS_DESC": "Clicking card will quickly take you to storage places list. We'll discuss them in detail next.",
+      "STATS_ITEMS_TITLE": "«Items» Section",
+      "STATS_ITEMS_DESC": "Main list of all your items. Tables and filters overview will be on your first visit to this section.",
+      "STATS_SALES_TITLE": "«Sales» Section",
+      "STATS_SALES_DESC": "Tracking sold items and clear totals. Details will be explained inside section itself.",
+      "STATS_LENT_TITLE": "«Lent» Section",
+      "STATS_LENT_DESC": "List of items you lent to someone or borrowed yourself.",
+      "STATS_ATTENTION_TITLE": "Notifications",
+      "STATS_ATTENTION_DESC": "Overdue reminders, expiring warranties, and important events end up here.",
+      "LOCATIONS_TITLE": "Quick Navigation",
+      "LOCATIONS_DESC": "Switch between major storage places for quick scrolling to needed block.",
+      "BOARD_TITLE": "Working Board",
+      "BOARD_DESC": "Main area. Each card is a separate place (room, closet, garage) where your items reside.",
+      "CREATE_FIRST_DESC": "Click here to add your first place and start organizing.",
+      "FEEDBACK_BTN_TITLE": "Ideas and Bugs",
+      "FEEDBACK_BTN_DESC": "Found a bug or have an idea? Click here anytime — we read every message.",
+      "FOOTER_TITLE": "Help & Contacts",
+      "FOOTER_DESC": "Support, terms, and developer contact are always at bottom of page."
+    },
+    "ITEMS_LIST": {
+      "WELCOME_TITLE": "All Items",
+      "WELCOME_DESC": "A visual list of all your items in a convenient table.",
+      "FILTERS_TITLE": "Search & Filters",
+      "FILTERS_DESC": "Search items by name, sort by categories, places, statuses, or open archive.",
+      "TABLE_TITLE": "Actions with Items",
+      "TABLE_DESC": "Check multiple items for bulk deletion or use icons on right for viewing and editing."
+    },
+    "SALES_LIST": {
+      "WELCOME_TITLE": "Sales Section",
+      "WELCOME_DESC": "Entire history of your successful deals and financial metrics is displayed here.",
+      "FINANCE_TITLE": "Financial Statistics",
+      "FINANCE_DESC": "Summary of your total revenue and net profit considering multi-currency.",
+      "FILTERS_TITLE": "Search & Filtering",
+      "FILTERS_DESC": "Use search by name, category/platform filters, and sorting by date or profit.",
+      "ACTIONS_TITLE": "Sales List",
+      "ACTIONS_DESC": "Cards with detailed sales information. From here you can cancel deal or delete record."
+    },
+    "LOCATION_FORM": {
+      "WELCOME_TITLE": "New Place",
+      "WELCOME_DESC": "Physical storage place is created here (e.g., Garage, Shelf, Red box).",
+      "NAME_TITLE": "Name & Nesting",
+      "NAME_DESC": "Enter clear name. If creating shelf inside closet — it will automatically link to it.",
+      "COLOR_TITLE": "Card Color",
+      "COLOR_DESC": "Select color from palette to quickly find desired card on board.",
+      "CUSTOM_COLOR_TITLE": "Custom Shade",
+      "CUSTOM_COLOR_DESC": "Eyedropper icon allows selecting any exact color."
+    },
+    "ITEM_FORM": {
+      "WELCOME_TITLE": "Item Information",
+      "WELCOME_DESC": "Detailed item card is created here: photos, purchase history, warranty, and statuses.",
+      "PHOTO_TITLE": "Photos",
+      "PHOTO_DESC": "Upload one or several photos. Main photo can be selected simply by clicking it.",
+      "NAME_TITLE": "Name",
+      "NAME_DESC": "Name item simply and clearly (e.g., «Bosch Hammer Drill» or «Winter Jacket»).",
+      "DESC_TITLE": "Description & Notes",
+      "DESC_DESC": "Serial numbers, package contents, dimensions, or important details can be entered here.",
+      "CATEGORY_TITLE": "Category",
+      "CATEGORY_DESC": "Group items by types (Tools, Clothing, Electronics) so they are easy to find.",
+      "ADD_CATEGORY_TITLE": "New Category",
+      "ADD_CATEGORY_DESC": "Click here if needed category is not in list — it can be added right while filling form.",
+      "LOCATION_TITLE": "Storage Place",
+      "LOCATION_DESC": "Specify exactly which place or box item is located in.",
+      "STATUS_TITLE": "Item Status",
+      "STATUS_DESC": "Mark state: «In stock», «Lent», or «Borrowed». Date and name fields will appear.",
+      "FINANCIALS_TITLE": "Cost",
+      "FINANCIALS_DESC": "Check box to specify price and purchase date to calculate total cost of all items.",
+      "RECEIPT_TITLE": "Warranty & Receipt",
+      "RECEIPT_DESC": "Save warranty expiration dates and receipt scans — app will remind you before warranty ends.",
+      "REMINDER_TITLE": "Reminders",
+      "REMINDER_DESC": "Set up scheduled maintenance, consumable replacement, or subscription renewal with Telegram or Email alerts."
+    },
+    "FIRST_LOCATION_CARD": {
+      "WELCOME_TITLE": "First Place Created!",
+      "WELCOME_DESC": "Great! Now this is your workspace. Let's cover control buttons.",
+      "HEADER_TITLE": "Control Buttons",
+      "HEADER_DESC": "View details, edit, delete, and parent place selection are located here.",
+      "ADD_NESTED_TITLE": "Nested Place",
+      "ADD_NESTED_DESC": "Click «Create Location» to create place INSIDE this one (e.g., Closet inside Room).",
+      "ADD_ITEM_TITLE": "Adding Item",
+      "ADD_ITEM_DESC": "Click «Create Item» to place new item here immediately."
+    },
+    "FIRST_ITEM_CARD": {
+      "WELCOME_TITLE": "First Item in Database!",
+      "WELCOME_DESC": "Congratulations! Here is how to manage this card now.",
+      "DRAG_TITLE": "Drag and Drop",
+      "DRAG_DESC": "Hold card with mouse and drag it to any other place on board.",
+      "INFO_TITLE": "View",
+      "INFO_DESC": "Eye icon will open detailed item page with photos, notes, and documents.",
+      "MENU_TITLE": "Actions Menu",
+      "MENU_DESC": "Three dots open menu: edit, lend, sell, or delete item."
+    },
+    "SELL_FORM": {
+      "WELCOME_TITLE": "Processing Sale",
+      "WELCOME_DESC": "Fill in sale amount and platform to record profit and remove item from storage.",
+      "PRICE_TITLE": "Selling Price",
+      "PRICE_DESC": "Specify final deal cost.",
+      "DATE_TITLE": "Sale Date",
+      "DATE_DESC": "Set to today by default.",
+      "ADD_PLATFORM_TITLE": "New Platform",
+      "ADD_PLATFORM_DESC": "Click here if needed marketplace (OLX, eBay, Amazon, etc.) is not in list yet.",
+      "PLATFORM_TITLE": "Marketplace",
+      "PLATFORM_DESC": "Select where item was sold."
+    },
+    "FIRST_SALE_CARD": {
+      "WELCOME_TITLE": "First Recorded Sale!",
+      "WELCOME_DESC": "Congratulations! Item moved to deal archive.",
+      "INFO_TITLE": "Deal Card",
+      "INFO_DESC": "Shows date, selling price, and your net profit (revenue minus purchase price).",
+      "UNDO_TITLE": "Return to Storage",
+      "UNDO_DESC": "If customer returned item or deal fell through — click this button to restore item to any location."
+    }
   }
 }

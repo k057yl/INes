@@ -297,10 +297,6 @@
     "ALREADY_HAVE_ACC": "Уже есть аккаунт? ",
     "GO_TO_REGISTER": "Перейти к регистрации",
     "GO_TO_LOGIN": "Перейти к входу",
-    "TITLE_FORGOT": "Восстановление",
-    "SUBTITLE_FORGOT": "Введите ваш Email, и мы отправим инструкцию по сбросу пароля",
-    "SEND_RESET_LINK_BTN": "Отправить инструкцию",
-    "RESET_EMAIL_SENT_MSG": "Ссылка для сброса пароля отправлена на ваш Email. Проверьте почтовый ящик.",
     "REMEMBERED_PASSWORD": "Вспомнили пароль?"
   },
   "FORGOT_PASSWORD_PAGE": {
