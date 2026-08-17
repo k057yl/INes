@@ -32,8 +32,8 @@ namespace INest.Controllers
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.None,
+                Secure = false,
+                SameSite = SameSiteMode.Lax,
                 Expires = DateTime.UtcNow.AddDays(7)
             };
 
@@ -54,7 +54,7 @@ namespace INest.Controllers
         {
             var result = await _mediator.Send(new ConfirmRegisterCommand(dto.Email, dto.Code));
             SetTokenCookies(result);
-            return Ok(result);
+            return Ok(new { data = result });
         }
 
         [AllowAnonymous]
@@ -119,7 +119,7 @@ namespace INest.Controllers
             if (result == null) return Unauthorized(new { error = AUTH.ERRORS.GOOGLE_AUTH_FAILED });
 
             SetTokenCookies(result);
-            return Ok();
+            return Ok(new { data = result });
         }
 
         [Authorize]
@@ -138,10 +138,14 @@ namespace INest.Controllers
         }
 
         [HttpPost("refresh")]
-        public async Task<IActionResult> Refresh()
+        public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequestDto? dto)
         {
-            var accessToken = Request.Cookies["X-Access-Token"];
-            var refreshToken = Request.Cookies["X-Refresh-Token"];
+            var authHeader = Request.Headers["Authorization"].ToString();
+            var accessToken = dto?.AccessToken
+                ?? (!string.IsNullOrEmpty(authHeader) && authHeader.StartsWith("Bearer ") ? authHeader["Bearer ".Length..].Trim() : null)
+                ?? Request.Cookies["X-Access-Token"];
+
+            var refreshToken = dto?.RefreshToken ?? Request.Cookies["X-Refresh-Token"];
 
             if (string.IsNullOrEmpty(accessToken) || string.IsNullOrEmpty(refreshToken))
                 return Unauthorized();
@@ -149,7 +153,7 @@ namespace INest.Controllers
             var response = await _mediator.Send(new RefreshTokenCommand(accessToken, refreshToken));
 
             SetTokenCookies(response);
-            return Ok();
+            return Ok(new { data = response });
         }
 
         [Authorize]
@@ -176,4 +180,6 @@ namespace INest.Controllers
             return Ok(new { message = TUTORIAL.SUCCESS.RESET_SUCCESS });
         }
     }
+
+    public record RefreshTokenRequestDto(string? AccessToken, string? RefreshToken);
 }

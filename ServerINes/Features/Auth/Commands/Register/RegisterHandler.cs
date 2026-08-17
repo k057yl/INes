@@ -92,8 +92,8 @@ namespace INest.Features.Auth.Commands.Register
             if (!updateResult.Succeeded)
                 throw new AppException(SYSTEM.DEFAULT_ERROR, 500);
 
-            string subject = _emailT[EMAILS.CONFIRM_SUBJECT].Value;
-            string bodyTemplate = _emailT[EMAILS.CONFIRM_BODY].Value;
+            string subject = _emailT[EMAILS.CONFIRM_SUBJECT];
+            string bodyTemplate = _emailT[EMAILS.CONFIRM_BODY];
             string htmlBody = string.Format(bodyTemplate, code);
 
             await _emailService.SendEmailAsync(rawEmail, subject, htmlBody);
