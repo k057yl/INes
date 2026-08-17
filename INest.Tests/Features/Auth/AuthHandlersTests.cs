@@ -117,7 +117,7 @@ namespace INest.Tests.Features.Auth
             _tokenServiceMock.GenerateRefreshToken().Returns("refresh_token");
             _tokenServiceMock.HashRefreshToken("refresh_token").Returns("hashed_refresh_token");
 
-            var handler = new ConfirmRegisterHandler(_userManagerMock, _tokenServiceMock);
+            var handler = new ConfirmRegisterHandler(_userManagerMock, _tokenServiceMock, _sanitizerMock);
             var command = new ConfirmRegisterCommand(email, code);
 
             // Act
@@ -147,7 +147,7 @@ namespace INest.Tests.Features.Auth
 
             _userManagerMock.FindByEmailAsync(email).Returns(user);
 
-            var handler = new ConfirmRegisterHandler(_userManagerMock, _tokenServiceMock);
+            var handler = new ConfirmRegisterHandler(_userManagerMock, _tokenServiceMock, _sanitizerMock);
             var command = new ConfirmRegisterCommand(email, "123456");
 
             // Act & Assert
@@ -171,7 +171,7 @@ namespace INest.Tests.Features.Auth
             _userManagerMock.FindByEmailAsync(email).Returns(user);
             _userManagerMock.CheckPasswordAsync(user, "Password123!").Returns(true);
 
-            var handler = new LoginHandler(_userManagerMock, _tokenServiceMock);
+            var handler = new LoginHandler(_userManagerMock, _tokenServiceMock, _sanitizerMock);
             var command = new LoginCommand(email, "Password123!", "Europe/Kyiv");
 
             // Act & Assert
@@ -198,7 +198,7 @@ namespace INest.Tests.Features.Auth
             _tokenServiceMock.GenerateJwtToken(user, Arg.Any<IList<string>>()).Returns("jwt_access_token");
             _tokenServiceMock.GenerateRefreshToken().Returns("refresh_token");
 
-            var handler = new LoginHandler(_userManagerMock, _tokenServiceMock);
+            var handler = new LoginHandler(_userManagerMock, _tokenServiceMock, _sanitizerMock);
             var command = new LoginCommand(email, "Password123!", "Europe/Kyiv");
 
             // Act

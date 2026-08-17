@@ -189,7 +189,7 @@ namespace INest.Tests.Features.Locations
         #region DeleteLocationHandler Tests
 
         [Fact]
-        public async Task DeleteLocation_ShouldThrowAppException_WhenHasItemsOrChildren()
+        public async Task DeleteLocation_ShouldMoveItemsToOther_AndRemoveLocation_WhenTargetNotSpecified()
         {
             // Arrange
             using var db = DbContextFactory.Create();
@@ -205,7 +205,81 @@ namespace INest.Tests.Features.Locations
             await db.SaveChangesAsync();
 
             var handler = new DeleteLocationHandler(db, _trackerMock);
-            var command = new DeleteLocationCommand(userId, location.Id);
+
+            // ФИКС: Сначала location.Id, затем userId!
+            var command = new DeleteLocationCommand(location.Id, userId);
+
+            // Act
+            var result = await handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            result.ShouldBeTrue();
+
+            var deletedLoc = await db.StorageLocations.FirstOrDefaultAsync(l => l.Id == location.Id);
+            deletedLoc.ShouldBeNull();
+
+            var otherLoc = await db.StorageLocations.FirstOrDefaultAsync(l => l.UserId == userId && l.Name == "Other");
+            otherLoc.ShouldNotBeNull();
+
+            var movedItem = await db.Items.FirstOrDefaultAsync(i => i.Id == item.Id);
+            movedItem.ShouldNotBeNull();
+            movedItem.StorageLocationId.ShouldBe(otherLoc.Id);
+
+            _trackerMock.Received(1).InvalidateUserCache(userId);
+        }
+
+        [Fact]
+        public async Task DeleteLocation_ShouldMoveItemsToSpecifiedTarget_AndRemoveLocation()
+        {
+            // Arrange
+            using var db = DbContextFactory.Create();
+            var userId = Guid.NewGuid();
+            var category = new Category { Id = Guid.NewGuid(), Name = "Тест", Color = "#00B894", UserId = userId };
+
+            var location = new StorageLocation { Id = Guid.NewGuid(), Name = "Удаляемая", UserId = userId };
+            var targetLocation = new StorageLocation { Id = Guid.NewGuid(), Name = "Целевая", UserId = userId };
+            var item = new Item { Id = Guid.NewGuid(), Name = "Вещь", UserId = userId, CategoryId = category.Id, StorageLocationId = location.Id };
+
+            db.Categories.Add(category);
+            db.StorageLocations.AddRange(location, targetLocation);
+            db.Items.Add(item);
+            await db.SaveChangesAsync();
+
+            var handler = new DeleteLocationHandler(db, _trackerMock);
+
+            // ФИКС: Сначала location.Id, затем userId, затем targetLocation.Id!
+            var command = new DeleteLocationCommand(location.Id, userId, targetLocation.Id);
+
+            // Act
+            var result = await handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            result.ShouldBeTrue();
+
+            var deletedLoc = await db.StorageLocations.FirstOrDefaultAsync(l => l.Id == location.Id);
+            deletedLoc.ShouldBeNull();
+
+            var movedItem = await db.Items.FirstOrDefaultAsync(i => i.Id == item.Id);
+            movedItem.ShouldNotBeNull();
+            movedItem.StorageLocationId.ShouldBe(targetLocation.Id);
+        }
+
+        [Fact]
+        public async Task DeleteLocation_ShouldThrowAppException_WhenNestingIntoItself()
+        {
+            // Arrange
+            using var db = DbContextFactory.Create();
+            var userId = Guid.NewGuid();
+            var location = new StorageLocation { Id = Guid.NewGuid(), Name = "Удаляемая", UserId = userId };
+            var childLoc = new StorageLocation { Id = Guid.NewGuid(), Name = "Дочерняя", UserId = userId, ParentLocationId = location.Id };
+
+            db.StorageLocations.AddRange(location, childLoc);
+            await db.SaveChangesAsync();
+
+            var handler = new DeleteLocationHandler(db, _trackerMock);
+
+            // ФИКС: Сначала location.Id, затем userId, затем target (location.Id)
+            var command = new DeleteLocationCommand(location.Id, userId, location.Id);
 
             // Act & Assert
             await Should.ThrowAsync<AppException>(async () =>
