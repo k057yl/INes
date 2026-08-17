@@ -14,7 +14,7 @@ services:
 
   inest-api:
     build:
-      context: ./INest
+      context: ./ServerINes
       dockerfile: Dockerfile
     container_name: inest-api-prod
     restart: always
@@ -44,7 +44,7 @@ services:
 
   inest-client:
     build:
-      context: ./ClientINest
+      context: ./ClientINes
       dockerfile: Dockerfile
     container_name: inest-client-prod
     restart: always
