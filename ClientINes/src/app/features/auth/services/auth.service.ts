@@ -35,9 +35,18 @@ export class AuthService {
       .post<any>(`${this.apiUrl}/login`, { email, password })
       .pipe(
         tap((response) => {
-          const token = response?.data?.token || response?.token || response?.data?.accessToken || response?.accessToken;
+          const token =
+            response?.data?.token ||
+            response?.token ||
+            response?.data?.accessToken ||
+            response?.accessToken;
+
+          console.log('LOGIN RESPONSE:', response);
+          console.log('LOGIN TOKEN:', token);
+
           if (token) {
             localStorage.setItem('token', token);
+            console.log('LOCAL STORAGE CHECK:', localStorage.getItem('token'));
           }
         }),
         switchMap(() => this.checkAuth())
