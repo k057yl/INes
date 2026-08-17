@@ -99,14 +99,16 @@ namespace INest
             })
             .AddJwtBearer(options =>
             {
+                options.RequireHttpsMetadata = false;
+
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = jwt["Issuer"],
-                    ValidAudience = jwt["Audience"],
+                    ValidIssuer = jwt["Issuer"]?.Trim(),
+                    ValidAudience = jwt["Audience"]?.Trim(),
                     IssuerSigningKey = new SymmetricSecurityKey(keyBytes),
                     ClockSkew = TimeSpan.Zero
                 };
