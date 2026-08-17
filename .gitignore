@@ -20,14 +20,13 @@
 # Secrets & Local Configuration
 # =========================
 
-# Local environment variables
+# Local environment variables (Секреты! Прячем от Git)
 **/.env
 **/.env.*
 
-# Local appsettings
-**/appsettings.json
-**/appsettings.Development.json
+# Local appsettings overrides (если вдруг будешь делать локальные секретные конфиги)
 **/appsettings.Local.json
+**/appsettings.Secrets.json
 
 # Local databases
 *.db

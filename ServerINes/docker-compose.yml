@@ -1,7 +1,20 @@
 services:
+  inest-db:
+    image: postgres:15-alpine
+    container_name: inest-postgres-prod
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - inest_db_data:/var/lib/postgresql/data
+    networks:
+      - inest_network
+
   inest-api:
-    build: 
-      context: .
+    build:
+      context: ./INest
       dockerfile: Dockerfile
     container_name: inest-api-prod
     restart: always
@@ -10,23 +23,35 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ConnectionStrings__DefaultConnection=Host=inest-db;Port=5432;Database=${DB_NAME};Username=${DB_USER};Password=${DB_PASSWORD}
+      - AdminSeeder__Email=${ADMIN_EMAIL}
+      - AdminSeeder__Password=${ADMIN_PASSWORD}
+      - AdminSeeder__DisplayName=${ADMIN_NAME}
+      - Jwt__Key=${Jwt__Key}
+      - Jwt__Issuer=${Jwt__Issuer}
+      - Jwt__Audience=${Jwt__Audience}
+      - CloudinarySettings__CloudName=${CloudinarySettings__CloudName}
+      - CloudinarySettings__ApiKey=${CloudinarySettings__ApiKey}
+      - CloudinarySettings__ApiSecret=${CloudinarySettings__ApiSecret}
+      - Brevo__ApiKey=${Brevo__ApiKey}
+      - Brevo__FromEmail=${Brevo__FromEmail}
+      - Brevo__FromName=${Brevo__FromName}
+      - TelegramBotSettings__BotToken=${TelegramBotSettings__BotToken}
+      - TelegramBotSettings__BotUsername=${TelegramBotSettings__BotUsername}
     depends_on:
       - inest-db
     networks:
       - inest_network
 
-  inest-db:
-    image: postgres:15-alpine
-    container_name: inest-postgres-prod
+  inest-client:
+    build:
+      context: ./ClientINest
+      dockerfile: Dockerfile
+    container_name: inest-client-prod
     restart: always
     ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
-    volumes:
-      - inest_db_data:/var/lib/postgresql/data
+      - "80:80"
+    depends_on:
+      - inest-api
     networks:
       - inest_network
 

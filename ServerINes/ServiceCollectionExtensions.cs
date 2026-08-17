@@ -127,21 +127,24 @@ namespace INest
 
         private static void AddCustomCors(this IServiceCollection services, IConfiguration config)
         {
+            var allowedOrigins = config.GetSection("AllowedOrigins").Get<string[]>() ?? new[]
+            {
+                SharedConstants.LOCALHOST,
+                SharedConstants.LOCALHOST_HTTPS,
+                SharedConstants.PWA,
+                SharedConstants.PWA_HTTPS,
+                SharedConstants.PWA_FROM_IP,
+                SharedConstants.PWA_MOBILE,
+                SharedConstants.PWA_MOBILE_HTTPS
+            };
+
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowAngular", policy =>
-                    policy.WithOrigins(
-                        SharedConstants.LOCALHOST,
-                        SharedConstants.LOCALHOST_HTTPS,
-                        SharedConstants.PWA,
-                        SharedConstants.PWA_HTTPS,
-                        SharedConstants.PWA_FROM_IP,
-                        SharedConstants.PWA_MOBILE,
-                        SharedConstants.PWA_MOBILE_HTTPS
-                    )
-                    .AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .AllowCredentials());
+                    policy.WithOrigins(allowedOrigins)
+                          .AllowAnyMethod()
+                          .AllowAnyHeader()
+                          .AllowCredentials());
             });
         }
 
