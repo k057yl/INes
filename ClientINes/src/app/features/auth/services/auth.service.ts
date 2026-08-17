@@ -15,6 +15,12 @@ export class AuthService {
 
   // ================= АВТОРИЗАЦИЯ =================
   checkAuth(): Observable<AppUser | null> {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      this.clearLocalSession();
+      return of(null);
+    }
+
     return this.http.get<AppUser>(`${this.apiUrl}/me`).pipe(
       tap(user => this.userSubject.next(user)),
       catchError(() => {
@@ -25,23 +31,23 @@ export class AuthService {
   }
 
   login(email: string, password: string): Observable<any> {
-  return this.http
-    .post<any>(`${this.apiUrl}/login`, { email, password })
-    .pipe(
-      switchMap((response) => {
-        const token = response?.data?.token || response?.token;
-        if (token) {
-          localStorage.setItem('token', token);
-        }
-        return this.checkAuth();
-      })
-    );
+    return this.http
+      .post<any>(`${this.apiUrl}/login`, { email, password })
+      .pipe(
+        tap((response) => {
+          const token = response?.data?.token || response?.token || response?.data?.accessToken || response?.accessToken;
+          if (token) {
+            localStorage.setItem('token', token);
+          }
+        }),
+        switchMap(() => this.checkAuth())
+      );
   }
 
   refreshToken(): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/refresh`, {}).pipe(
       tap((response) => {
-        const token = response?.data?.token || response?.token;
+        const token = response?.data?.token || response?.token || response?.data?.accessToken || response?.accessToken;
         if (token) {
           localStorage.setItem('token', token);
         }
@@ -65,13 +71,13 @@ export class AuthService {
     return this.http
       .post<any>(`${this.apiUrl}/confirm-register`, { email, code })
       .pipe(
-        switchMap((response) => {
-          const token = response?.data?.token || response?.token;
+        tap((response) => {
+          const token = response?.data?.token || response?.token || response?.data?.accessToken || response?.accessToken;
           if (token) {
             localStorage.setItem('token', token);
           }
-          return this.checkAuth();
-        })
+        }),
+        switchMap(() => this.checkAuth())
       );
   }
 
@@ -79,13 +85,13 @@ export class AuthService {
     return this.http
       .post<any>(`${this.apiUrl}/google-login`, { idToken })
       .pipe(
-        switchMap((response) => {
-          const token = response?.data?.token || response?.token;
+        tap((response) => {
+          const token = response?.data?.token || response?.token || response?.data?.accessToken || response?.accessToken;
           if (token) {
             localStorage.setItem('token', token);
           }
-          return this.checkAuth();
-        })
+        }),
+        switchMap(() => this.checkAuth())
       );
   }
 
