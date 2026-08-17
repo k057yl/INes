@@ -3,6 +3,8 @@ services:
     image: postgres:15-alpine
     container_name: inest-postgres-prod
     restart: always
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
@@ -26,6 +28,8 @@ services:
       - AdminSeeder__Email=${ADMIN_EMAIL}
       - AdminSeeder__Password=${ADMIN_PASSWORD}
       - AdminSeeder__DisplayName=${ADMIN_NAME}
+      - AllowedOrigins__0=http://165.245.219.122
+      - AllowedOrigins__1=http://localhost:4200
       - Jwt__Key=${Jwt__Key}
       - Jwt__Issuer=${Jwt__Issuer}
       - Jwt__Audience=${Jwt__Audience}
