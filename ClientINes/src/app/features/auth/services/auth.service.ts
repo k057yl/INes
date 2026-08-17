@@ -14,14 +14,19 @@ export class AuthService {
   user$ = this.userSubject.asObservable();
 
   // ================= АВТОРИЗАЦИЯ =================
-  checkAuth(): Observable<AppUser | null> {
-    const token = localStorage.getItem('token');
+  checkAuth(explicitToken?: string): Observable<AppUser | null> {
+    const token = explicitToken || localStorage.getItem('token');
+    
     if (!token) {
       this.clearLocalSession();
       return of(null);
     }
 
-    return this.http.get<AppUser>(`${this.apiUrl}/me`).pipe(
+    const headers = {
+      'Authorization': `Bearer ${token}`
+    };
+
+    return this.http.get<AppUser>(`${this.apiUrl}/me`, { headers }).pipe(
       tap(user => this.userSubject.next(user)),
       catchError(() => {
         this.clearLocalSession();
@@ -34,22 +39,19 @@ export class AuthService {
     return this.http
       .post<any>(`${this.apiUrl}/login`, { email, password })
       .pipe(
-        tap((response) => {
+        switchMap((response) => {
           const token =
             response?.data?.token ||
             response?.token ||
             response?.data?.accessToken ||
             response?.accessToken;
 
-          console.log('LOGIN RESPONSE:', response);
-          console.log('LOGIN TOKEN:', token);
-
           if (token) {
             localStorage.setItem('token', token);
-            console.log('LOCAL STORAGE CHECK:', localStorage.getItem('token'));
+            return this.checkAuth(token);
           }
-        }),
-        switchMap(() => this.checkAuth())
+          return this.checkAuth();
+        })
       );
   }
 
@@ -80,13 +82,14 @@ export class AuthService {
     return this.http
       .post<any>(`${this.apiUrl}/confirm-register`, { email, code })
       .pipe(
-        tap((response) => {
+        switchMap((response) => {
           const token = response?.data?.token || response?.token || response?.data?.accessToken || response?.accessToken;
           if (token) {
             localStorage.setItem('token', token);
+            return this.checkAuth(token);
           }
-        }),
-        switchMap(() => this.checkAuth())
+          return this.checkAuth();
+        })
       );
   }
 
@@ -94,13 +97,14 @@ export class AuthService {
     return this.http
       .post<any>(`${this.apiUrl}/google-login`, { idToken })
       .pipe(
-        tap((response) => {
+        switchMap((response) => {
           const token = response?.data?.token || response?.token || response?.data?.accessToken || response?.accessToken;
           if (token) {
             localStorage.setItem('token', token);
+            return this.checkAuth(token);
           }
-        }),
-        switchMap(() => this.checkAuth())
+          return this.checkAuth();
+        })
       );
   }
 
