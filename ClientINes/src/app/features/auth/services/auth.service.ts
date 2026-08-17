@@ -28,7 +28,7 @@ export class AuthService {
   return this.http
     .post<any>(`${this.apiUrl}/login`, { email, password })
     .pipe(
-      switchMap(response => {
+      switchMap((response) => {
         const token = response?.data?.token || response?.token;
         if (token) {
           localStorage.setItem('token', token);
@@ -36,11 +36,11 @@ export class AuthService {
         return this.checkAuth();
       })
     );
-}
+  }
 
   refreshToken(): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/refresh`, {}).pipe(
-      tap(response => {
+      tap((response) => {
         const token = response?.data?.token || response?.token;
         if (token) {
           localStorage.setItem('token', token);
@@ -65,13 +65,13 @@ export class AuthService {
     return this.http
       .post<any>(`${this.apiUrl}/confirm-register`, { email, code })
       .pipe(
-        tap(response => {
+        switchMap((response) => {
           const token = response?.data?.token || response?.token;
           if (token) {
             localStorage.setItem('token', token);
           }
-        }),
-        switchMap(() => this.checkAuth())
+          return this.checkAuth();
+        })
       );
   }
 
@@ -79,13 +79,13 @@ export class AuthService {
     return this.http
       .post<any>(`${this.apiUrl}/google-login`, { idToken })
       .pipe(
-        tap(response => {
+        switchMap((response) => {
           const token = response?.data?.token || response?.token;
           if (token) {
             localStorage.setItem('token', token);
           }
-        }),
-        switchMap(() => this.checkAuth())
+          return this.checkAuth();
+        })
       );
   }
 
