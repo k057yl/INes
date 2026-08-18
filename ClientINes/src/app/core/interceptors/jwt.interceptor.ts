@@ -59,7 +59,7 @@ function handle401Error(req: HttpRequest<any>, next: HttpHandlerFn, authService:
 
         const newToken = localStorage.getItem('token');
         const retryReq = newToken 
-          ? req.clone({ setHeaders: { ...req.headers, Authorization: `Bearer ${newToken}` } })
+          ? req.clone({ headers: req.headers.set('Authorization', `Bearer ${newToken}`) })
           : req;
 
         return next(retryReq);
@@ -67,9 +67,7 @@ function handle401Error(req: HttpRequest<any>, next: HttpHandlerFn, authService:
       catchError((err) => {
         isRefreshing = false;
         refreshTokenSubject.next(false);
-        
         authService.clearLocalSession(); 
-
         return throwError(() => err);
       })
     );
@@ -81,7 +79,7 @@ function handle401Error(req: HttpRequest<any>, next: HttpHandlerFn, authService:
         if (success) {
           const newToken = localStorage.getItem('token');
           const retryReq = newToken 
-            ? req.clone({ setHeaders: { ...req.headers, Authorization: `Bearer ${newToken}` } })
+            ? req.clone({ headers: req.headers.set('Authorization', `Bearer ${newToken}`) })
             : req;
 
           return next(retryReq);

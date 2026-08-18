@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1786984685482,
+  "timestamp": 1787028164622,
   "index": "/index.html",
   "assetGroups": [
     {
@@ -13,7 +13,7 @@
       "urls": [
         "/favicon.ico",
         "/index.html",
-        "/main-S2DB6QWY.js",
+        "/main-EDRRSM2X.js",
         "/manifest.webmanifest",
         "/polyfills-5CFQRCPP.js",
         "/styles-DZ4BR2PV.css"
@@ -78,8 +78,8 @@
     "/assets/images/LogoKaraLight.png": "5c9e3c650f77bf7c5972542dba7a9423b7c8f9b0",
     "/assets/images/no-image.png": "31a74fe17ebaa5f56007ac77a34fcd3e73cb50ef",
     "/favicon.ico": "9c39f434fe1261f68c5e3eefdf734630d99c5670",
-    "/index.html": "8710929c81e416b3f5824c627789e64b4444c7c4",
-    "/main-S2DB6QWY.js": "25279b583e9253109fb0cd8ab465fe95b65bc754",
+    "/index.html": "b049177e74ee462033c19c9af2d9f8276da40042",
+    "/main-EDRRSM2X.js": "9231844d56ff232107d045b2a8c5f422fc2e8455",
     "/manifest.webmanifest": "5f8f7a69b16f788ddf990ce4e01b0e9c60aab88b",
     "/polyfills-5CFQRCPP.js": "f2241e9a25858f895ce299d15f6f22e849e2fd72",
     "/styles-DZ4BR2PV.css": "f5988580338ef75406eef4088b97ab746174a712"
