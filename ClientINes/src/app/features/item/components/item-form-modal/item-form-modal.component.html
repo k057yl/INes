@@ -24,53 +24,41 @@
 
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
 
-      <!-- ЧЕКБОКС ДЛЯ РЕДАКТИРОВАНИЯ ФОТО -->
-      @if (isEdit) {
-        <div class="inest-form-group" style="margin-bottom: 10px;">
-          <label class="inest-checkbox-label highlight">
-            <input type="checkbox" formControlName="addPhoto">
-            <span><i class="fa fa-camera"></i> {{ 'CREATE_ITEM_PAGE.ADD_PHOTO_OPTIONAL' | translate }}</span>
-          </label>
-        </div>
-      }
+      <!-- 1. ФОТОГРАФИИ (ВИДИМЫ ВСЕГДА: И ПРИ СОЗДАНИИ, И ПРИ РЕДАКТИРОВАНИИ) -->
+      <div class="photo-hero-section">
+        <div class="photo-upload-canvas" [class.has-photos]="selectedPhotos.length > 0">
+          @if (selectedPhotos.length === 0) {
+            <div class="upload-placeholder">
+              <input type="file" accept="image/*" multiple (change)="onFileSelected($event)" id="fileInput" class="hidden-input">
+              <label for="fileInput" class="canvas-label">
+                <i class="fa fa-camera-retro"></i>
+                <span>{{ 'CREATE_ITEM_PAGE.CLICK_TO_UPLOAD' | translate }}</span>
+              </label>
+            </div>
+          }
+          @if (selectedPhotos.length > 0) {
+            <div class="photo-grid-inline">
+              @for (p of selectedPhotos; track p; let i = $index) {
+                <div class="preview-card" [class.is-main]="p.isMain" (click)="setMainPhoto(i)">
+                  <img [src]="p.preview">
+                  @if (p.isMain) { <div class="main-badge"><i class="fa fa-star"></i></div> }
+                  <button type="button" class="btn-del" (click)="removePhoto(i, $event)"><i class="fa fa-times"></i></button>
+                </div>
+              }
 
-      <!-- 1. ФОТО -->
-      @if (!isEdit || form.get('addPhoto')?.value) {
-        <div class="photo-hero-section">
-          <div class="photo-upload-canvas" [class.has-photos]="selectedPhotos.length > 0">
-            @if (selectedPhotos.length === 0) {
-              <div class="upload-placeholder">
-                <input type="file" accept="image/*" multiple (change)="onFileSelected($event)" id="fileInput" class="hidden-input">
-                <label for="fileInput" class="canvas-label">
-                  <i class="fa fa-camera-retro"></i>
-                  <span>{{ 'CREATE_ITEM_PAGE.CLICK_TO_UPLOAD' | translate }}</span>
-                </label>
-              </div>
-            }
-            @if (selectedPhotos.length > 0) {
-              <div class="photo-grid-inline">
-                @for (p of selectedPhotos; track p; let i = $index) {
-                  <div class="preview-card" [class.is-main]="p.isMain" (click)="setMainPhoto(i)">
-                    <img [src]="p.preview">
-                    @if (p.isMain) { <div class="main-badge"><i class="fa fa-star"></i></div> }
-                    <button type="button" class="btn-del" (click)="removePhoto(i, $event)"><i class="fa fa-times"></i></button>
+              @if (selectedPhotos.length < MAX_PHOTOS) {
+                <label class="add-more-card">
+                  <input type="file" accept="image/*" multiple (change)="onFileSelected($event)" class="hidden-input">
+                  <div class="plus-content">
+                    <i class="fa fa-plus"></i>
+                    <span>{{ selectedPhotos.length }}/{{ MAX_PHOTOS }}</span>
                   </div>
-                }
-
-                @if (selectedPhotos.length < MAX_PHOTOS) {
-                  <label class="add-more-card">
-                    <input type="file" accept="image/*" multiple (change)="onFileSelected($event)" class="hidden-input">
-                    <div class="plus-content">
-                      <i class="fa fa-plus"></i>
-                      <span>{{ selectedPhotos.length }}/{{ MAX_PHOTOS }}</span>
-                    </div>
-                  </label>
-                }
-              </div>
-            }
-          </div>
+                </label>
+              }
+            </div>
+          }
         </div>
-      }
+      </div>
 
       <!-- 2. ИМЯ -->
       <div class="inest-form-group">
@@ -339,7 +327,6 @@
             <div class="lending-info-section">
               <div class="form-row-multi">
                 
-                <!-- ТИП НАПОМИНАНИЯ (Звездочка тут!) -->
                 <div class="inest-form-group">
                   <label>{{ 'CREATE_ITEM_PAGE.REMINDER.TYPE' | translate }} *</label>
                   <div class="inest-input-wrapper">
@@ -352,7 +339,6 @@
                   </div>
                 </div>
 
-                <!-- ДАТА НАПОМИНАНИЯ -->
                 <div class="inest-form-group">
                   <label>{{ 'CREATE_ITEM_PAGE.REMINDER.DATE' | translate }} *</label>
                   <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('reminderTriggerAt')">
@@ -361,7 +347,6 @@
                   </div>
                 </div>
 
-                <!-- ПОВТОРЕНИЕ -->
                 <div class="inest-form-group">
                   <label>{{ 'CREATE_ITEM_PAGE.REMINDER.RECURRENCE' | translate }}</label>
                   <div class="inest-input-wrapper">
@@ -375,11 +360,6 @@
                 </div>
               </div>
 
-              <div class="form-row-multi">
-                
-              </div>
-
-              <!-- КАНАЛЫ УВЕДОМЛЕНИЙ -->
               <div class="notification-channels-wrapper">
                 <label class="channels-title">{{ 'CREATE_ITEM_PAGE.REMIND_CHANNELS_TITLE' | translate }}</label>
 

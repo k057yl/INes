@@ -103,7 +103,6 @@ export class ItemFormModalComponent implements OnInit {
     expectedReturnDate: [null as string | null],
     sendNotification: [false],
     sendTelegramNotification: [true],
-    addPhoto: [false],
 
     addReceipt: [false],
     warrantyExpiration: [null as string | null],
@@ -397,8 +396,8 @@ export class ItemFormModalComponent implements OnInit {
       formData.append('reminder.sendTelegram', (!!val.reminderSendTelegramNotification).toString());
     }
 
-    // ФОТОГРАФИИ
-    if ((!this.isEdit || val.addPhoto) && this.selectedPhotos.length > 0) {
+    // ФОТОГРАФИИ (Отправляем ВСЕГДА, если они есть в выбранном массиве)
+    if (this.selectedPhotos.length > 0) {
       this.selectedPhotos.forEach(p => {
         if (p.file) {
           formData.append('photos', p.file, p.file.name);
