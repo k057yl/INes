@@ -510,7 +510,8 @@
       "STATUS": "Status",
       "PRICE": "Price",
       "ACTION": "Actions"
-    }
+    },
+    "ARCHIVE_CONFIRM": "Are you sure you want to move the item to the archive?"
   },
   "SETTINGS_PAGE": {
     "TITLE": "General Settings",
