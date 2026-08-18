@@ -284,10 +284,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
       .subscribe(confirmed => {
         if (confirmed) {
           this.facade.items.moveLocally(data.item, data.targetLocationId, this.facade.locations.flatLocations);
+          
           this.facade.executor.run(
             this.facade.items.moveApi(data.item.id, data.targetLocationId),
             'ITEM_CARD.MODAL.MOVE_SUCCESS',
-            () => this.jumpToLocation(data.targetLocationId),
+            () => {
+              this.loadData();
+              this.jumpToLocation(data.targetLocationId);
+            },
             'SYSTEM.DEFAULT_ERROR'
           );
         }
@@ -336,8 +340,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
 
     const item = event.previousContainer.data[event.previousIndex];
+  
     this.facade.items.moveLocally(item, loc.id, this.facade.locations.flatLocations);
-    this.facade.executor.run(this.facade.items.moveApi(item.id, loc.id), 'ITEM_CARD.TOASER.MOVE_SUCCESS', () => this.loadData());
+    
+    this.facade.executor.run(
+      this.facade.items.moveApi(item.id, loc.id), 
+      'ITEM_CARD.TOASER.MOVE_SUCCESS', 
+      () => this.loadData()
+    );
   }
 
   trackById = (_: number, item: any) => item.id;
