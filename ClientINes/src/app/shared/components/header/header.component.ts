@@ -1,6 +1,8 @@
-import { Component, inject, signal, HostListener, ElementRef } from '@angular/core';
+import { Component, inject, signal, HostListener, ElementRef, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { Subscription, of } from 'rxjs';
+import { catchError, filter } from 'rxjs/operators';
 import { AuthService } from '../../../features/auth/services/auth.service';
 import { LocalizationService } from '../../../core/services/localization.service';
 import { ThemeService } from '../../../core/services/theme.service';
@@ -15,7 +17,7 @@ import { LocationService } from '../../../features/location/services/location.se
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss'
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnInit, OnDestroy {
   private el = inject(ElementRef);
   public authService = inject(AuthService);
   public loc = inject(LocalizationService);
@@ -29,9 +31,9 @@ export class HeaderComponent {
   isLangMenuOpen = signal(false);
   isCreateMenuOpen = signal(false);
   hasLocations = signal<boolean>(false);
-  
 
   user$ = this.authService.user$;
+  private sub = new Subscription();
 
   get currentLang() { return this.loc.currentLang; }
 
@@ -50,15 +52,39 @@ export class HeaderComponent {
   }
 
   ngOnInit() {
-  this.checkLocations();
-  this.modalService.refreshData$.subscribe(() => this.checkLocations());
-  this.router.events.subscribe(() => {
-    this.isMobileMenuOpen = false;
-  });
-}
+    this.sub.add(
+      this.user$.subscribe(user => {
+        if (user) {
+          this.checkLocations();
+        } else {
+          this.hasLocations.set(false);
+        }
+      })
+    );
+
+    this.sub.add(
+      this.modalService.refreshData$.subscribe(() => {
+        if (this.authService.isLoggedIn()) {
+          this.checkLocations();
+        }
+      })
+    );
+
+    this.sub.add(
+      this.router.events.subscribe(() => {
+        this.isMobileMenuOpen = false;
+      })
+    );
+  }
+
+  ngOnDestroy() {
+    this.sub.unsubscribe();
+  }
 
   private checkLocations() {
-    this.locationService.getTree().subscribe(locs => {
+    this.locationService.getTree().pipe(
+      catchError(() => of([]))
+    ).subscribe(locs => {
       this.hasLocations.set(locs && locs.length > 0);
     });
   }
