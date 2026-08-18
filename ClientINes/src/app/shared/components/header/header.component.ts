@@ -50,9 +50,12 @@ export class HeaderComponent {
   }
 
   ngOnInit() {
-    this.checkLocations();
-    this.modalService.refreshData$.subscribe(() => this.checkLocations());
-  }
+  this.checkLocations();
+  this.modalService.refreshData$.subscribe(() => this.checkLocations());
+  this.router.events.subscribe(() => {
+    this.isMobileMenuOpen = false;
+  });
+}
 
   private checkLocations() {
     this.locationService.getTree().subscribe(locs => {
@@ -88,6 +91,7 @@ export class HeaderComponent {
     if (!this.el.nativeElement.contains(target)) {
       this.isLangMenuOpen.set(false);
       this.isCreateMenuOpen.set(false);
+      this.isMobileMenuOpen = false;
     }
   }
 
