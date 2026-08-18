@@ -253,9 +253,7 @@
     "REGISTERATION": "Registration",
     "LOGOUT": "Log out",
     "SETTINGS": "Settings",
-    "SALES": "Sales",
-    "CREATE_LOCATION": "Create location",
-    "CREATE_ITEM": "Create item"
+    "SALES": "Sales"
   },
   "MAIN_PAGE": {
     "LOCATION_EMPTY_MSG": "Start by creating your first location",
@@ -648,7 +646,9 @@
     "EXPIRED_LABEL": "Overdue",
     "REMINDER_LABEL": "Reminder",
     "ALL_OK": "All good",
-    "EXPIRED": "Overdue"
+    "EXPIRED": "Overdue",
+    "CREATE_LOCATION": "Create location",
+    "CREATE_ITEM": "Create item"
   },
   "FEEDBACK": {
     "TITLE": "Have an idea or found a bug?",
@@ -753,14 +753,16 @@
       "REMINDER_DESC": "Set up scheduled maintenance, consumable replacement, or subscription renewal with Telegram or Email alerts."
     },
     "FIRST_LOCATION_CARD": {
-      "WELCOME_TITLE": "First Place Created!",
-      "WELCOME_DESC": "Great! Now this is your workspace. Let's cover control buttons.",
-      "HEADER_TITLE": "Control Buttons",
-      "HEADER_DESC": "View details, edit, delete, and parent place selection are located here.",
-      "ADD_NESTED_TITLE": "Nested Place",
-      "ADD_NESTED_DESC": "Click «Create Location» to create place INSIDE this one (e.g., Closet inside Room).",
-      "ADD_ITEM_TITLE": "Adding Item",
-      "ADD_ITEM_DESC": "Click «Create Item» to place new item here immediately."
+      "WELCOME_TITLE": "First location created!",
+      "WELCOME_DESC": "Great! This is now your workspace. Let's go over the control buttons.",
+      "MAIN_ADD_ITEM_TITLE": "Quick item creation",
+      "MAIN_ADD_ITEM_DESC": "The 'Create Item' button is now available on the stats panel for quick item additions.",
+      "HEADER_TITLE": "Control buttons",
+      "HEADER_DESC": "Here you can view details, edit, delete, and select a parent location.",
+      "ADD_NESTED_TITLE": "Nested location",
+      "ADD_NESTED_DESC": "Click 'Create Location' to create a space INSIDE this one (e.g., Closet inside Room).",
+      "ADD_ITEM_TITLE": "Adding an item",
+      "ADD_ITEM_DESC": "Click 'Create Item' to place a new item here right away."
     },
     "FIRST_ITEM_CARD": {
       "WELCOME_TITLE": "First Item in Database!",

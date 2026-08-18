@@ -1,14 +1,11 @@
-import { Component, inject, signal, HostListener, ElementRef, OnInit, OnDestroy } from '@angular/core';
+import { Component, inject, signal, HostListener, ElementRef, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { Subscription, of } from 'rxjs';
-import { catchError, filter } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 import { AuthService } from '../../../features/auth/services/auth.service';
 import { LocalizationService } from '../../../core/services/localization.service';
 import { ThemeService } from '../../../core/services/theme.service';
 import { TranslateModule } from '@ngx-translate/core';
-import { DashboardModalService } from '../../../features/dashboard/components/dashboard/dashboard.modal.service';
-import { LocationService } from '../../../features/location/services/location.service';
 
 @Component({
   selector: 'app-header',
@@ -17,25 +14,32 @@ import { LocationService } from '../../../features/location/services/location.se
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss'
 })
-export class HeaderComponent implements OnInit, OnDestroy {
+export class HeaderComponent implements OnDestroy {
   private el = inject(ElementRef);
   public authService = inject(AuthService);
   public loc = inject(LocalizationService);
   public themeService = inject(ThemeService);
   private router = inject(Router);
-  public modalService = inject(DashboardModalService);
-  private locationService = inject(LocationService);
-  
-  public isMobileMenuOpen = false;
 
+  public isMobileMenuOpen = false;
   isLangMenuOpen = signal(false);
-  isCreateMenuOpen = signal(false);
-  hasLocations = signal<boolean>(false);
 
   user$ = this.authService.user$;
   private sub = new Subscription();
 
   get currentLang() { return this.loc.currentLang; }
+
+  constructor() {
+    this.sub.add(
+      this.router.events.subscribe(() => {
+        this.isMobileMenuOpen = false;
+      })
+    );
+  }
+
+  ngOnDestroy() {
+    this.sub.unsubscribe();
+  }
 
   isAdmin(user: any): boolean {
     if (!user || !user.roles) return false;
@@ -49,44 +53,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
 
     return false;
-  }
-
-  ngOnInit() {
-    this.sub.add(
-      this.user$.subscribe(user => {
-        if (user) {
-          this.checkLocations();
-        } else {
-          this.hasLocations.set(false);
-        }
-      })
-    );
-
-    this.sub.add(
-      this.modalService.refreshData$.subscribe(() => {
-        if (this.authService.isLoggedIn()) {
-          this.checkLocations();
-        }
-      })
-    );
-
-    this.sub.add(
-      this.router.events.subscribe(() => {
-        this.isMobileMenuOpen = false;
-      })
-    );
-  }
-
-  ngOnDestroy() {
-    this.sub.unsubscribe();
-  }
-
-  private checkLocations() {
-    this.locationService.getTree().pipe(
-      catchError(() => of([]))
-    ).subscribe(locs => {
-      this.hasLocations.set(locs && locs.length > 0);
-    });
   }
 
   onLogout() {
@@ -105,30 +71,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.isLangMenuOpen.set(!this.isLangMenuOpen());
   }
 
-  toggleCreateMenu(event: MouseEvent) {
-    event.stopPropagation();
-    this.isLangMenuOpen.set(false);
-    this.isCreateMenuOpen.set(!this.isCreateMenuOpen());
-  }
-
   @HostListener('document:click', ['$event'])
   onClickOutside(event: MouseEvent) {
     const target = event.target as HTMLElement;
     if (!this.el.nativeElement.contains(target)) {
       this.isLangMenuOpen.set(false);
-      this.isCreateMenuOpen.set(false);
       this.isMobileMenuOpen = false;
     }
-  }
-
-  openCreateItem() {
-    this.modalService.openItemForm(); 
-    this.isCreateMenuOpen.set(false);
-  }
-
-  openCreateLocation() {
-    this.modalService.openLocationForm(); 
-    this.isCreateMenuOpen.set(false);
   }
 
   changeLang(lang: string) {

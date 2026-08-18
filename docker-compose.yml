@@ -28,8 +28,10 @@ services:
       - AdminSeeder__Email=${ADMIN_EMAIL}
       - AdminSeeder__Password=${ADMIN_PASSWORD}
       - AdminSeeder__DisplayName=${ADMIN_NAME}
-      - AllowedOrigins__0=http://165.245.219.122
-      - AllowedOrigins__1=http://localhost:4200
+      - AllowedOrigins__0=https://karakatsiya.com
+      - AllowedOrigins__1=https://www.karakatsiya.com
+      - AllowedOrigins__2=http://165.245.219.122
+      - AllowedOrigins__3=http://localhost:4200
       - Jwt__Key=${Jwt__Key}
       - Jwt__Issuer=${Jwt__Issuer}
       - Jwt__Audience=${Jwt__Audience}

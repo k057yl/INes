@@ -20,4 +20,12 @@ export class DashboardStatsComponent {
   openStats(type: StatsListType) {
     this.modal.openStatsList(type);
   }
+
+  openCreateLocation() {
+    this.modal.openLocationForm();
+  }
+
+  openCreateItem() {
+    this.modal.openItemForm();
+  }
 }

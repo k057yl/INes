@@ -11,7 +11,7 @@
     <!-- 2. ПРАВАЯ ЧАСТЬ: ВСЕ ДЕЙСТВИЯ -->
     <div class="actions" [class.mobile-open]="isMobileMenuOpen">
       
-      <!-- ПУБЛИЧНЫЕ ЭЛЕМЕНТЫ (ВИДНЫ ВСЕГДА) -->
+      <!-- ПУБЛИЧНЫЕ ЭЛЕМЕНТЫ -->
       <button type="button" class="theme-toggle" (click)="toggleTheme()" [title]="'COMMON.CHANGE_THEME_TOOLTIP' | translate">
         {{ themeService.isDarkTheme() ? '🌙' : '☀️' }}
       </button>
@@ -35,7 +35,7 @@
         }
       </div>
 
-      <!-- ПРИВАТНЫЕ ЭЛЕМЕНТЫ (ТОЛЬКО ДЛЯ АВТОРИЗОВАННЫХ) -->
+      <!-- ПРИВАТНЫЕ ЭЛЕМЕНТЫ -->
       @if (user$ | async; as user) {
         
         @if (isAdmin(user)) {
@@ -48,28 +48,6 @@
           <i class="fa fa-cog"></i>
           <span class="desktop-only">{{ 'HEADER.SETTINGS' | translate }}</span>
         </a>
-
-        @if (hasLocations()) {
-          <div class="create-dropdown" [class.open]="isCreateMenuOpen()">
-            <button type="button" class="create-trigger" (click)="toggleCreateMenu($event)" [title]="'COMMON.CREATE' | translate">
-              <i class="fa fa-plus"></i>
-              <span class="desktop-only">{{ 'COMMON.CREATE' | translate }}</span>
-            </button>
-
-            @if (isCreateMenuOpen()) {
-              <div class="create-menu" (click)="$event.stopPropagation()">
-                <button type="button" (click)="openCreateLocation()">
-                  <i class="fa fa-folder-plus"></i>
-                  <span>{{ 'HEADER.CREATE_LOCATION' | translate }}</span>
-                </button>
-                <button type="button" (click)="openCreateItem()">
-                  <i class="fa fa-box"></i>
-                  <span>{{ 'HEADER.CREATE_ITEM' | translate }}</span>
-                </button>  
-              </div>
-            }
-          </div>
-        }
 
         <div class="user-box desktop-user-box" [title]="user.displayName || user.email">
           <i class="fa fa-user-circle"></i>
