@@ -1,16 +1,11 @@
-.stats-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 1rem;
-}
-
 .stats-ribbon {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 8px;
+  margin-bottom: 1rem;
 
   .stat-card {
+    position: relative;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -35,6 +30,88 @@
       }
     }
 
+    /* Карточка с дропдауном "Создать" */
+    &.create-dropdown-card {
+      padding: 0;
+
+      .create-trigger-btn {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        height: 100%;
+        padding: 6px 12px;
+        background: transparent;
+        border: none;
+        color: inherit;
+        cursor: pointer;
+        text-align: left;
+
+        .create-icon {
+          background: rgba(var(--accent-color-rgb, 59, 130, 246), 0.15);
+          color: var(--accent-color);
+        }
+
+        .arrow-icon {
+          font-size: 0.75rem;
+          color: var(--text-muted);
+          transition: transform 0.2s ease;
+          margin-left: auto;
+
+          &.rotate {
+            transform: rotate(180deg);
+          }
+        }
+      }
+
+      &:hover, &.open {
+        border-color: var(--accent-color);
+        background: var(--bg-main-card);
+      }
+
+      .create-menu {
+        position: absolute;
+        top: calc(100% + 6px);
+        left: 0;
+        z-index: 100;
+        min-width: 180px;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        padding: 6px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+
+        button {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          width: 100%;
+          padding: 8px 12px;
+          border: none;
+          background: transparent;
+          color: var(--text-main);
+          font-size: 0.85rem;
+          font-weight: 600;
+          border-radius: 6px;
+          cursor: pointer;
+          transition: all 0.15s ease;
+
+          i {
+            color: var(--accent-color);
+            font-size: 0.9rem;
+          }
+
+          &:hover {
+            background: var(--bg-input);
+            color: var(--accent-color);
+          }
+        }
+      }
+    }
+
     .stat-icon {
       width: 30px;
       height: 30px;
@@ -53,6 +130,7 @@
       display: flex;
       flex-direction: column;
       min-width: 0;
+      flex-grow: 1;
 
       .stat-label {
         font-size: 0.65rem;
@@ -124,39 +202,6 @@
   }
 }
 
-.stats-actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  .action-btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 14px;
-    border-radius: 10px;
-    font-size: 0.85rem;
-    font-weight: 700;
-    cursor: pointer;
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    color: var(--text-main);
-    transition: all 0.2s ease;
-
-    i {
-      color: var(--accent-color);
-      font-size: 0.9rem;
-    }
-
-    &:hover {
-      border-color: var(--accent-color);
-      color: var(--accent-color);
-      transform: translateY(-1px);
-      background: var(--bg-main-card);
-    }
-  }
-}
-
 @media (max-width: 768px) {
   .stats-ribbon {
     grid-template-columns: repeat(2, 1fr);
@@ -164,15 +209,6 @@
 
     .stat-card {
       padding: 6px 10px;
-    }
-  }
-
-  .stats-actions {
-    flex-direction: column;
-    align-items: stretch;
-
-    .action-btn {
-      justify-content: center;
     }
   }
 }

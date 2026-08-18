@@ -595,11 +595,11 @@ export class TutorialService {
         }
       ];
 
-      // Подсветка кнопки создания предмета в блоке статистики
-      const mainAddItemBtn = document.querySelector('.stats-actions .create-item-btn');
-      if (mainAddItemBtn) {
+      // Подсветка карточки с дропдауном "Создать"
+      const createDropdown = document.querySelector('.stats-ribbon .create-dropdown-card');
+      if (createDropdown) {
         steps.push({
-          element: mainAddItemBtn,
+          element: createDropdown,
           popover: {
             title: this.translate.instant('TUTORIAL_PAGE.FIRST_LOCATION_CARD.MAIN_ADD_ITEM_TITLE'),
             description: this.translate.instant('TUTORIAL_PAGE.FIRST_LOCATION_CARD.MAIN_ADD_ITEM_DESC'),
