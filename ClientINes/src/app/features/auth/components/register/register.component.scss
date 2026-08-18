@@ -5,7 +5,7 @@
 
 /* 1. Центрирование страницы и самой карточки */
 .inest-form-page {
-  min-height: 100vh;
+  min-height: calc(100vh - 64px);
   width: 100%;
   display: flex;
   align-items: center;

@@ -71,15 +71,29 @@ namespace INest.Controllers
         [HttpPut("{itemId}")]
         public async Task<IActionResult> UpdateFull(Guid itemId, [FromForm] UpdateItemFullDto dto)
         {
-            var command = new UpdateItemFullCommand(GetUserId(), itemId, dto, dto.Photos);
+            var command = new UpdateItemFullCommand(
+                GetUserId(),
+                itemId,
+                dto,
+                dto.Photos,
+                dto.ReceiptFile,
+                dto.MainPhotoName
+            );
             await _mediator.Send(command);
             return NoContent();
         }
 
         [HttpPatch("{id}")]
-        public async Task<IActionResult> UpdatePartial(Guid id, [FromForm] UpdateItemPartialDto dto, List<IFormFile>? photos)
+        public async Task<IActionResult> UpdatePartial(Guid id, [FromForm] UpdateItemPartialDto dto)
         {
-            var command = new UpdateItemPartialCommand(GetUserId(), id, dto, photos);
+            var command = new UpdateItemPartialCommand(
+                GetUserId(),
+                id,
+                dto,
+                dto.Photos,
+                dto.ReceiptFile,
+                dto.MainPhotoName
+            );
             var result = await _mediator.Send(command);
             return result ? Ok() : BadRequest();
         }

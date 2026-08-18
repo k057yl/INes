@@ -73,9 +73,10 @@ namespace INest.Features.Items.Commands.UpdateItemFull
                 item.Details.PurchaseDate = dto.PurchaseDate;
                 item.Details.PurchasePrice = dto.PurchasePrice;
                 item.Details.Currency = dto.Currency ?? item.Details.Currency;
+                var oldWarrantyExpiration = item.Details.WarrantyExpiration;
                 item.Details.WarrantyExpiration = dto.WarrantyExpiration;
 
-                if (dto.WarrantyExpiration.HasValue && dto.WarrantyExpiration != item.Details.WarrantyExpiration)
+                if (dto.WarrantyExpiration.HasValue && dto.WarrantyExpiration != oldWarrantyExpiration)
                 {
                     item.Details.WarrantyAlertSent = false;
                 }
@@ -120,7 +121,7 @@ namespace INest.Features.Items.Commands.UpdateItemFull
 
                 if (request.Photos != null && request.Photos.Count > 0)
                 {
-                    await HandlePhotosAsync(item, request.Photos, request.UserId);
+                    await HandlePhotosAsync(item, request.Photos, request.UserId, request.MainPhotoName);
                 }
 
                 await _context.SaveChangesAsync(cancellationToken);

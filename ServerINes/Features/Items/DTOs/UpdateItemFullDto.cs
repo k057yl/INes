@@ -25,6 +25,7 @@ namespace INest.Features.Items.DTOs
         public bool SendNotification { get; set; }
         public List<IFormFile>? Photos { get; set; }
         public string? MainPhotoName { get; set; }
+        public IFormFile? ReceiptFile { get; set; }
         public string? ReceiptDocumentPath { get; set; }
     }
 }

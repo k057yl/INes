@@ -8,6 +8,7 @@ namespace INest.Features.Items.Commands.UpdateItemFull
         Guid ItemId,
         UpdateItemFullDto Dto,
         List<IFormFile>? Photos,
-        IFormFile? ReceiptFile = null
+        IFormFile? ReceiptFile = null,
+        string? MainPhotoName = null
     ) : IRequest<bool>;
 }

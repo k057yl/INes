@@ -283,6 +283,13 @@ export class ItemFormModalComponent implements OnInit {
     if (this.isEdit) {
       this.form.get('status')?.disable({ emitEvent: false });
     }
+
+    if (item.photos && item.photos.length > 0) {
+      this.selectedPhotos = item.photos.map((p: any) => ({
+        preview: p.filePath || p.url,
+        isMain: (p.filePath || p.url) === item.photoUrl
+      }));
+    }
   }
 
   private loadInitialData() {
@@ -346,7 +353,7 @@ export class ItemFormModalComponent implements OnInit {
     formData.append('storageLocationId', val.storageLocationId!);
     formData.append('status', val.status!.toString());
 
-    // ФИНАНСЫ: Шлём ключи без префикса "details.", ровно так, как ждёт UpdateItemFullCommand
+    // ФИНАНСЫ
     const hasPriceValue = val.purchasePrice !== null && val.purchasePrice !== undefined;
     if (val.addDetails || hasPriceValue || val.purchaseDate) {
       formData.append('currency', val.currency || 'USD');
@@ -394,8 +401,10 @@ export class ItemFormModalComponent implements OnInit {
     if ((!this.isEdit || val.addPhoto) && this.selectedPhotos.length > 0) {
       this.selectedPhotos.forEach(p => {
         if (p.file) {
-          formData.append('photos', p.file);
-          if (p.isMain) formData.append('mainPhotoName', p.file.name);
+          formData.append('photos', p.file, p.file.name);
+          if (p.isMain) {
+            formData.append('mainPhotoName', p.file.name);
+          }
         }
       });
     }

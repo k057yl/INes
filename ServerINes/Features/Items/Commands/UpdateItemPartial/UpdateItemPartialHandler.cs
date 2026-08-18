@@ -123,10 +123,14 @@ namespace INest.Features.Items.Commands.UpdateItemPartial
                     item.Details.Currency = dto.Currency;
                 }
 
-                if (dto.WarrantyExpiration.HasValue && dto.WarrantyExpiration != item.Details.WarrantyExpiration)
+                if (dto.WarrantyExpiration.HasValue)
                 {
-                    item.Details.WarrantyExpiration = dto.WarrantyExpiration;
-                    item.Details.WarrantyAlertSent = false;
+                    var oldWarranty = item.Details.WarrantyExpiration;
+                    if (dto.WarrantyExpiration != oldWarranty)
+                    {
+                        item.Details.WarrantyExpiration = dto.WarrantyExpiration;
+                        item.Details.WarrantyAlertSent = false;
+                    }
                 }
 
                 if (dto.ReceiptDocumentPath != null && dto.ReceiptDocumentPath != item.Details.ReceiptDocumentPath)
@@ -172,7 +176,7 @@ namespace INest.Features.Items.Commands.UpdateItemPartial
 
                 if (request.Photos != null && request.Photos.Count > 0)
                 {
-                    await HandlePhotosAsync(item, request.Photos, request.UserId);
+                    await HandlePhotosAsync(item, request.Photos, request.UserId, request.MainPhotoName);
                     LogChange(ItemHistoryType.ValueUpdated, null, $"{HISTORY.PHOTOS_ADDED_COUNT}|{request.Photos.Count}");
                 }
 
@@ -187,7 +191,7 @@ namespace INest.Features.Items.Commands.UpdateItemPartial
             }
         }
 
-        private async Task HandlePhotosAsync(Item item, List<IFormFile>? photos, Guid userId)
+        private async Task HandlePhotosAsync(Item item, List<IFormFile>? photos, Guid userId, string? mainPhotoName = null)
         {
             if (photos == null || photos.Count == 0) return;
 
@@ -215,7 +219,8 @@ namespace INest.Features.Items.Commands.UpdateItemPartial
                     PublicId = upload.Result.PublicId
                 };
 
-                if (string.IsNullOrEmpty(item.PhotoUrl))
+                if ((!string.IsNullOrEmpty(mainPhotoName) && upload.File.FileName == mainPhotoName) ||
+                    string.IsNullOrEmpty(item.PhotoUrl))
                 {
                     item.PhotoUrl = itemPhoto.FilePath;
                     item.PublicId = itemPhoto.PublicId;

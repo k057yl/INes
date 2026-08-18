@@ -24,6 +24,16 @@
 
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
 
+      <!-- ЧЕКБОКС ДЛЯ РЕДАКТИРОВАНИЯ ФОТО -->
+      @if (isEdit) {
+        <div class="inest-form-group" style="margin-bottom: 10px;">
+          <label class="inest-checkbox-label highlight">
+            <input type="checkbox" formControlName="addPhoto">
+            <span><i class="fa fa-camera"></i> {{ 'CREATE_ITEM_PAGE.ADD_PHOTO_OPTIONAL' | translate }}</span>
+          </label>
+        </div>
+      }
+
       <!-- 1. ФОТО -->
       @if (!isEdit || form.get('addPhoto')?.value) {
         <div class="photo-hero-section">
