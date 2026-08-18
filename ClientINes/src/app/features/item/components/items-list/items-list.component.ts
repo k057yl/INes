@@ -191,14 +191,17 @@ export class ItemsListComponent implements OnInit {
   toggleAll(event: Event): void {
     const checked = (event.target as HTMLInputElement).checked;
     if (checked) {
-      this.items.forEach(item => this.selectedIds.add(item.id));
+      this.items
+        .filter(item => item.status !== 2)
+        .forEach(item => this.selectedIds.add(item.id));
       return;
     }
     this.selectedIds.clear();
   }
 
   isAllSelected(): boolean {
-    return this.items.length > 0 && this.selectedIds.size === this.items.length;
+    const selectableItems = this.items.filter(item => item.status !== 2);
+    return selectableItems.length > 0 && this.selectedIds.size === selectableItems.length;
   }
 
   resetFilters(): void {
@@ -208,6 +211,7 @@ export class ItemsListComponent implements OnInit {
     });
   }
 
+  // --- МАССОВОЕ ДЕЙСТВИЕ (БАТЧ) ---
   bulkDelete(): void {
     if (this.selectedIds.size === 0) return;
 
@@ -220,8 +224,10 @@ export class ItemsListComponent implements OnInit {
     const isArchiveView = this.filterForm.get('showArchived')?.value === true;
     const isHardDelete = isArchiveView || selectedItems.every(x => x.status === 3);
 
-    const confirmTitle = isHardDelete ? 'COMMON.HARD_DELETE' : 'COMMON.DELETE';
-    const confirmMessageKey = isHardDelete ? 'ITEMS_LIST.BULK_HARD_DELETE_CONFIRM' : 'ITEMS_LIST.BULK_DELETE_COUNT_CONFIRM';
+    const confirmTitle = isHardDelete ? 'COMMON.HARD_DELETE' : 'COMMON.ARCHIVE';
+    const confirmMessageKey = isHardDelete 
+      ? 'ITEMS_LIST.BULK_HARD_DELETE_CONFIRM' 
+      : 'ITEMS_LIST.BULK_DELETE_COUNT_CONFIRM';
 
     this.modal.openConfirm({
       mode: 'delete',
@@ -232,7 +238,9 @@ export class ItemsListComponent implements OnInit {
 
       this.isLoading = true;
       const ids = Array.from(this.selectedIds);
-      const request$ = isHardDelete ? this.itemService.deleteArchivedBatch(ids) : this.itemService.deleteBatch(ids);
+      const request$ = isHardDelete 
+        ? this.itemService.deleteArchivedBatch(ids) 
+        : this.itemService.deleteBatch(ids);
 
       request$.subscribe({
         next: () => {
@@ -259,10 +267,45 @@ export class ItemsListComponent implements OnInit {
     });
   }
 
+  // --- ОДИНОЧНОЕ УДАЛЕНИЕ ИЗ ТАБЛИЦЫ ---
   onDeleteClick(item: Item): void {
-    this.selectedIds.clear();
-    this.selectedIds.add(item.id);
-    this.bulkDelete();
+    if (item.status === 2) {
+      this.toastr.error(this.translate.instant('ITEMS.ERRORS.CANNOT_DELETE_SOLD'));
+      return;
+    }
+
+    const isArchived = item.status === 3;
+    const confirmTitle = isArchived ? 'COMMON.HARD_DELETE' : 'COMMON.ARCHIVE';
+    const confirmMessageKey = isArchived 
+      ? 'ITEMS_LIST.HARD_DELETE_CONFIRM' 
+      : 'ITEMS_LIST.ARCHIVE_CONFIRM';
+
+    this.modal.openConfirm({
+      mode: 'delete',
+      title: confirmTitle,
+      message: this.translate.instant(confirmMessageKey, { name: item.name }),
+      name: item.name
+    }).subscribe(confirm => {
+      if (!confirm) return;
+
+      this.isLoading = true;
+
+      const request$ = isArchived
+        ? this.itemService.deleteArchivedBatch([item.id])
+        : this.itemService.changeStatus(item.id, 3);
+
+      request$.subscribe({
+        next: () => {
+          this.toastr.success(this.translate.instant(isArchived ? 'ITEMS.SUCCESS.DELETE' : 'ITEMS.SUCCESS.ARCHIVE'));
+          this.selectedIds.delete(item.id);
+          this.loadData();
+        },
+        error: () => {
+          this.toastr.error(this.translate.instant('SYSTEM.DEFAULT_ERROR'));
+          this.isLoading = false;
+        }
+      });
+    });
   }
 
   @HostListener('document:click', ['$event'])

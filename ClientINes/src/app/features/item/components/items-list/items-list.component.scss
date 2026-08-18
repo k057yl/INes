@@ -208,37 +208,54 @@
     cursor: pointer;
     user-select: none;
 
-    input { position:absolute; opacity:0; width:0; height:0; }
+    input { position: absolute; opacity: 0; width: 0; height: 0; }
 
     .checkmark {
-      position:absolute;
-      inset:0;
-      background:transparent;
-      border:2px solid var(--border-color);
-      border-radius:6px;
-      transition:.2s;
+      position: absolute;
+      inset: 0;
+      background: transparent;
+      border: 2px solid var(--border-color);
+      border-radius: 6px;
+      transition: .2s;
 
       &:after {
-        content:"";
-        position:absolute;
-        display:none;
-        left:6px;
-        top:2px;
-        width:5px;
-        height:10px;
-        border:solid var(--text-on-accent);
-        border-width:0 2px 2px 0;
-        transform:rotate(45deg);
+        content: "";
+        position: absolute;
+        display: none;
+        left: 6px;
+        top: 2px;
+        width: 5px;
+        height: 10px;
+        border: solid var(--text-on-accent);
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
       }
     }
 
     input:checked ~ .checkmark {
       background: var(--accent-color);
       border-color: var(--accent-color);
-      &:after { display:block; }
+      &:after { display: block; }
     }
 
     &:hover .checkmark { border-color: var(--accent-color); }
+
+    /* Стили заблокированного чекбокса для проданного товара */
+    &.disabled-checkbox {
+      opacity: 0.35;
+      cursor: not-allowed;
+
+      input { cursor: not-allowed; }
+
+      .checkmark {
+        border-color: var(--border-color);
+        background: var(--bg-input);
+      }
+
+      &:hover .checkmark {
+        border-color: var(--border-color);
+      }
+    }
   }
 }
 
@@ -375,10 +392,21 @@
 
 .actions-group {
   display: flex; gap: 8px; justify-content: flex-end;
+
   .icon-btn {
     width: 34px; height: 34px; border-radius: 8px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
     color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;
+
     &:hover { background: var(--accent-color); color: var(--text-on-accent); border-color: var(--accent-color); }
+
+    /* Стиль кнопки сноса/архивации */
+    &.delete-btn {
+      &:hover {
+        background: var(--error-red);
+        color: #fff;
+        border-color: var(--error-red);
+      }
+    }
   }
 }
 

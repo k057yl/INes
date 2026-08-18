@@ -17,7 +17,8 @@
       <div class="header-right">
         @if (selectedIds.size > 0) {
           <button class="bulk-delete-btn" (click)="bulkDelete()">
-            <i class="fa fa-trash"></i> {{ 'COMMON.DELETE' | translate }} ({{ selectedIds.size }})
+            <i class="fa" [ngClass]="filterForm.get('showArchived')?.value ? 'fa-fire' : 'fa-archive'"></i> 
+            {{ (filterForm.get('showArchived')?.value ? 'COMMON.HARD_DELETE' : 'COMMON.ARCHIVE') | translate }} ({{ selectedIds.size }})
           </button>
         }
 
@@ -135,9 +136,12 @@
             @for (item of items; track trackById($index, item)) {
               <tr [class.selected-row]="selectedIds.has(item.id)">
                 <td class="col-check">
-                  <label class="custom-checkbox yellow">
-                    <input type="checkbox" [checked]="selectedIds.has(item.id)" (change)="toggleSelection(item.id)">
-                    <span class="checkmark"></span>
+                  <label class="custom-checkbox yellow" [class.disabled-checkbox]="item.status === 2">
+                    <input type="checkbox" 
+                          [disabled]="item.status === 2"
+                          [checked]="selectedIds.has(item.id)" 
+                          (change)="toggleSelection(item.id)">
+                    <span class="checkmark" [attr.title]="item.status === 2 ? ('ITEMS.ERRORS.CANNOT_DELETE_SOLD' | translate) : null"></span>
                   </label>
                 </td>
                 <td class="col-photo">
@@ -158,8 +162,15 @@
                 <td class="col-price">{{ (item.details?.purchasePrice || 0) | price:(item.details?.currency || '$') }}</td>
                 <td class="col-actions">
                   <div class="actions-group">
-                    <button class="icon-btn view-btn" [routerLink]="['/item', item.id]"><i class="fa fa-eye"></i></button>
-                    <button class="icon-btn edit-btn" (click)="onEditClick(item)"><i class="fa fa-pen"></i></button>
+                    <button class="icon-btn view-btn" [routerLink]="['/item', item.id]" [attr.title]="'COMMON.INFO' | translate">
+                      <i class="fa fa-eye"></i>
+                    </button>
+                    <button class="icon-btn edit-btn" (click)="onEditClick(item)" [attr.title]="'COMMON.EDIT' | translate">
+                      <i class="fa fa-pen"></i>
+                    </button>
+                    <button class="icon-btn delete-btn" (click)="onDeleteClick(item)" [attr.title]="(item.status === 3 ? 'COMMON.HARD_DELETE' : 'COMMON.ARCHIVE') | translate">
+                      <i class="fa" [ngClass]="item.status === 3 ? 'fa-fire' : 'fa-archive'"></i>
+                    </button>
                   </div>
                 </td>
               </tr>
