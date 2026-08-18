@@ -85,8 +85,9 @@
   &:hover { transform: scale(1.05); }
 }
 
+/* ДЕСКТОПНЫЙ БЛОК ДЕЙСТВИЙ - ГАРАНТИРУЕМ ВИДИМОСТЬ */
 .actions {
-  display: flex;
+  display: flex !important;
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
@@ -280,13 +281,13 @@
   .header { padding: 0 1rem; }
 }
 
-/* ФИКС МОБИЛЬНОГО МЕНЮ */
+/* МОБИЛЬНАЯ АДАПТИВНОСТЬ И ПЕРЕОПРЕДЕЛЕНИЕ */
 @media (max-width: 768px) {
   .mobile-header-right { display: flex; }
   .desktop-user-box { display: none !important; }
 
   .actions {
-    display: none;
+    display: none !important;
     position: absolute;
     top: 64px; left: 0; right: 0;
     background: var(--bg-card);
@@ -297,11 +298,11 @@
     gap: 8px;
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
     z-index: 999;
-    pointer-events: none; /* Чобы в закрытом виде не перекрывал клики */
+    pointer-events: none;
 
     &.mobile-open {
-      display: flex;
-      pointer-events: auto; /* Включаем клики при открытии */
+      display: flex !important;
+      pointer-events: auto;
       animation: slideIn 0.2s ease-out;
     }
 

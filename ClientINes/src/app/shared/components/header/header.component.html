@@ -1,26 +1,23 @@
 <header class="header">
   <div class="header-main">
 
-    <!-- ЛОГОТИП (Всегда виден) -->
+    <!-- 1. ЛЕВАЯ ЧАСТЬ: ЛОГОТИП -->
     <div class="brand-section">
       <div class="logo" [routerLink]="['/dashboard']" title="INest / Karakaţsya">
         <div class="logo-icon"></div>
       </div>
     </div>
 
-    <!-- МЕНЮ И ДЕЙСТВИЯ -->
+    <!-- 2. ПРАВАЯ ЧАСТЬ: ВСЕ ДЕЙСТВИЯ -->
     <div class="actions" [class.mobile-open]="isMobileMenuOpen">
       
-      <!-- ПУБЛИЧНЫЕ КОНТРОЛЫ (Всегда видны: и гостю, и юзеру) -->
-      
-      <!-- 1. ТЕМА -->
-      <button class="theme-toggle" (click)="toggleTheme()" [title]="'COMMON.CHANGE_THEME_TOOLTIP' | translate">
+      <!-- ПУБЛИЧНЫЕ ЭЛЕМЕНТЫ (ВИДНЫ ВСЕГДА) -->
+      <button type="button" class="theme-toggle" (click)="toggleTheme()" [title]="'COMMON.CHANGE_THEME_TOOLTIP' | translate">
         {{ themeService.isDarkTheme() ? '🌙' : '☀️' }}
       </button>
 
-      <!-- 2. ЯЗЫК -->
       <div class="lang-dropdown" [class.open]="isLangMenuOpen()">
-        <button class="lang-trigger" (click)="toggleLangMenu($event)" [title]="'COMMON.CHANGE_LANGUAGE_TOOLTIP' | translate">
+        <button type="button" class="lang-trigger" (click)="toggleLangMenu($event)" [title]="'COMMON.CHANGE_LANGUAGE_TOOLTIP' | translate">
           <i class="fa fa-globe"></i>
           <span class="active-lang">{{ currentLang | uppercase }}</span>
           <i class="fa fa-chevron-down" [class.rotate]="isLangMenuOpen()"></i>
@@ -29,7 +26,7 @@
         @if (isLangMenuOpen()) {
           <div class="lang-menu" (click)="$event.stopPropagation()">
             @for (lang of languages; track lang.code) {
-              <button (click)="changeLang(lang.code)" [class.selected]="currentLang === lang.code">
+              <button type="button" (click)="changeLang(lang.code)" [class.selected]="currentLang === lang.code">
                 <span class="flag">{{ lang.flag }}</span>
                 {{ lang.label }}
               </button>
@@ -38,37 +35,34 @@
         }
       </div>
 
-      <!-- ПРИВАТНЫЕ КОНТРОЛЫ (Только для авторизованных) -->
+      <!-- ПРИВАТНЫЕ ЭЛЕМЕНТЫ (ТОЛЬКО ДЛЯ АВТОРИЗОВАННЫХ) -->
       @if (user$ | async; as user) {
         
-        <!-- АДМИНКА -->
         @if (isAdmin(user)) {
           <a routerLink="/admin/feedback" routerLinkActive="active" class="icon-btn admin-trigger" title="Админка отзывов">
             <i class="fa fa-shield-alt"></i>
           </a>
         }
 
-        <!-- НАСТРОЙКИ -->
         <a routerLink="/settings" routerLinkActive="active" class="settings-link" [title]="'HEADER.SETTINGS' | translate">
           <i class="fa fa-cog"></i>
           <span class="desktop-only">{{ 'HEADER.SETTINGS' | translate }}</span>
         </a>
 
-        <!-- СОЗДАТЬ -->
         @if (hasLocations()) {
           <div class="create-dropdown" [class.open]="isCreateMenuOpen()">
-            <button class="create-trigger" (click)="toggleCreateMenu($event)" [title]="'COMMON.CREATE' | translate">
+            <button type="button" class="create-trigger" (click)="toggleCreateMenu($event)" [title]="'COMMON.CREATE' | translate">
               <i class="fa fa-plus"></i>
               <span class="desktop-only">{{ 'COMMON.CREATE' | translate }}</span>
             </button>
 
             @if (isCreateMenuOpen()) {
               <div class="create-menu" (click)="$event.stopPropagation()">
-                <button (click)="openCreateLocation()">
+                <button type="button" (click)="openCreateLocation()">
                   <i class="fa fa-folder-plus"></i>
                   <span>{{ 'HEADER.CREATE_LOCATION' | translate }}</span>
                 </button>
-                <button (click)="openCreateItem()">
+                <button type="button" (click)="openCreateItem()">
                   <i class="fa fa-box"></i>
                   <span>{{ 'HEADER.CREATE_ITEM' | translate }}</span>
                 </button>  
@@ -77,14 +71,12 @@
           </div>
         }
 
-        <!-- НИК (Десктоп) -->
         <div class="user-box desktop-user-box" [title]="user.displayName || user.email">
           <i class="fa fa-user-circle"></i>
           <strong>{{ user.displayName || user.email }}</strong>
         </div>
 
-        <!-- ВЫХОД -->
-        <button class="logout-icon-btn" (click)="onLogout()" [title]="'COMMON.EXIT' | translate">
+        <button type="button" class="logout-icon-btn" (click)="onLogout()" [title]="'COMMON.EXIT' | translate">
           <i class="fa fa-sign-out-alt"></i>
         </button>
 
@@ -92,7 +84,7 @@
 
     </div>
 
-    <!-- МОБИЛЬНАЯ ПРАВАЯ СЕКЦИЯ (Ник + Гамбургер) -->
+    <!-- МОБИЛЬНАЯ КНОПКА ГАМБУРГЕРА -->
     <div class="mobile-header-right">
       @if (user$ | async; as user) {
         <div class="user-box mobile-user-box" [title]="user.displayName || user.email">
@@ -101,7 +93,7 @@
         </div>
       }
 
-      <button class="mobile-menu-btn" (click)="isMobileMenuOpen = !isMobileMenuOpen" [class.open]="isMobileMenuOpen">
+      <button type="button" class="mobile-menu-btn" (click)="isMobileMenuOpen = !isMobileMenuOpen" [class.open]="isMobileMenuOpen">
         <i class="fa" [ngClass]="isMobileMenuOpen ? 'fa-times' : 'fa-bars'"></i>
       </button>
     </div>
