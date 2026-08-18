@@ -28,7 +28,6 @@
   margin: 0 auto;
 }
 
-/* --- МОБИЛЬНЫЕ ЭЛЕМЕНТЫ --- */
 .mobile-header-right {
   display: none;
   align-items: center;
@@ -68,7 +67,6 @@
   }
 }
 
-/* --- ЛОГОТИП --- */
 .brand-section {
   display: flex;
   align-items: center;
@@ -87,7 +85,6 @@
   &:hover { transform: scale(1.05); }
 }
 
-/* --- ПРАВАЯ ЧАСТЬ И ДЕЙСТВИЯ --- */
 .actions {
   display: flex;
   align-items: center;
@@ -95,7 +92,6 @@
   flex-shrink: 0;
 }
 
-/* Настройки */
 .settings-link {
   background: var(--bg-input);
   border: 1px solid var(--border-color);
@@ -121,7 +117,6 @@
   }
 }
 
-/* Дропдаун "Создать" */
 .create-dropdown { position: relative; }
 
 .create-trigger {
@@ -192,7 +187,6 @@
   }
 }
 
-/* Общие утилитарные кнопки хедера */
 .user-box, .theme-toggle, .lang-trigger, .logout-icon-btn, .icon-btn {
   background: var(--bg-input);
   border: 1px solid var(--border-color);
@@ -213,7 +207,6 @@
   }
 }
 
-/* Иконка Админки */
 .icon-btn.admin-trigger {
   width: 38px;
   font-size: 0.95rem;
@@ -287,7 +280,7 @@
   .header { padding: 0 1rem; }
 }
 
-/* Мобильная адаптивность */
+/* ФИКС МОБИЛЬНОГО МЕНЮ */
 @media (max-width: 768px) {
   .mobile-header-right { display: flex; }
   .desktop-user-box { display: none !important; }
@@ -304,9 +297,11 @@
     gap: 8px;
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
     z-index: 999;
+    pointer-events: none; /* Чобы в закрытом виде не перекрывал клики */
 
     &.mobile-open {
       display: flex;
+      pointer-events: auto; /* Включаем клики при открытии */
       animation: slideIn 0.2s ease-out;
     }
 
