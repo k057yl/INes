@@ -489,6 +489,7 @@
     "EMPTY_RESULT_DESC": "Try changing search parameters or resetting filters",
     "BULK_DELETE_COUNT_CONFIRM": "Are you sure you want to archive selected items ({{count}} pcs)?",
     "BULK_HARD_DELETE_CONFIRM": "Are you sure you want to permanently delete selected items ({{count}} pcs)? This action is irreversible!",
+    "ARCHIVE_CONFIRM": "Are you sure you want to move the item to the archive?",
     "DROP_MENU": {
       "ALL_CATEGORIES": "All categories",
       "ALL_LOCATIONS": "All locations"
@@ -510,8 +511,7 @@
       "STATUS": "Status",
       "PRICE": "Price",
       "ACTION": "Actions"
-    },
-    "ARCHIVE_CONFIRM": "Are you sure you want to move the item to the archive?"
+    }
   },
   "SETTINGS_PAGE": {
     "TITLE": "General Settings",

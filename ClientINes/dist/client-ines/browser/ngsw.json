@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1787055619171,
+  "timestamp": 1787055914162,
   "index": "/index.html",
   "assetGroups": [
     {
@@ -71,9 +71,9 @@
     }
   ],
   "hashTable": {
-    "/assets/i18n/en.json": "68fbc4d1ae02d353ebb816e894f95fb7db660a4d",
-    "/assets/i18n/ru.json": "c0707bfd598df889f15d2a9ce6705b29e06a2f84",
-    "/assets/i18n/uk.json": "252e94d2168ea62f962aa04adaa299398f5f3dc5",
+    "/assets/i18n/en.json": "4a7548e9e775c68d5b6cdd9f8fefeaa7a49e0972",
+    "/assets/i18n/ru.json": "ec14cf8b8d07054ff1041325ea6290466d8364ca",
+    "/assets/i18n/uk.json": "6051dbc54e48a78580c52030ec9a212c63b776fb",
     "/assets/images/LogoKaraDark.png": "c9556470d1ba5214c54e56a3fd1c24db8ea24c0f",
     "/assets/images/LogoKaraLight.png": "5c9e3c650f77bf7c5972542dba7a9423b7c8f9b0",
     "/assets/images/no-image.png": "31a74fe17ebaa5f56007ac77a34fcd3e73cb50ef",
