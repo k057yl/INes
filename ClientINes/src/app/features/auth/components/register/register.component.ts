@@ -1,18 +1,20 @@
 import { Component, inject, OnInit, AfterViewInit, NgZone, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { environment } from '../../../../../environments/environment';
 import { emailUniqueValidator } from '../../../../core/validators/email-unique.validator';
 import { AuthService } from '../../services/auth.service';
+import { ThemeService } from '../../../../core/services/theme.service';
+import { LocalizationService } from '../../../../core/services/localization.service';
 
 declare var google: any;
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, TranslateModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule, TranslateModule],
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss'
 })
@@ -22,6 +24,8 @@ export class RegisterComponent implements OnInit, AfterViewInit {
   private authService = inject(AuthService);
   private ngZone = inject(NgZone);
   private cdr = inject(ChangeDetectorRef);
+  public themeService = inject(ThemeService);
+  public locService = inject(LocalizationService);
 
   registerForm: FormGroup; 
   message?: string;
@@ -29,6 +33,18 @@ export class RegisterComponent implements OnInit, AfterViewInit {
 
   showGoogle = false;
   showPassword = false;
+
+  languages = [
+    { code: 'en', label: 'EN', flag: '🇺🇸' },
+    { code: 'ru', label: 'RU', flag: '🇷🇺' },
+    { code: 'uk', label: 'UK', flag: '🇺🇦' }
+  ];
+
+  get currentLang() { return this.locService.currentLang; }
+
+  changeLang(lang: string) {
+    this.locService.setLanguage(lang);
+  }
 
   constructor() {
     this.registerForm = this.initForm();

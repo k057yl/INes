@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { AuthService } from '../../services/auth.service';
 import { ThemeService } from '../../../../core/services/theme.service';
+import { LocalizationService } from '../../../../core/services/localization.service';
 import { environment } from '../../../../../environments/environment';
 
 declare var google: any;
@@ -18,6 +19,7 @@ declare var google: any;
 })
 export class LoginComponent implements OnInit {
   public themeService = inject(ThemeService);
+  public locService = inject(LocalizationService);
   private authService = inject(AuthService);
   private router = inject(Router);
   private ngZone = inject(NgZone);
@@ -27,6 +29,18 @@ export class LoginComponent implements OnInit {
   error?: string;
   showGoogle = false;
   showPassword = false;
+
+  languages = [
+    { code: 'en', label: 'EN', flag: '🇺🇸' },
+    { code: 'ru', label: 'RU', flag: '🇷🇺' },
+    { code: 'uk', label: 'UK', flag: '🇺🇦' }
+  ];
+
+  get currentLang() { return this.locService.currentLang; }
+
+  changeLang(lang: string) {
+    this.locService.setLanguage(lang);
+  }
 
   ngOnInit() {
     this.resetForm();

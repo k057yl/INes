@@ -1,5 +1,21 @@
 <div class="inest-form-page">
   <div class="inest-form-card">
+
+    <!-- ВСТРОЕННАЯ ПАНЕЛЬ ТЕМЫ И ЯЗЫКА -->
+    <div class="auth-top-controls">
+      <button type="button" class="theme-toggle" (click)="themeService.toggleTheme()">
+        {{ themeService.isDarkTheme() ? '🌙' : '☀️' }}
+      </button>
+
+      <div class="lang-dropdown">
+        <select [ngModel]="currentLang" (ngModelChange)="changeLang($event)" class="auth-lang-select">
+          @for (lang of languages; track lang.code) {
+            <option [value]="lang.code">{{ lang.flag }} {{ lang.code | uppercase }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
     <header class="inest-form-header">
       <div class="logo-circle"><i class="fa fa-user-plus"></i></div>
       <h2>{{ 'AUTH_PAGE.TITLE_REG' | translate }}</h2>
@@ -22,6 +38,7 @@
             }
           </div>
         </div>
+
         <div class="inest-form-group">
           <label>{{ 'AUTH_PAGE.EMAIL' | translate }}</label>
           <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('email')">
@@ -46,6 +63,7 @@
             }
           </div>
         </div>
+
         <div class="inest-form-group">
           <label>{{ 'AUTH_PAGE.PASSWORD' | translate }}</label>
           <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('password')">
@@ -53,84 +71,90 @@
             <input [type]="showPassword ? 'text' : 'password'"
               formControlName="password"
               [placeholder]="'AUTH_PAGE.PASSWORD_CREATE_PHL' | translate">
-              <button type="button" class="input-action" (click)="togglePassword()">
-                <i class="fa" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
-              </button>
-            </div>
-            @if (registerForm.get('password')?.value && !hasForbiddenChars()) {
-              <div class="password-checklist">
-                <div class="check-item" [class.valid]="!registerForm.get('password')?.hasError('minlength')">
-                  <i class="fa" [ngClass]="registerForm.get('password')?.hasError('minlength') ? 'fa-circle-notch' : 'fa-check-circle'"></i>
-                  {{ 'ERRORS.PWD_MIN_LENGTH' | translate }}
-                </div>
-                <div class="check-item" [class.valid]="checkPasswordRequirement('[A-Z]')">
-                  <i class="fa" [ngClass]="checkPasswordRequirement('[A-Z]') ? 'fa-check-circle' : 'fa-circle-notch'"></i>
-                  {{ 'ERRORS.PWD_UPPER' | translate }}
-                </div>
-                <div class="check-item" [class.valid]="checkPasswordRequirement('[0-9]')">
-                  <i class="fa" [ngClass]="checkPasswordRequirement('[0-9]') ? 'fa-check-circle' : 'fa-circle-notch'"></i>
-                  {{ 'ERRORS.PWD_DIGIT' | translate }}
-                </div>
-                <div class="check-item" [class.valid]="checkPasswordRequirement('[^a-zA-Z0-9]')">
-                  <i class="fa" [ngClass]="checkPasswordRequirement('[^a-zA-Z0-9]') ? 'fa-check-circle' : 'fa-circle-notch'"></i>
-                  {{ 'ERRORS.PWD_SPEC' | translate }}
-                </div>
-              </div>
-            }
-            <div class="inest-error-container">
-              @if (hasForbiddenChars()) {
-                <small class="inest-error-text">
-                  <i class="fa fa-exclamation-circle"></i> {{ 'ERRORS.PWD_LATIN' | translate }}
-                </small>
-              }
-            </div>
-          </div>
-          <div class="inest-form-group">
-            <label>{{ 'AUTH_PAGE.CONFIRM_PASSWORD' | translate }}</label>
-            <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('confirmPassword') || (registerForm.errors?.['mismatch'] && registerForm.get('confirmPassword')?.touched)">
-              <i class="fa fa-lock inest-field-icon-left"></i>
-              <input [type]="showPassword ? 'text' : 'password'"
-                formControlName="confirmPassword"
-                [placeholder]="'AUTH_PAGE.PASSWORD_CONFIRM_PHL' | translate">
-                <button type="button" class="input-action" (click)="togglePassword()">
-                  <i class="fa" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
-                </button>
-              </div>
-              <div class="inest-error-container">
-                @if (registerForm.errors?.['mismatch'] && registerForm.get('confirmPassword')?.touched) {
-                  <small class="inest-error-text">
-                    {{ 'AUTH_PAGE.PASSWORD_MISMATCH' | translate }}
-                  </small>
-                }
-              </div>
-            </div>
-            @if (error) {
-              <div class="inest-status-box error">
-                <i class="fa fa-exclamation-triangle"></i> {{ error | translate }}
-              </div>
-            }
-            <button type="submit" class="inest-btn-primary" [disabled]="registerForm.invalid">
-              <i class="fa fa-user-plus" style="margin-right: 8px;"></i> {{ 'AUTH_PAGE.REGISTRATION_BTN' | translate }}
+            <button type="button" class="input-action" (click)="togglePassword()">
+              <i class="fa" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
             </button>
-          </form>
-        }
+          </div>
+          
+          @if (registerForm.get('password')?.value && !hasForbiddenChars()) {
+            <div class="password-checklist">
+              <div class="check-item" [class.valid]="!registerForm.get('password')?.hasError('minlength')">
+                <i class="fa" [ngClass]="registerForm.get('password')?.hasError('minlength') ? 'fa-circle-notch' : 'fa-check-circle'"></i>
+                {{ 'ERRORS.PWD_MIN_LENGTH' | translate }}
+              </div>
+              <div class="check-item" [class.valid]="checkPasswordRequirement('[A-Z]')">
+                <i class="fa" [ngClass]="checkPasswordRequirement('[A-Z]') ? 'fa-check-circle' : 'fa-circle-notch'"></i>
+                {{ 'ERRORS.PWD_UPPER' | translate }}
+              </div>
+              <div class="check-item" [class.valid]="checkPasswordRequirement('[0-9]')">
+                <i class="fa" [ngClass]="checkPasswordRequirement('[0-9]') ? 'fa-check-circle' : 'fa-circle-notch'"></i>
+                {{ 'ERRORS.PWD_DIGIT' | translate }}
+              </div>
+              <div class="check-item" [class.valid]="checkPasswordRequirement('[^a-zA-Z0-9]')">
+                <i class="fa" [ngClass]="checkPasswordRequirement('[^a-zA-Z0-9]') ? 'fa-check-circle' : 'fa-circle-notch'"></i>
+                {{ 'ERRORS.PWD_SPEC' | translate }}
+              </div>
+            </div>
+          }
 
-        <div class="inest-form-divider">
-          <span>{{ 'AUTH_PAGE.OR' | translate }}</span>
+          <div class="inest-error-container">
+            @if (hasForbiddenChars()) {
+              <small class="inest-error-text">
+                <i class="fa fa-exclamation-circle"></i> {{ 'ERRORS.PWD_LATIN' | translate }}
+              </small>
+            }
+          </div>
         </div>
 
-        <button type="button" class="inest-btn-outline" (click)="toggleGoogle()">
-          <i class="fab fa-google" style="margin-right: 8px;"></i>
-          {{ (showGoogle ? 'AUTH_PAGE.HIDE_GOOGLE_BTN' : 'AUTH_PAGE.SHOW_REG_GOOGLE_BTN') | translate }}
-        </button>
+        <div class="inest-form-group">
+          <label>{{ 'AUTH_PAGE.CONFIRM_PASSWORD' | translate }}</label>
+          <div class="inest-input-wrapper" [class.is-invalid]="isControlInvalid('confirmPassword') || (registerForm.errors?.['mismatch'] && registerForm.get('confirmPassword')?.touched)">
+            <i class="fa fa-lock inest-field-icon-left"></i>
+            <input [type]="showPassword ? 'text' : 'password'"
+              formControlName="confirmPassword"
+              [placeholder]="'AUTH_PAGE.PASSWORD_CONFIRM_PHL' | translate">
+            <button type="button" class="input-action" (click)="togglePassword()">
+              <i class="fa" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+            </button>
+          </div>
+          <div class="inest-error-container">
+            @if (registerForm.errors?.['mismatch'] && registerForm.get('confirmPassword')?.touched) {
+              <small class="inest-error-text">
+                {{ 'AUTH_PAGE.PASSWORD_MISMATCH' | translate }}
+              </small>
+            }
+          </div>
+        </div>
 
-        @if (showGoogle) {
-          <div id="googleBtn" class="google-btn-container" style="margin-top: 15px;"></div>
+        @if (error) {
+          <div class="inest-status-box error">
+            <i class="fa fa-exclamation-triangle"></i> {{ error | translate }}
+          </div>
         }
 
-        <footer class="inest-form-footer">
-          <span>{{ 'AUTH_PAGE.ALREADY_HAVE_ACC' | translate }}</span>
-          <a routerLink="/login">{{ 'AUTH_PAGE.GO_TO_LOGIN' | translate }}</a>
-        </footer>
-      </div>
+        <button type="submit" class="inest-btn-primary" [disabled]="registerForm.invalid">
+          <i class="fa fa-user-plus" style="margin-right: 8px;"></i> {{ 'AUTH_PAGE.REGISTRATION_BTN' | translate }}
+        </button>
+      </form>
+    }
+
+    <div class="inest-form-divider">
+      <span>{{ 'AUTH_PAGE.OR' | translate }}</span>
     </div>
+
+    <button type="button" class="inest-btn-outline" (click)="toggleGoogle()">
+      <i class="fab fa-google" style="margin-right: 8px;"></i>
+      {{ (showGoogle ? 'AUTH_PAGE.HIDE_GOOGLE_BTN' : 'AUTH_PAGE.SHOW_REG_GOOGLE_BTN') | translate }}
+    </button>
+
+    @if (showGoogle) {
+      <div id="googleBtn" class="google-btn-container" style="margin-top: 15px;"></div>
+    }
+
+    <footer class="inest-form-footer">
+      <span>{{ 'AUTH_PAGE.ALREADY_HAVE_ACC' | translate }}</span>
+      <a routerLink="/login">{{ 'AUTH_PAGE.GO_TO_LOGIN' | translate }}</a>
+    </footer>
+
+  </div>
+</div>
