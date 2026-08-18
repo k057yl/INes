@@ -2,7 +2,6 @@
 using CloudinaryDotNet.Actions;
 using INest.Constants;
 using INest.Infrastructure.Storage;
-using SkiaSharp;
 
 namespace INest.Infrastructure
 {
@@ -10,10 +9,9 @@ namespace INest.Infrastructure
     {
         private readonly Cloudinary _cloudinary;
         private readonly ILogger<PhotoService> _logger;
-        private const int TargetWidth = 320;
-        private const long MaxFileSizeBytes = 512 * 1024;
+        private const long MaxFileSizeBytes = 10 * 1024 * 1024;
 
-        private static readonly string[] AllowedMimeTypes = { "image/jpeg", "image/png", "image/webp", "image/gif" };
+        private static readonly string[] AllowedExtensions = { ".jpg", ".jpeg", ".png", ".webp", ".gif" };
         private static readonly string[] AllowedReceiptExtensions = { ".pdf", ".jpg", ".jpeg", ".png", ".webp" };
 
         public PhotoService(Cloudinary cloudinary, ILogger<PhotoService> logger)
@@ -26,42 +24,22 @@ namespace INest.Infrastructure
         {
             if (file == null || file.Length == 0) return new ImageUploadResult();
 
-            if (!AllowedMimeTypes.Contains(file.ContentType.ToLowerInvariant()))
+            var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
+            if (string.IsNullOrEmpty(ext) || !AllowedExtensions.Contains(ext))
             {
-                _logger.LogWarning("Попытка загрузить неверный формат файла: {Type}", file.ContentType);
+                _logger.LogWarning("Попытка загрузить недопустимое расширение файла: {FileName} ({ContentType})", file.FileName, file.ContentType);
                 return new ImageUploadResult { Error = new Error { Message = LocalizationConstants.ERRORS.IMAGE_PROCESSING_FAILED } };
             }
 
-            if (file.Length > MaxFileSizeBytes * 20)
+            if (file.Length > MaxFileSizeBytes)
             {
+                _logger.LogWarning("Превышен размер файла: {Size} байт", file.Length);
                 return new ImageUploadResult { Error = new Error { Message = LocalizationConstants.ERRORS.FILE_TOO_LARGE } };
             }
 
-            using var outStream = new MemoryStream();
             try
             {
-                using (var inputStream = file.OpenReadStream())
-                using (var originalBitmap = SKBitmap.Decode(inputStream))
-                {
-                    if (originalBitmap == null)
-                        throw new Exception(LocalizationConstants.ERRORS.IMAGE_PROCESSING_FAILED);
-
-                    int targetHeight = (int)(originalBitmap.Height * ((float)TargetWidth / originalBitmap.Width));
-
-                    using (var resizedBitmap = new SKBitmap(TargetWidth, targetHeight))
-                    {
-                        var samplingOptions = new SKSamplingOptions(SKFilterMode.Linear);
-                        originalBitmap.ScalePixels(resizedBitmap, samplingOptions);
-
-                        using (var image = SKImage.FromBitmap(resizedBitmap))
-                        using (var data = image.Encode(SKEncodedImageFormat.Jpeg, 75))
-                        {
-                            data.SaveTo(outStream);
-                        }
-                    }
-                }
-
-                outStream.Position = 0;
+                await using var stream = file.OpenReadStream();
 
                 var folderPath = userId.HasValue
                     ? $"INest/users/{userId.Value}"
@@ -69,17 +47,24 @@ namespace INest.Infrastructure
 
                 var uploadParams = new ImageUploadParams
                 {
-                    File = new FileDescription(file.FileName, outStream),
+                    File = new FileDescription(file.FileName, stream),
                     Folder = folderPath,
-                    Transformation = new Transformation().Quality("auto").FetchFormat("auto"),
+                    Transformation = new Transformation().Width(1280).Crop("limit").Quality("auto").FetchFormat("auto")
                 };
 
-                return await _cloudinary.UploadAsync(uploadParams);
+                var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+
+                if (uploadResult.Error != null)
+                {
+                    _logger.LogError("Cloudinary Upload Error: {Message}", uploadResult.Error.Message);
+                }
+
+                return uploadResult;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Photo processing via SkiaSharp failed");
-                return new ImageUploadResult { Error = new Error { Message = LocalizationConstants.ERRORS.IMAGE_PROCESSING_FAILED } };
+                _logger.LogError(ex, "Ошибка при загрузке фото в Cloudinary для файла {FileName}", file.FileName);
+                return new ImageUploadResult { Error = new Error { Message = ex.Message } };
             }
         }
 
@@ -94,7 +79,7 @@ namespace INest.Infrastructure
                 return new ImageUploadResult { Error = new Error { Message = LocalizationConstants.ERRORS.IMAGE_PROCESSING_FAILED } };
             }
 
-            if (file.Length > MaxFileSizeBytes * 20)
+            if (file.Length > MaxFileSizeBytes)
             {
                 return new ImageUploadResult { Error = new Error { Message = LocalizationConstants.ERRORS.FILE_TOO_LARGE } };
             }
@@ -105,7 +90,6 @@ namespace INest.Infrastructure
 
             await using var stream = file.OpenReadStream();
 
-            // 1. ОБРАБОТКА PDF
             if (extension == ".pdf" || file.ContentType.Equals("application/pdf", StringComparison.OrdinalIgnoreCase))
             {
                 try
@@ -135,17 +119,17 @@ namespace INest.Infrastructure
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "PDF receipt upload to Cloudinary failed");
-                    return new ImageUploadResult { Error = new Error { Message = LocalizationConstants.ERRORS.IMAGE_PROCESSING_FAILED } };
+                    return new ImageUploadResult { Error = new Error { Message = ex.Message } };
                 }
             }
 
-            // 2. ОБРАБОТКА КАРТИНКИ-ЧЕКА (БЕЗ УРЕЗАНИЯ РАЗРЕШЕНИЯ)
             try
             {
                 var imageUploadParams = new ImageUploadParams
                 {
                     File = new FileDescription(file.FileName, stream),
-                    Folder = folderPath
+                    Folder = folderPath,
+                    Transformation = new Transformation().Quality("auto").FetchFormat("auto")
                 };
 
                 var imageResult = await _cloudinary.UploadAsync(imageUploadParams);
@@ -160,7 +144,7 @@ namespace INest.Infrastructure
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Image receipt upload to Cloudinary failed");
-                return new ImageUploadResult { Error = new Error { Message = LocalizationConstants.ERRORS.IMAGE_PROCESSING_FAILED } };
+                return new ImageUploadResult { Error = new Error { Message = ex.Message } };
             }
         }
 
