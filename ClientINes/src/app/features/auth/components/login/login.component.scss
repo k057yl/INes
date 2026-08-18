@@ -1,3 +1,9 @@
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 1. Центрирование страницы и самой карточки */
 .inest-form-page {
   min-height: calc(100vh - 64px);
   width: 100%;
@@ -10,38 +16,62 @@
 }
 
 .inest-form-card {
-  position: relative;
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  position: relative; /* Чтобы кнопки встали ровно справа вверху */
 }
 
-.inest-form-divider {
+/* 2. Верхняя панель переключений (Тема + Язык) */
+.auth-top-controls {
+  position: absolute;
+  top: 12px;
+  right: 12px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  margin: 20px 0;
-  color: var(--text-muted);
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  gap: 8px;
+  z-index: 10;
 
-  &::before,
-  &::after {
-    content: "";
-    flex: 1;
-    height: 1px;
-    background: var(--border-color);
+  .theme-toggle {
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+
+    &:hover {
+      border-color: var(--accent-color);
+      transform: translateY(-1px);
+    }
   }
 
-  span {
-    padding: 0 12px;
+  .auth-lang-select {
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    height: 32px;
+    padding: 0 6px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.2s ease;
+
+    &:hover, &:focus {
+      border-color: var(--accent-color);
+    }
   }
 }
 
-@keyframes fadeInDown {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
+/* 3. Поля ввода и глазок для пароля */
 .inest-input-wrapper {
   position: relative;
 
@@ -71,6 +101,32 @@
   }
 }
 
+/* 4. Разделитель "ИЛИ" */
+.inest-form-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 20px 0;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  &::before,
+  &::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--border-color);
+  }
+
+  span {
+    padding: 0 12px;
+  }
+}
+
+/* 5. Кнопки и Google */
 .inest-btn-outline {
   width: 100%;
   background: var(--bg-main-card);
@@ -85,7 +141,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
 
   i.fa-google, i.fab.fa-google {
     color: var(--accent-color);
@@ -111,6 +166,7 @@
   }
 }
 
+/* 6. Подвал с ссылкой перехода на регистрацию */
 .inest-form-footer {
   margin-top: 20px;
   text-align: center;
@@ -129,75 +185,4 @@
       text-decoration: underline;
     }
   }
-}
-
-.label-with-action {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 6px;
-
-  label {
-    margin-bottom: 0;
-  }
-
-  .forgot-link {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    text-decoration: none;
-    transition: color 0.2s ease;
-
-    &:hover {
-      color: var(--accent-color);
-      text-decoration: underline;
-    }
-  }
-
-  .auth-top-controls {
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    z-index: 10;
-
-  .theme-toggle {
-    background: var(--bg-input);
-    border: 1px solid var(--border-color);
-    color: var(--text-main);
-    width: 34px;
-    height: 34px;
-    border-radius: 8px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.9rem;
-    transition: all 0.2s ease;
-
-    &:hover {
-      border-color: var(--accent-color);
-      transform: translateY(-1px);
-    }
-  }
-
-  .auth-lang-select {
-    background: var(--bg-input);
-    border: 1px solid var(--border-color);
-    color: var(--text-main);
-    height: 34px;
-    padding: 0 8px;
-    border-radius: 8px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    cursor: pointer;
-    outline: none;
-    transition: all 0.2s ease;
-
-    &:hover, &:focus {
-      border-color: var(--accent-color);
-    }
-  }
-}
 }
