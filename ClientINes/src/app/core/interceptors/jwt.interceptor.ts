@@ -4,7 +4,7 @@ import { BehaviorSubject, catchError, filter, switchMap, take, throwError, Obser
 import { AuthService } from '../../features/auth/services/auth.service';
 
 let isRefreshing = false;
-const refreshTokenSubject = new BehaviorSubject<boolean | null>(null);
+const refreshTokenSubject = new BehaviorSubject<string | null>(null);
 
 export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
@@ -56,26 +56,25 @@ function handle401Error(req: HttpRequest<any>, next: HttpHandlerFn, authService:
       switchMap((res: any) => {
         isRefreshing = false;
         
-        const newToken = res?.data?.token || res?.token || res?.data?.accessToken || res?.accessToken;
+        const newToken = res?.data?.token || res?.token;
         if (newToken) {
           localStorage.setItem('token', newToken);
+          refreshTokenSubject.next(newToken);
+        } else {
+          authService.clearLocalSession();
+          return throwError(() => new Error('No token in refresh response'));
         }
-        
-        refreshTokenSubject.next(true);
 
-        const latestToken = localStorage.getItem('token');
         const retryReq = req.clone({
           withCredentials: true,
-          headers: latestToken 
-            ? req.headers.set('Authorization', `Bearer ${latestToken}`)
-            : req.headers
+          setHeaders: { Authorization: `Bearer ${newToken}` }
         });
 
         return next(retryReq);
       }),
       catchError((err) => {
         isRefreshing = false;
-        refreshTokenSubject.next(false);
+        refreshTokenSubject.next(null);
 
         authService.clearLocalSession();
         return throwError(() => err);
@@ -83,20 +82,14 @@ function handle401Error(req: HttpRequest<any>, next: HttpHandlerFn, authService:
     );
   } else {
     return refreshTokenSubject.pipe(
-      filter(done => done !== null),
+      filter(token => token !== null),
       take(1),
-      switchMap((success) => {
-        if (success) {
-          const latestToken = localStorage.getItem('token');
-          const retryReq = req.clone({
-            withCredentials: true,
-            headers: latestToken 
-              ? req.headers.set('Authorization', `Bearer ${latestToken}`)
-              : req.headers
-          });
-          return next(retryReq);
-        }
-        return throwError(() => new HttpErrorResponse({ status: 401, statusText: 'Unauthorized' }));
+      switchMap((token) => {
+        const retryReq = req.clone({
+          withCredentials: true,
+          setHeaders: { Authorization: `Bearer ${token}` }
+        });
+        return next(retryReq);
       })
     );
   }

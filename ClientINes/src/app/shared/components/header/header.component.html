@@ -35,7 +35,7 @@
         }
       </div>
 
-      <!-- ПРИВАТНЫЕ ЭЛЕМЕНТЫ -->
+      <!-- АВТОРИЗОВАННЫЙ ПОЛЬЗОВАТЕЛЬ -->
       @if (user$ | async; as user) {
         
         @if (isAdmin(user)) {
@@ -57,6 +57,20 @@
         <button type="button" class="logout-icon-btn" (click)="onLogout()" [title]="'COMMON.EXIT' | translate">
           <i class="fa fa-sign-out-alt"></i>
         </button>
+
+      } @else {
+
+        <!-- НЕАВТОРИЗОВАННЫЙ ПОЛЬЗОВАТЕЛЬ -->
+        <div class="guest-actions">
+          <a routerLink="/login" routerLinkActive="active" class="inest-btn-auth-secondary">
+            <i class="fa-solid fa-right-to-bracket"></i>
+            <span>{{ 'LANDING.LOGIN' | translate }}</span>
+          </a>
+          <a routerLink="/register" routerLinkActive="active" class="inest-btn-auth-primary">
+            <i class="fa-solid fa-user-plus"></i>
+            <span>{{ 'LANDING.START_FREE' | translate }}</span>
+          </a>
+        </div>
 
       }
 

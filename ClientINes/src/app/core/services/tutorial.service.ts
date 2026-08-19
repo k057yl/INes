@@ -167,7 +167,7 @@ export class TutorialService {
     return this.http.post(`${environment.apiBaseUrl}/auth/complete-tutorial`, { step });
   }
 
-  // --- 1. ТУР ПО ДАШБОРДУ ---
+// --- 1. ТУР ПО ДАШБОРДУ ---
   public startDashboardTour(onComplete?: () => void) {
     this.initDriver(TutorialStep.Dashboard, 'dashboard', onComplete);
     if (!this.driverObj) return;
@@ -205,10 +205,22 @@ export class TutorialService {
       });
     }
 
-    // 3-6. Отдельные карточки статистики
-    if (document.querySelector('.stats-ribbon .stat-card:nth-child(1)')) {
+    // 3. Быстрое создание (Кнопка "Создать" с дропдауном)
+    if (document.querySelector('.create-dropdown-card')) {
       steps.push({
-        element: '.stats-ribbon .stat-card:nth-child(1)',
+        element: '.create-dropdown-card',
+        popover: {
+          title: this.translate.instant('TUTORIAL_PAGE.DASHBOARD.CREATE_BTN_TITLE'),
+          description: this.translate.instant('TUTORIAL_PAGE.DASHBOARD.CREATE_BTN_DESC'),
+          side: 'bottom'
+        }
+      });
+    }
+
+    // 4. Локации (теперь nth-child(2))
+    if (document.querySelector('.stats-ribbon .stat-card:nth-child(2)')) {
+      steps.push({
+        element: '.stats-ribbon .stat-card:nth-child(2)',
         popover: {
           title: this.translate.instant('TUTORIAL_PAGE.DASHBOARD.STATS_LOCATIONS_TITLE'),
           description: this.translate.instant('TUTORIAL_PAGE.DASHBOARD.STATS_LOCATIONS_DESC'),
@@ -217,9 +229,10 @@ export class TutorialService {
       });
     }
 
-    if (document.querySelector('.stats-ribbon .stat-card:nth-child(2)')) {
+    // 5. Всего вещей (nth-child(3))
+    if (document.querySelector('.stats-ribbon .stat-card:nth-child(3)')) {
       steps.push({
-        element: '.stats-ribbon .stat-card:nth-child(2)',
+        element: '.stats-ribbon .stat-card:nth-child(3)',
         popover: {
           title: this.translate.instant('TUTORIAL_PAGE.DASHBOARD.STATS_ITEMS_TITLE'),
           description: this.translate.instant('TUTORIAL_PAGE.DASHBOARD.STATS_ITEMS_DESC'),
@@ -228,9 +241,10 @@ export class TutorialService {
       });
     }
 
-    if (document.querySelector('.stats-ribbon .stat-card:nth-child(3)')) {
+    // 6. Продано (nth-child(4))
+    if (document.querySelector('.stats-ribbon .stat-card:nth-child(4)')) {
       steps.push({
-        element: '.stats-ribbon .stat-card:nth-child(3)',
+        element: '.stats-ribbon .stat-card:nth-child(4)',
         popover: {
           title: this.translate.instant('TUTORIAL_PAGE.DASHBOARD.STATS_SALES_TITLE'),
           description: this.translate.instant('TUTORIAL_PAGE.DASHBOARD.STATS_SALES_DESC'),
@@ -239,9 +253,10 @@ export class TutorialService {
       });
     }
 
-    if (document.querySelector('.stats-ribbon .stat-card:nth-child(4)')) {
+    // 7. Одолжено (nth-child(5))
+    if (document.querySelector('.stats-ribbon .stat-card:nth-child(5)')) {
       steps.push({
-        element: '.stats-ribbon .stat-card:nth-child(4)',
+        element: '.stats-ribbon .stat-card:nth-child(5)',
         popover: {
           title: this.translate.instant('TUTORIAL_PAGE.DASHBOARD.STATS_LENT_TITLE'),
           description: this.translate.instant('TUTORIAL_PAGE.DASHBOARD.STATS_LENT_DESC'),
@@ -250,7 +265,7 @@ export class TutorialService {
       });
     }
 
-    // 7. Карточка внимания
+    // 8. Карточка внимания
     if (document.querySelector('.attention-card')) {
       steps.push({
         element: '.attention-card',
@@ -262,7 +277,7 @@ export class TutorialService {
       });
     }
 
-    // 8. Лента навигации (РИББОН ЛОКАЦИИ)
+    // 9. Лента навигации (РИББОН ЛОКАЦИИ)
     if (document.querySelector('.ribbon-container')) {
       steps.push({
         element: '.ribbon-container',
@@ -274,7 +289,7 @@ export class TutorialService {
       });
     }
 
-    // 9. Футер и Обратная связь
+    // 10. Футер и Обратная связь
     if (document.querySelector('.footer-content')) {
       steps.push({
         element: '.footer-content',
@@ -297,7 +312,7 @@ export class TutorialService {
       });
     }
 
-    // 10. КУЛЬМИНАЦИЯ: Интерактивный клик по кнопке создания
+    // 11. КУЛЬМИНАЦИЯ: Интерактивный клик по кнопке создания
     const targetBtn = document.querySelector('.zero-state-container .tutorial-action, .tutorial-action');
 
     if (targetBtn) {

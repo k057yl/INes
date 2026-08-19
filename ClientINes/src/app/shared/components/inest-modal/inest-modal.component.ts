@@ -11,7 +11,7 @@ import { TranslateModule } from '@ngx-translate/core';
   styleUrl: './inest-modal.component.scss'
 })
 export class InestModalComponent implements AfterViewInit {
-  @Input() mode: 'input' | 'delete' | 'confirm' = 'input';
+  @Input() mode: 'input' | 'delete' | 'confirm' | 'password' = 'input';
   
   @Input() title: string = '';
   @Input() message: string = '';
@@ -27,7 +27,7 @@ export class InestModalComponent implements AfterViewInit {
   @ViewChild('inputElement') inputElement?: ElementRef;
 
   ngAfterViewInit() {
-    if (this.mode === 'input') {
+    if (this.mode === 'input' || this.mode === 'password') {
       setTimeout(() => this.inputElement?.nativeElement.focus(), 100);
     }
   }
@@ -36,6 +36,7 @@ export class InestModalComponent implements AfterViewInit {
     switch (this.mode) {
       case 'delete': return 'fa-exclamation-triangle';
       case 'confirm': return 'fa-undo-alt';
+      case 'password': return 'fa-lock';
       default: return 'fa-edit';
     }
   }
@@ -43,6 +44,7 @@ export class InestModalComponent implements AfterViewInit {
   getButtonClass(): string {
     switch (this.mode) {
       case 'delete': return 'inest-btn-danger';
+      case 'password': return 'inest-btn-danger';
       case 'confirm': return 'inest-btn-confirm';
       default: return 'inest-btn-primary';
     }
@@ -53,15 +55,17 @@ export class InestModalComponent implements AfterViewInit {
 
     switch (this.mode) {
       case 'delete': return 'COMMON.DELETE';
+      case 'password': return 'COMMON.CONFIRM';
       case 'confirm': return 'COMMON.OK';
       default: return 'COMMON.SAVE';
     }
   }
 
   submit(result?: string) {
-    const finalValue = result || (this.mode === 'input' ? this.name.trim() : this.mode);
+    const isInputMode = this.mode === 'input' || this.mode === 'password';
+    const finalValue = result || (isInputMode ? this.name.trim() : this.mode);
 
-    if (this.mode === 'input' && !finalValue) return;
+    if (isInputMode && !finalValue) return;
 
     this.confirmed.emit(finalValue);
   }

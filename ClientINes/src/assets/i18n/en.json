@@ -542,6 +542,7 @@
     "DELETE_ACCOUNT_SUB": "Permanently delete your profile, categories, locations, and all history",
     "DELETE_ACCOUNT_BTN": "Delete Profile",
     "DELETE_ACCOUNT_CONFIRM": "Are you sure you want to permanently delete your account? All your data will be wiped forever!",
+    "DELETE_ACCOUNT_PASSWORD_PLH": "Enter your password",
     "MODAL": {
       "CREATE_CATEGORY": "New category",
       "DELETE_CATEGORY": "Delete category",
@@ -722,7 +723,9 @@
       "FEEDBACK_BTN_TITLE": "Ideas and Bugs",
       "FEEDBACK_BTN_DESC": "Found a bug or have an idea? Click here anytime — we read every message.",
       "FOOTER_TITLE": "Help & Contacts",
-      "FOOTER_DESC": "Support, terms, and developer contact are always at bottom of page."
+      "FOOTER_DESC": "Support, terms, and developer contact are always at bottom of page.",
+      "CREATE_BTN_TITLE": "Quick creation",
+      "CREATE_BTN_DESC": "Here you can instantly create a new location or add an item"
     },
     "ITEMS_LIST": {
       "WELCOME_TITLE": "All Items",

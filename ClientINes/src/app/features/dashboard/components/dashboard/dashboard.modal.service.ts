@@ -1,15 +1,15 @@
 import { Injectable, inject } from '@angular/core';
-import { Subject, Observable } from 'rxjs';
+import { Subject, Observable, EMPTY } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 import { TranslateService } from '@ngx-translate/core';
 import { StorageLocation } from '../../../location/contracts/storage-location';
 import { Item } from '../../../item/contracts/item';
-import { EMPTY } from 'rxjs';
-
 
 export type DashboardModalType = 'itemForm' | 'locationForm' | 'categoryForm' | 'platformForm' | 'confirm' | 'sell' | 'lend' | 'statsList' | 'feedback' | 'notEmptyLocationDelete' | null;
 
 export type StatsListType = 'locations' | 'lent' | 'attention';
+
+export type ConfirmModalMode = 'delete' | 'confirm' | 'input' | 'password';
 
 @Injectable({ providedIn: 'root' })
 export class DashboardModalService {
@@ -72,7 +72,7 @@ export class DashboardModalService {
     return this.resetSubject();
   }
 
-  openConfirm(config: { mode: 'delete' | 'confirm' | 'input', title: string, message: string, name?: string, confirmText?: string, cancelText?: string }): Observable<any> {
+  openConfirm(config: { mode: ConfirmModalMode, title: string, message: string, name?: string, confirmText?: string, cancelText?: string }): Observable<any> {
     this.config = {
       ...config,
       confirmText: config.confirmText || 'COMMON.CONFIRM',

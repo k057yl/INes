@@ -163,21 +163,32 @@ export class SettingsComponent implements OnInit, OnDestroy {
       mode: 'delete',
       title: 'SETTINGS_PAGE.DELETE_ACCOUNT_TITLE',
       message: this.translate.instant('SETTINGS_PAGE.DELETE_ACCOUNT_CONFIRM')
-    }).subscribe(confirm => {
-      if (confirm) {
-        this.isLoading = true;
-        this.authService.deleteAccount()
-          .pipe(finalize(() => this.isLoading = false))
-          .subscribe({
-            next: () => {
-              this.toastr.success(this.translate.instant('AUTH.SUCCESS.ACCOUNT_DELETED'));
-              this.router.navigate(['/auth/login']);
-            },
-            error: () => {
-              this.toastr.error(this.translate.instant('SYSTEM.DEFAULT_ERROR'));
-            }
-          });
-      }
+    }).subscribe(firstConfirm => {
+      if (!firstConfirm) return;
+
+      setTimeout(() => {
+        this.modalService.openConfirm({
+          mode: 'password',
+          title: 'SETTINGS_PAGE.DELETE_ACCOUNT_TITLE',
+          message: this.translate.instant('SETTINGS_PAGE.DELETE_ACCOUNT_SUB')
+        }).subscribe(password => {
+          if (!password || typeof password !== 'string') return;
+
+          this.isLoading = true;
+          this.authService.deleteAccount(password)
+            .pipe(finalize(() => this.isLoading = false))
+            .subscribe({
+              next: () => {
+                this.toastr.success(this.translate.instant('AUTH.SUCCESS.ACCOUNT_DELETED'));
+                this.router.navigate(['/auth/login']);
+              },
+              error: (err) => {
+                const errorMessage = err?.error?.message || err?.error?.error || 'SYSTEM.DEFAULT_ERROR';
+                this.toastr.error(this.translate.instant(errorMessage));
+              }
+            });
+        });
+      }, 100);
     });
   }
 

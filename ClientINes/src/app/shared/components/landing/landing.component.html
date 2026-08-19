@@ -1,53 +1,53 @@
 <div class="landing-page">
   <main class="landing-main">
-    <!-- HERO SECTION -->
-    <section class="hero-section">
-      <div class="container hero-container">
-        <div class="hero-content">
-          <div class="hero-badge">
-            <i class="fa-solid fa-sparkles"></i>
-            <span>{{ 'LANDING.BADGE' | translate }}</span>
-          </div>
-          <h1>{{ 'LANDING.HERO_TITLE' | translate }}</h1>
-          <p class="hero-subtitle">{{ 'LANDING.HERO_SUBTITLE' | translate }}</p>
-          <div class="hero-actions">
-            <a routerLink="/register" class="cta-btn primary-btn">
-              <i class="fa-solid fa-rocket"></i>
-              <span>{{ 'LANDING.START_FREE' | translate }}</span>
-            </a>
-            <a routerLink="/login" class="cta-btn secondary-btn">
-              <i class="fa-solid fa-right-to-bracket"></i>
-              <span>{{ 'LANDING.LOGIN' | translate }}</span>
-            </a>
-          </div>
-        </div>
-
-        <div class="hero-preview">
-          <div class="preview-card-mockup">
-            <div class="mockup-header">
-              <i class="fa fa-terminal" style="color: var(--accent-color); font-size: 0.8rem;"></i>
-              <span class="mockup-title">INest Workspace</span>
+    <div class="container landing-container">
+      <!-- HERO SECTION -->
+      <section class="hero-section">
+        <div class="hero-container">
+          <div class="hero-content">
+            <div class="hero-badge">
+              <i class="fa-solid fa-sparkles"></i>
+              <span>{{ 'LANDING.BADGE' | translate }}</span>
             </div>
-            <div class="mockup-body">
-              <div class="mockup-stat-ribbon">
-                <div class="mockup-stat"><i class="fa fa-folder-open"></i> 12 Locs</div>
-                <div class="mockup-stat"><i class="fa fa-boxes"></i> 148 Items</div>
-                <div class="mockup-stat"><i class="fa fa-hand-holding"></i> 3 Lent</div>
-              </div>
-              <div class="mockup-tree">
-                <div class="tree-node"><i class="fa fa-folder"></i> Workshop / Garage</div>
-                <div class="tree-node nested"><i class="fa fa-box"></i> Tool Cabinet #2</div>
-                <div class="tree-item"><i class="fa-solid fa-screwdriver-wrench"></i> Bosch Drill (Lent to Alex)</div>
-              </div>
+            <h1>{{ 'LANDING.HERO_TITLE' | translate }}</h1>
+            <p class="hero-subtitle">{{ 'LANDING.HERO_SUBTITLE' | translate }}</p>
+            <div class="hero-actions">
+              <a routerLink="/register" class="cta-btn primary-btn">
+                <i class="fa-solid fa-rocket"></i>
+                <span>{{ 'LANDING.START_FREE' | translate }}</span>
+              </a>
+              <a routerLink="/login" class="cta-btn secondary-btn">
+                <i class="fa-solid fa-right-to-bracket"></i>
+                <span>{{ 'LANDING.LOGIN' | translate }}</span>
+              </a>
             </div>
           </div>
-        </div>
-      </div>
-    </section>
 
-    <!-- FEATURES SECTION -->
-    <section class="features-section">
-      <div class="container">
+          <div class="hero-preview">
+            <div class="preview-card-mockup">
+              <div class="mockup-header">
+                <i class="fa fa-terminal" style="color: var(--accent-color); font-size: 0.8rem;"></i>
+                <span class="mockup-title">INest Workspace</span>
+              </div>
+              <div class="mockup-body">
+                <div class="mockup-stat-ribbon">
+                  <div class="mockup-stat"><i class="fa fa-folder-open"></i> 12 Locs</div>
+                  <div class="mockup-stat"><i class="fa fa-boxes"></i> 148 Items</div>
+                  <div class="mockup-stat"><i class="fa fa-hand-holding"></i> 3 Lent</div>
+                </div>
+                <div class="mockup-tree">
+                  <div class="tree-node"><i class="fa fa-folder"></i> Workshop / Garage</div>
+                  <div class="tree-node nested"><i class="fa fa-box"></i> Tool Cabinet #2</div>
+                  <div class="tree-item"><i class="fa-solid fa-screwdriver-wrench"></i> Bosch Drill (Lent to Alex)</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FEATURES SECTION -->
+      <section class="features-section">
         <h2 class="section-title">{{ 'LANDING.FEATURES_TITLE' | translate }}</h2>
         <div class="features-grid">
 
@@ -70,7 +70,7 @@
           </div>
 
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
   </main>
 </div>

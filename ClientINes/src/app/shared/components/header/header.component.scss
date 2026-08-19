@@ -93,6 +93,53 @@
   flex-shrink: 0;
 }
 
+/* КНОПКИ ДЛЯ НЕАВТОРИЗОВАННЫХ ПОЛЬЗОВАТЕЛЕЙ */
+.guest-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  .inest-btn-auth-secondary,
+  .inest-btn-auth-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 16px;
+    height: 38px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+  }
+
+  .inest-btn-auth-secondary {
+    background: var(--bg-input);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+
+    &:hover, &.active {
+      border-color: var(--accent-color);
+      color: var(--accent-color);
+      transform: translateY(-1px);
+    }
+  }
+
+  .inest-btn-auth-primary {
+    background: var(--accent-color);
+    color: #ffffff;
+    border: 1px solid var(--accent-color);
+
+    &:hover, &.active {
+      opacity: 0.95;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.3);
+    }
+  }
+}
+
 .settings-link {
   background: var(--bg-input);
   border: 1px solid var(--border-color);
@@ -304,6 +351,17 @@
       display: flex !important;
       pointer-events: auto;
       animation: slideIn 0.2s ease-out;
+    }
+
+    .guest-actions {
+      flex-direction: column;
+      width: 100%;
+      gap: 8px;
+
+      .inest-btn-auth-secondary,
+      .inest-btn-auth-primary {
+        width: 100%;
+      }
     }
 
     .create-dropdown, .lang-dropdown, .settings-link, .theme-toggle, .logout-icon-btn, .icon-btn {

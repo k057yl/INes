@@ -62,19 +62,8 @@ export class AuthService {
       `${this.apiUrl}/refresh`, 
       { accessToken: currentToken }, 
       { withCredentials: true }
-    ).pipe(
-      tap((response) => {
-        const token = response?.data?.token || response?.token || response?.data?.accessToken || response?.accessToken;
-        if (token) {
-          localStorage.setItem('token', token);
-        }
-      }),
-      catchError(err => {
-        this.clearLocalSession();
-        return throwError(() => err);
-      })
-    );
-}
+    ).pipe();
+  }
 
   resendCode(data: { email: string }) {
     return this.http.post(`${this.apiUrl}/resend-code`, data);
@@ -170,8 +159,8 @@ export class AuthService {
   }
 
   deleteAccount(password?: string): Observable<any> {
-    return this.http.delete<any>(`${this.apiUrl}/delete-account`, {
-      body: { password },
+    const payload = password ? { password } : {};
+    return this.http.post<any>(`${this.apiUrl}/delete-account`, payload, {
       withCredentials: true
     }).pipe(
       tap(() => this.clearLocalSession())

@@ -1,6 +1,6 @@
 <div class="modal-backdrop" (click)="close()">
   <div class="modal-card"
-    [class.is-danger]="mode === 'delete'"
+    [class.is-danger]="mode === 'delete' || mode === 'password'"
     [class.is-confirm]="mode === 'confirm'"
     (click)="$event.stopPropagation()">
 
@@ -24,9 +24,16 @@
       </div>
     }
 
+    @if (mode === 'password') {
+      <div class="inest-form-group">
+        <input type="password" [(ngModel)]="name" #inputElement class="inest-input-styled"
+          [placeholder]="'SETTINGS_PAGE.DELETE_ACCOUNT_PASSWORD_PLH' | translate" (keyup.enter)="submit()">
+      </div>
+    }
+
     <div class="modal-actions">
       <button class="inest-btn-cancel" (click)="close()">{{ cancelText | translate }}</button>
-      <button [ngClass]="getButtonClass()" (click)="submit()" [disabled]="mode === 'input' && !name.trim()">
+      <button [ngClass]="getButtonClass()" (click)="submit()" [disabled]="(mode === 'input' || mode === 'password') && !name.trim()">
         {{ getConfirmText() | translate }}
       </button>
     </div>
