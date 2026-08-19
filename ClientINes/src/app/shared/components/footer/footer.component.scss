@@ -1,6 +1,6 @@
 .footer {
   position: relative;
-  z-index: 100;
+  z-index: 10;
   padding: 1.5rem 1.5rem;
   background: var(--bg-card);
   color: var(--text-muted);
@@ -17,7 +17,43 @@
   align-items: center;
 }
 
-.footer-left, 
+.footer-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+
+  .author-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.2s ease;
+
+    i {
+      font-size: 0.85rem;
+      color: var(--text-main);
+    }
+
+    &:hover {
+      color: var(--accent-color);
+      border-color: var(--accent-color);
+      background: rgba(var(--accent-rgb, 59, 130, 246), 0.1);
+      transform: translateY(-1px);
+
+      i {
+        color: var(--accent-color);
+      }
+    }
+  }
+}
+
 .footer-right {
   display: flex;
   align-items: center;
@@ -81,7 +117,7 @@
   .feedback-btn {
     position: relative;
     z-index: 102;
-    pointer-events: auto !important; /* Гарантированный клик */
+    pointer-events: auto !important;
     background: var(--bg-input);
     border: 1px solid var(--border-color);
     color: var(--text-muted);

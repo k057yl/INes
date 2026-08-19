@@ -13,15 +13,16 @@ import { ItemsListComponent } from './features/item/components/items-list/items-
 import { AdminFeedbackComponent } from './features/admin/components/admin-feedback.component';
 import { authGuard, guestGuard } from './core/guards/auth.guard';
 import { locationResolver } from './features/location/components/location.resolver';
+import { LandingComponent } from './shared/components/landing/landing.component';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+  { path: '', component: LandingComponent, canActivate: [guestGuard] },
+
   { path: 'login', component: LoginComponent, canActivate: [guestGuard] },
   { path: 'register', component: RegisterComponent, canActivate: [guestGuard] },
   { path: 'confirm-register', component: ConfirmRegisterComponent, canActivate: [guestGuard] },
   { path: 'forgot-password', component: ForgotPasswordComponent, canActivate: [guestGuard] },
   { path: 'reset-password', component: ResetPasswordComponent, canActivate: [guestGuard] },
-  
   { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },
   { 
     path: 'location/:id', 
@@ -34,5 +35,5 @@ export const routes: Routes = [
   { path: 'item/:id', component: ItemDetailComponent, canActivate: [authGuard] },
   { path: 'items-list', component: ItemsListComponent, canActivate: [authGuard] },
   { path: 'admin/feedback', component: AdminFeedbackComponent, canActivate: [authGuard] },
-  { path: '**', redirectTo: 'dashboard' }
+  { path: '**', redirectTo: '' }
 ];

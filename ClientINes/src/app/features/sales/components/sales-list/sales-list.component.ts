@@ -53,6 +53,10 @@ export class SalesListComponent implements OnInit {
   selectedReturnLocationId: string | null = null;
   isLoading = true;
 
+  // --- ПАГИНАЦИЯ ---
+  currentPage = 1;
+  pageSize = 10;
+
   activeAction: SalesAction = null;
   selectedSale: SaleListItem | null = null;
   activeDropdown: 'platform' | 'sort' | 'category' | null = null;
@@ -85,6 +89,23 @@ export class SalesListComponent implements OnInit {
     return !!(f.searchQuery || f.platformId || f.categoryId || f.minPrice || f.maxPrice || f.minProfit || f.startDate || f.sortBy !== 0);
   }
 
+  // --- ГЕТТЕРЫ ДЛЯ ПАГИНАЦИИ ---
+  get totalPages(): number {
+    return Math.ceil(this.sales.length / this.pageSize) || 1;
+  }
+
+  get paginatedSales(): SaleListItem[] {
+    const start = (this.currentPage - 1) * this.pageSize;
+    return this.sales.slice(start, start + this.pageSize);
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
   ngOnInit(): void {
     this.salesService.getPlatforms().subscribe(res => this.platforms = res);
     this.categoryService.getAll().subscribe(res => this.categories = res);
@@ -93,7 +114,10 @@ export class SalesListComponent implements OnInit {
     this.filterForm.valueChanges.pipe(
       startWith(this.filterForm.getRawValue()),
       debounceTime(350),
-      tap(() => this.isLoading = true),
+      tap(() => {
+        this.isLoading = true;
+        this.currentPage = 1; // Сбрасываем на 1 страницу при фильтрации
+      }),
       switchMap(filters => this.salesService.getHistory(filters as GetSalesDto).pipe(
         catchError(err => {
           console.error('FETCH_ERROR:', err);
@@ -104,7 +128,6 @@ export class SalesListComponent implements OnInit {
     ).subscribe(data => {
       this.sales = data;
       this.calculateCurrencyTotals();
-
       this.checkAndStartTutorial();
     });
   }

@@ -795,5 +795,19 @@
       "UNDO_TITLE": "Return to Storage",
       "UNDO_DESC": "If customer returned item or deal fell through — click this button to restore item to any location."
     }
+  },
+  "LANDING": {
+    "BADGE": "Smart personal belongings tracker",
+    "HERO_TITLE": "Bring order to your things once and for all",
+    "HERO_SUBTITLE": "INest is your digital organizer. Track item locations, warranties, sold, and lent items in a few clicks.",
+    "START_FREE": "Try for free",
+    "LOGIN": "Sign in",
+    "FEATURES_TITLE": "Everything for total control",
+    "FEATURE_1_TITLE": "Hierarchical locations",
+    "FEATURE_1_DESC": "Create structures of any complexity: Home -> Closet -> Second shelf. Find anything in seconds.",
+    "FEATURE_2_TITLE": "Sales & Lending",
+    "FEATURE_2_DESC": "Keep track of who borrowed your tools and how much you sold your old gear for.",
+    "FEATURE_3_TITLE": "Telegram Integration",
+    "FEATURE_3_DESC": "Search items, check status, and get reminders right inside the messenger."
   }
 }

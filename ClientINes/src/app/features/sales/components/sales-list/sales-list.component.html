@@ -11,7 +11,6 @@
       </div>
 
       <div class="stats-grid">
-        <!-- КАРТОЧКА ВЫРУЧКИ / ПРОДАЖ -->
         <div class="stat-card revenue">
           <div class="stat-icon"><i class="fa fa-university"></i></div>
           <div class="stat-info">
@@ -21,14 +20,13 @@
                 <span class="value-line">{{ item.value | price:item.key }}</span>
               }
               @if ((revenueByCurrency | keyvalue).length === 0) {
-                <span class="value-line">0 $</span>
+                <span class="value-line">0</span>
               }
             </div>
           </div>
           <div class="stat-progress" style="background: var(--g-blue)"></div>
         </div>
 
-        <!-- КАРТОЧКА ПРИБЫЛИ -->
         <div class="stat-card profit">
           <div class="stat-icon"><i class="fa fa-chart-line"></i></div>
           <div class="stat-info">
@@ -68,96 +66,112 @@
             <input type="text" formControlName="searchQuery" [placeholder]="'SALES_PAGE.SEARCH_PHL' | translate">
           </div>
 
-          <!-- Фильтр Категорий -->
-          <div class="th-dropdown-wrapper">
-            <button type="button" 
-                    class="icon-btn" 
-                    [class.active]="activeDropdown === 'category'" 
-                    [class.has-filter]="!!filterForm.get('categoryId')?.value"
-                    (click)="activeDropdown = activeDropdown === 'category' ? null : 'category'"
-                    [attr.title]="'SALES_PAGE.CATEGORIES_TOOLTIP' | translate">
-              <i class="fa fa-folder"></i>
-            </button>
-            @if (activeDropdown === 'category') {
-              <div class="th-dropdown-panel right-aligned">
-                <div class="filter-item" (click)="setFilter('categoryId', null)" [class.active]="!filterForm.get('categoryId')?.value">
-                  {{ 'SALES_PAGE.ALL_CATEGORIES' | translate }}
-                </div>
-                @for (c of categories; track c.id) {
-                  <div class="filter-item" (click)="setFilter('categoryId', c.id)" [class.active]="filterForm.get('categoryId')?.value === c.id">
-                    {{ c.name }}
+          <div class="filter-buttons-group">
+            <!-- Фильтр Категорий -->
+            <div class="th-dropdown-wrapper">
+              <button type="button" 
+                      class="icon-btn" 
+                      [class.active]="activeDropdown === 'category'" 
+                      [class.has-filter]="!!filterForm.get('categoryId')?.value"
+                      (click)="activeDropdown = activeDropdown === 'category' ? null : 'category'"
+                      [attr.title]="'SALES_PAGE.CATEGORIES_TOOLTIP' | translate">
+                <i class="fa fa-folder"></i>
+              </button>
+              @if (activeDropdown === 'category') {
+                <div class="th-dropdown-panel right-aligned">
+                  <div class="filter-item" (click)="setFilter('categoryId', null)" [class.active]="!filterForm.get('categoryId')?.value">
+                    {{ 'SALES_PAGE.ALL_CATEGORIES' | translate }}
                   </div>
-                }
-              </div>
-            }
-          </div>
-
-          <!-- Фильтр Платформ -->
-          <div class="th-dropdown-wrapper">
-            <button type="button" 
-                    class="icon-btn" 
-                    [class.active]="activeDropdown === 'platform'" 
-                    [class.has-filter]="!!filterForm.get('platformId')?.value"
-                    (click)="activeDropdown = activeDropdown === 'platform' ? null : 'platform'"
-                    [attr.title]="'SALES_PAGE.PLATFORMS_TOOLTIP' | translate">
-              <i class="fa fa-tag"></i>
-            </button>
-            @if (activeDropdown === 'platform') {
-              <div class="th-dropdown-panel right-aligned">
-                <div class="filter-item" (click)="setFilter('platformId', null)" [class.active]="!filterForm.get('platformId')?.value">
-                  {{ 'SALES_PAGE.ALL_PLATFORMS' | translate }}
+                  @for (c of categories; track c.id) {
+                    <div class="filter-item" (click)="setFilter('categoryId', c.id)" [class.active]="filterForm.get('categoryId')?.value === c.id">
+                      {{ c.name }}
+                    </div>
+                  }
                 </div>
-                @for (p of platforms; track p.id) {
-                  <div class="filter-item" (click)="setFilter('platformId', p.id)" [class.active]="filterForm.get('platformId')?.value === p.id">
-                    {{ p.name }}
-                  </div>
-                }
-              </div>
-            }
-          </div>
+              }
+            </div>
 
-          <!-- Сортировка -->
-          <div class="th-dropdown-wrapper">
-            <button type="button" 
-                    class="icon-btn" 
-                    [class.active]="activeDropdown === 'sort'" 
-                    [class.has-filter]="filterForm.get('sortBy')?.value !== 0"
-                    (click)="activeDropdown = activeDropdown === 'sort' ? null : 'sort'"
-                    [attr.title]="'SALES_PAGE.SORT.SORT_TOOLTIP' | translate">
-              <i class="fa fa-sort-amount-down"></i>
-            </button>
-            @if (activeDropdown === 'sort') {
-              <div class="th-dropdown-panel right-aligned">
-                <div class="filter-item" (click)="setFilter('sortBy', 0)" [class.active]="filterForm.get('sortBy')?.value === 0">{{ 'SALES_PAGE.SORT.NEWEST' | translate }}</div>
-                <div class="filter-item" (click)="setFilter('sortBy', 4)" [class.active]="filterForm.get('sortBy')?.value === 4">{{ 'SALES_PAGE.SORT.PROFIT_DESC' | translate }}</div>
-                <div class="filter-item" (click)="setFilter('sortBy', 2)" [class.active]="filterForm.get('sortBy')?.value === 2">{{ 'SALES_PAGE.SORT.PRICE_DESC' | translate }}</div>
-                <div class="filter-item" (click)="setFilter('sortBy', 3)" [class.active]="filterForm.get('sortBy')?.value === 3">{{ 'SALES_PAGE.SORT.PRICE_ASC' | translate }}</div>
-              </div>
-            }
+            <!-- Фильтр Платформ -->
+            <div class="th-dropdown-wrapper">
+              <button type="button" 
+                      class="icon-btn" 
+                      [class.active]="activeDropdown === 'platform'" 
+                      [class.has-filter]="!!filterForm.get('platformId')?.value"
+                      (click)="activeDropdown = activeDropdown === 'platform' ? null : 'platform'"
+                      [attr.title]="'SALES_PAGE.PLATFORMS_TOOLTIP' | translate">
+                <i class="fa fa-tag"></i>
+              </button>
+              @if (activeDropdown === 'platform') {
+                <div class="th-dropdown-panel right-aligned">
+                  <div class="filter-item" (click)="setFilter('platformId', null)" [class.active]="!filterForm.get('platformId')?.value">
+                    {{ 'SALES_PAGE.ALL_PLATFORMS' | translate }}
+                  </div>
+                  @for (p of platforms; track p.id) {
+                    <div class="filter-item" (click)="setFilter('platformId', p.id)" [class.active]="filterForm.get('platformId')?.value === p.id">
+                      {{ p.name }}
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+
+            <!-- Сортировка -->
+            <div class="th-dropdown-wrapper">
+              <button type="button" 
+                      class="icon-btn" 
+                      [class.active]="activeDropdown === 'sort'" 
+                      [class.has-filter]="filterForm.get('sortBy')?.value !== 0"
+                      (click)="activeDropdown = activeDropdown === 'sort' ? null : 'sort'"
+                      [attr.title]="'SALES_PAGE.SORT.SORT_TOOLTIP' | translate">
+                <i class="fa fa-sort-amount-down"></i>
+              </button>
+              @if (activeDropdown === 'sort') {
+                <div class="th-dropdown-panel right-aligned">
+                  <div class="filter-item" (click)="setFilter('sortBy', 0)" [class.active]="filterForm.get('sortBy')?.value === 0">{{ 'SALES_PAGE.SORT.NEWEST' | translate }}</div>
+                  <div class="filter-item" (click)="setFilter('sortBy', 4)" [class.active]="filterForm.get('sortBy')?.value === 4">{{ 'SALES_PAGE.SORT.PROFIT_DESC' | translate }}</div>
+                  <div class="filter-item" (click)="setFilter('sortBy', 2)" [class.active]="filterForm.get('sortBy')?.value === 2">{{ 'SALES_PAGE.SORT.PRICE_DESC' | translate }}</div>
+                  <div class="filter-item" (click)="setFilter('sortBy', 3)" [class.active]="filterForm.get('sortBy')?.value === 3">{{ 'SALES_PAGE.SORT.PRICE_ASC' | translate }}</div>
+                </div>
+              }
+            </div>
           </div>
         </div>
       </div>
 
       @if (!isLoading) {
         <div class="sales-grid">
-          @for (s of sales; track s.saleId) {
+          @for (s of paginatedSales; track s.saleId) {
             <app-sale-card 
               [sale]="s" 
               (undo)="handleUndo($event)" 
               (delete)="handleDelete($event)">
             </app-sale-card>
           }
+          
           @if (sales.length === 0) {
             <div class="global-empty-state">
               <div class="empty-icon">
                 <i class="fa" [class.fa-handshake]="!hasActiveFilters" [class.fa-search-minus]="hasActiveFilters"></i>
               </div>
-              
               <h3>{{ (hasActiveFilters ? 'SALES_PAGE.EMPTY_RESULT' : 'SALES_PAGE.NO_SALES') | translate }}</h3>
               <p>{{ (hasActiveFilters ? 'SALES_PAGE.EMPTY_RESULT_DESC' : 'SALES_PAGE.NO_SALES_SUB') | translate }}</p>
             </div>
           }
         </div>
+
+        <!-- БЛОК ПАГИНАЦИИ -->
+        @if (totalPages > 1) {
+          <div class="pagination-wrapper">
+            <button type="button" class="page-btn" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)">
+              <i class="fa fa-chevron-left"></i>
+            </button>
+            <span class="page-info">{{ currentPage }} / {{ totalPages }}</span>
+            <button type="button" class="page-btn" [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)">
+              <i class="fa fa-chevron-right"></i>
+            </button>
+          </div>
+        }
+
       } @else {
         <div class="loading-wrapper">
           <div class="inest-spinner"></div>
@@ -168,7 +182,6 @@
   </div>
 </div>
 
-<!-- Модалка возврата предмета с кастомным селектором локации -->
 @if (activeAction === 'undo') {
   <app-inest-modal
     mode="confirm"

@@ -1,17 +1,26 @@
 .items-list-page {
-  padding: 5px 0 20px 0;
-  
+  background-color: var(--bg-main);
+  min-height: 100vh;
+  padding: 2rem 1.5rem;
+  color: var(--text-main);
+  transition: all 0.3s ease;
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
   .items-list-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
-    gap: 15px;
+    margin-bottom: 2.5rem;
+    gap: 20px;
 
     .header-left { 
       display: flex; 
       align-items: center; 
-      gap: 12px;
+      gap: 16px;
 
       .nav-btn {
         display: inline-flex;
@@ -36,11 +45,15 @@
       }
 
       h1 { 
-        font-size: 1.8rem; 
-        font-weight: 800; 
-        color: var(--text-main); 
+        font-size: 2.5rem; 
+        font-weight: 900; 
+        letter-spacing: -1px;
+        background: linear-gradient(45deg, var(--accent-color), var(--g-blue));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
         margin: 0; 
-        line-height: 1; 
+        line-height: 1.1; 
       }
     }
 
@@ -48,9 +61,9 @@
       background: rgba(var(--accent-rgb), 0.1); 
       color: var(--accent-color); 
       border: 1px solid rgba(var(--accent-rgb), 0.3); 
-      padding: 4px 10px; 
-      border-radius: 20px; 
-      font-size: 0.8rem; 
+      padding: 6px 14px; 
+      border-radius: 50px; 
+      font-size: 0.85rem; 
       font-weight: 800; 
       display: flex; 
       align-items: center; 
@@ -87,7 +100,6 @@
         display: flex; 
         align-items: center; 
         gap: 15px;
-        flex-wrap: wrap;
 
         .archive-filters-group {
           display: flex;
@@ -156,7 +168,6 @@
           height: 42px;
           transition: 0.2s;
           white-space: nowrap;
-          animation: fadeInRight 0.3s ease;
 
           i { font-size: 0.7rem; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
           &:hover {
@@ -174,7 +185,7 @@
           border-radius: 12px; 
           padding: 0 15px; 
           height: 42px; 
-          width: 260px; 
+          width: 240px; 
           transition: 0.2s;
           flex-shrink: 0;
           
@@ -196,10 +207,27 @@
   }
 }
 
-// --- Кастомные чекбоксы ---
-.col-check { width: 40px; text-align: center; }
+.items-table-wrapper {
+  width: 100%;
+}
+
+/* Кастомные ширины колонок для десктопа (без полос прокрутки) */
+.col-check { width: 45px; text-align: center; }
 
 .inest-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 8px;
+  table-layout: fixed; // Убираем скроллбар на десктопе
+
+  .col-photo { width: 60px; }
+  .col-name { width: auto; }
+  .col-cat { width: 140px; }
+  .col-loc { width: 160px; }
+  .col-status { width: 130px; }
+  .col-price { width: 110px; }
+  .col-actions { width: 130px; }
+
   .custom-checkbox {
     display: inline-block;
     position: relative;
@@ -240,7 +268,6 @@
 
     &:hover .checkmark { border-color: var(--accent-color); }
 
-    /* Стили заблокированного чекбокса для проданного товара */
     &.disabled-checkbox {
       opacity: 0.35;
       cursor: not-allowed;
@@ -257,16 +284,11 @@
       }
     }
   }
-}
 
-// --- Таблица ---
-.inest-table {
-  width: 100%; border-collapse: separate; border-spacing: 0 8px;
-  
   thead {
     tr { background: rgba(255,255,255,0.03); }
     th { 
-      padding: 16px; color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase; 
+      padding: 16px 12px; color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase; 
       letter-spacing: 1px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); position: relative;
 
       &:first-child { border-radius: 12px 0 0 12px; }
@@ -301,7 +323,7 @@
     background: var(--bg-card); transition: transform 0.2s ease, background 0.2s ease;
     &.selected-row { background: rgba(var(--accent-rgb), 0.08); border-left: 2px solid var(--accent-color); }
     
-    td { padding: 12px 16px; color: var(--text-main); vertical-align: middle; 
+    td { padding: 12px; color: var(--text-main); vertical-align: middle; 
       &:first-child { border-radius: 12px 0 0 12px; }
       &:last-child { border-radius: 0 12px 12px 0; }
     }
@@ -310,9 +332,10 @@
 
   .mini-thumb { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; border: 1px solid rgba(255,255,255,0.05); }
   .cat-tag { background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; color: var(--text-muted); }
+  .name-text { font-weight: 600; font-size: 0.95rem; }
 }
 
-// --- Пустое состояние (Zero State) ---
+// --- Zero State ---
 .global-empty-state {
   display: flex;
   flex-direction: column;
@@ -345,36 +368,8 @@
     margin: 0 0 15px 0;
     max-width: 400px;
   }
-
-  .empty-state-reset-btn {
-    margin-top: 10px;
-    background: rgba(var(--accent-rgb), 0.1);
-    color: var(--accent-color);
-    border: 1px solid rgba(var(--accent-rgb), 0.3);
-    padding: 10px 20px;
-    border-radius: 10px;
-    font-size: 0.85rem;
-    font-weight: 700;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    transition: all 0.2s ease;
-
-    &:hover {
-      background: var(--accent-color);
-      color: var(--text-on-accent);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.3);
-    }
-
-    i {
-      font-size: 0.75rem;
-    }
-  }
 }
 
-// --- Выпадающие панели фильтров ---
 .th-dropdown-panel {
   position: absolute; top: calc(100% + 5px); left: 0; min-width: 200px;
   background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px;
@@ -399,7 +394,6 @@
 
     &:hover { background: var(--accent-color); color: var(--text-on-accent); border-color: var(--accent-color); }
 
-    /* Стиль кнопки сноса/архивации */
     &.delete-btn {
       &:hover {
         background: var(--error-red);
@@ -416,28 +410,29 @@
 @keyframes popIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 @keyframes dropIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 
-// --- АДАПТИВНЫЙ РАЗДЕЛ ---
-@media (max-width: 1024px) {
-  .items-list-header {
-    flex-direction: column;
-    align-items: flex-start !important;
-    gap: 15px;
-  }
-  .header-right {
-    width: 100%;
-    justify-content: space-between;
-  }
-  .controls-toolbar {
-    width: 100%;
-    justify-content: flex-start;
-  }
-}
-
+// --- МОБИЛЬНАЯ АДАПТАЦИЯ ---
 @media (max-width: 768px) {
+  .items-list-page { 
+    padding: 1rem 12px;
+  }
+
   .items-list-header { 
     flex-direction: column; 
-    align-items: stretch !important; 
-    gap: 15px; 
+    align-items: center !important; 
+    text-align: center;
+    gap: 12px; 
+    margin-bottom: 1.5rem;
+
+    .header-left {
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+
+      h1 {
+        font-size: 2rem;
+        text-align: center;
+      }
+    }
   }
   
   .header-right { 
@@ -445,45 +440,105 @@
     align-items: stretch; 
     width: 100%;
     gap: 12px;
+
+    .bulk-delete-btn {
+      justify-content: center;
+      width: 100%;
+    }
   }
 
   .controls-toolbar {
     flex-direction: column;
     align-items: stretch !important;
     width: 100%;
-    gap: 12px !important;
+    gap: 10px !important;
 
+    /* Флаги + Кнопка сортировки в ОДНОМ ряду */
     .archive-filters-group { 
-      order: 0; 
       width: 100%; 
+      display: flex;
+      align-items: center;
       justify-content: space-between; 
-      margin-bottom: 5px; 
+      gap: 10px;
+
+      .custom-checkbox {
+        font-size: 0.78rem;
+      }
+
+      .th-dropdown-wrapper {
+        margin-left: auto;
+
+        .icon-btn {
+          width: 38px;
+          height: 38px;
+        }
+
+        .th-dropdown-panel {
+          right: 0;
+          left: auto;
+          width: 200px;
+        }
+      }
     }
 
     .search-box { 
-      order: 1; 
       width: 100% !important; 
     }
 
     .reset-filters-btn { 
-      order: 2; 
       justify-content: center;
       width: 100%;
       height: 38px; 
     }
-
-    .th-dropdown-wrapper {
-      order: 3;
-      width: 100%;
-      .icon-btn { width: 100% !important; }
-      .th-dropdown-panel { width: 100%; }
-    }
   }
 
-  .inest-table .col-cat, 
-  .inest-table .col-loc, 
-  .inest-table .col-price, 
-  .inest-table .col-status { 
-    display: none !important; 
+  .inest-table {
+    table-layout: auto; // На мобилке даем колонкам сжаться по контенту
+
+    thead th, 
+    tbody td {
+      padding: 8px 6px !important;
+    }
+
+    .col-check { width: 30px; }
+    .col-photo { width: 40px; }
+
+    .mini-thumb {
+      width: 32px;
+      height: 32px;
+    }
+
+    .col-name {
+      max-width: 140px;
+
+      .name-text {
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+
+    .col-actions {
+      width: 90px;
+
+      .actions-group {
+        gap: 4px;
+
+        .icon-btn {
+          width: 28px;
+          height: 28px;
+          font-size: 0.75rem;
+        }
+      }
+    }
+
+    /* На мобилке показываем только чекбокс, фото, название и действия */
+    .col-cat, 
+    .col-loc, 
+    .col-price, 
+    .col-status { 
+      display: none !important; 
+    }
   }
 }

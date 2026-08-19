@@ -56,7 +56,13 @@ export class AuthService {
   }
 
   refreshToken(): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/refresh`, {}).pipe(
+    const currentToken = localStorage.getItem('token');
+
+    return this.http.post<any>(
+      `${this.apiUrl}/refresh`, 
+      { accessToken: currentToken }, 
+      { withCredentials: true }
+    ).pipe(
       tap((response) => {
         const token = response?.data?.token || response?.token || response?.data?.accessToken || response?.accessToken;
         if (token) {
@@ -68,7 +74,7 @@ export class AuthService {
         return throwError(() => err);
       })
     );
-  }
+}
 
   resendCode(data: { email: string }) {
     return this.http.post(`${this.apiUrl}/resend-code`, data);

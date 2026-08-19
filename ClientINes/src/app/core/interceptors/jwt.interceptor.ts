@@ -53,21 +53,31 @@ function handle401Error(req: HttpRequest<any>, next: HttpHandlerFn, authService:
     refreshTokenSubject.next(null);
 
     return authService.refreshToken().pipe(
-      switchMap(() => {
+      switchMap((res: any) => {
         isRefreshing = false;
+        
+        const newToken = res?.data?.token || res?.token || res?.data?.accessToken || res?.accessToken;
+        if (newToken) {
+          localStorage.setItem('token', newToken);
+        }
+        
         refreshTokenSubject.next(true);
 
-        const newToken = localStorage.getItem('token');
-        const retryReq = newToken 
-          ? req.clone({ headers: req.headers.set('Authorization', `Bearer ${newToken}`) })
-          : req;
+        const latestToken = localStorage.getItem('token');
+        const retryReq = req.clone({
+          withCredentials: true,
+          headers: latestToken 
+            ? req.headers.set('Authorization', `Bearer ${latestToken}`)
+            : req.headers
+        });
 
         return next(retryReq);
       }),
       catchError((err) => {
         isRefreshing = false;
         refreshTokenSubject.next(false);
-        authService.clearLocalSession(); 
+
+        authService.clearLocalSession();
         return throwError(() => err);
       })
     );
@@ -77,11 +87,13 @@ function handle401Error(req: HttpRequest<any>, next: HttpHandlerFn, authService:
       take(1),
       switchMap((success) => {
         if (success) {
-          const newToken = localStorage.getItem('token');
-          const retryReq = newToken 
-            ? req.clone({ headers: req.headers.set('Authorization', `Bearer ${newToken}`) })
-            : req;
-
+          const latestToken = localStorage.getItem('token');
+          const retryReq = req.clone({
+            withCredentials: true,
+            headers: latestToken 
+              ? req.headers.set('Authorization', `Bearer ${latestToken}`)
+              : req.headers
+          });
           return next(retryReq);
         }
         return throwError(() => new HttpErrorResponse({ status: 401, statusText: 'Unauthorized' }));

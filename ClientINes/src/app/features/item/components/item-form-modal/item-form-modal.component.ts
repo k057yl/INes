@@ -352,27 +352,35 @@ export class ItemFormModalComponent implements OnInit {
     formData.append('storageLocationId', val.storageLocationId!);
     formData.append('status', val.status!.toString());
 
-    // ФИНАНСЫ
-    const hasPriceValue = val.purchasePrice !== null && val.purchasePrice !== undefined;
-    if (val.addDetails || hasPriceValue || val.purchaseDate) {
-      formData.append('currency', val.currency || 'USD');
+    // Определяем префикс ключа: при создании "Details.", при редактировании "" (в корень)
+    const prefix = this.isEdit ? '' : 'Details.';
+
+    // --- ФИНАНСЫ ---
+    const hasPriceValue = val.purchasePrice !== null && val.purchasePrice !== undefined && val.purchasePrice !== ('' as any);
+
+    if (val.addDetails || hasPriceValue) {
+      formData.append(`${prefix}Currency`, val.currency || 'USD');
       
       if (val.purchaseDate) {
-        formData.append('purchaseDate', val.purchaseDate);
+        formData.append(`${prefix}PurchaseDate`, val.purchaseDate);
       }
       
       if (hasPriceValue) {
-        formData.append('purchasePrice', val.purchasePrice!.toString());
+        formData.append(`${prefix}PurchasePrice`, val.purchasePrice!.toString());
       }
     }
 
-    // ЧЕК И ГАРАНТИЯ
+    // --- ЧЕК И ГАРАНТИЯ ---
     if (val.addReceipt) {
-      if (val.warrantyExpiration) formData.append('warrantyExpiration', val.warrantyExpiration);
-      if (this.selectedReceiptFile) formData.append('receiptFile', this.selectedReceiptFile, this.selectedReceiptFile.name);
+      if (val.warrantyExpiration) {
+        formData.append(`${prefix}WarrantyExpiration`, val.warrantyExpiration);
+      }
+      if (this.selectedReceiptFile) {
+        formData.append(`${prefix}ReceiptFile`, this.selectedReceiptFile, this.selectedReceiptFile.name);
+      }
     }
 
-    // АРЕНДА
+    // --- АРЕНДА ---
     if (this.isLendingStatus) {
       formData.append('personName', val.personName || '');
       formData.append('contactEmail', val.contactEmail || '');
@@ -381,22 +389,22 @@ export class ItemFormModalComponent implements OnInit {
       formData.append('sendTelegramNotification', (!!val.sendTelegramNotification).toString());
     }
 
-    // НАПОМИНАНИЯ
+    // --- НАПОМИНАНИЯ ---
     if (val.addReminder && val.reminderTriggerAt && !this.isLendingStatus) {
       const selectedTypeObj = this.reminderTypeOptions.find(o => o.value === val.reminderType);
       const fallbackLabel = this.translateService.instant('REMINDERS.CUSTOM');
       const typeLabel = selectedTypeObj ? this.translateService.instant(selectedTypeObj.label) : fallbackLabel;
       const autoTitle = val.name ? `${typeLabel}: ${val.name}` : typeLabel;
 
-      formData.append('reminder.title', autoTitle);
-      formData.append('reminder.type', (val.reminderType ?? ReminderType.Custom).toString());
-      formData.append('reminder.recurrence', (val.reminderRecurrence ?? ReminderRecurrence.None).toString());
-      formData.append('reminder.triggerAt', val.reminderTriggerAt);
-      formData.append('reminder.sendNotification', (!!val.reminderSendNotification).toString());
-      formData.append('reminder.sendTelegram', (!!val.reminderSendTelegramNotification).toString());
+      formData.append('Reminder.Title', autoTitle);
+      formData.append('Reminder.Type', (val.reminderType ?? ReminderType.Custom).toString());
+      formData.append('Reminder.Recurrence', (val.reminderRecurrence ?? ReminderRecurrence.None).toString());
+      formData.append('Reminder.TriggerAt', val.reminderTriggerAt);
+      formData.append('Reminder.SendNotification', (!!val.reminderSendNotification).toString());
+      formData.append('Reminder.SendTelegram', (!!val.reminderSendTelegramNotification).toString());
     }
 
-    // ФОТОГРАФИИ (Отправляем ВСЕГДА, если они есть в выбранном массиве)
+    // --- ФОТОГРАФИИ ---
     if (this.selectedPhotos.length > 0) {
       this.selectedPhotos.forEach(p => {
         if (p.file) {

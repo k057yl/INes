@@ -58,6 +58,18 @@ export class ItemsListComponent implements OnInit {
     { value: 3, label: 'STATUS.ARCHIVED' }
   ];
 
+  getCurrencySymbol(currencyStr: string | undefined | null): string {
+    if (!currencyStr) return '₴';
+
+    switch (currencyStr.toUpperCase()) {
+      case 'UAH': return '₴';
+      case 'USD': return '$';
+      case 'EUR': return '€';
+      case 'USDT': return '₮';
+      default: return currencyStr;
+    }
+  }
+
   filterForm = this.fb.group({
     searchQuery: [''],
     categoryId: [null as string | null],

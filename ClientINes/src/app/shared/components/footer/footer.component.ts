@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { DashboardModalService } from '../../../features/dashboard/components/dashboard/dashboard.modal.service';
+import { AuthService } from '../../../features/auth/services/auth.service';
 
 @Component({
   selector: 'app-footer',
@@ -12,6 +13,7 @@ import { DashboardModalService } from '../../../features/dashboard/components/da
 })
 export class FooterComponent {
   private modalService = inject(DashboardModalService);
+  public authService = inject(AuthService);
 
   openFeedback(): void {
     this.modalService.openFeedback();

@@ -119,17 +119,57 @@
   }
 }
 
-/* Мобильный адаптив */
+/* Мобильный адаптив: переработка сетки */
 @media (max-width: 600px) {
   .sale-card {
-    grid-template-columns: 1fr;
-    gap: 12px;
-    padding: 16px;
+    grid-template-columns: 1.4fr 1.1fr auto;
+    gap: 8px;
+    padding: 12px;
+
+    .sale-main-info {
+      gap: 1px;
+      min-width: 0;
+
+      .name {
+        font-size: 1rem; // Крупнее имя
+        font-weight: 800;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .platform {
+        font-size: 0.68rem; // Меньше платформа
+      }
+
+      .date {
+        font-size: 0.68rem; // Меньше дата
+      }
+    }
+
+    .sale-finance {
+      text-align: center; // Цена и прибыль строго по центру
+      align-items: center;
+
+      .price {
+        font-size: 0.95rem;
+      }
+
+      .profit {
+        font-size: 0.82rem;
+      }
+    }
 
     .sale-actions {
-      justify-content: flex-start;
-      border-top: 1px dashed var(--border-color);
-      padding-top: 10px;
+      justify-content: flex-end;
+      gap: 4px;
+
+      .inest-action-btn,
+      .archived-label {
+        width: 32px;
+        height: 32px;
+        font-size: 0.8rem;
+      }
     }
   }
 }

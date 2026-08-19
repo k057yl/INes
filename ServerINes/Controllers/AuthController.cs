@@ -32,7 +32,7 @@ namespace INest.Controllers
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
-                Secure = false,
+                Secure = true,
                 SameSite = SameSiteMode.Lax,
                 Expires = DateTime.UtcNow.AddDays(7)
             };

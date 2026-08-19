@@ -24,6 +24,7 @@
 
         <div class="controls-toolbar" [formGroup]="filterForm">
 
+          <!-- Блок с чекбоксами И сортировкой -->
           <div class="archive-filters-group">
             <label class="custom-checkbox yellow">
               <input type="checkbox" formControlName="showArchived">
@@ -36,6 +37,21 @@
               <span class="checkmark"></span>
               <span class="label-text">{{ 'ITEMS_LIST.ALL_AND_ARCHIVE' | translate }}</span>
             </label>
+
+            <!-- Сортировка переехала сюда -->
+            <div class="th-dropdown-wrapper">
+              <button type="button" class="icon-btn sort-btn" [class.active]="activeDropdown === 'sort'" (click)="toggleDropdown('sort', $event)">
+                <i class="fa fa-sort-amount-down"></i>
+              </button>
+              @if (activeDropdown === 'sort') {
+                <div class="th-dropdown-panel right-aligned" (click)="$event.stopPropagation()">
+                  <div class="filter-item" (click)="setFilter('sortBy', 0)" [class.active]="filterForm.get('sortBy')?.value === 0">{{ 'ITEMS_LIST.SORT.NEWEST' | translate }}</div>
+                  <div class="filter-item" (click)="setFilter('sortBy', 2)" [class.active]="filterForm.get('sortBy')?.value === 2">{{ 'ITEMS_LIST.SORT.NAME_ASC' | translate }}</div>
+                  <div class="filter-item" (click)="setFilter('sortBy', 4)" [class.active]="filterForm.get('sortBy')?.value === 4">{{ 'ITEMS_LIST.SORT.PRICE_ASC' | translate }}</div>
+                  <div class="filter-item" (click)="setFilter('sortBy', 5)" [class.active]="filterForm.get('sortBy')?.value === 5">{{ 'ITEMS_LIST.SORT.PRICE_DESC' | translate }}</div>
+                </div>
+              }
+            </div>
           </div>
           
           @if (hasActiveFilters) {
@@ -56,19 +72,6 @@
             }
           </div>
 
-          <div class="th-dropdown-wrapper">
-            <button class="icon-btn sort-btn" [class.active]="activeDropdown === 'sort'" (click)="toggleDropdown('sort', $event)">
-              <i class="fa fa-sort-amount-down"></i>
-            </button>
-            @if (activeDropdown === 'sort') {
-              <div class="th-dropdown-panel right-aligned" (click)="$event.stopPropagation()">
-                <div class="filter-item" (click)="setFilter('sortBy', 0)" [class.active]="filterForm.get('sortBy')?.value === 0">{{ 'ITEMS_LIST.SORT.NEWEST' | translate }}</div>
-                <div class="filter-item" (click)="setFilter('sortBy', 2)" [class.active]="filterForm.get('sortBy')?.value === 2">{{ 'ITEMS_LIST.SORT.NAME_ASC' | translate }}</div>
-                <div class="filter-item" (click)="setFilter('sortBy', 4)" [class.active]="filterForm.get('sortBy')?.value === 4">{{ 'ITEMS_LIST.SORT.PRICE_ASC' | translate }}</div>
-                <div class="filter-item" (click)="setFilter('sortBy', 5)" [class.active]="filterForm.get('sortBy')?.value === 5">{{ 'ITEMS_LIST.SORT.PRICE_DESC' | translate }}</div>
-              </div>
-            }
-          </div>
         </div>
       </div>
     </header>
@@ -159,7 +162,9 @@
                     <span class="status-text">{{ 'STATUS.' + (item.status | statusName) | translate }}</span>
                   </div>
                 </td>
-                <td class="col-price">{{ (item.details?.purchasePrice || 0) | price:(item.details?.currency || '$') }}</td>
+                <td class="col-price">
+                  {{ (item.details?.purchasePrice || 0) | price: getCurrencySymbol(item.details?.currency) }}
+                </td>
                 <td class="col-actions">
                   <div class="actions-group">
                     <button class="icon-btn view-btn" [routerLink]="['/item', item.id]" [attr.title]="'COMMON.INFO' | translate">
