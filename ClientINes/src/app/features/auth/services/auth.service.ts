@@ -168,4 +168,13 @@ export class AuthService {
       this.userSubject.next({ ...currentUser });
     }
   }
+
+  deleteAccount(password?: string): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/delete-account`, {
+      body: { password },
+      withCredentials: true
+    }).pipe(
+      tap(() => this.clearLocalSession())
+    );
+  }
 }

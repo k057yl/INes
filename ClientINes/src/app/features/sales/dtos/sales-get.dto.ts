@@ -8,4 +8,6 @@ export interface GetSalesDto {
   minProfit?: number;
   startDate?: string;
   endDate?: string;
+  pageNumber?: number;
+  pageSize?: number;
 }

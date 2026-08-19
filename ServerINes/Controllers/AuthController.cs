@@ -179,6 +179,22 @@ namespace INest.Controllers
             await _mediator.Send(new ResetTutorialsCommand(userId));
             return Ok(new { message = TUTORIAL.SUCCESS.RESET_SUCCESS });
         }
+
+        [Authorize]
+        [HttpPost("delete-account")]
+        public async Task<IActionResult> DeleteAccount([FromBody] DeleteAccountDto? dto)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
+
+            await _mediator.Send(new Features.Auth.Commands.DeleteAccount.DeleteAccountCommand(userId, dto?.Password));
+
+            Response.Cookies.Delete("X-Access-Token");
+            Response.Cookies.Delete("X-Refresh-Token");
+
+            return Ok(new { message = AUTH.SUCCESS.ACCOUNT_DELETED });
+        }
     }
 
     public record RefreshTokenRequestDto(string? AccessToken, string? RefreshToken);

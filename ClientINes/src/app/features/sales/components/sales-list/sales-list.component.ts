@@ -33,6 +33,8 @@ export type SalesAction = 'undo' | null;
   styleUrl: './sales-list.component.scss'
 })
 export class SalesListComponent implements OnInit {
+  protected readonly Math = Math;
+
   private salesService = inject(SalesService);
   private categoryService = inject(CategoryService);
   private locationService = inject(LocationService);
@@ -54,8 +56,11 @@ export class SalesListComponent implements OnInit {
   isLoading = true;
 
   // --- ПАГИНАЦИЯ ---
-  currentPage = 1;
+  pageNumber = 1;
   pageSize = 10;
+  totalCount = 0;
+  totalPages = 0;
+  readonly PAGE_SIZE_OPTIONS = [10, 20, 50, 100];
 
   activeAction: SalesAction = null;
   selectedSale: SaleListItem | null = null;
@@ -89,21 +94,35 @@ export class SalesListComponent implements OnInit {
     return !!(f.searchQuery || f.platformId || f.categoryId || f.minPrice || f.maxPrice || f.minProfit || f.startDate || f.sortBy !== 0);
   }
 
-  // --- ГЕТТЕРЫ ДЛЯ ПАГИНАЦИИ ---
-  get totalPages(): number {
-    return Math.ceil(this.sales.length / this.pageSize) || 1;
-  }
-
-  get paginatedSales(): SaleListItem[] {
-    const start = (this.currentPage - 1) * this.pageSize;
-    return this.sales.slice(start, start + this.pageSize);
-  }
-
+  // --- МЕТОДЫ ПАГИНАЦИИ ---
   goToPage(page: number): void {
-    if (page >= 1 && page <= this.totalPages) {
-      this.currentPage = page;
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (page < 1 || page > this.totalPages || page === this.pageNumber) return;
+    this.pageNumber = page;
+    this.refreshData();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  changePageSize(size: number): void {
+    if (this.pageSize === size) return;
+    this.pageSize = size;
+    this.pageNumber = 1;
+    this.refreshData();
+  }
+
+  get pagesArray(): number[] {
+    const pages: number[] = [];
+    const maxVisible = 5;
+    let start = Math.max(1, this.pageNumber - Math.floor(maxVisible / 2));
+    let end = Math.min(this.totalPages, start + maxVisible - 1);
+
+    if (end - start + 1 < maxVisible) {
+      start = Math.max(1, end - maxVisible + 1);
     }
+
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+    return pages;
   }
 
   ngOnInit(): void {
@@ -111,22 +130,40 @@ export class SalesListComponent implements OnInit {
     this.categoryService.getAll().subscribe(res => this.categories = res);
     this.locationService.getAll().subscribe((res: any[]) => this.locations = res);
 
+    this.filterForm.valueChanges.subscribe(() => {
+      this.pageNumber = 1;
+    });
+
     this.filterForm.valueChanges.pipe(
       startWith(this.filterForm.getRawValue()),
       debounceTime(350),
       tap(() => {
         this.isLoading = true;
-        this.currentPage = 1; // Сбрасываем на 1 страницу при фильтрации
       }),
-      switchMap(filters => this.salesService.getHistory(filters as GetSalesDto).pipe(
-        catchError(err => {
-          console.error('FETCH_ERROR:', err);
-          return of([]);
-        }),
-        finalize(() => this.isLoading = false)
-      ))
-    ).subscribe(data => {
-      this.sales = data;
+      switchMap(filters => {
+        const queryParams: GetSalesDto = {
+          ...filters as GetSalesDto,
+          pageNumber: this.pageNumber,
+          pageSize: this.pageSize
+        };
+        return this.salesService.getHistory(queryParams).pipe(
+          catchError(err => {
+            console.error('FETCH_ERROR:', err);
+            return of({ items: [], totalCount: 0, totalPages: 0, pageNumber: 1, pageSize: 10 });
+          }),
+          finalize(() => this.isLoading = false)
+        );
+      })
+    ).subscribe((res: any) => {
+      if (Array.isArray(res)) {
+        this.sales = res;
+        this.totalCount = res.length;
+        this.totalPages = 1;
+      } else {
+        this.sales = res.items || [];
+        this.totalCount = res.totalCount || 0;
+        this.totalPages = res.totalPages || Math.ceil(this.totalCount / this.pageSize);
+      }
       this.calculateCurrencyTotals();
       this.checkAndStartTutorial();
     });
@@ -187,6 +224,7 @@ export class SalesListComponent implements OnInit {
   }
 
   resetFilters(): void {
+    this.pageNumber = 1;
     this.filterForm.reset({
       searchQuery: '', platformId: null, categoryId: null, sortBy: 0, 
       minPrice: null, maxPrice: null, minProfit: null, startDate: null, endDate: null
@@ -248,9 +286,25 @@ export class SalesListComponent implements OnInit {
   }
 
   refreshData(): void {
-    this.salesService.getHistory(this.filterForm.getRawValue() as GetSalesDto)
-      .subscribe(data => {
-        this.sales = data;
+    this.isLoading = true;
+    const filters: GetSalesDto = {
+      ...this.filterForm.getRawValue() as GetSalesDto,
+      pageNumber: this.pageNumber,
+      pageSize: this.pageSize
+    };
+
+    this.salesService.getHistory(filters)
+      .pipe(finalize(() => this.isLoading = false))
+      .subscribe((res: any) => {
+        if (Array.isArray(res)) {
+          this.sales = res;
+          this.totalCount = res.length;
+          this.totalPages = 1;
+        } else {
+          this.sales = res.items || [];
+          this.totalCount = res.totalCount || 0;
+          this.totalPages = res.totalPages || Math.ceil(this.totalCount / this.pageSize);
+        }
         this.calculateCurrencyTotals();
       });
   }

@@ -6,4 +6,6 @@ export interface GetItemFilters {
   sortBy?: number | null;
   minPrice?: number | null;
   maxPrice?: number | null;
+  pageNumber?: number;
+  pageSize?: number;
 }

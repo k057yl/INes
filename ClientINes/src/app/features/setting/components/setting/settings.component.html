@@ -84,6 +84,19 @@
                 <i class="fa-solid fa-rotate-left"></i> {{ 'SETTINGS_PAGE.RESET_TUTORIAL_BTN' | translate }}
               </button>
             </div>
+            <!-- УДАЛЕНИЕ АККАУНТА -->
+            <div class="config-card danger-card">
+              <div class="card-info">
+                <i class="fa-solid fa-user-xmark danger-icon"></i>
+                <div class="text">
+                  <span class="label">{{ 'SETTINGS_PAGE.DELETE_ACCOUNT_TITLE' | translate }}</span>
+                  <p>{{ 'SETTINGS_PAGE.DELETE_ACCOUNT_SUB' | translate }}</p>
+                </div>
+              </div>
+              <button class="inest-btn-outline is-danger" (click)="deleteAccount()">
+                <i class="fa-solid fa-trash"></i> {{ 'SETTINGS_PAGE.DELETE_ACCOUNT_BTN' | translate }}
+              </button>
+            </div>
           </div>
         </section>
       }

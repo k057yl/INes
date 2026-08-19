@@ -38,6 +38,8 @@ export class ItemsListComponent implements OnInit {
   private location = inject(Location);
   private router = inject(Router);
 
+  protected readonly Math = Math;
+
   public modal = inject(DashboardModalService);
 
   private authService = inject(AuthService);
@@ -49,6 +51,13 @@ export class ItemsListComponent implements OnInit {
   isLoading = false;
   selectedIds = new Set<string>();
   activeDropdown: DropdownType = null;
+
+  // --- Пагинация ---
+  pageNumber = 1;
+  pageSize = 10;
+  totalCount = 0;
+  totalPages = 0;
+  readonly PAGE_SIZE_OPTIONS = [10, 20, 50, 100];
 
   readonly STATUSES = [
     { value: null, label: 'FILTERS.SHOW_ALL' },
@@ -100,22 +109,74 @@ export class ItemsListComponent implements OnInit {
       if (val) this.filterForm.get('showArchived')?.setValue(false, { emitEvent: false });
     });
 
+    // Реакция на смену любого фильтра -> сбрасываем на страницу 1
+    this.filterForm.valueChanges.subscribe(() => {
+      this.pageNumber = 1;
+    });
+
     this.filterForm.valueChanges.pipe(
       startWith(this.filterForm.getRawValue()),
       debounceTime(300),
       tap(() => { this.isLoading = true; }),
-      switchMap(filters => this.itemService.getAll(filters as GetItemFilters).pipe(
-        catchError(err => {
-          console.error('Ошибка бэкенда при поиске:', err);
-          return of([]);
-        }),
-        finalize(() => { this.isLoading = false; })
-      ))
-    ).subscribe(items => {
-      this.items = items;
+      switchMap(filters => {
+        const queryParams = {
+          ...filters,
+          pageNumber: this.pageNumber,
+          pageSize: this.pageSize
+        } as GetItemFilters & { pageNumber?: number; pageSize?: number };
+
+        return this.itemService.getAll(queryParams).pipe(
+          catchError(err => {
+            console.error('Ошибка бэкенда при поиске:', err);
+            return of({ items: [], totalCount: 0, totalPages: 0, pageNumber: 1, pageSize: 10 });
+          }),
+          finalize(() => { this.isLoading = false; })
+        );
+      })
+    ).subscribe((res: any) => {
+      // Если бэкенд возвращает PagedList DTO { items, totalCount, totalPages }
+      if (Array.isArray(res)) {
+        this.items = res;
+        this.totalCount = res.length;
+        this.totalPages = 1;
+      } else {
+        this.items = res.items || [];
+        this.totalCount = res.totalCount || 0;
+        this.totalPages = res.totalPages || Math.ceil(this.totalCount / this.pageSize);
+      }
       this.syncSelection();
       this.checkAndStartTutorial();
     });
+  }
+
+  // --- Методы Пагинации ---
+  goToPage(page: number): void {
+    if (page < 1 || page > this.totalPages || page === this.pageNumber) return;
+    this.pageNumber = page;
+    this.loadData();
+  }
+
+  changePageSize(size: number): void {
+    if (this.pageSize === size) return;
+    this.pageSize = size;
+    this.pageNumber = 1;
+    this.loadData();
+  }
+
+  get pagesArray(): number[] {
+    const pages: number[] = [];
+    const maxVisible = 5;
+    let start = Math.max(1, this.pageNumber - Math.floor(maxVisible / 2));
+    let end = Math.min(this.totalPages, start + maxVisible - 1);
+
+    if (end - start + 1 < maxVisible) {
+      start = Math.max(1, end - maxVisible + 1);
+    }
+
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+    return pages;
   }
 
   private checkAndStartTutorial() {
@@ -149,10 +210,24 @@ export class ItemsListComponent implements OnInit {
 
   loadData(): void {
     this.isLoading = true;
-    this.itemService.getAll(this.filterForm.getRawValue()).pipe(
+    const filters = {
+      ...this.filterForm.getRawValue(),
+      pageNumber: this.pageNumber,
+      pageSize: this.pageSize
+    } as GetItemFilters & { pageNumber?: number; pageSize?: number };
+
+    this.itemService.getAll(filters).pipe(
       finalize(() => { this.isLoading = false; })
-    ).subscribe(items => {
-      this.items = items;
+    ).subscribe((res: any) => {
+      if (Array.isArray(res)) {
+        this.items = res;
+        this.totalCount = res.length;
+        this.totalPages = 1;
+      } else {
+        this.items = res.items || [];
+        this.totalCount = res.totalCount || 0;
+        this.totalPages = res.totalPages || Math.ceil(this.totalCount / this.pageSize);
+      }
       this.syncSelection();
     });
   }
@@ -217,6 +292,7 @@ export class ItemsListComponent implements OnInit {
   }
 
   resetFilters(): void {
+    this.pageNumber = 1;
     this.filterForm.reset({
       searchQuery: '', categoryId: null, storageLocationId: null, status: null,
       sortBy: 0, minPrice: null, maxPrice: null, showArchived: false, includeArchived: false
@@ -270,7 +346,7 @@ export class ItemsListComponent implements OnInit {
 
   onEditClick(item: Item): void {
     if (item.status !== 0) {
-      this.toastr.warning(this.translate.instant('ITEMS.ERRORS.ONLY_ACTIVE_CAN_BE_EDITED'));
+      this.toastr.error(this.translate.instant('ITEMS.ERRORS.ONLY_ACTIVE_CAN_BE_EDITED'));
       return;
     }
 

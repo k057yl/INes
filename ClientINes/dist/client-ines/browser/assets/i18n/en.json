@@ -54,7 +54,8 @@
       "OTP_SENT": "Confirmation code sent to email",
       "RESET_EMAIL_SENT": "Password reset instructions sent to email",
       "PASSWORD_CHANGED": "Password changed successfully",
-      "LOGIN": "Authorization successful"
+      "LOGIN": "Authorization successful",
+      "ACCOUNT_DELETED": "Account deleted."
     }
   },
   "CATEGORIES": {
@@ -511,6 +512,15 @@
       "STATUS": "Status",
       "PRICE": "Price",
       "ACTION": "Actions"
+    },
+    "PAGINATION": {
+      "SHOWING": "Showing",
+      "OF": "of",
+      "PER_PAGE": "Per page",
+      "FIRST": "First page",
+      "PREV": "Previous page",
+      "NEXT": "Next page",
+      "LAST": "Last page"
     }
   },
   "SETTINGS_PAGE": {
@@ -528,6 +538,10 @@
     "RESET_TUTORIAL_SUB": "Reset progress of interactive hints to go through interface tour again",
     "RESET_TUTORIAL_BTN": "Reset progress",
     "RESET_TUTORIAL_CONFIRM": "Reset hints and start interactive interface tour again?",
+    "DELETE_ACCOUNT_TITLE": "Delete Account",
+    "DELETE_ACCOUNT_SUB": "Permanently delete your profile, categories, locations, and all history",
+    "DELETE_ACCOUNT_BTN": "Delete Profile",
+    "DELETE_ACCOUNT_CONFIRM": "Are you sure you want to permanently delete your account? All your data will be wiped forever!",
     "MODAL": {
       "CREATE_CATEGORY": "New category",
       "DELETE_CATEGORY": "Delete category",
@@ -605,6 +619,15 @@
       "DELETE_TITLE": "Delete Record",
       "DELETE_MESSAGE": "Are you sure you want to delete information about this deal?",
       "DELETE_SMART_HINT": "When deleting, you can keep record in history for statistics."
+    },
+    "PAGINATION": {
+      "SHOWING": "Showing",
+      "OF": "of",
+      "PER_PAGE": "Per page",
+      "FIRST": "First page",
+      "PREV": "Previous page",
+      "NEXT": "Next page",
+      "LAST": "Last page"
     }
   },
   "ITEM_REMINDERS": {

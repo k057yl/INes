@@ -32,7 +32,7 @@
       <div class="root-chip"
         cdkDrag
         [class.active-on-board]="isLocActiveOnBoard(loc.id)"
-        (click)="jumpTo.emit(loc.id)">
+        (click)="onLocationClick(loc.id)">
         <div class="chip-content">
           <i [className]="'fa ' + (loc.icon || 'fa-folder')" [style.color]="loc.color"></i>
           <span class="loc-name">{{ loc.name }}</span>

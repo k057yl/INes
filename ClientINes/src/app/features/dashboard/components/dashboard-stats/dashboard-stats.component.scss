@@ -48,18 +48,51 @@
         text-align: left;
 
         .create-icon {
-          background: rgba(var(--accent-color-rgb, 59, 130, 246), 0.15);
+          background: rgba(var(--accent-rgb, 59, 130, 246), 0.15);
           color: var(--accent-color);
+          transition: all 0.2s ease;
         }
 
-        .arrow-icon {
-          font-size: 0.75rem;
-          color: var(--text-muted);
-          transition: transform 0.2s ease;
-          margin-left: auto;
+        .stat-body {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+          min-width: 0;
+          flex-grow: 1;
 
-          &.rotate {
-            transform: rotate(180deg);
+          .stat-label {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--text-main);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          .arrow-icon {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            transition: transform 0.2s ease, color 0.2s ease;
+            margin-left: auto;
+
+            &.rotate {
+              transform: rotate(180deg);
+              color: var(--accent-color);
+            }
+          }
+        }
+
+        &:hover {
+          .create-icon {
+            background: var(--accent-color);
+            color: var(--text-on-accent);
+          }
+
+          .arrow-icon {
+            color: var(--accent-color);
           }
         }
       }
@@ -74,12 +107,12 @@
         top: calc(100% + 6px);
         left: 0;
         z-index: 100;
-        min-width: 180px;
+        min-width: 190px;
         background: var(--bg-card);
         border: 1px solid var(--border-color);
-        border-radius: 10px;
+        border-radius: 12px;
         padding: 6px;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
         display: flex;
         flex-direction: column;
         gap: 4px;
@@ -89,23 +122,25 @@
           align-items: center;
           gap: 10px;
           width: 100%;
-          padding: 8px 12px;
+          padding: 10px 12px;
           border: none;
           background: transparent;
           color: var(--text-main);
           font-size: 0.85rem;
           font-weight: 600;
-          border-radius: 6px;
+          border-radius: 8px;
           cursor: pointer;
           transition: all 0.15s ease;
 
           i {
             color: var(--accent-color);
-            font-size: 0.9rem;
+            font-size: 0.95rem;
+            width: 16px;
+            text-align: center;
           }
 
           &:hover {
-            background: var(--bg-input);
+            background: rgba(255, 255, 255, 0.05);
             color: var(--accent-color);
           }
         }

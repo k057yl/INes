@@ -1,4 +1,6 @@
 <div class="location-column" 
+     [id]="'location-card-' + location.id"
+     [attr.data-location-id]="location.id"
      [class.nested-location]="locationLevel > 0"
      [style.border-top-color]="effectiveColor"
      [style.background-color]="cardBackgroundStyle">
@@ -122,7 +124,7 @@
     }
   </div>
 
-<!-- ВЛОЖЕННЫЕ ЛОКАЦИИ -->
+  <!-- ВЛОЖЕННЫЕ ЛОКАЦИИ -->
   <div class="child-locations">
     @for (child of location.children; track trackById($index, child)) {
       <div class="child-location-wrapper">

@@ -72,6 +72,7 @@
                 public const string RESET_EMAIL_SENT = "AUTH.SUCCESS.RESET_EMAIL_SENT";
                 public const string PASSWORD_CHANGED = "AUTH.SUCCESS.PASSWORD_CHANGED";
                 public const string LOGIN = "AUTH.SUCCESS.LOGIN";
+                public const string ACCOUNT_DELETED = "AUTH.SUCCESS.ACCOUNT_DELETED";
             }
         }
 

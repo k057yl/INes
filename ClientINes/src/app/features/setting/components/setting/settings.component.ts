@@ -1,9 +1,10 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { finalize, forkJoin, interval, Subscription } from 'rxjs';
 import { takeWhile } from 'rxjs/operators';
+import { ToastrService } from 'ngx-toastr';
 
 import { FeatureService } from '../../../../core/services/feature.service';
 import { CategoryService } from '../../../category/services/category.service';
@@ -12,6 +13,7 @@ import { DashboardModalService } from '../../../dashboard/components/dashboard/d
 import { TelegramBotService } from '../../services/telegram-bot.service';
 import { TelegramStatusContract } from '../../contracts/telegram-status';
 import { TutorialService } from '../../../../core/services/tutorial.service';
+import { AuthService } from '../../../auth/services/auth.service';
 
 interface SimpleContract {
   id: string;
@@ -36,6 +38,9 @@ export class SettingsComponent implements OnInit, OnDestroy {
   private translate = inject(TranslateService);
   private telegramService = inject(TelegramBotService);
   private tutorialService = inject(TutorialService);
+  private authService = inject(AuthService);
+  private toastr = inject(ToastrService);
+  private router = inject(Router);
 
   categories: SimpleContract[] = [];
   platforms: SimpleContract[] = [];
@@ -149,6 +154,29 @@ export class SettingsComponent implements OnInit, OnDestroy {
         this.tutorialService.resetTutorialsOnBackend()
           .pipe(finalize(() => this.isLoading = false))
           .subscribe();
+      }
+    });
+  }
+
+  deleteAccount() {
+    this.modalService.openConfirm({
+      mode: 'delete',
+      title: 'SETTINGS_PAGE.DELETE_ACCOUNT_TITLE',
+      message: this.translate.instant('SETTINGS_PAGE.DELETE_ACCOUNT_CONFIRM')
+    }).subscribe(confirm => {
+      if (confirm) {
+        this.isLoading = true;
+        this.authService.deleteAccount()
+          .pipe(finalize(() => this.isLoading = false))
+          .subscribe({
+            next: () => {
+              this.toastr.success(this.translate.instant('AUTH.SUCCESS.ACCOUNT_DELETED'));
+              this.router.navigate(['/auth/login']);
+            },
+            error: () => {
+              this.toastr.error(this.translate.instant('SYSTEM.DEFAULT_ERROR'));
+            }
+          });
       }
     });
   }

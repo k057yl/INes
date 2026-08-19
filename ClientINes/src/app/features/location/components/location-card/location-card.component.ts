@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, inject, ElementRef, HostListener, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject, ElementRef, HostListener, HostBinding, OnInit } from '@angular/core';
 import { DragDropModule, CdkDragDrop, CdkDrag } from '@angular/cdk/drag-drop'; 
 import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
@@ -27,6 +27,14 @@ export class LocationCardComponent implements OnInit {
   @Input() accentColor?: string;
   @Input() flatLocations: StorageLocation[] = [];
   @Input() connectedLists: string[] = [];
+
+  @HostBinding('attr.id') get elementId(): string {
+    return `location-card-${this.location?.id}`;
+  }
+
+  @HostBinding('attr.data-location-id') get dataLocationId(): string {
+    return this.location?.id;
+  }
 
   @Output() itemDropped = new EventEmitter<{event: CdkDragDrop<Item[]>, loc: StorageLocation}>();
   @Output() move = new EventEmitter<{ loc: StorageLocation, targetId: string }>();

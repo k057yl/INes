@@ -1,5 +1,4 @@
 import { Component, Input, Output, EventEmitter, HostListener, ElementRef, inject, ViewChild } from '@angular/core';
-
 import { DragDropModule, CdkDragDrop } from '@angular/cdk/drag-drop';
 import { TranslateModule } from '@ngx-translate/core';
 import { StorageLocation } from '../../../location/contracts/storage-location';
@@ -54,6 +53,20 @@ export class LocationRibbonComponent {
 
   isLocActiveOnBoard(locId: string): boolean {
     return this.activeBoardIds.includes(locId);
+  }
+
+  onLocationClick(locId: string): void {
+    this.jumpTo.emit(locId);
+
+    if (window.innerWidth <= RIBBON_CONFIG.BREAKPOINT_MOBILE) {
+      setTimeout(() => {
+        const targetElem = document.getElementById(`location-card-${locId}`) || 
+                           document.querySelector(`[data-location-id="${locId}"]`);
+        if (targetElem) {
+          targetElem.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    }
   }
 
   toggleCreateMenu(event: MouseEvent) {
