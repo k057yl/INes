@@ -8,6 +8,11 @@
       </button>
 
       <div class="header-actions">
+        <!-- ССЫЛКА / КНОПКА ГЕНЕРАЦИИ QR-КОДА -->
+        <a [href]="getQrCodeUrl()" target="_blank" rel="noopener noreferrer" class="nav-btn qr-btn" title="QR Код">
+          <i class="fa fa-qrcode"></i> QR
+        </a>
+
         @if (isLent) {
           <button class="nav-btn return-btn" (click)="onReturn()">
             <i class="fa fa-undo"></i> {{ 'COMMON.RETURN' | translate }}

@@ -59,6 +59,11 @@ export class ItemDetailComponent implements OnInit {
 
   get isLent(): boolean { return this.item?.status === 1; }
 
+  getQrCodeUrl(): string {
+    if (!this.item) return '';
+    return `${environment.apiBaseUrl}/qr/generate?payload=${encodeURIComponent(window.location.href)}`;
+  }
+
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {

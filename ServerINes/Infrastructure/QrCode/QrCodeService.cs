@@ -13,7 +13,8 @@ namespace INest.Infrastructure.QrCode
 
             using var qrGenerator = new QRCodeGenerator();
             using var qrCodeData = qrGenerator.CreateQrCode(payload, QRCodeGenerator.ECCLevel.Q);
-            using var qrCode = new PngByteQRCode(qrCodeData);
+
+            var qrCode = new BitmapByteQRCode(qrCodeData);
 
             return qrCode.GetGraphic(20);
         }

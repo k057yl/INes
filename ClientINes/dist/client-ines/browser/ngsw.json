@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1787135303198,
+  "timestamp": 1787137732748,
   "index": "/index.html",
   "assetGroups": [
     {
@@ -13,7 +13,7 @@
       "urls": [
         "/favicon.ico",
         "/index.html",
-        "/main-ZBYX2WCC.js",
+        "/main-LTX5XEJT.js",
         "/manifest.webmanifest",
         "/polyfills-5CFQRCPP.js",
         "/styles-DZ4BR2PV.css"
@@ -71,15 +71,15 @@
     }
   ],
   "hashTable": {
-    "/assets/i18n/en.json": "8960fc0f03e81ad6c303d687b52bcd926bf7f874",
-    "/assets/i18n/ru.json": "282f61353d0227b55275c2b08f6e8dc143c554e9",
-    "/assets/i18n/uk.json": "0c885006ee421dfeff1b960e56a52c42bab421a3",
+    "/assets/i18n/en.json": "e36e5f095b729fd03dd051baeb4630c2cc8414d0",
+    "/assets/i18n/ru.json": "d30752051adddc28130f31d6e665b375a7103894",
+    "/assets/i18n/uk.json": "de23d783d06dff697b332ce279aee61c8ca898f3",
     "/assets/images/LogoKaraDark.png": "c9556470d1ba5214c54e56a3fd1c24db8ea24c0f",
     "/assets/images/LogoKaraLight.png": "5c9e3c650f77bf7c5972542dba7a9423b7c8f9b0",
     "/assets/images/no-image.png": "31a74fe17ebaa5f56007ac77a34fcd3e73cb50ef",
     "/favicon.ico": "9c39f434fe1261f68c5e3eefdf734630d99c5670",
-    "/index.html": "119eb638ce5f61a4c92694d48e88fab0a93c6b08",
-    "/main-ZBYX2WCC.js": "b64c0f7d9990c2da554f97e336d5e71bf5a4aba0",
+    "/index.html": "11b22a10084ebb1f90648e09da56542b5dcd246e",
+    "/main-LTX5XEJT.js": "be0d52c220cd81dc7f1ec789978303cf14fae905",
     "/manifest.webmanifest": "5f8f7a69b16f788ddf990ce4e01b0e9c60aab88b",
     "/polyfills-5CFQRCPP.js": "f2241e9a25858f895ce299d15f6f22e849e2fd72",
     "/styles-DZ4BR2PV.css": "f5988580338ef75406eef4088b97ab746174a712"

@@ -352,7 +352,6 @@ export class ItemFormModalComponent implements OnInit {
     formData.append('storageLocationId', val.storageLocationId!);
     formData.append('status', val.status!.toString());
 
-    // Определяем префикс ключа: при создании "Details.", при редактировании "" (в корень)
     const prefix = this.isEdit ? '' : 'Details.';
 
     // --- ФИНАНСЫ ---

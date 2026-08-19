@@ -1,4 +1,5 @@
-﻿using INest.Data.Enums;
+﻿using INest.Constants;
+using INest.Data.Enums;
 using INest.Features.Dashboard.DTOs;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -25,16 +26,24 @@ namespace INest.Features.Dashboard.Queries.GetRemindersStats
                 .CountAsync(r => r.Item!.UserId == request.UserId && !r.IsCompleted && r.TriggerAt > request.NowUtc && r.Item.Status != ItemStatus.Archived, cancellationToken);
 
             var items = await _context.Reminders.AsNoTracking()
-                .Where(r => r.Item!.UserId == request.UserId && !r.IsCompleted && r.Item.Status != ItemStatus.Archived)
+                .Where(r => r.Item!.UserId == request.UserId && !r.IsCompleted && r.Item.Status != ItemStatus.Archived && r.TriggerAt <= warningThreshold)
                 .Select(r => new AttentionItemDto
                 {
                     ItemId = r.ItemId,
                     ItemName = r.Item!.Name,
                     LocationName = r.Item.StorageLocation != null ? r.Item.StorageLocation.Name : string.Empty,
-                    TypeKey = r.Type == ReminderType.ReturnItem ? "DASHBOARD_STATS.LENT" :
-                              r.Type == ReminderType.Warranty ? "DASHBOARD_STATS.WARRANTY_SHORT" : "DASHBOARD_STATS.ATTENTION",
+
+                    TypeKey = r.Type == ReminderType.Warranty ? LocalizationConstants.REMINDERS.WARRANTY :
+                              r.Type == ReminderType.Maintenance ? LocalizationConstants.REMINDERS.MAINTENANCE :
+                              r.Type == ReminderType.ReturnItem ? LocalizationConstants.REMINDERS.RETURN_ITEM :
+                              r.Type == ReminderType.Insurance ? LocalizationConstants.REMINDERS.INSURANCE :
+                              r.Type == ReminderType.Medical ? LocalizationConstants.REMINDERS.MEDICAL :
+                              r.Type == ReminderType.Tax ? LocalizationConstants.REMINDERS.TAX :
+                              r.Type == ReminderType.Subscription ? LocalizationConstants.REMINDERS.SUBSCRIPTION :
+                              LocalizationConstants.REMINDERS.CUSTOM,
+
                     Date = r.TriggerAt,
-                    Severity = r.TriggerAt < request.NowUtc ? "danger" : (r.TriggerAt <= warningThreshold ? "warning" : "info")
+                    Severity = r.TriggerAt <= request.NowUtc ? "danger" : "warning"
                 })
                 .ToListAsync(cancellationToken);
 

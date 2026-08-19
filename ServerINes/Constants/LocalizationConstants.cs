@@ -228,6 +228,7 @@
 
         public static class LENDING
         {
+            public const string OVERDUE = "LENDING.OVERDUE";
             public static class ERRORS
             {
                 public const string NOT_FOUND = "LENDING.ERRORS.NOT_FOUND";
