@@ -4,11 +4,12 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FormBuilder, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { debounceTime, finalize, switchMap, tap, startWith, catchError, take } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { BehaviorSubject, combineLatest, of } from 'rxjs';
 import { Router } from '@angular/router';
 import { PricePipe } from '../../../../shared/pipes/price-currency.pipe';
 
-import { SalesService } from '../../services/sales.service';
+import { SalesService} from '../../services/sales.service';
+import { PagedResult } from '../../contracts/sale-page';
 import { CategoryService } from '../../../category/services/category.service';
 import { LocationService } from '../../../location/services/location.service';
 import { DashboardModalService } from '../../../dashboard/components/dashboard/dashboard.modal.service';
@@ -55,7 +56,10 @@ export class SalesListComponent implements OnInit {
   selectedReturnLocationId: string | null = null;
   isLoading = true;
 
-  // --- ПАГИНАЦИЯ ---
+  // --- Реактивная пагинация ---
+  private page$ = new BehaviorSubject<number>(1);
+  private pageSize$ = new BehaviorSubject<number>(10);
+
   pageNumber = 1;
   pageSize = 10;
   totalCount = 0;
@@ -96,20 +100,19 @@ export class SalesListComponent implements OnInit {
 
   // --- МЕТОДЫ ПАГИНАЦИИ ---
   goToPage(page: number): void {
-    if (page < 1 || page > this.totalPages || page === this.pageNumber) return;
+    if (page < 1 || (this.totalPages > 0 && page > this.totalPages)) return;
     this.pageNumber = page;
-    this.refreshData();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    this.page$.next(page);
   }
 
   changePageSize(size: number): void {
-    if (this.pageSize === size) return;
     this.pageSize = size;
-    this.pageNumber = 1;
-    this.refreshData();
+    this.pageSize$.next(size);
+    this.page$.next(1);
   }
 
   get pagesArray(): number[] {
+    if (this.totalPages <= 0) return [];
     const pages: number[] = [];
     const maxVisible = 5;
     let start = Math.max(1, this.pageNumber - Math.floor(maxVisible / 2));
@@ -130,40 +133,59 @@ export class SalesListComponent implements OnInit {
     this.categoryService.getAll().subscribe(res => this.categories = res);
     this.locationService.getAll().subscribe((res: any[]) => this.locations = res);
 
-    this.filterForm.valueChanges.subscribe(() => {
-      this.pageNumber = 1;
-    });
-
-    this.filterForm.valueChanges.pipe(
-      startWith(this.filterForm.getRawValue()),
-      debounceTime(350),
-      tap(() => {
+    combineLatest([
+      this.filterForm.valueChanges.pipe(
+        startWith(this.filterForm.getRawValue()),
+        debounceTime(350),
+        tap(() => this.page$.next(1))
+      ),
+      this.page$,
+      this.pageSize$
+    ]).pipe(
+      tap(([_, page, size]) => {
         this.isLoading = true;
+        this.pageNumber = page;
+        this.pageSize = size;
       }),
-      switchMap(filters => {
+      switchMap(([filters, page, size]) => {
         const queryParams: GetSalesDto = {
           ...filters as GetSalesDto,
-          pageNumber: this.pageNumber,
-          pageSize: this.pageSize
+          pageNumber: page,
+          pageSize: size
         };
         return this.salesService.getHistory(queryParams).pipe(
           catchError(err => {
             console.error('FETCH_ERROR:', err);
-            return of({ items: [], totalCount: 0, totalPages: 0, pageNumber: 1, pageSize: 10 });
+            return of({ items: [], totalCount: 0, totalPages: 0, pageNumber: 1, pageSize: 10 } as PagedResult<SaleListItem>);
           }),
           finalize(() => this.isLoading = false)
         );
       })
     ).subscribe((res: any) => {
+      let rawSales: SaleListItem[] = [];
+
       if (Array.isArray(res)) {
-        this.sales = res;
+        rawSales = res;
         this.totalCount = res.length;
-        this.totalPages = 1;
       } else {
-        this.sales = res.items || [];
-        this.totalCount = res.totalCount || 0;
-        this.totalPages = res.totalPages || Math.ceil(this.totalCount / this.pageSize);
+        rawSales = res?.items || [];
+        this.totalCount = res?.totalCount || rawSales.length;
       }
+
+      this.totalPages = Math.ceil(this.totalCount / this.pageSize) || 1;
+
+      if (this.pageNumber > this.totalPages) {
+        this.pageNumber = this.totalPages;
+      }
+
+      if (Array.isArray(res) && res.length > this.pageSize) {
+        const startIndex = (this.pageNumber - 1) * this.pageSize;
+        const endIndex = startIndex + this.pageSize;
+        this.sales = rawSales.slice(startIndex, endIndex);
+      } else {
+        this.sales = rawSales;
+      }
+
       this.calculateCurrencyTotals();
       this.checkAndStartTutorial();
     });
@@ -224,11 +246,11 @@ export class SalesListComponent implements OnInit {
   }
 
   resetFilters(): void {
-    this.pageNumber = 1;
     this.filterForm.reset({
       searchQuery: '', platformId: null, categoryId: null, sortBy: 0, 
       minPrice: null, maxPrice: null, minProfit: null, startDate: null, endDate: null
     });
+    this.page$.next(1);
   }
 
   handleUndo(sale: SaleListItem): void {
@@ -286,27 +308,7 @@ export class SalesListComponent implements OnInit {
   }
 
   refreshData(): void {
-    this.isLoading = true;
-    const filters: GetSalesDto = {
-      ...this.filterForm.getRawValue() as GetSalesDto,
-      pageNumber: this.pageNumber,
-      pageSize: this.pageSize
-    };
-
-    this.salesService.getHistory(filters)
-      .pipe(finalize(() => this.isLoading = false))
-      .subscribe((res: any) => {
-        if (Array.isArray(res)) {
-          this.sales = res;
-          this.totalCount = res.length;
-          this.totalPages = 1;
-        } else {
-          this.sales = res.items || [];
-          this.totalCount = res.totalCount || 0;
-          this.totalPages = res.totalPages || Math.ceil(this.totalCount / this.pageSize);
-        }
-        this.calculateCurrencyTotals();
-      });
+    this.page$.next(this.pageNumber);
   }
 
   goBack(): void {

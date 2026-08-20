@@ -5,6 +5,7 @@ import { environment } from '../../../../environments/environment';
 import { Item } from '../contracts/item';
 import { ItemCreateDto } from '../dtos/item-create.dto';
 import { GetItemFilters } from '../dtos/items-get.dto';
+import { PagedResult } from '../contracts/item-pages';
 
 @Injectable({
   providedIn: 'root'
@@ -13,9 +14,9 @@ export class ItemService {
   private http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiBaseUrl}/items`;
 
-  getAll(filters?: GetItemFilters): Observable<Item[]> {
+  getAll(filters?: GetItemFilters): Observable<PagedResult<Item>> {
     const params = this.buildParams(filters);
-    return this.http.get<Item[]>(this.apiUrl, { params });
+    return this.http.get<PagedResult<Item>>(this.apiUrl, { params });
   }
 
   getById(id: string): Observable<Item> {
@@ -71,9 +72,7 @@ export class ItemService {
   private buildParams(obj?: GetItemFilters): HttpParams {
     let params = new HttpParams();
 
-    if (!obj) {
-      return params;
-    }
+    if (!obj) return params;
 
     Object.keys(obj).forEach(key => {
       const value = obj[key as keyof GetItemFilters];
@@ -82,7 +81,8 @@ export class ItemService {
         const stringValue = value.toString().trim();
 
         if (stringValue !== '') {
-          params = params.set(key, stringValue);
+          const paramName = key.charAt(0).toUpperCase() + key.slice(1);
+          params = params.set(paramName, stringValue);
         }
       }
     });

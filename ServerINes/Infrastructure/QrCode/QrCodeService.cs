@@ -18,5 +18,11 @@ namespace INest.Infrastructure.QrCode
 
             return qrCode.GetGraphic(20);
         }
+
+        public string GenerateBase64QrCode(string payload)
+        {
+            var bytes = GeneratePngCode(payload);
+            return $"data:image/png;base64,{Convert.ToBase64String(bytes)}";
+        }
     }
 }

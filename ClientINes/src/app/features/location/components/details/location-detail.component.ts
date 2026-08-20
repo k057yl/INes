@@ -56,34 +56,47 @@ export class LocationDetailComponent implements OnInit {
   }
 
   printQrCode() {
-    const printContent = document.getElementById('location-qr-zone')?.innerHTML;
-    if (!printContent) return;
+    const printZone = document.getElementById('location-qr-zone');
+    if (!printZone) return;
 
     const windowPrint = window.open('', '', 'left=0,top=0,width=600,height=600,toolbar=0,scrollbars=0,status=0');
     if (!windowPrint) return;
 
+    const qrImageEl = printZone.querySelector('img') as HTMLImageElement;
+    const qrSrc = qrImageEl ? qrImageEl.src : '';
+
     windowPrint.document.write(`
       <html>
         <head>
-          <title>Print QR Code</title>
+          <title>Print QR Code - ${this.location?.name || ''}</title>
           <style>
             body { 
               margin: 0; display: flex; justify-content: center; align-items: center; 
               height: 100vh; font-family: sans-serif; background: #fff; color: #000;
             }
-            .qr-wrapper-card { text-align: center; border: 2px solid #000; padding: 20px; border-radius: 12px; }
+            .qr-wrapper-card { text-align: center; border: 2px solid #000; padding: 24px; border-radius: 12px; }
             .qr-card-title { font-size: 1.2rem; font-weight: bold; margin-bottom: 12px; text-transform: uppercase; }
-            .qr-image { width: 200px; height: 200px; }
-            .qr-card-footer { font-size: 0.75rem; color: #666; margin-top: 10px; letter-spacing: 1px; }
+            .qr-image { width: 220px; height: 220px; display: block; margin: 0 auto; }
+            .qr-card-footer { font-size: 0.75rem; color: #444; margin-top: 12px; letter-spacing: 1px; font-weight: bold; }
           </style>
         </head>
         <body>
-          \${printContent}
+          <div class="qr-wrapper-card">
+            <div class="qr-card-title">${this.location?.name || ''}</div>
+            <img src="${qrSrc}" class="qr-image" alt="QR Code" id="printable-qr">
+            <div class="qr-card-footer">МЕСТО ХРАНЕНИЯ</div>
+          </div>
           <script>
-            setTimeout(() => {
+            const img = document.getElementById('printable-qr');
+            if (img.complete) {
               window.print();
               window.close();
-            }, 300);
+            } else {
+              img.onload = () => {
+                window.print();
+                window.close();
+              };
+            }
           </script>
         </body>
       </html>

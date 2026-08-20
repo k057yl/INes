@@ -500,4 +500,28 @@
       justify-content: center;
     }
   }
+
+  /* СТИЛИ ДЛЯ ВЫПАДАЮЩИХ МЕНЮ В МОБИЛКЕ */
+  .th-dropdown-panel {
+    right: auto;
+    left: 0;
+    min-width: 200px;
+  }
+
+  .filter-buttons-group {
+    .th-dropdown-wrapper {
+      /* Позиционируем меню категорий (первая кнопка) по левому краю */
+      &:nth-child(1) .th-dropdown-panel {
+        left: 0;
+        right: auto;
+      }
+
+      /* Позиционируем платформы и сортировку (2-я и 3-я кнопки) по правому краю */
+      &:nth-child(2) .th-dropdown-panel,
+      &:nth-child(3) .th-dropdown-panel {
+        left: auto;
+        right: 0;
+      }
+    }
+  }
 }

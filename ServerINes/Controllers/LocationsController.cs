@@ -74,12 +74,10 @@ namespace INest.Controllers
             return Ok(children);
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}/qr")]
         public async Task<IActionResult> GetQrCode(Guid id)
         {
-            var loc = await _mediator.Send(new GetLocationHeaderQuery(GetUserId(), id));
-            if (loc == null) throw new AppException(LOCATIONS.ERRORS.NOT_FOUND, 404);
-
             var frontendUrl = _configuration["Frontend:Url"];
             if (string.IsNullOrWhiteSpace(frontendUrl))
             {

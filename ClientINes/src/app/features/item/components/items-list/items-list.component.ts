@@ -3,12 +3,13 @@ import { CommonModule, Location } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime, finalize, switchMap, tap, startWith, catchError, take } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { BehaviorSubject, combineLatest, of } from 'rxjs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { PricePipe } from '../../../../shared/pipes/price-currency.pipe';
 
-import { ItemService } from '../../services/item.service';
+import { ItemService} from '../../services/item.service';
+import { PagedResult } from '../../contracts/item-pages';
 import { CategoryService } from '../../../category/services/category.service';
 import { LocationService } from '../../../location/services/location.service';
 import { Item } from '../../contracts/item';
@@ -52,7 +53,10 @@ export class ItemsListComponent implements OnInit {
   selectedIds = new Set<string>();
   activeDropdown: DropdownType = null;
 
-  // --- Пагинация ---
+  // --- Реативные контроллеры пагинации ---
+  private page$ = new BehaviorSubject<number>(1);
+  private pageSize$ = new BehaviorSubject<number>(10);
+
   pageNumber = 1;
   pageSize = 10;
   totalCount = 0;
@@ -66,18 +70,6 @@ export class ItemsListComponent implements OnInit {
     { value: 2, label: 'STATUS.SOLD' },
     { value: 3, label: 'STATUS.ARCHIVED' }
   ];
-
-  getCurrencySymbol(currencyStr: string | undefined | null): string {
-    if (!currencyStr) return '₴';
-
-    switch (currencyStr.toUpperCase()) {
-      case 'UAH': return '₴';
-      case 'USD': return '$';
-      case 'EUR': return '€';
-      case 'USDT': return '₮';
-      default: return currencyStr;
-    }
-  }
 
   filterForm = this.fb.group({
     searchQuery: [''],
@@ -98,6 +90,17 @@ export class ItemsListComponent implements OnInit {
     return !!(f.searchQuery || f.categoryId || f.storageLocationId || f.status !== null || f.minPrice !== null || f.maxPrice !== null);
   }
 
+  getCurrencySymbol(currencyStr: string | undefined | null): string {
+    if (!currencyStr) return '₴';
+    switch (currencyStr.toUpperCase()) {
+      case 'UAH': return '₴';
+      case 'USD': return '$';
+      case 'EUR': return '€';
+      case 'USDT': return '₮';
+      default: return currencyStr;
+    }
+  }
+
   ngOnInit(): void {
     this.loadInitialData();
 
@@ -109,61 +112,79 @@ export class ItemsListComponent implements OnInit {
       if (val) this.filterForm.get('showArchived')?.setValue(false, { emitEvent: false });
     });
 
-    // Реакция на смену любого фильтра -> сбрасываем на страницу 1
-    this.filterForm.valueChanges.subscribe(() => {
-      this.pageNumber = 1;
-    });
-
-    this.filterForm.valueChanges.pipe(
-      startWith(this.filterForm.getRawValue()),
-      debounceTime(300),
-      tap(() => { this.isLoading = true; }),
-      switchMap(filters => {
-        const queryParams = {
+    combineLatest([
+      this.filterForm.valueChanges.pipe(
+        startWith(this.filterForm.getRawValue()),
+        debounceTime(300),
+        tap(() => this.page$.next(1))
+      ),
+      this.page$,
+      this.pageSize$
+    ]).pipe(
+      tap(([_, page, size]) => {
+        this.isLoading = true;
+        this.pageNumber = page;
+        this.pageSize = size;
+      }),
+      switchMap(([filters, page, size]) => {
+        const queryParams: GetItemFilters = {
           ...filters,
-          pageNumber: this.pageNumber,
-          pageSize: this.pageSize
-        } as GetItemFilters & { pageNumber?: number; pageSize?: number };
+          pageNumber: page,
+          pageSize: size
+        };
 
         return this.itemService.getAll(queryParams).pipe(
           catchError(err => {
             console.error('Ошибка бэкенда при поиске:', err);
-            return of({ items: [], totalCount: 0, totalPages: 0, pageNumber: 1, pageSize: 10 });
+            return of({ items: [], totalCount: 0, totalPages: 0, pageNumber: 1, pageSize: 10 } as PagedResult<Item>);
           }),
           finalize(() => { this.isLoading = false; })
         );
       })
     ).subscribe((res: any) => {
-      // Если бэкенд возвращает PagedList DTO { items, totalCount, totalPages }
+      let rawItems: Item[] = [];
+
       if (Array.isArray(res)) {
-        this.items = res;
+        rawItems = res;
         this.totalCount = res.length;
-        this.totalPages = 1;
       } else {
-        this.items = res.items || [];
-        this.totalCount = res.totalCount || 0;
-        this.totalPages = res.totalPages || Math.ceil(this.totalCount / this.pageSize);
+        rawItems = res?.items || [];
+        this.totalCount = res?.totalCount || rawItems.length;
       }
+
+      this.totalPages = Math.ceil(this.totalCount / this.pageSize) || 1;
+
+      if (this.pageNumber > this.totalPages) {
+        this.pageNumber = this.totalPages;
+      }
+
+      if (Array.isArray(res) && res.length > this.pageSize) {
+        const startIndex = (this.pageNumber - 1) * this.pageSize;
+        const endIndex = startIndex + this.pageSize;
+        this.items = rawItems.slice(startIndex, endIndex);
+      } else {
+        this.items = rawItems;
+      }
+
       this.syncSelection();
       this.checkAndStartTutorial();
     });
   }
 
-  // --- Методы Пагинации ---
   goToPage(page: number): void {
-    if (page < 1 || page > this.totalPages || page === this.pageNumber) return;
+    if (page < 1 || (this.totalPages > 0 && page > this.totalPages)) return;
     this.pageNumber = page;
-    this.loadData();
+    this.page$.next(page);
   }
 
   changePageSize(size: number): void {
-    if (this.pageSize === size) return;
     this.pageSize = size;
-    this.pageNumber = 1;
-    this.loadData();
+    this.pageSize$.next(size);
+    this.page$.next(1);
   }
 
   get pagesArray(): number[] {
+    if (this.totalPages <= 0) return [];
     const pages: number[] = [];
     const maxVisible = 5;
     let start = Math.max(1, this.pageNumber - Math.floor(maxVisible / 2));
@@ -177,6 +198,10 @@ export class ItemsListComponent implements OnInit {
       pages.push(i);
     }
     return pages;
+  }
+
+  loadData(): void {
+    this.page$.next(this.pageNumber);
   }
 
   private checkAndStartTutorial() {
@@ -208,30 +233,6 @@ export class ItemsListComponent implements OnInit {
     this.locationService.getAll().subscribe(res => { this.locations = res; });
   }
 
-  loadData(): void {
-    this.isLoading = true;
-    const filters = {
-      ...this.filterForm.getRawValue(),
-      pageNumber: this.pageNumber,
-      pageSize: this.pageSize
-    } as GetItemFilters & { pageNumber?: number; pageSize?: number };
-
-    this.itemService.getAll(filters).pipe(
-      finalize(() => { this.isLoading = false; })
-    ).subscribe((res: any) => {
-      if (Array.isArray(res)) {
-        this.items = res;
-        this.totalCount = res.length;
-        this.totalPages = 1;
-      } else {
-        this.items = res.items || [];
-        this.totalCount = res.totalCount || 0;
-        this.totalPages = res.totalPages || Math.ceil(this.totalCount / this.pageSize);
-      }
-      this.syncSelection();
-    });
-  }
-
   private syncSelection(): void {
     const currentIds = new Set(this.items.map(x => x.id));
     this.selectedIds.forEach(id => {
@@ -252,7 +253,7 @@ export class ItemsListComponent implements OnInit {
     this.activeDropdown = null;
   }
 
-  setFilter(field: keyof GetItemFilters, value: GetItemFilters[keyof GetItemFilters]): void {
+  setFilter(field: keyof GetItemFilters, value: any): void {
     this.updateFilters({ [field]: value });
     this.closeDropdown();
   }
@@ -292,14 +293,13 @@ export class ItemsListComponent implements OnInit {
   }
 
   resetFilters(): void {
-    this.pageNumber = 1;
     this.filterForm.reset({
       searchQuery: '', categoryId: null, storageLocationId: null, status: null,
       sortBy: 0, minPrice: null, maxPrice: null, showArchived: false, includeArchived: false
     });
+    this.page$.next(1);
   }
 
-  // --- МАССОВОЕ ДЕЙСТВИЕ (БАТЧ) ---
   bulkDelete(): void {
     if (this.selectedIds.size === 0) return;
 
@@ -355,7 +355,6 @@ export class ItemsListComponent implements OnInit {
     });
   }
 
-  // --- ОДИНОЧНОЕ УДАЛЕНИЕ ИЗ ТАБЛИЦЫ ---
   onDeleteClick(item: Item): void {
     if (item.status === 2) {
       this.toastr.error(this.translate.instant('ITEMS.ERRORS.CANNOT_DELETE_SOLD'));
