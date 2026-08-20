@@ -124,18 +124,10 @@ namespace INest
                 {
                     OnMessageReceived = context =>
                     {
-                        string authHeader = context.Request.Headers["Authorization"].ToString();
-                        if (!string.IsNullOrEmpty(authHeader) && authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+                        if (context.Request.Cookies.TryGetValue("X-Access-Token", out var accessToken))
                         {
-                            context.Token = authHeader.Substring("Bearer ".Length).Trim();
-                            return Task.CompletedTask;
+                            context.Token = accessToken;
                         }
-
-                        if (context.Request.Cookies.ContainsKey("X-Access-Token"))
-                        {
-                            context.Token = context.Request.Cookies["X-Access-Token"];
-                        }
-
                         return Task.CompletedTask;
                     }
                 };

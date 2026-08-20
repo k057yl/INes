@@ -29,16 +29,24 @@ namespace INest.Controllers
 
         private void SetTokenCookies(AuthResponseDto authResponse)
         {
-            var cookieOptions = new CookieOptions
+            var accessCookieOptions = new CookieOptions
             {
                 HttpOnly = true,
                 Secure = true,
                 SameSite = SameSiteMode.None,
-                Expires = DateTime.UtcNow.AddDays(7)
+                Expires = DateTime.UtcNow.AddMinutes(15)
             };
 
-            Response.Cookies.Append("X-Access-Token", authResponse.Token, cookieOptions);
-            Response.Cookies.Append("X-Refresh-Token", authResponse.RefreshToken, cookieOptions);
+            var refreshCookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None,
+                Expires = DateTime.UtcNow.AddDays(30)
+            };
+
+            Response.Cookies.Append("X-Access-Token", authResponse.Token, accessCookieOptions);
+            Response.Cookies.Append("X-Refresh-Token", authResponse.RefreshToken, refreshCookieOptions);
         }
 
         [AllowAnonymous]
@@ -138,22 +146,19 @@ namespace INest.Controllers
         }
 
         [HttpPost("refresh")]
-        public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequestDto? dto)
+        public async Task<IActionResult> Refresh()
         {
-            var authHeader = Request.Headers["Authorization"].ToString();
-            var accessToken = dto?.AccessToken
-                ?? (!string.IsNullOrEmpty(authHeader) && authHeader.StartsWith("Bearer ") ? authHeader["Bearer ".Length..].Trim() : null)
-                ?? Request.Cookies["X-Access-Token"];
-
-            var refreshToken = dto?.RefreshToken ?? Request.Cookies["X-Refresh-Token"];
+            var accessToken = Request.Cookies["X-Access-Token"];
+            var refreshToken = Request.Cookies["X-Refresh-Token"];
 
             if (string.IsNullOrEmpty(accessToken) || string.IsNullOrEmpty(refreshToken))
-                return Unauthorized();
+                return Unauthorized(new { error = AUTH.ERRORS.INVALID_TOKEN });
 
             var response = await _mediator.Send(new RefreshTokenCommand(accessToken, refreshToken));
 
             SetTokenCookies(response);
-            return Ok(new { data = response });
+
+            return Ok();
         }
 
         [Authorize]

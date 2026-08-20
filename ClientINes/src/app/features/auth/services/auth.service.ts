@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { tap, finalize, catchError, switchMap } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
@@ -14,22 +14,13 @@ export class AuthService {
   user$ = this.userSubject.asObservable();
 
   // ================= АВТОРИЗАЦИЯ =================
-  checkAuth(explicitToken?: string): Observable<AppUser | null> {
-    const token = explicitToken || localStorage.getItem('token');
-    
-    if (!token) {
-      this.clearLocalSession();
-      return of(null);
-    }
-
-    const headers = {
-      'Authorization': `Bearer ${token}`
-    };
-
-    return this.http.get<AppUser>(`${this.apiUrl}/me`, { headers }).pipe(
+  checkAuth(): Observable<AppUser | null> {
+    return this.http.get<AppUser>(`${this.apiUrl}/me`).pipe(
       tap(user => this.userSubject.next(user)),
-      catchError(() => {
-        this.clearLocalSession();
+      catchError((err: HttpErrorResponse) => {
+        if (err.status === 401 || err.status === 403) {
+          this.clearLocalSession();
+        }
         return of(null);
       })
     );
@@ -39,30 +30,12 @@ export class AuthService {
     return this.http
       .post<any>(`${this.apiUrl}/login`, { email, password })
       .pipe(
-        switchMap((response) => {
-          const token =
-            response?.data?.token ||
-            response?.token ||
-            response?.data?.accessToken ||
-            response?.accessToken;
-
-          if (token) {
-            localStorage.setItem('token', token);
-            return this.checkAuth(token);
-          }
-          return this.checkAuth();
-        })
+        switchMap(() => this.checkAuth())
       );
   }
 
   refreshToken(): Observable<any> {
-    const currentToken = localStorage.getItem('token');
-
-    return this.http.post<any>(
-      `${this.apiUrl}/refresh`, 
-      { accessToken: currentToken }, 
-      { withCredentials: true }
-    ).pipe();
+    return this.http.post<any>(`${this.apiUrl}/refresh`, {});
   }
 
   resendCode(data: { email: string }) {
@@ -77,14 +50,7 @@ export class AuthService {
     return this.http
       .post<any>(`${this.apiUrl}/confirm-register`, { email, code })
       .pipe(
-        switchMap((response) => {
-          const token = response?.data?.token || response?.token || response?.data?.accessToken || response?.accessToken;
-          if (token) {
-            localStorage.setItem('token', token);
-            return this.checkAuth(token);
-          }
-          return this.checkAuth();
-        })
+        switchMap(() => this.checkAuth())
       );
   }
 
@@ -92,14 +58,7 @@ export class AuthService {
     return this.http
       .post<any>(`${this.apiUrl}/google-login`, { idToken })
       .pipe(
-        switchMap((response) => {
-          const token = response?.data?.token || response?.token || response?.data?.accessToken || response?.accessToken;
-          if (token) {
-            localStorage.setItem('token', token);
-            return this.checkAuth(token);
-          }
-          return this.checkAuth();
-        })
+        switchMap(() => this.checkAuth())
       );
   }
 
@@ -144,7 +103,6 @@ export class AuthService {
   // ================= СБРОС СЕССИИ БЕЗ СЕТИ =================
 
   clearLocalSession(): void {
-    localStorage.removeItem('token');
     this.userSubject.next(null);
   }
 
@@ -160,9 +118,7 @@ export class AuthService {
 
   deleteAccount(password?: string): Observable<any> {
     const payload = password ? { password } : {};
-    return this.http.post<any>(`${this.apiUrl}/delete-account`, payload, {
-      withCredentials: true
-    }).pipe(
+    return this.http.post<any>(`${this.apiUrl}/delete-account`, payload).pipe(
       tap(() => this.clearLocalSession())
     );
   }

@@ -4,7 +4,7 @@ import { BehaviorSubject, catchError, filter, switchMap, take, throwError, Obser
 import { AuthService } from '../../features/auth/services/auth.service';
 
 let isRefreshing = false;
-const refreshTokenSubject = new BehaviorSubject<string | null>(null);
+const refreshTokenSubject = new BehaviorSubject<boolean>(false);
 
 export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
@@ -13,18 +13,11 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
     return next(req);
   }
 
-  const token = localStorage.getItem('token');
-  const headers: Record<string, string> = {
-    'X-Requested-With': 'XMLHttpRequest'
-  };
-
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
-
   const clonedReq = req.clone({
     withCredentials: true,
-    setHeaders: headers
+    setHeaders: {
+      'X-Requested-With': 'XMLHttpRequest'
+    }
   });
 
   return next(clonedReq).pipe(
@@ -50,46 +43,28 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
 function handle401Error(req: HttpRequest<any>, next: HttpHandlerFn, authService: AuthService): Observable<any> {
   if (!isRefreshing) {
     isRefreshing = true;
-    refreshTokenSubject.next(null);
+    refreshTokenSubject.next(false);
 
     return authService.refreshToken().pipe(
-      switchMap((res: any) => {
+      switchMap(() => {
         isRefreshing = false;
-        
-        const newToken = res?.data?.token || res?.token;
-        if (newToken) {
-          localStorage.setItem('token', newToken);
-          refreshTokenSubject.next(newToken);
-        } else {
-          authService.clearLocalSession();
-          return throwError(() => new Error('No token in refresh response'));
-        }
+        refreshTokenSubject.next(true);
 
-        const retryReq = req.clone({
-          withCredentials: true,
-          setHeaders: { Authorization: `Bearer ${newToken}` }
-        });
-
-        return next(retryReq);
+        return next(req);
       }),
       catchError((err) => {
         isRefreshing = false;
-        refreshTokenSubject.next(null);
-
+        refreshTokenSubject.next(false);
         authService.clearLocalSession();
         return throwError(() => err);
       })
     );
   } else {
     return refreshTokenSubject.pipe(
-      filter(token => token !== null),
+      filter(status => status === true),
       take(1),
-      switchMap((token) => {
-        const retryReq = req.clone({
-          withCredentials: true,
-          setHeaders: { Authorization: `Bearer ${token}` }
-        });
-        return next(retryReq);
+      switchMap(() => {
+        return next(req);
       })
     );
   }

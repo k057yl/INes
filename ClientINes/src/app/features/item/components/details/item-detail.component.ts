@@ -59,11 +59,6 @@ export class ItemDetailComponent implements OnInit {
 
   get isLent(): boolean { return this.item?.status === 1; }
 
-  getQrCodeUrl(): string {
-    if (!this.item) return '';
-    return `${environment.apiBaseUrl}/qr/generate?payload=${encodeURIComponent(window.location.href)}`;
-  }
-
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
@@ -113,7 +108,6 @@ export class ItemDetailComponent implements OnInit {
   onEdit() {
     if (!this.item) return;
 
-    // Запрещаем редактирование, если предмет одолжен / взят в долг / не активен
     if (this.item.status !== 0) {
       this.toastr.warning(this.translateService.instant('CREATE_ITEM_PAGE.WARNING_EDIT_MSG'));
       return;
@@ -169,7 +163,6 @@ export class ItemDetailComponent implements OnInit {
         },
         error: (err) => console.error('Return failed', err)
       });
-
     });
   }
 }
