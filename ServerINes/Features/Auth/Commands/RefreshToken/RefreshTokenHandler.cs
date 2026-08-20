@@ -4,7 +4,7 @@ using INest.Features.Auth.DTOs;
 using INest.Infrastructure.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
 using static INest.Constants.LocalizationConstants;
 
 namespace INest.Features.Auth.Commands.RefreshToken
@@ -22,30 +22,29 @@ namespace INest.Features.Auth.Commands.RefreshToken
 
         public async Task<AuthResponseDto> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
         {
-            var principal = _tokenService.GetPrincipalFromExpiredToken(request.AccessToken);
-            var userId = principal.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (userId == null)
+            if (string.IsNullOrWhiteSpace(request.RefreshToken))
                 throw new AppException(AUTH.ERRORS.INVALID_TOKEN, 401);
 
-            var user = await _userManager.FindByIdAsync(userId);
             var hashedInputToken = _tokenService.HashRefreshToken(request.RefreshToken);
 
-            if (user == null || user.RefreshToken != hashedInputToken || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
+            var user = await _userManager.Users
+                .FirstOrDefaultAsync(u => u.RefreshToken == hashedInputToken, cancellationToken);
+
+            if (user == null || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
                 throw new AppException(AUTH.ERRORS.INVALID_OR_EXPIRED_CODE, 401);
 
             var roles = await _userManager.GetRolesAsync(user);
-            var accessToken = _tokenService.GenerateJwtToken(user, roles);
-            var refreshToken = _tokenService.GenerateRefreshToken();
+            var newAccessToken = _tokenService.GenerateJwtToken(user, roles);
+            var newRefreshToken = _tokenService.GenerateRefreshToken();
 
-            user.RefreshToken = _tokenService.HashRefreshToken(refreshToken);
+            user.RefreshToken = _tokenService.HashRefreshToken(newRefreshToken);
             user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(30);
             await _userManager.UpdateAsync(user);
 
             return new AuthResponseDto
             {
-                Token = accessToken,
-                RefreshToken = refreshToken
+                Token = newAccessToken,
+                RefreshToken = newRefreshToken
             };
         }
     }

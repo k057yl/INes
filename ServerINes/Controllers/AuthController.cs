@@ -148,13 +148,12 @@ namespace INest.Controllers
         [HttpPost("refresh")]
         public async Task<IActionResult> Refresh()
         {
-            var accessToken = Request.Cookies["X-Access-Token"];
             var refreshToken = Request.Cookies["X-Refresh-Token"];
 
-            if (string.IsNullOrEmpty(accessToken) || string.IsNullOrEmpty(refreshToken))
+            if (string.IsNullOrEmpty(refreshToken))
                 return Unauthorized(new { error = AUTH.ERRORS.INVALID_TOKEN });
 
-            var response = await _mediator.Send(new RefreshTokenCommand(accessToken, refreshToken));
+            var response = await _mediator.Send(new RefreshTokenCommand(string.Empty, refreshToken));
 
             SetTokenCookies(response);
 
