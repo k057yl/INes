@@ -20,6 +20,8 @@ app.UseMiddleware<ExceptionMiddleware>();
 app.UseRouting();
 app.UseCors("AllowAngular");
 
+app.UseCookiePolicy();
+
 app.Use(async (context, next) =>
 {
     context.Response.Headers.Append("Content-Security-Policy", SharedConstants.CONTENT_SECURITY_POLICY);

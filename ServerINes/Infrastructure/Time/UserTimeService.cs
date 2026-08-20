@@ -23,7 +23,14 @@ namespace INest.Infrastructure.Time
 
             if (!TimeZoneInfo.TryFindSystemTimeZoneById(userTzId, out var tzInfo))
             {
-                tzInfo = TimeZoneInfo.Utc;
+                if (userTzId == "Europe/Kyiv" && TimeZoneInfo.TryFindSystemTimeZoneById("FLE Standard Time", out var winTz))
+                {
+                    tzInfo = winTz;
+                }
+                else
+                {
+                    tzInfo = TimeZoneInfo.Utc;
+                }
             }
 
             return TimeZoneInfo.ConvertTimeFromUtc(nowUtc, tzInfo);

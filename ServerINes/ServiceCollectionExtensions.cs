@@ -89,6 +89,13 @@ namespace INest
 
         private static void AddCustomAuth(this IServiceCollection services, IConfiguration config)
         {
+            services.Configure<CookiePolicyOptions>(options =>
+            {
+                options.MinimumSameSitePolicy = SameSiteMode.Unspecified;
+                options.OnAppendCookie = cookieContext => CheckSameSite(cookieContext.Context, cookieContext.CookieOptions);
+                options.OnDeleteCookie = cookieContext => CheckSameSite(cookieContext.Context, cookieContext.CookieOptions);
+            });
+
             var jwt = config.GetSection("Jwt");
             var keyBytes = Encoding.UTF8.GetBytes(jwt["Key"]?.Trim() ?? throw new InvalidOperationException(SharedConstants.JWT_KEY_MISSING));
 
@@ -99,7 +106,7 @@ namespace INest
             })
             .AddJwtBearer(options =>
             {
-                options.RequireHttpsMetadata = false;
+                options.RequireHttpsMetadata = true;
 
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
@@ -110,7 +117,7 @@ namespace INest
                     ValidIssuer = jwt["Issuer"]?.Trim(),
                     ValidAudience = jwt["Audience"]?.Trim(),
                     IssuerSigningKey = new SymmetricSecurityKey(keyBytes),
-                    ClockSkew = TimeSpan.Zero
+                    ClockSkew = TimeSpan.FromSeconds(30)
                 };
 
                 options.Events = new JwtBearerEvents
@@ -133,6 +140,15 @@ namespace INest
                     }
                 };
             });
+        }
+
+        private static void CheckSameSite(HttpContext httpContext, CookieOptions options)
+        {
+            if (options.SameSite == SameSiteMode.None)
+            {
+                var userAgent = httpContext.Request.Headers["User-Agent"].ToString();
+                options.Secure = true;
+            }
         }
 
         private static void AddCustomCors(this IServiceCollection services, IConfiguration config)
