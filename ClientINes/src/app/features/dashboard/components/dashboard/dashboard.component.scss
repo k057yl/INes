@@ -20,14 +20,13 @@
   width: 100%;
 }
 
-/* БОКОВЫЕ КНОПКИ ПАГИНАЦИИ ВДОЛЬ БОРДЫ */
+/* ОГРОМНЫЕ БОКОВЫЕ КНОПКИ ПАГИНАЦИИ НА ВСЮ ВЫСОТУ БОРДЫ */
 .board-nav-btn {
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
+  top: 0;
+  bottom: 0;
   z-index: 50;
-  width: 38px;
-  height: 50%;
+  width: 42px;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   color: var(--text-muted);
@@ -35,19 +34,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.1rem;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 1.4rem;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
 
   &.prev-btn {
-    left: -46px;
-    border-radius: 12px 0 0 12px;
+    left: -48px;
+    border-radius: 16px 0 0 16px;
     border-right: none;
   }
 
   &.next-btn {
-    right: -46px;
-    border-radius: 0 12px 12px 0;
+    right: -48px;
+    border-radius: 0 16px 16px 0;
     border-left: none;
   }
 
@@ -55,11 +54,11 @@
     background: var(--bg-main-card);
     color: var(--accent-color);
     border-color: var(--accent-color);
-    width: 44px; /* Эффект небольшого выдвижения навстречу курсору */
+    width: 50px;
   }
 
   &:active:not(:disabled) {
-    transform: translateY(-50%) scale(0.94);
+    transform: scale(0.96);
   }
 
   &:disabled {
@@ -133,11 +132,54 @@
   }
 }
 
+/* --- МОБИЛЬНАЯ ПАГИНАЦИЯ --- */
+.mobile-pagination-wrapper {
+  display: none;
+  justify-content: center;
+  margin-top: 1rem;
+  padding: 10px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+
+  .pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    .page-info {
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--accent-color);
+      padding: 0 8px;
+    }
+
+    .page-btn {
+      min-width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      &:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+      }
+    }
+  }
+}
+
 @media (max-width: 1200px) { 
-  /* Когда контейнер прижимается к краям экрана, прижимаем стрелки вплотную к борде */
   .board-nav-btn {
-    &.prev-btn { left: 0; border-radius: 0 10px 10px 0; border-right: 1px solid var(--border-color); }
-    &.next-btn { right: 0; border-radius: 10px 0 0 10px; border-left: 1px solid var(--border-color); }
+    &.prev-btn { left: 0; border-radius: 0 12px 12px 0; border-right: 1px solid var(--border-color); }
+    &.next-btn { right: 0; border-radius: 12px 0 0 12px; border-left: 1px solid var(--border-color); }
   }
 }
 
@@ -155,9 +197,14 @@
     padding: 10px; 
   }
 
-  /* Скрываем громоздкие боковые «уши» на телефонах */
+  /* Скрываем огромные боковые стрелки на телефонах */
   .board-nav-btn {
-    display: none;
+    display: none !important;
+  }
+
+  /* Показываем мобильную пагинацию снизу */
+  .mobile-pagination-wrapper {
+    display: flex;
   }
 
   .zero-state-container { 
@@ -201,7 +248,6 @@
     padding-bottom: 10px !important;
   }
 
-  /* Drag & Drop превьюшки */
   .custom-drag-preview {
     width: 90px;
     height: 90px;
