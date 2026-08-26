@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, HostListener } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { DragDropModule, CdkDragDrop, moveItemInArray, CdkDrag } from '@angular/cdk/drag-drop';
 import { TranslateModule } from '@ngx-translate/core';
@@ -52,6 +52,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   selectedTargetLocationForDelete: string | null = null;
   locationToDeleteId: string | null = null;
+
+  @HostListener('window:resize')
+  onResize() {
+    this.isMobile = window.innerWidth <= 768;
+    const totalPages = this.totalBoardPages;
+    if (this.facade.nav.currentPageBoard >= totalPages) {
+      this.facade.nav.currentPageBoard = Math.max(0, totalPages - 1);
+    }
+    this.facade.nav.syncRibbonWithBoard();
+  }
 
   ngOnInit() {
     this.loadData();

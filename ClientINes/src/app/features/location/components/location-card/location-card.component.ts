@@ -111,6 +111,16 @@ export class LocationCardComponent implements OnInit {
     }
   }
 
+  onMoveTarget(targetId: string | null, event: Event) {
+    this.move.emit({ loc: this.location, targetId: targetId ?? 'root' });
+
+    const target = event.target as HTMLElement;
+    const details = target.closest('details');
+    if (details) {
+      details.removeAttribute('open');
+    }
+  }
+
   @HostListener('window:resize')
   onResize() { this.isMobile = window.innerWidth <= 768; }
 
@@ -139,27 +149,22 @@ export class LocationCardComponent implements OnInit {
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
-    if (!this.openItemMenuId) return;
-    if (!this.el.nativeElement.contains(event.target)) {
+    // Закрываем меню итемов
+    if (this.openItemMenuId && !this.el.nativeElement.contains(event.target)) {
       this.openItemMenuId = null;
     }
+
+    // Автоматически закрываем открытые <details> при клике мимо
+    const openDetails = this.el.nativeElement.querySelectorAll('details[open]');
+    openDetails.forEach((details: HTMLDetailsElement) => {
+      if (!details.contains(event.target as Node)) {
+        details.removeAttribute('open');
+      }
+    });
   }
 
   onItemDrop(event: CdkDragDrop<Item[]>) {
     this.itemDropped.emit({ event, loc: this.location });
-  }
-
-  onMove(event: Event) {
-    const select = event.target as HTMLSelectElement;
-    const targetId = select.value === 'root' ? null : select.value;
-
-    if (!this.treeService.canMoveLocation(this.facade.locations.flatLocations, this.location.id, targetId)) {
-      select.value = "";
-      return;
-    }
-
-    this.move.emit({ loc: this.location, targetId: targetId ?? 'root' });
-    select.value = "";
   }
 
   onAddLocation(event: Event) {

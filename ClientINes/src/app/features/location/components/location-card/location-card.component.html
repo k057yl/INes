@@ -26,24 +26,30 @@
             <i class="fa fa-eye"></i>
           </button>
 
-          <!-- Селект перемещения -->
-          <div class="select-btn-wrapper" [title]="'LOCATION_CARD.BTN.CHANGE_LOC_TOOLTIP' | translate" (click)="$event.stopPropagation()">
-            <i class="fa fa-exchange-alt select-icon"></i>
-            <select (change)="onMove($event)">
-              <option value="" disabled selected></option>
-              <option value="root"
-                [disabled]="!treeService.canMoveLocation(facade.locations.flatLocations, location.id, null)">
+          <!-- Кастомный дропдаун перемещения -->
+          <details class="custom-dropdown" (click)="$event.stopPropagation()">
+            <summary class="tool-btn" [title]="'LOCATION_CARD.BTN.CHANGE_LOC_TOOLTIP' | translate">
+              <i class="fa fa-exchange-alt select-icon"></i>
+            </summary>
+
+            <div class="dropdown-menu">
+              <button type="button" 
+                      class="dropdown-item"
+                      [disabled]="!treeService.canMoveLocation(facade.locations.flatLocations, location.id, null)"
+                      (click)="onMoveTarget(null, $event)">
                 📁 {{'DROP_MENU.HIGHER_LEVEL' | translate}}
-              </option>
+              </button>
+
               @for (target of flatLocations; track target.id) {
-                <option
-                  [value]="target.id"
-                  [disabled]="target.id === location.id || treeService.isChildOf(target.id, location) || !treeService.canMoveLocation(facade.locations.flatLocations, location.id, target.id)">
+                <button type="button"
+                        class="dropdown-item"
+                        [disabled]="target.id === location.id || treeService.isChildOf(target.id, location) || !treeService.canMoveLocation(facade.locations.flatLocations, location.id, target.id)"
+                        (click)="onMoveTarget(target.id, $event)">
                   {{ target.name }}
-                </option>
+                </button>
               }
-            </select>
-          </div>
+            </div>
+          </details>
 
           <!-- Стрелки вверх/вниз (только у вложенных) -->
           @if (isNestedLocation) {

@@ -13,20 +13,26 @@ export class DashboardNavigationService {
       : RIBBON_CONFIG.PAGE_SIZE_DESKTOP;
   }
 
+  get boardPageSize(): number {
+    return window.innerWidth <= BOARD_CONFIG.BREAKPOINT_MOBILE
+      ? BOARD_CONFIG.PAGE_SIZE_MOBILE
+      : BOARD_CONFIG.PAGE_SIZE_DESKTOP;
+  }
+
   getBoardPageLocations(locations: StorageLocation[]): StorageLocation[] {
-    const start = this.currentPageBoard * BOARD_CONFIG.PAGE_SIZE;
-    return locations.slice(start, start + BOARD_CONFIG.PAGE_SIZE);
+    const start = this.currentPageBoard * this.boardPageSize;
+    return locations.slice(start, start + this.boardPageSize);
   }
 
   getTotalBoardPages(locationsCount: number): number {
-    return Math.ceil(locationsCount / BOARD_CONFIG.PAGE_SIZE);
+    return Math.max(1, Math.ceil(locationsCount / this.boardPageSize));
   }
 
   changeBoardPage(delta: number, locationsCount: number) {
     const newPage = this.currentPageBoard + delta;
-    const maxPages = Math.ceil(locationsCount / BOARD_CONFIG.PAGE_SIZE);
+    const maxPages = this.getTotalBoardPages(locationsCount);
 
-    if (newPage >= 0 && (maxPages === 0 || newPage < maxPages)) {
+    if (newPage >= 0 && newPage < maxPages) {
       this.currentPageBoard = newPage;
       this.syncRibbonWithBoard();
     }
@@ -35,19 +41,19 @@ export class DashboardNavigationService {
   onRibbonPageChange(newPage: number) {
     this.currentPageRibbon = newPage;
     const firstItemIndex = newPage * this.ribbonPageSize;
-    this.currentPageBoard = Math.floor(firstItemIndex / BOARD_CONFIG.PAGE_SIZE);
+    this.currentPageBoard = Math.floor(firstItemIndex / this.boardPageSize);
   }
 
   jumpToLocation(locId: string, locations: StorageLocation[]) {
     const index = locations.findIndex(l => l.id === locId);
     if (index !== -1) {
-      this.currentPageBoard = Math.floor(index / BOARD_CONFIG.PAGE_SIZE);
+      this.currentPageBoard = Math.floor(index / this.boardPageSize);
       this.syncRibbonWithBoard();
     }
   }
 
   syncRibbonWithBoard() {
-    const firstVisibleIndex = this.currentPageBoard * BOARD_CONFIG.PAGE_SIZE;
+    const firstVisibleIndex = this.currentPageBoard * this.boardPageSize;
     this.currentPageRibbon = Math.floor(firstVisibleIndex / this.ribbonPageSize);
   }
 

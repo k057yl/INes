@@ -57,16 +57,6 @@ export class LocationRibbonComponent {
 
   onLocationClick(locId: string): void {
     this.jumpTo.emit(locId);
-
-    if (window.innerWidth <= RIBBON_CONFIG.BREAKPOINT_MOBILE) {
-      setTimeout(() => {
-        const targetElem = document.getElementById(`location-card-${locId}`) || 
-                           document.querySelector(`[data-location-id="${locId}"]`);
-        if (targetElem) {
-          targetElem.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      }, 100);
-    }
   }
 
   toggleCreateMenu(event: MouseEvent) {
